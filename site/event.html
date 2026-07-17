@@ -6,11 +6,12 @@
 <meta name="robots" content="noindex">
 <title>大会予想｜RIZIN予想部</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 <div id="app-header"></div>
+<div id="sticky-cd"></div>
 <div class="wrap" id="main"></div>
 <div class="toast" id="toast"></div>
 
@@ -21,7 +22,7 @@
 <script src="js/api.js"></script>
 <script src="js/app.js"></script>
 <script>
-let EV, FIGHTS, FMAP, MEMBERS, myPreds = {}, allPreds = [];
+let EV, PHASE, FIGHTS, FMAP, MEMBERS, myPreds = {}, allPreds = [];
 
 function toast(msg) {
   const t = document.getElementById("toast");
@@ -35,12 +36,13 @@ async function load() {
   const id = qp("id");
   EV = id ? await DB.getEvent(id) : null;
   if (!EV) { document.getElementById("main").innerHTML = "<p class='page-sub'>大会が見つかりません。</p>"; return; }
+  PHASE = eventPhase(EV);
   FIGHTS = (await DB.listFights(EV.id)).sort((a, b) =>
     (a.segment === b.segment) ? b.order_no - a.order_no : (a.segment === "main" ? -1 : 1));
   FMAP = fighterMap(await DB.listFighters());
   MEMBERS = await DB.listMembers();
   const fightIds = FIGHTS.map(f => f.id);
-  if (isLocked(EV)) {
+  if (PHASE === "locked" || PHASE === "finished") {
     allPreds = await DB.listPredictions({ fightIds });
   } else {
     allPreds = await DB.listPredictions({ fightIds, memberId: getMemberId() });
@@ -57,7 +59,7 @@ function fightLabel(f) {
     <span>${esc(f.weight_class || "")}</span>`;
 }
 
-// ---------- 予想UI（締切前） ----------
+// ---------- 予想UI（受付中） ----------
 function predictCard(f) {
   const p = myPreds[f.id] || {};
   const f1 = FMAP[f.fighter1_id], f2 = FMAP[f.fighter2_id];
@@ -85,11 +87,12 @@ function predictCard(f) {
     </div>` : "";
   return `
     <div class="fight-card" id="fc_${f.id}">
-      ${f.image_url ? `<div class="banner"><img src="${esc(f.image_url)}" alt=""></div>` : ""}
+      ${f.image_url ? `<div class="banner"><img src="${esc(f.image_url)}" alt="" loading="lazy"></div>` : ""}
       <div class="fight-label">${fightLabel(f)}</div>
       <div class="vs-row">
         <button class="corner-btn c1 ${p.winner_id === f.fighter1_id ? "sel" : ""}"
           onclick="setPred('${f.id}','winner_id','${f.fighter1_id}')"><small>RED</small>${esc(f1?.name)}</button>
+        <span class="vs-mark">VS</span>
         <button class="corner-btn c2 ${p.winner_id === f.fighter2_id ? "sel" : ""}"
           onclick="setPred('${f.id}','winner_id','${f.fighter2_id}')"><small>BLUE</small>${esc(f2?.name)}</button>
       </div>
@@ -98,6 +101,22 @@ function predictCard(f) {
         <span class="save-note ${p.winner_id ? "saved" : ""}">${p.winner_id ? "✓ 保存済み" : "未予想（タップで即保存）"}</span>
         ${p.winner_id ? `<button class="clear-btn" onclick="clearPred('${f.id}')">予想を取り消す</button>` : ""}
       </div>
+    </div>`;
+}
+
+// ---------- 受付前（計量待ち）：カードだけ見せる ----------
+function previewCard(f) {
+  const f1 = FMAP[f.fighter1_id], f2 = FMAP[f.fighter2_id];
+  return `
+    <div class="fight-card" id="fc_${f.id}">
+      ${f.image_url ? `<div class="banner"><img src="${esc(f.image_url)}" alt="" loading="lazy"></div>` : ""}
+      <div class="fight-label">${fightLabel(f)}</div>
+      <div class="vs-row">
+        <div class="corner-btn c1 disabled"><small>RED</small>${esc(f1?.name)}</div>
+        <span class="vs-mark">VS</span>
+        <div class="corner-btn c2 disabled"><small>BLUE</small>${esc(f2?.name)}</div>
+      </div>
+      <div class="fight-foot"><span class="save-note">計量終了後に予想開始</span></div>
     </div>`;
 }
 
@@ -113,7 +132,6 @@ async function setPred(fightId, key, val) {
   } else {
     next[key] = val || null;
     if (key === "method") { next.round = null; next.technique = null; }
-    if (key === "method" && val === "DEC") { next.round = null; next.technique = null; }
   }
   try {
     await DB.upsertPrediction({
@@ -138,7 +156,8 @@ function replaceCard(fightId) {
   const f = FIGHTS.find(x => x.id === fightId);
   const el = document.getElementById("fc_" + fightId);
   const tmp = document.createElement("div");
-  tmp.innerHTML = isLocked(EV) ? resultCard(f) : predictCard(f);
+  tmp.innerHTML = (PHASE === "locked" || PHASE === "finished") ? resultCard(f)
+    : PHASE === "before_open" ? previewCard(f) : predictCard(f);
   el.replaceWith(tmp.firstElementChild);
 }
 
@@ -146,7 +165,7 @@ function replaceCard(fightId) {
 function resultCard(f) {
   const f1 = FMAP[f.fighter1_id], f2 = FMAP[f.fighter2_id];
   const decided = f.winner_id && f.result_method;
-  let resultBox = `<div class="result-box"><span class="rline">結果待ち</span></div>`;
+  let resultBox = `<div class="result-box waiting"><span class="rline">結果待ち</span></div>`;
   if (decided) {
     if (f.result_method === "DRAW" || f.result_method === "NC") {
       resultBox = `<div class="result-box"><span class="rline">${METHOD_LABEL[f.result_method]}</span>（集計対象外）</div>`;
@@ -177,10 +196,11 @@ function resultCard(f) {
   }).join("") : `<div class="pred-row"><span class="pdetail">予想なし</span></div>`;
   return `
     <div class="fight-card" id="fc_${f.id}">
-      ${f.image_url ? `<div class="banner"><img src="${esc(f.image_url)}" alt=""></div>` : ""}
+      ${f.image_url ? `<div class="banner"><img src="${esc(f.image_url)}" alt="" loading="lazy"></div>` : ""}
       <div class="fight-label">${fightLabel(f)}</div>
       <div class="vs-row">
         <div class="corner-btn c1 ${decided && f.winner_id === f.fighter1_id ? "sel" : ""}"><small>RED</small>${esc(f1?.name)}</div>
+        <span class="vs-mark">VS</span>
         <div class="corner-btn c2 ${decided && f.winner_id === f.fighter2_id ? "sel" : ""}"><small>BLUE</small>${esc(f2?.name)}</div>
       </div>
       ${resultBox}
@@ -188,20 +208,58 @@ function resultCard(f) {
     </div>`;
 }
 
+// ---------- 結果発表（finished時の大会サマリー） ----------
+function eventSummary() {
+  const rows = computeLeaderboard(MEMBERS, FIGHTS, allPreds).filter(r => r.answered > 0);
+  if (!rows.length) return "";
+  return `
+    <div class="summary-box">
+      <div class="en-label gold">FINAL RESULT</div>
+      <div class="summary-title">この大会の成績</div>
+      ${rows.map((r, i) => `
+        <div class="summary-row ${i === 0 ? "champ" : ""}">
+          <span class="srank">${i + 1}</span>
+          <span class="sname">${esc(r.member.name)}${i === 0 ? "　👑" : ""}</span>
+          <span class="srate">${fmtRate(r.rate)}</span>
+          <span class="ssub">${r.hits}/${r.decided}的中・${r.pts}pt${r.pitari ? `・🎯×${r.pitari}` : ""}</span>
+        </div>`).join("")}
+    </div>`;
+}
+
 function render() {
-  const locked = isLocked(EV);
   const main = FIGHTS.filter(f => f.segment === "main");
   const op = FIGHTS.filter(f => f.segment === "opening");
-  const card = locked ? resultCard : predictCard;
+  const card = (PHASE === "locked" || PHASE === "finished") ? resultCard
+    : PHASE === "before_open" ? previewCard : predictCard;
+  const days = daysToEvent(EV);
+  const subText = {
+    before_open: "カード公開中。計量終了後に予想が開く。",
+    open: "全メンバーの予想は締切後に公開。",
+    locked: "締切済み。全員の予想を公開中——あとは試合を待つだけ。",
+    finished: "結果確定・答え合わせ",
+  }[PHASE];
   document.getElementById("main").innerHTML = `
+    <div class="en-label">${PHASE === "finished" ? "RESULT" : "FIGHT CARD"}</div>
     <h1 class="page-title">${esc(EV.name)}</h1>
-    <p class="page-sub">${fmtDate(EV.event_date)}　${locked
-      ? (EV.status === "finished" ? "結果確定・答え合わせ" : "締切済み・全員の予想を公開中")
-      : lockCountdown(EV) + "　※他のメンバーの予想は締切後に公開"}</p>
-    ${main.length ? `<div class="section-label">Main Card</div>` : ""}
+    <p class="page-sub">${fmtDate(EV.event_date)}　${subText}</p>
+    ${PHASE === "finished" ? eventSummary() : ""}
+    ${main.length ? `<div class="section-label">MAIN CARD</div>` : ""}
     ${main.map(card).join("")}
-    ${op.length ? `<div class="section-label">Opening Fights</div>` : ""}
+    ${op.length ? `<div class="section-label">OPENING FIGHTS</div>` : ""}
     ${op.map(card).join("")}`;
+  // 受付中は締切カウントダウンをスティッキー表示
+  const sc = document.getElementById("sticky-cd");
+  if (PHASE === "open") {
+    sc.innerHTML = `
+      <div class="countdown-bar sticky">
+        <div class="cd-left">
+          <span class="cd-label">予想締切まで</span>
+          <span class="cd-timer" id="cd_main">--:--:--</span>
+        </div>
+        ${days !== null && days >= 0 ? `<div class="cd-days"><b>${days === 0 ? "本日" : "あと" + days + "日"}</b><span>大会${days === 0 ? "開催" : "まで"}</span></div>` : ""}
+      </div>`;
+    startCountdown(document.getElementById("cd_main"), EV.lock_at, () => location.reload());
+  } else sc.innerHTML = "";
 }
 
 load();

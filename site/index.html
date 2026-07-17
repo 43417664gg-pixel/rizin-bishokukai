@@ -6,7 +6,7 @@
 <meta name="robots" content="noindex">
 <title>RIZIN予想部</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -23,18 +23,21 @@
 async function renderPlayerSelect() {
   const members = await DB.listMembers();
   document.getElementById("main").innerHTML = `
-    <h1 class="page-title">誰で参戦する？</h1>
-    <p class="page-sub">自分の名前を選んでスタート。次からは自動でログインされる。</p>
+    <div class="ps-hero">
+      <div class="en-label">CHOOSE YOUR FIGHTER</div>
+      <h1 class="page-title">誰で参戦する？</h1>
+      <p class="page-sub">名前を選んでエントリー。次からは自動で入場。</p>
+    </div>
     <div class="player-grid">
-      ${members.map(m => `
-        <button class="player-tile" onclick="choose('${m.id}')">
-          <div class="avatar" style="background:${esc(m.color)}">${esc(m.name.slice(0, 1))}</div>
-          <div class="pname">${esc(m.name)}</div>
+      ${members.map((m, i) => `
+        <button class="player-tile" style="--c:${esc(m.color)};--d:${i * 70}ms" data-initial="${esc(m.name.slice(0, 1))}" onclick="choose('${m.id}')">
+          <span class="entry-no">ENTRY ${String(i + 1).padStart(2, "0")}</span>
+          <span class="pname">${esc(m.name)}</span>
         </button>`).join("")}
     </div>
     <div class="rules-box">
       <b>ルールは一行：</b>勝者を当てて<b class="gold">的中率</b>で競う。
-      さらに決まり手（+1pt）・ラウンド（+1pt）・フィニッシュ技ピタリ（+2pt）を深掘りするほど<b class="gold">ボーナスpt</b>が積み上がる。
+      決まり手（+1pt）・ラウンド（+1pt）・技ピタリ（+2pt）と深掘りするほど<b class="gold">ボーナスpt</b>。
       勝者を外したらボーナスは全部パー。予想しない試合はノーカウント。
     </div>`;
 }
@@ -47,11 +50,17 @@ async function renderHome() {
   const rows = await Promise.all(events.map(async ev => {
     const fights = await DB.listFights(ev.id);
     const myPreds = await DB.listPredictions({ fightIds: fights.map(f => f.id), memberId: getMemberId() });
-    const locked = isLocked(ev);
-    const tag = ev.status === "finished"
-      ? '<span class="tag finished">結果確定</span>'
-      : locked ? '<span class="tag locked">締切済み・結果待ち</span>'
-      : '<span class="tag open">予想受付中</span>';
+    const phase = eventPhase(ev);
+    const days = daysToEvent(ev);
+    const tag = `<span class="tag ${phase}">${PHASE_LABEL[phase]}</span>`;
+    const countdown = phase === "open" ? `
+      <div class="countdown-bar">
+        <div class="cd-left">
+          <span class="cd-label">予想締切まで</span>
+          <span class="cd-timer" data-target="${ev.lock_at}">--:--:--</span>
+        </div>
+        ${days !== null && days >= 0 ? `<div class="cd-days"><b>${days === 0 ? "本日" : "あと" + days + "日"}</b><span>大会${days === 0 ? "開催" : "まで"}</span></div>` : ""}
+      </div>` : "";
     return `
       <a class="event-card" href="event.html?id=${ev.id}">
         ${ev.poster_url ? `<img src="${esc(ev.poster_url)}" alt="">` : ""}
@@ -61,15 +70,18 @@ async function renderHome() {
             <span>${fmtDate(ev.event_date)}</span>
             ${tag}
             <span>予想済み ${myPreds.length}/${fights.length}</span>
-            ${!locked && ev.status !== "finished" ? `<span>${lockCountdown(ev)}</span>` : ""}
           </div>
         </div>
+        ${countdown}
       </a>`;
   }));
   document.getElementById("main").innerHTML = `
+    <div class="en-label">EVENTS</div>
     <h1 class="page-title">大会</h1>
-    <p class="page-sub">カードをタップして予想する。締切は大会開始と同時。</p>
+    <p class="page-sub">計量終了後に予想開始、前日の夜24:00で締切。</p>
     ${rows.join("")}`;
+  document.querySelectorAll(".cd-timer").forEach(el =>
+    startCountdown(el, el.dataset.target, () => location.reload()));
 }
 
 (async () => {

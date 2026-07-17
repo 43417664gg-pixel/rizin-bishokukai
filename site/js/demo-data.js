@@ -59,7 +59,8 @@ window.DEMO_SEED = {
       id: "ev_lm15",
       name: "RIZIN LANDMARK 15 in HIROSHIMA",
       event_date: "2026-07-18",
-      lock_at: "2026-07-18T14:00:00+09:00",
+      open_at: "2026-07-17T15:00:00+09:00",  // 前日計量終了後に開放
+      lock_at: "2026-07-18T00:00:00+09:00",  // 前日の夜24:00締切
       poster_url: "assets/lm15/poster.jpg",
       official_url: "https://jp.rizinff.com/_ct/17841138",
       status: "upcoming",
@@ -68,7 +69,8 @@ window.DEMO_SEED = {
       id: "ev_demo",
       name: "【サンプル】答え合わせ・集計のデモ大会",
       event_date: "2026-06-01",
-      lock_at: "2026-06-01T14:00:00+09:00",
+      open_at: "2026-05-31T15:00:00+09:00",
+      lock_at: "2026-06-01T00:00:00+09:00",
       poster_url: "",
       official_url: "",
       status: "finished",

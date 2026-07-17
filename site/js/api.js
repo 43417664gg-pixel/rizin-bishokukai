@@ -39,10 +39,12 @@
     },
     async upsertPrediction(pred) {
       const db = demoLoad();
-      // デモでも締切は守る
+      // デモでも受付時間は守る（計量前は開いていない・前日24:00で締切）
       const fight = db.fights.find(f => f.id === pred.fight_id);
       const ev = fight && db.events.find(e => e.id === fight.event_id);
-      if (!ev || new Date(ev.lock_at) <= new Date()) throw new Error("予想の締切を過ぎています");
+      if (!ev) throw new Error("大会が見つかりません");
+      if (ev.open_at && new Date(ev.open_at) > new Date()) throw new Error("予想は計量終了後に開始されます");
+      if (new Date(ev.lock_at) <= new Date()) throw new Error("予想の締切を過ぎています");
       const i = db.predictions.findIndex(p => p.member_id === pred.member_id && p.fight_id === pred.fight_id);
       if (i >= 0) db.predictions[i] = { ...db.predictions[i], ...pred, updated_at: new Date().toISOString() };
       else db.predictions.push({ id: uid(), updated_at: new Date().toISOString(), ...pred });
@@ -69,6 +71,11 @@
       if (ev.id) { Object.assign(db.events.find(e => e.id === ev.id), ev); }
       else { ev.id = uid(); db.events.push(ev); }
       demoSave(db); return ev.id;
+    },
+    async updateEvent(id, fields) {
+      const db = demoLoad();
+      Object.assign(db.events.find(e => e.id === id), fields);
+      demoSave(db);
     },
     async upsertFighter(f) {
       const db = demoLoad();
@@ -130,6 +137,7 @@
       async adminLogout() { await client.auth.signOut(); },
       async saveResult(fightId, result) { return q(client.from("fights").update(result).eq("id", fightId)); },
       async upsertEvent(ev) { const d = await q(client.from("events").upsert(ev).select()); return d[0].id; },
+      async updateEvent(id, fields) { return q(client.from("events").update(fields).eq("id", id)); },
       async upsertFighter(f) { const d = await q(client.from("fighters").upsert(f).select()); return d[0].id; },
       async upsertFight(f) { const d = await q(client.from("fights").upsert(f).select()); return d[0].id; },
       async upsertMember(m) { const d = await q(client.from("members").upsert(m).select()); return d[0].id; },

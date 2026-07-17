@@ -23,7 +23,8 @@ create table events (
   id uuid primary key default gen_random_uuid(),
   name text not null,
   event_date date,
-  lock_at timestamptz not null,          -- 予想締切＝大会開始時刻
+  open_at timestamptz,                   -- 予想開始＝前日計量終了後（nullなら即開放）
+  lock_at timestamptz not null,          -- 予想締切＝前日の夜24:00
   poster_url text,
   official_url text,                     -- rizin.jp の大会ページ（admin参照用）
   status text not null default 'upcoming' check (status in ('upcoming','finished')),
@@ -82,25 +83,33 @@ create policy "admin write fighters" on fighters for all to authenticated using 
 create policy "admin write events"   on events   for all to authenticated using (true) with check (true);
 create policy "admin write fights"   on fights   for all to authenticated using (true) with check (true);
 
--- 予想は匿名で書けるが、大会のlock_atを過ぎたらDBが拒否（後出し防止）
-create policy "predict before lock (insert)" on predictions for insert
+-- 予想は匿名で書けるが、受付時間外（計量前／前日24:00以降）はDBが拒否（後出し防止）
+create policy "predict in window (insert)" on predictions for insert
   with check (
     exists (select 1 from fights f join events e on e.id = f.event_id
-            where f.id = fight_id and e.lock_at > now())
+            where f.id = fight_id
+              and (e.open_at is null or e.open_at <= now())
+              and e.lock_at > now())
   );
-create policy "predict before lock (update)" on predictions for update
+create policy "predict in window (update)" on predictions for update
   using (
     exists (select 1 from fights f join events e on e.id = f.event_id
-            where f.id = fight_id and e.lock_at > now())
+            where f.id = fight_id
+              and (e.open_at is null or e.open_at <= now())
+              and e.lock_at > now())
   )
   with check (
     exists (select 1 from fights f join events e on e.id = f.event_id
-            where f.id = fight_id and e.lock_at > now())
+            where f.id = fight_id
+              and (e.open_at is null or e.open_at <= now())
+              and e.lock_at > now())
   );
-create policy "predict before lock (delete)" on predictions for delete
+create policy "predict in window (delete)" on predictions for delete
   using (
     exists (select 1 from fights f join events e on e.id = f.event_id
-            where f.id = fight_id and e.lock_at > now())
+            where f.id = fight_id
+              and (e.open_at is null or e.open_at <= now())
+              and e.lock_at > now())
   );
 
 -- 管理アカウントは予想も訂正可能

@@ -90,13 +90,50 @@
     return `${dt.getFullYear()}.${dt.getMonth() + 1}.${dt.getDate()}（${"日月火水木金土"[dt.getDay()]}）`;
   };
   window.fmtRate = (r) => r === null || r === undefined ? "—" : `${Math.round(r * 100)}%`;
-  window.isLocked = (ev) => new Date(ev.lock_at) <= new Date();
-  window.lockCountdown = (ev) => {
-    const ms = new Date(ev.lock_at) - new Date();
-    if (ms <= 0) return "予想締切済み";
-    const h = Math.floor(ms / 3600000), m = Math.floor((ms % 3600000) / 60000);
-    if (h >= 48) return `締切まであと${Math.floor(h / 24)}日`;
-    return `締切まであと${h}時間${m}分`;
+
+  // 大会の状態：before_open（計量前）→ open（受付中）→ locked（締切・結果待ち）→ finished（結果発表済み）
+  window.eventPhase = (ev) => {
+    if (ev.status === "finished") return "finished";
+    const now = new Date();
+    if (new Date(ev.lock_at) <= now) return "locked";
+    if (ev.open_at && new Date(ev.open_at) > now) return "before_open";
+    return "open";
+  };
+  window.isLocked = (ev) => eventPhase(ev) === "locked" || eventPhase(ev) === "finished";
+  window.PHASE_LABEL = {
+    before_open: "計量終了後に予想開始",
+    open: "予想受付中",
+    locked: "締切済み・試合待ち",
+    finished: "結果発表",
+  };
+
+  // 大会当日までの日数（当日は0）
+  window.daysToEvent = (ev) => {
+    if (!ev.event_date) return null;
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    const d = new Date(ev.event_date + "T00:00:00");
+    return Math.round((d - today) / 86400000);
+  };
+
+  // カウントダウンタイマー。elに「1日と 05:12:44」形式で毎秒描画する
+  window.startCountdown = function (el, targetIso, onExpire) {
+    function tick() {
+      const ms = new Date(targetIso) - new Date();
+      if (ms <= 0) {
+        el.textContent = "00:00:00";
+        clearInterval(el._cd);
+        if (onExpire) onExpire();
+        return;
+      }
+      const d = Math.floor(ms / 86400000);
+      const h = String(Math.floor((ms % 86400000) / 3600000)).padStart(2, "0");
+      const m = String(Math.floor((ms % 3600000) / 60000)).padStart(2, "0");
+      const s = String(Math.floor((ms % 60000) / 1000)).padStart(2, "0");
+      el.textContent = (d > 0 ? `${d}日と ` : "") + `${h}:${m}:${s}`;
+    }
+    clearInterval(el._cd);
+    tick();
+    el._cd = setInterval(tick, 1000);
   };
   window.fighterMap = (fighters) => Object.fromEntries(fighters.map(f => [f.id, f]));
 

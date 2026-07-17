@@ -6,7 +6,7 @@
 <meta name="robots" content="noindex">
 <title>管理｜RIZIN予想部</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -71,14 +71,19 @@ function render() {
         </select>
       </div>
       <div id="result_forms"></div>
+      <div id="publish_area"></div>
     </div>
 
     <div class="admin-section">
       <h2>② 大会を追加</h2>
       <div class="form-row"><input id="ev_name" placeholder="大会名（例：RIZIN.54）"></div>
       <div class="form-row">
-        <label>開催日／予想締切（大会開始時刻）</label>
-        <input id="ev_date" type="date"><input id="ev_lock" type="datetime-local">
+        <label>開催日</label>
+        <input id="ev_date" type="date">
+      </div>
+      <div class="form-row">
+        <label>予想開始（前日の計量終了後）／予想締切（前日の夜24:00）</label>
+        <input id="ev_open" type="datetime-local"><input id="ev_lock" type="datetime-local">
       </div>
       <div class="form-row"><input id="ev_poster" placeholder="ポスター画像パス（assets/…）"></div>
       <div class="form-row"><input id="ev_url" placeholder="RIZIN公式大会ページURL"></div>
@@ -131,7 +136,16 @@ function render() {
 async function renderResultForms() {
   const evId = document.getElementById("res_event").value;
   const box = document.getElementById("result_forms");
+  const pub = document.getElementById("publish_area");
+  pub.innerHTML = "";
   if (!evId) { box.innerHTML = ""; return; }
+  const evObj = EVENTS.find(e => e.id === evId);
+  pub.innerHTML = evObj.status === "finished"
+    ? `<div class="admin-note" style="margin-top:12px">🏁 この大会は結果発表済み。</div>`
+    : `<div style="margin-top:14px">
+        <button class="btn" onclick="publishEvent('${evId}')">🏁 集計結果を発表する</button>
+        <div class="admin-note">全試合の結果を入れ終わったら押す。大会が「結果発表」になり、大会ページに最終成績が出る。</div>
+      </div>`;
   const ev = EVENTS.find(e => e.id === evId);
   const fights = (await DB.listFights(evId)).sort((a, b) =>
     (a.segment === b.segment) ? b.order_no - a.order_no : (a.segment === "main" ? -1 : 1));
@@ -185,12 +199,24 @@ async function saveResult(fightId) {
   } catch (e) { toast("保存失敗：" + (e.message || "")); }
 }
 
+async function publishEvent(evId) {
+  const fights = await DB.listFights(evId);
+  const undecided = fights.filter(f => !(f.winner_id && f.result_method) && !["DRAW", "NC"].includes(f.result_method));
+  if (undecided.length && !confirm(`結果未入力が${undecided.length}試合ある。それでも発表する？`)) return;
+  await DB.updateEvent(evId, { status: "finished" });
+  toast("🏁 結果発表した");
+  EVENTS = await DB.listEvents();
+  renderResultForms();
+}
+
 async function addEvent() {
   const name = document.getElementById("ev_name").value.trim();
   const lock = document.getElementById("ev_lock").value;
   if (!name || !lock) { toast("大会名と締切は必須"); return; }
+  const open = document.getElementById("ev_open").value;
   await DB.upsertEvent({
     name, event_date: document.getElementById("ev_date").value || null,
+    open_at: open ? new Date(open).toISOString() : null,
     lock_at: new Date(lock).toISOString(),
     poster_url: document.getElementById("ev_poster").value || null,
     official_url: document.getElementById("ev_url").value || null,
