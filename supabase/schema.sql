@@ -14,6 +14,9 @@ create table fighters (
   id uuid primary key default gen_random_uuid(),
   name text not null,
   nickname text,
+  backbone text,                         -- バックボーン（レスリング・ムエタイ等）
+  origin text,                           -- 出身
+  memo text,                             -- ひとことメモ（スタイル・実績）
   photo_url text,
   rizin_url text,
   created_at timestamptz not null default now()

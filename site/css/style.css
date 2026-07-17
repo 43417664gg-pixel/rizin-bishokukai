@@ -356,6 +356,16 @@ tr.top .lb-rate { color: var(--gold-hot); }
 .meikan-card .mbody { padding: 9px 12px 12px; }
 .meikan-card .mname { font-weight: 900; font-size: 13px; line-height: 1.35; }
 .meikan-card .mmeta { display: flex; gap: 8px; color: var(--muted); font-size: 11px; margin-top: 2px; flex-wrap: wrap; }
+.meikan-card .mbackbone {
+  display: inline-block; margin-top: 6px; padding: 1px 8px;
+  font-size: 10px; color: var(--gold); border: 1px solid rgba(212, 175, 55, .45);
+  clip-path: polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%);
+}
+
+.profile-table { margin: 4px 0 14px; border-top: 1px solid var(--line); }
+.pt-row { display: flex; gap: 12px; padding: 9px 2px; border-bottom: 1px solid var(--line); font-size: 13px; }
+.pt-row .pt-k { color: var(--muted); min-width: 96px; font-size: 12px; letter-spacing: .04em; flex-shrink: 0; }
+.pt-row .pt-v { flex: 1; }
 
 .fhero { position: relative; margin-top: 14px; }
 .fhero-photo {

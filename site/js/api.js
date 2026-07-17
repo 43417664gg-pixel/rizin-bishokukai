@@ -6,12 +6,38 @@
   const LS_KEY = "rizin_portal_demo_v1";
 
   // ---------- デモモード ----------
+  // シード更新時はSEED_Vを上げる。マスタ（選手・試合・大会）はシードの新値を反映しつつ、
+  // ユーザーが入れた予想・結果・追加データは保持する
+  const SEED_V = 2;
+  function migrate(saved) {
+    const seed = JSON.parse(JSON.stringify(window.DEMO_SEED));
+    const byId = (arr) => Object.fromEntries((arr || []).map(x => [x.id, x]));
+    const savedF = byId(saved.fighters), savedFt = byId(saved.fights), savedE = byId(saved.events);
+    // 選手・試合：シードを土台に、保存側の編集・結果を上書きで残す
+    const fighters = seed.fighters.map(f => ({ ...f, ...savedF[f.id] }));
+    for (const f of saved.fighters || []) if (!fighters.some(x => x.id === f.id)) fighters.push(f);
+    const fights = seed.fights.map(f => ({ ...f, ...savedFt[f.id], image_url: f.image_url }));
+    for (const f of saved.fights || []) if (!fights.some(x => x.id === f.id)) fights.push(f);
+    // 大会：時刻設定はシード優先、発表済みステータスだけ保持
+    const events = seed.events.map(e => ({
+      ...e, status: savedE[e.id]?.status === "finished" ? "finished" : e.status,
+    }));
+    for (const e of saved.events || []) if (!events.some(x => x.id === e.id)) events.push(e);
+    // メンバー：保存側優先（admin追加を残す）＋シードの新顔を補完
+    const members = (saved.members || []).slice();
+    for (const m of seed.members) if (!members.some(x => x.id === m.id)) members.push(m);
+    return { _v: SEED_V, members, fighters, events, fights, predictions: saved.predictions || [] };
+  }
   function demoLoad() {
-    const saved = localStorage.getItem(LS_KEY);
-    if (saved) {
-      try { return JSON.parse(saved); } catch (e) { /* 壊れていたらシードから再生成 */ }
+    const raw = localStorage.getItem(LS_KEY);
+    if (raw) {
+      try {
+        let db = JSON.parse(raw);
+        if (db._v !== SEED_V) { db = migrate(db); localStorage.setItem(LS_KEY, JSON.stringify(db)); }
+        return db;
+      } catch (e) { /* 壊れていたらシードから再生成 */ }
     }
-    const db = JSON.parse(JSON.stringify(window.DEMO_SEED));
+    const db = { _v: SEED_V, ...JSON.parse(JSON.stringify(window.DEMO_SEED)) };
     localStorage.setItem(LS_KEY, JSON.stringify(db));
     return db;
   }

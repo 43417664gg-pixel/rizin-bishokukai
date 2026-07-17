@@ -91,9 +91,18 @@ function render() {
     </div>
 
     <div class="admin-section">
-      <h2>③ 選手を追加</h2>
-      <div class="form-row"><input id="fi_name" placeholder="選手名"><input id="fi_url" placeholder="RIZIN公式プロフィールURL（任意）"></div>
-      <button class="btn ghost" onclick="addFighter()">選手を追加</button>
+      <h2>③ 選手を追加・プロフィール補完</h2>
+      <div class="form-row">
+        <select id="fi_edit" onchange="pickFighter()">
+          <option value="">— 新規追加（既存選手を選ぶと編集） —</option>
+          ${FIGHTERS.map(f => `<option value="${f.id}">${esc(f.name)}</option>`).join("")}
+        </select>
+      </div>
+      <div class="form-row"><input id="fi_name" placeholder="選手名"><input id="fi_nickname" placeholder="肩書き・異名（任意）"></div>
+      <div class="form-row"><input id="fi_backbone" placeholder="バックボーン（例：レスリング）"><input id="fi_origin" placeholder="出身（例：日本）"></div>
+      <div class="form-row"><input id="fi_memo" placeholder="ひとことメモ（スタイル・実績など）"></div>
+      <div class="form-row"><input id="fi_url" placeholder="RIZIN公式関連URL（任意）"></div>
+      <button class="btn ghost" onclick="addFighter()">保存</button>
     </div>
 
     <div class="admin-section">
@@ -225,11 +234,25 @@ async function addEvent() {
   toast("大会を追加した ✓"); load();
 }
 
+function pickFighter() {
+  const f = FIGHTERS.find(x => x.id === document.getElementById("fi_edit").value);
+  const set = (id, v) => document.getElementById(id).value = v || "";
+  set("fi_name", f?.name); set("fi_nickname", f?.nickname);
+  set("fi_backbone", f?.backbone); set("fi_origin", f?.origin);
+  set("fi_memo", f?.memo); set("fi_url", f?.rizin_url);
+}
+
 async function addFighter() {
   const name = document.getElementById("fi_name").value.trim();
   if (!name) { toast("選手名は必須"); return; }
-  await DB.upsertFighter({ name, rizin_url: document.getElementById("fi_url").value || null });
-  toast("選手を追加した ✓"); load();
+  const v = (id) => document.getElementById(id).value.trim() || null;
+  const editId = document.getElementById("fi_edit").value || undefined;
+  await DB.upsertFighter({
+    ...(editId ? { id: editId } : {}),
+    name, nickname: v("fi_nickname"), backbone: v("fi_backbone"),
+    origin: v("fi_origin"), memo: v("fi_memo"), rizin_url: v("fi_url"),
+  });
+  toast(editId ? "プロフィールを更新した ✓" : "選手を追加した ✓"); load();
 }
 
 async function addFight() {

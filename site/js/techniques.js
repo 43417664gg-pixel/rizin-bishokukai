@@ -19,6 +19,7 @@ window.TECHNIQUES = [
   { id: "body",           label: "ボディ（膝・蹴り含む）", method: "KO" },
   { id: "knee",           label: "膝（顔面）",             method: "KO" },
   { id: "gnp",            label: "グラウンドパウンド",     method: "KO" },
+  { id: "ko_other",       label: "その他",                 method: "KO" },
   // 一本系
   { id: "rnc",            label: "リアネイキドチョーク",   method: "SUB" },
   { id: "guillotine",     label: "ギロチンチョーク",       method: "SUB" },
@@ -27,6 +28,7 @@ window.TECHNIQUES = [
   { id: "armbar",         label: "腕ひしぎ十字固め",       method: "SUB" },
   { id: "kimura",         label: "キムラ・アームロック",   method: "SUB" },
   { id: "leglock",        label: "ヒールフック・足関節",   method: "SUB" },
+  { id: "sub_other",      label: "その他",                 method: "SUB" },
 ];
 
 window.TECH_LABEL = Object.fromEntries(window.TECHNIQUES.map(t => [t.id, t.label]));

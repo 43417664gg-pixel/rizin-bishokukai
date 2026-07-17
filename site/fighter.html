@@ -87,6 +87,7 @@ function renderList(fighters, fights) {
               ${wc ? `<span>${esc(wc)}</span>` : ""}
               <span>${s.w + s.l + s.d ? `${s.w}勝${s.l}敗${s.d ? s.d + "分" : ""}` : "初登場"}</span>
             </div>
+            ${f.backbone ? `<div class="mbackbone">${esc(f.backbone)}</div>` : ""}
           </div>
         </a>`).join("")}
     </div>`;
@@ -140,8 +141,13 @@ function renderDetail(fighter, fighters, fights, events) {
       ${s.d ? `<div class="rec-badge"><b>${s.d}</b><span>分</span></div>` : ""}
       ${s.fights.length ? "" : `<div class="rec-badge fresh"><b>—</b><span>ポータル初登場</span></div>`}
     </div>
-    ${finishList ? `<p class="page-sub">フィニッシュ：${esc(finishList)}</p>` : ""}
-    ${fighter.rizin_url ? `<p class="page-sub"><a href="${esc(fighter.rizin_url)}" target="_blank" rel="noopener" style="text-decoration:underline">RIZIN公式プロフィール ↗</a></p>` : ""}
+    <div class="profile-table">
+      ${fighter.backbone ? `<div class="pt-row"><span class="pt-k">バックボーン</span><span class="pt-v">${esc(fighter.backbone)}</span></div>` : ""}
+      ${fighter.origin ? `<div class="pt-row"><span class="pt-k">出身</span><span class="pt-v">${esc(fighter.origin)}</span></div>` : ""}
+      ${finishList ? `<div class="pt-row"><span class="pt-k">フィニッシュ</span><span class="pt-v">${esc(finishList)}</span></div>` : ""}
+      ${fighter.memo ? `<div class="pt-row"><span class="pt-k">メモ</span><span class="pt-v">${esc(fighter.memo)}</span></div>` : ""}
+    </div>
+    ${fighter.rizin_url ? `<p class="page-sub"><a href="${esc(fighter.rizin_url)}" target="_blank" rel="noopener" style="text-decoration:underline">RIZIN公式の関連記事 ↗</a></p>` : ""}
     ${upcoming.length ? `<div class="section-label">NEXT FIGHT</div>${historyHtml(upcoming, false)}` : ""}
     ${s.fights.length ? `<div class="section-label">FIGHT HISTORY</div>${historyHtml(s.fights, true)}` : ""}
     <p style="margin-top:20px"><a href="fighter.html" style="color:var(--muted);font-size:13px;text-decoration:underline">← 選手名鑑に戻る</a></p>`;
