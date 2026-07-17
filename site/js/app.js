@@ -8,30 +8,32 @@
   window.clearMemberId = () => localStorage.removeItem(MEMBER_KEY);
 
   // ---------- スコアリング（ルールの正本） ----------
-  // 勝者的中＝1pt＋的中率カウント。決まり手+1／ラウンド+1／技ピタリ+2。
-  // 勝者を外したらボーナスは全て不成立。ドロー・無効試合は集計から除外。
+  // 三段梯子：的中（勝者）→ ピタリ（決まり手＋ラウンドまで一致・判定は決まり手のみ）
+  // → あらます（ピタリ＋フィニッシュ技まで完全一致）。勝者を外したら全て不成立。
+  // ドロー・無効試合は集計から除外。
   window.scoreFight = function (pred, fight) {
     if (!fight.winner_id || !fight.result_method) return null; // 結果未確定
     if (fight.result_method === "DRAW" || fight.result_method === "NC") {
-      return { counted: false, winnerHit: false, pts: 0, methodHit: false, roundHit: false, techHit: false };
+      return { counted: false, winnerHit: false, methodHit: false, roundHit: false, techHit: false, pitari: false, aramasu: false };
     }
     const winnerHit = pred.winner_id === fight.winner_id;
-    let pts = 0, methodHit = false, roundHit = false, techHit = false;
+    let methodHit = false, roundHit = false, techHit = false, pitari = false, aramasu = false;
     if (winnerHit) {
-      pts = 1;
-      if (pred.method && pred.method === fight.result_method) { pts += 1; methodHit = true; }
-      if (pred.round && fight.result_round && Number(pred.round) === Number(fight.result_round)
-          && fight.result_method !== "DEC") { pts += 1; roundHit = true; }
-      if (pred.technique && pred.technique === fight.result_technique) { pts += 2; techHit = true; }
+      methodHit = !!(pred.method && pred.method === fight.result_method);
+      roundHit = !!(pred.round && fight.result_round && Number(pred.round) === Number(fight.result_round)
+          && fight.result_method !== "DEC");
+      techHit = !!(pred.technique && pred.technique === fight.result_technique);
+      pitari = methodHit && (fight.result_method === "DEC" || roundHit);
+      aramasu = pitari && techHit;
     }
-    return { counted: true, winnerHit, pts, methodHit, roundHit, techHit };
+    return { counted: true, winnerHit, methodHit, roundHit, techHit, pitari, aramasu };
   };
 
   // メンバー×確定試合からランキング行を作る
   window.computeLeaderboard = function (members, fights, predictions) {
     const fightById = Object.fromEntries(fights.map(f => [f.id, f]));
     const rows = members.map(m => {
-      const row = { member: m, answered: 0, decided: 0, hits: 0, pts: 0, pitari: 0 };
+      const row = { member: m, answered: 0, decided: 0, hits: 0, pitari: 0, aramasu: 0 };
       for (const p of predictions.filter(p => p.member_id === m.id)) {
         row.answered += 1;
         const f = fightById[p.fight_id];
@@ -40,13 +42,13 @@
         if (!s || !s.counted) continue;
         row.decided += 1;
         if (s.winnerHit) row.hits += 1;
-        row.pts += s.pts;
-        if (s.techHit) row.pitari += 1;
+        if (s.pitari) row.pitari += 1;
+        if (s.aramasu) row.aramasu += 1;
       }
       row.rate = row.decided ? row.hits / row.decided : null;
       return row;
     });
-    rows.sort((a, b) => (b.rate ?? -1) - (a.rate ?? -1) || b.pts - a.pts || b.decided - a.decided);
+    rows.sort((a, b) => (b.rate ?? -1) - (a.rate ?? -1) || b.aramasu - a.aramasu || b.pitari - a.pitari || b.decided - a.decided);
     return rows;
   };
 

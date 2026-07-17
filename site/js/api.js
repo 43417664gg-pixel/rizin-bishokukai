@@ -8,7 +8,7 @@
   // ---------- デモモード ----------
   // シード更新時はSEED_Vを上げる。マスタ（選手・試合・大会）はシードの新値を反映しつつ、
   // ユーザーが入れた予想・結果・追加データは保持する
-  const SEED_V = 3;
+  const SEED_V = 4;
   // v3: 本番移行——サンプル大会・デモ選手・仮メンバーを完全に取り除く
   const PURGED = new Set([
     "ev_demo", "demo_1", "demo_2", "demo_3",
@@ -22,10 +22,10 @@
     const seed = JSON.parse(JSON.stringify(window.DEMO_SEED));
     const byId = (arr) => Object.fromEntries((arr || []).map(x => [x.id, x]));
     const savedF = byId(saved.fighters), savedFt = byId(saved.fights), savedE = byId(saved.events);
-    // 選手・試合：シードを土台に、保存側の編集・結果を上書きで残す
-    const fighters = seed.fighters.map(f => ({ ...f, ...savedF[f.id] }));
+    // 選手・試合：シードの内容を正とし、保存側だけにあるフィールド（結果入力等）は残す
+    const fighters = seed.fighters.map(f => ({ ...savedF[f.id], ...f }));
     for (const f of saved.fighters || []) if (!fighters.some(x => x.id === f.id)) fighters.push(f);
-    const fights = seed.fights.map(f => ({ ...f, ...savedFt[f.id], image_url: f.image_url }));
+    const fights = seed.fights.map(f => ({ ...savedFt[f.id], ...f }));
     for (const f of saved.fights || []) if (!fights.some(x => x.id === f.id)) fights.push(f);
     // 大会：時刻設定はシード優先、発表済みステータスだけ保持
     const events = seed.events.map(e => ({

@@ -177,7 +177,9 @@ function renderDetail(fighter, fighters, fights, events) {
       ${fighter.backbone ? `<div class="pt-row"><span class="pt-k">バックボーン</span><span class="pt-v">${esc(fighter.backbone)}</span></div>` : ""}
       ${fighter.team ? `<div class="pt-row"><span class="pt-k">所属</span><span class="pt-v">${esc(fighter.team)}</span></div>` : ""}
       ${fighter.origin ? `<div class="pt-row"><span class="pt-k">出身</span><span class="pt-v">${esc(fighter.origin)}</span></div>` : ""}
-      ${fighter.memo ? `<div class="pt-row"><span class="pt-k">ストーリー</span><span class="pt-v">${esc(fighter.memo)}</span></div>` : ""}
+      ${fighter.style ? `<div class="pt-row"><span class="pt-k">ファイトスタイル</span><span class="pt-v">${esc(fighter.style)}</span></div>` : ""}
+      ${fighter.career ? `<div class="pt-row"><span class="pt-k">来歴</span><span class="pt-v">${esc(fighter.career)}</span></div>` : ""}
+      ${fighter.memo ? `<div class="pt-row"><span class="pt-k">今大会</span><span class="pt-v">${esc(fighter.memo)}</span></div>` : ""}
     </div>
     <div class="section-label">予想部STATS</div>
     <div class="record-badges">

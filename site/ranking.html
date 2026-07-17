@@ -49,7 +49,7 @@ function render() {
   document.getElementById("main").innerHTML = `
     <div class="en-label">RANKING</div>
     <h1 class="page-title">ランキング</h1>
-    <p class="page-sub">的中率で勝負。あらますは深掘りの証。</p>
+    <p class="page-sub">的中率で勝負。ピタリを超えた先に、あらます。</p>
 
     <div class="ev-checks">
       <label class="ev-check all ${allOn ? "on" : ""}">
@@ -71,14 +71,14 @@ function render() {
           <td><span class="lb-rate">${fmtRate(r.rate)}</span>
               <div class="lb-sub">${r.hits}/${r.decided}</div></td>
           <td class="lb-num">${r.pitari}</td>
-          <td class="lb-num gold">${r.pts}</td>
+          <td class="lb-num gold">${r.aramasu}</td>
         </tr>`).join("")}
     </table>
     <div class="rules-box">
-      <b>集計ルール：</b>的中＝勝者を当てた率（結果が出た予想試合だけが分母・未回答はノーカウント）。
-      ピタリ＝フィニッシュ技まで完全一致した回数。
-      <b class="gold">あらます</b>＝勝者1＋決まり手1＋ラウンド1＋技ピタリ2の合計（勝者を外すと全部0）。
-      ドロー・無効試合は集計から除外。
+      <b>三段梯子：</b><b>的中</b>＝勝者を当てた率（結果が出た予想試合だけが分母・未回答はノーカウント）。
+      <b>ピタリ</b>＝決まり手＋ラウンドまで一致（判定決着は決まり手のみでピタリ）。
+      <b class="gold">あらます</b>＝フィニッシュ技まで完全一致した最上位。
+      勝者を外したら全部不成立。ドロー・無効試合は集計から除外。
     </div>`;
 }
 

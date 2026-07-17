@@ -17,7 +17,9 @@ create table fighters (
   backbone text,                         -- バックボーン（レスリング・ムエタイ等）
   team text,                             -- 所属
   origin text,                           -- 出身
-  memo text,                             -- ひとことメモ（スタイル・実績）
+  style text,                            -- ファイトスタイル解説
+  career text,                           -- 来歴
+  memo text,                             -- ひとことメモ（今大会のストーリー等）
   rec_w int, rec_l int, rec_d int,       -- 通算戦績（報道ベース・任意）
   rec_ko int, rec_sub int, rec_dec int,  -- 勝利の内訳（フィニッシュグラフ用・任意）
   photo_url text,

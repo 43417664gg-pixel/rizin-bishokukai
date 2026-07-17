@@ -109,7 +109,9 @@ function render() {
         <label>勝利の内訳（任意）：KO／一本／判定 → フィニッシュグラフに反映</label>
         <input id="fi_ko" type="number" placeholder="KO"><input id="fi_sub" type="number" placeholder="一本"><input id="fi_dec" type="number" placeholder="判定">
       </div>
-      <div class="form-row"><input id="fi_memo" placeholder="ストーリー・ひとことメモ"></div>
+      <div class="form-row"><input id="fi_style" placeholder="ファイトスタイル解説"></div>
+      <div class="form-row"><input id="fi_career" placeholder="来歴"></div>
+      <div class="form-row"><input id="fi_memo" placeholder="今大会のストーリー・ひとこと"></div>
       <div class="form-row"><input id="fi_url" placeholder="RIZIN公式関連URL（任意）"></div>
       <button class="btn ghost" onclick="addFighter()">保存</button>
     </div>
@@ -250,6 +252,7 @@ function pickFighter() {
   set("fi_backbone", f?.backbone); set("fi_team", f?.team); set("fi_origin", f?.origin);
   set("fi_w", f?.rec_w); set("fi_l", f?.rec_l); set("fi_d", f?.rec_d);
   set("fi_ko", f?.rec_ko); set("fi_sub", f?.rec_sub); set("fi_dec", f?.rec_dec);
+  set("fi_style", f?.style); set("fi_career", f?.career);
   set("fi_memo", f?.memo); set("fi_url", f?.rizin_url);
 }
 
@@ -262,7 +265,8 @@ async function addFighter() {
   await DB.upsertFighter({
     ...(editId ? { id: editId } : {}),
     name, nickname: v("fi_nickname"), backbone: v("fi_backbone"), team: v("fi_team"),
-    origin: v("fi_origin"), memo: v("fi_memo"), rizin_url: v("fi_url"),
+    origin: v("fi_origin"), style: v("fi_style"), career: v("fi_career"),
+    memo: v("fi_memo"), rizin_url: v("fi_url"),
     rec_w: n("fi_w"), rec_l: n("fi_l"), rec_d: n("fi_d"),
     rec_ko: n("fi_ko"), rec_sub: n("fi_sub"), rec_dec: n("fi_dec"),
   });

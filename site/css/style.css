@@ -286,8 +286,12 @@ img { max-width: 100%; display: block; }
 }
 .pred-row .pwho { font-weight: 700; min-width: 64px; }
 .pred-row .pdetail { color: var(--muted); flex: 1; font-size: 12px; }
-.pred-row .ppts { font-family: var(--num); font-weight: 700; }
-.pred-row.hit .ppts { color: var(--gold-hot); }
+.pred-row .ptier { font-size: 11px; font-weight: 700; white-space: nowrap; color: var(--muted); }
+.pred-row .ptier.pitari { color: var(--gold-hot); }
+.pred-row .ptier.aramasu {
+  color: var(--gold-hot); font-size: 12px;
+  text-shadow: 0 0 10px rgba(212, 175, 55, .6);
+}
 .pred-row.miss { opacity: .5; }
 .hitmark { font-weight: 700; }
 .hit .hitmark { color: var(--ok); }
