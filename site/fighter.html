@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex">
-<title>選手名鑑｜RIZIN予想部</title>
+<title>選手名鑑｜RIZIN美食会予想</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
@@ -96,6 +96,30 @@ function renderList(fighters, fights) {
     </div>`;
 }
 
+// キャリア戦績：直近3試合は常時表示、残りは開閉式
+function careerHistoryHtml(fighter) {
+  const h = fighter.history || [];
+  if (!h.length) return "";
+  const row = (x) => `
+    <div class="cr-row ${x.r === "W" ? "w" : x.r === "L" ? "l" : "n"}">
+      <span class="cr-res">${x.r === "W" ? "○" : x.r === "L" ? "×" : x.r === "D" ? "△" : "−"}</span>
+      <span class="cr-date">${esc(x.d || "")}</span>
+      <span class="cr-opp">vs ${esc(x.opp)}</span>
+      <span class="cr-how">${esc(x.how || "")}</span>
+    </div>`;
+  const first = h.slice(0, 3), rest = h.slice(3);
+  return `
+    <div class="section-label">戦績（直近）</div>
+    <div class="career-list">
+      ${first.map(row).join("")}
+      ${rest.length ? `
+      <details class="career-more">
+        <summary>過去の戦績も見る（あと${rest.length}試合）</summary>
+        ${rest.map(row).join("")}
+      </details>` : ""}
+    </div>`;
+}
+
 function renderDetail(fighter, fighters, fights, events) {
   if (!fighter) { document.getElementById("main").innerHTML = "<p class='page-sub'>選手が見つかりません。</p>"; return; }
   const FMAP = fighterMap(fighters);
@@ -136,15 +160,15 @@ function renderDetail(fighter, fighters, fights, events) {
     : null;
   let finBars = "";
   const ko = fighter.rec_ko, sub = fighter.rec_sub, dec = fighter.rec_dec;
-  if (hasRec && (ko != null || sub != null || dec != null)) {
+  // 内訳が勝数と一致する（＝完全に判明している）場合だけグラフを出す。中途半端な内訳は出さない
+  if (hasRec && ((ko || 0) + (sub || 0) + (dec || 0)) === fighter.rec_w && fighter.rec_w > 0) {
     const parts = [
       { label: "KO/TKO", n: ko || 0, cls: "ko" },
       { label: "一本", n: sub || 0, cls: "sub" },
       { label: "判定", n: dec || 0, cls: "dec" },
     ].filter(p => p.n > 0);
     const total = parts.reduce((a, p) => a + p.n, 0);
-    const known = ko != null && sub != null; // 内訳が判明している場合のみフィニッシュ率
-    const finRate = known && fighter.rec_w ? Math.round(((ko || 0) + (sub || 0)) / fighter.rec_w * 100) : null;
+    const finRate = Math.round(((ko || 0) + (sub || 0)) / fighter.rec_w * 100);
     if (total > 0) {
       finBars = `
       <div class="fin-graph">
@@ -181,17 +205,10 @@ function renderDetail(fighter, fighters, fights, events) {
       ${fighter.career ? `<div class="pt-row"><span class="pt-k">来歴</span><span class="pt-v">${esc(fighter.career)}</span></div>` : ""}
       ${fighter.memo ? `<div class="pt-row"><span class="pt-k">今大会</span><span class="pt-v">${esc(fighter.memo)}</span></div>` : ""}
     </div>
-    <div class="section-label">予想部STATS</div>
-    <div class="record-badges">
-      <div class="rec-badge"><b>${s.w}</b><span>勝</span></div>
-      <div class="rec-badge"><b>${s.l}</b><span>敗</span></div>
-      ${s.d ? `<div class="rec-badge"><b>${s.d}</b><span>分</span></div>` : ""}
-      ${s.fights.length ? "" : `<div class="rec-badge fresh"><b>—</b><span>ポータル初登場</span></div>`}
-    </div>
-    ${finishList ? `<p class="page-sub">ポータル内フィニッシュ：${esc(finishList)}</p>` : ""}
-    ${fighter.rizin_url ? `<p class="page-sub"><a href="${esc(fighter.rizin_url)}" target="_blank" rel="noopener" style="text-decoration:underline">RIZIN公式の関連記事 ↗</a></p>` : ""}
     ${upcoming.length ? `<div class="section-label">NEXT FIGHT</div>${historyHtml(upcoming, false)}` : ""}
-    ${s.fights.length ? `<div class="section-label">FIGHT HISTORY</div>${historyHtml(s.fights, true)}` : ""}
+    ${careerHistoryHtml(fighter)}
+    ${s.fights.length ? `<div class="section-label">美食会アーカイブ</div>${historyHtml(s.fights, true)}` : ""}
+    ${fighter.rizin_url ? `<p class="page-sub" style="margin-top:16px"><a href="${esc(fighter.rizin_url)}" target="_blank" rel="noopener" style="text-decoration:underline">RIZIN公式の関連記事 ↗</a></p>` : ""}
     <p style="margin-top:20px"><a href="fighter.html" style="color:var(--muted);font-size:13px;text-decoration:underline">← 選手名鑑に戻る</a></p>`;
 }
 

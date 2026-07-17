@@ -414,10 +414,12 @@ tr.top .lb-rate { color: var(--gold-hot); }
 .rec-badge.fresh span { letter-spacing: .04em; }
 .rec-badge.career b { font-size: 20px; letter-spacing: .04em; }
 
-/* 異名 */
+/* 異名・選手名（大きく） */
+.fhero-body .page-title { font-size: 38px; line-height: 1.1; }
 .falias {
-  font-size: 14px; font-weight: 700; color: var(--gold-hot);
-  transform: skewX(-6deg); letter-spacing: .06em; margin: 2px 0 -2px;
+  font-size: 19px; font-weight: 900; color: var(--gold-hot);
+  transform: skewX(-6deg); letter-spacing: .06em; margin: 4px 0 0;
+  text-shadow: 0 0 16px rgba(212, 175, 55, .35);
 }
 .malias {
   color: var(--gold-hot); font-size: 10px; font-weight: 700; margin-top: 3px;
@@ -447,6 +449,26 @@ tr.top .lb-rate { color: var(--gold-hot); }
 .fin-leg.ko::before  { background: var(--red-hot); }
 .fin-leg.sub::before { background: #3d8bff; }
 .fin-leg.dec::before { background: #8a8a98; }
+
+/* キャリア戦績リスト（直近3＋開閉） */
+.career-list { border-top: 1px solid var(--line); }
+.cr-row {
+  display: flex; align-items: baseline; gap: 10px;
+  padding: 8px 2px; border-bottom: 1px solid var(--line); font-size: 13px;
+}
+.cr-row .cr-res { font-weight: 900; width: 18px; }
+.cr-row.w .cr-res { color: var(--gold-hot); }
+.cr-row.l .cr-res { color: var(--red-hot); }
+.cr-row.n .cr-res { color: var(--muted); }
+.cr-row .cr-date { font-family: var(--num); color: var(--muted); font-size: 12px; width: 58px; flex-shrink: 0; }
+.cr-row .cr-opp { font-weight: 700; flex: 1; min-width: 0; }
+.cr-row .cr-how { color: var(--muted); font-size: 12px; text-align: right; }
+.career-more summary {
+  cursor: pointer; padding: 10px 2px; font-size: 12px; color: var(--gold);
+  border-bottom: 1px solid var(--line); list-style: none; user-select: none;
+}
+.career-more summary::before { content: "▼ "; font-size: 10px; }
+.career-more[open] summary::before { content: "▲ "; }
 .record-badges { display: flex; gap: 8px; margin: 12px 0 20px; }
 .rec-badge {
   background: var(--panel); border: 1px solid var(--line);

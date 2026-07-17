@@ -22,6 +22,7 @@ create table fighters (
   memo text,                             -- ひとことメモ（今大会のストーリー等）
   rec_w int, rec_l int, rec_d int,       -- 通算戦績（報道ベース・任意）
   rec_ko int, rec_sub int, rec_dec int,  -- 勝利の内訳（フィニッシュグラフ用・任意）
+  history jsonb,                         -- キャリア戦績 [{d,opp,r,how}]（r: W/L/D/NC）
   photo_url text,
   rizin_url text,
   created_at timestamptz not null default now()
