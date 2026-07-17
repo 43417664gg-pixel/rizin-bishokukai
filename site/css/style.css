@@ -327,11 +327,41 @@ tr.top .lb-rank { color: var(--gold-hot); }
 .lb-rate { font-family: var(--num); font-size: 24px; font-weight: 700; font-variant-numeric: tabular-nums; }
 tr.top .lb-rate { color: var(--gold-hot); }
 .lb-sub { color: var(--muted); font-size: 11px; }
-.filter-row { display: flex; gap: 8px; margin-bottom: 14px; }
-.filter-row select {
-  background: var(--panel2); color: var(--text); border: 1px solid var(--line);
-  padding: 7px 10px; font-size: 13px;
+.lb-num { font-family: var(--num); font-size: 18px; font-weight: 700; }
+.lb-num.gold { color: var(--gold-hot); }
+
+/* 大会チェックボックス */
+.ev-checks { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.ev-check {
+  display: inline-flex; align-items: center; gap: 6px; cursor: pointer;
+  background: var(--panel2); border: 1px solid var(--line); color: var(--muted);
+  padding: 6px 12px; font-size: 12px; user-select: none;
+  clip-path: polygon(5px 0, 100% 0, calc(100% - 5px) 100%, 0 100%);
 }
+.ev-check input { accent-color: var(--red); }
+.ev-check.on { color: var(--text); border-color: rgba(230, 0, 18, .55); }
+.ev-check.all.on { border-color: var(--gold); color: var(--gold-hot); }
+
+/* 全員の予想マトリクス */
+.matrix-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 -14px; padding: 0 14px; }
+.matrix { border-collapse: collapse; min-width: 100%; font-size: 11px; }
+.matrix th, .matrix td { border: 1px solid var(--line); padding: 5px 7px; text-align: left; }
+.matrix .mx-member {
+  font-family: var(--num); font-weight: 700; font-size: 12px; letter-spacing: .04em;
+  background: var(--panel2); white-space: nowrap;
+}
+.matrix .mx-fight {
+  font-family: var(--num); font-weight: 700; color: var(--gold);
+  background: var(--panel); white-space: nowrap; font-size: 11px;
+}
+.mx-cell { min-width: 84px; background: var(--panel); }
+.mx-cell.none { color: var(--muted); text-align: center; }
+.mx-cell .mx-name { display: block; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 110px; }
+.mx-cell .mx-sub { display: block; color: var(--muted); font-size: 10px; }
+.mx-cell.c1 .mx-name { color: var(--red-hot); }
+.mx-cell.c2 .mx-name { color: var(--blue-hot); }
+.mx-cell.hit { background: rgba(43, 168, 74, .12); }
+.mx-cell.miss { opacity: .5; }
 
 /* ===== 選手名鑑 ===== */
 .meikan-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }

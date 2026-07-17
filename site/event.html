@@ -70,20 +70,20 @@ function predictCard(f) {
   const f1 = FMAP[f.fighter1_id], f2 = FMAP[f.fighter2_id];
   const methodChips = p.winner_id ? `
     <div class="chips">
-      <span class="clabel">決まり手（任意 +1pt）</span>
+      <span class="clabel">決まり手（任意 +1あらます）</span>
       ${METHODS.map(m => `<button class="chip ${p.method === m.id ? "sel" : ""}"
         onclick="setDraft('${f.id}','method','${m.id}')">${m.label}</button>`).join("")}
     </div>` : "";
   const roundChips = p.winner_id && p.method && p.method !== "DEC" ? `
     <div class="chips">
-      <span class="clabel">ラウンド（任意 +1pt）</span>
+      <span class="clabel">ラウンド（任意 +1あらます）</span>
       ${Array.from({ length: f.rounds || 3 }, (_, i) => i + 1).map(r =>
         `<button class="chip ${Number(p.round) === r ? "sel" : ""}"
           onclick="setDraft('${f.id}','round',${r})">${r}R</button>`).join("")}
     </div>` : "";
   const techSelect = p.winner_id && p.method && p.method !== "DEC" ? `
     <div class="chips">
-      <span class="clabel">フィニッシュ技ピタリ賞（任意 +2pt）</span>
+      <span class="clabel">フィニッシュ技ピタリ賞（任意 +2あらます）</span>
       <select class="tech-select" onchange="setDraft('${f.id}','technique',this.value)">
         <option value="">— 狙わない —</option>
         ${techsFor(p.method).map(t =>
@@ -128,7 +128,7 @@ function confirmedCard(f, p) {
       <div class="my-pick">
         <span class="mp-check">✓</span>
         <span class="mp-body"><b>${esc(FMAP[p.winner_id]?.name)}</b>${detail ? `　${esc(detail)}` : ""}
-          <span class="mp-max">的中で最大${maxPts}pt</span></span>
+          <span class="mp-max">的中で最大${maxPts}あらます</span></span>
       </div>
       <div class="confirm-bar">
         <button class="btn ghost" onclick="startEdit('${f.id}')">編集</button>
@@ -248,7 +248,7 @@ function resultCard(f) {
       <span class="hitmark">${s.winnerHit ? "○" : "×"}</span>
       <span class="pwho">${esc(m?.name)}</span>
       <span class="pdetail">${esc(detail)}${s.techHit ? "　🎯ピタリ賞!" : ""}</span>
-      <span class="ppts">${s.pts}pt</span>
+      <span class="ppts">${s.pts}あらます</span>
     </div>`;
   }).join("") : `<div class="pred-row"><span class="pdetail">予想なし</span></div>`;
   return `
@@ -265,6 +265,40 @@ function resultCard(f) {
     </div>`;
 }
 
+// ---------- 全員の予想マトリクス（締切後） ----------
+function allPicksMatrix() {
+  const activeMembers = MEMBERS.filter(m => allPreds.some(p => p.member_id === m.id));
+  if (!activeMembers.length) return "";
+  const ordered = FIGHTS;  // renderと同じ並び（メイン降順→オープニング降順）
+  const rows = ordered.map(f => {
+    const no = f.segment === "opening" ? `OP${f.order_no}` : `第${f.order_no}`;
+    const decided = f.winner_id && f.result_method && !["DRAW", "NC"].includes(f.result_method);
+    const cells = activeMembers.map(m => {
+      const p = allPreds.find(x => x.fight_id === f.id && x.member_id === m.id);
+      if (!p) return `<td class="mx-cell none">—</td>`;
+      const corner = p.winner_id === f.fighter1_id ? "c1" : "c2";
+      const hitCls = decided ? (p.winner_id === f.winner_id ? " hit" : " miss") : "";
+      const sub = [p.method ? METHOD_LABEL[p.method] : null, p.round ? `${p.round}R` : null]
+        .filter(Boolean).join(" ");
+      const s = decided ? scoreFight(p, f) : null;
+      return `<td class="mx-cell ${corner}${hitCls}">
+        <span class="mx-name">${esc(FMAP[p.winner_id]?.name || "")}</span>
+        ${sub ? `<span class="mx-sub">${esc(sub)}${s?.techHit ? " 🎯" : ""}</span>` : (s?.techHit ? `<span class="mx-sub">🎯</span>` : "")}
+      </td>`;
+    }).join("");
+    return `<tr><th class="mx-fight">${no}</th>${cells}</tr>`;
+  }).join("");
+  return `
+    <div class="section-label">ALL PICKS</div>
+    <div class="matrix-wrap">
+      <table class="matrix">
+        <tr><th></th>${activeMembers.map(m => `<th class="mx-member">${esc(m.name)}</th>`).join("")}</tr>
+        ${rows}
+      </table>
+    </div>
+    <p class="page-sub" style="margin-top:6px">赤＝RED側・青＝BLUE側の予想。結果が出ると○×で色分け。</p>`;
+}
+
 // ---------- 結果発表（finished時の大会サマリー） ----------
 function eventSummary() {
   const rows = computeLeaderboard(MEMBERS, FIGHTS, allPreds).filter(r => r.answered > 0);
@@ -278,7 +312,7 @@ function eventSummary() {
           <span class="srank">${i + 1}</span>
           <span class="sname">${esc(r.member.name)}${i === 0 ? "　👑" : ""}</span>
           <span class="srate">${fmtRate(r.rate)}</span>
-          <span class="ssub">${r.hits}/${r.decided}的中・${r.pts}pt${r.pitari ? `・🎯×${r.pitari}` : ""}</span>
+          <span class="ssub">${r.hits}/${r.decided}的中・${r.pts}あらます${r.pitari ? `・ピタリ${r.pitari}回` : ""}</span>
         </div>`).join("")}
     </div>`;
 }
@@ -300,6 +334,7 @@ function render() {
     <h1 class="page-title">${esc(EV.name)}</h1>
     <p class="page-sub">${fmtDate(EV.event_date)}　${subText}</p>
     ${PHASE === "finished" ? eventSummary() : ""}
+    ${PHASE === "locked" || PHASE === "finished" ? allPicksMatrix() : ""}
     ${main.length ? `<div class="section-label">MAIN CARD</div>` : ""}
     ${main.map(card).join("")}
     ${op.length ? `<div class="section-label">OPENING FIGHTS</div>` : ""}
