@@ -251,6 +251,25 @@ img { max-width: 100%; display: block; }
 .save-note.saved { color: var(--ok); }
 .clear-btn { background: none; border: none; color: var(--muted); font-size: 11px; text-decoration: underline; }
 
+/* 決定・編集 */
+.confirm-bar {
+  display: flex; gap: 10px; align-items: center;
+  padding: 10px 16px 16px;
+}
+.btn.decide { flex: 1; padding: 12px; font-size: 15px; letter-spacing: .08em; }
+.btn:disabled { opacity: .35; cursor: default; }
+.my-pick {
+  display: flex; gap: 10px; align-items: baseline;
+  margin: 4px 14px 0; padding: 10px 12px; font-size: 14px;
+  background: rgba(43, 168, 74, .08); border: 1px solid rgba(43, 168, 74, .4);
+  clip-path: polygon(0 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+}
+.my-pick .mp-check { color: var(--ok); font-weight: 700; }
+.my-pick .mp-body b { font-size: 15px; }
+.my-pick .mp-max { display: block; font-size: 11px; color: var(--muted); }
+.fight-card.confirmed .confirm-bar { padding-top: 8px; justify-content: space-between; }
+.fight-card.confirmed .btn.ghost { padding: 8px 26px; }
+
 /* 答え合わせ */
 .result-box {
   margin: 2px 14px 12px; background: rgba(212, 175, 55, .07);
@@ -314,26 +333,41 @@ tr.top .lb-rate { color: var(--gold-hot); }
   padding: 7px 10px; font-size: 13px;
 }
 
-/* ===== 選手 ===== */
-.fighter-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-.fighter-tile {
-  display: flex; gap: 10px; align-items: center;
-  background: var(--panel); border: 1px solid var(--line); padding: 11px 12px;
-  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
-  animation: rise .4s both;
+/* ===== 選手名鑑 ===== */
+.meikan-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.meikan-card {
+  background: var(--panel); border: 1px solid var(--line); overflow: hidden;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%);
+  animation: rise .45s both; animation-delay: var(--d, 0ms);
+  transition: transform .12s;
 }
-.fighter-tile .favatar, .fdetail-head .favatar {
-  width: 40px; height: 40px; flex-shrink: 0;
-  background: var(--panel2); border: 1px solid var(--line);
+.meikan-card:active { transform: scale(.97); }
+.mphoto {
+  aspect-ratio: 1 / 1; background-repeat: no-repeat;
+  background-size: 290% auto; background-color: var(--panel2);
+  border-bottom: 2px solid var(--red);
+}
+.mphoto.left { background-position: left 8% top 18%; }
+.mphoto.right { background-position: right 8% top 18%; }
+.mphoto.none {
   display: flex; align-items: center; justify-content: center;
-  font-weight: 900; color: var(--gold);
-  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%);
+  font-family: var(--display); font-size: 56px; color: rgba(255, 255, 255, .12);
 }
-.fighter-tile .fname { font-weight: 700; font-size: 13px; }
-.fighter-tile .frec { color: var(--muted); font-size: 11px; }
-.fdetail-head { display: flex; gap: 14px; align-items: center; margin: 20px 0 6px; }
-.fdetail-head .favatar { width: 62px; height: 62px; font-size: 24px; }
-.fdetail-head h1 { font-size: 24px; font-weight: 900; }
+.meikan-card .mbody { padding: 9px 12px 12px; }
+.meikan-card .mname { font-weight: 900; font-size: 13px; line-height: 1.35; }
+.meikan-card .mmeta { display: flex; gap: 8px; color: var(--muted); font-size: 11px; margin-top: 2px; flex-wrap: wrap; }
+
+.fhero { position: relative; margin-top: 14px; }
+.fhero-photo {
+  aspect-ratio: 16 / 10; background-repeat: no-repeat;
+  background-size: 200% auto; background-color: var(--panel2);
+  border: 1px solid var(--line); border-bottom: 2px solid var(--red);
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0 100%);
+}
+.fhero-photo.left { background-position: left 12% top 24%; }
+.fhero-photo.right { background-position: right 12% top 24%; }
+.fhero-body .en-label { margin-top: 14px; }
+.rec-badge.fresh span { letter-spacing: .04em; }
 .record-badges { display: flex; gap: 8px; margin: 12px 0 20px; }
 .rec-badge {
   background: var(--panel); border: 1px solid var(--line);

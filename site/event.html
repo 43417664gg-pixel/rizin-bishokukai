@@ -23,6 +23,8 @@
 <script src="js/app.js"></script>
 <script>
 let EV, PHASE, FIGHTS, FMAP, MEMBERS, myPreds = {}, allPreds = [];
+let drafts = {};              // 決定前の編集中の選択（ローカルのみ）
+const editing = new Set();    // 「編集」で開き直した試合ID
 
 function toast(msg) {
   const t = document.getElementById("toast");
@@ -60,26 +62,29 @@ function fightLabel(f) {
 }
 
 // ---------- 予想UI（受付中） ----------
+// 保存済み＆編集中でなければ「確定ビュー」、それ以外は「選択ビュー（決定ボタン付き）」
 function predictCard(f) {
-  const p = myPreds[f.id] || {};
+  const saved = myPreds[f.id];
+  if (saved && !editing.has(f.id)) return confirmedCard(f, saved);
+  const p = drafts[f.id] || (saved ? { ...saved } : {});
   const f1 = FMAP[f.fighter1_id], f2 = FMAP[f.fighter2_id];
   const methodChips = p.winner_id ? `
     <div class="chips">
       <span class="clabel">決まり手（任意 +1pt）</span>
       ${METHODS.map(m => `<button class="chip ${p.method === m.id ? "sel" : ""}"
-        onclick="setPred('${f.id}','method','${m.id}')">${m.label}</button>`).join("")}
+        onclick="setDraft('${f.id}','method','${m.id}')">${m.label}</button>`).join("")}
     </div>` : "";
   const roundChips = p.winner_id && p.method && p.method !== "DEC" ? `
     <div class="chips">
       <span class="clabel">ラウンド（任意 +1pt）</span>
       ${Array.from({ length: f.rounds || 3 }, (_, i) => i + 1).map(r =>
         `<button class="chip ${Number(p.round) === r ? "sel" : ""}"
-          onclick="setPred('${f.id}','round',${r})">${r}R</button>`).join("")}
+          onclick="setDraft('${f.id}','round',${r})">${r}R</button>`).join("")}
     </div>` : "";
   const techSelect = p.winner_id && p.method && p.method !== "DEC" ? `
     <div class="chips">
       <span class="clabel">フィニッシュ技ピタリ賞（任意 +2pt）</span>
-      <select class="tech-select" onchange="setPred('${f.id}','technique',this.value)">
+      <select class="tech-select" onchange="setDraft('${f.id}','technique',this.value)">
         <option value="">— 狙わない —</option>
         ${techsFor(p.method).map(t =>
           `<option value="${t.id}" ${p.technique === t.id ? "selected" : ""}>${t.label}</option>`).join("")}
@@ -91,15 +96,43 @@ function predictCard(f) {
       <div class="fight-label">${fightLabel(f)}</div>
       <div class="vs-row">
         <button class="corner-btn c1 ${p.winner_id === f.fighter1_id ? "sel" : ""}"
-          onclick="setPred('${f.id}','winner_id','${f.fighter1_id}')"><small>RED</small>${esc(f1?.name)}</button>
+          onclick="setDraft('${f.id}','winner_id','${f.fighter1_id}')"><small>RED</small>${esc(f1?.name)}</button>
         <span class="vs-mark">VS</span>
         <button class="corner-btn c2 ${p.winner_id === f.fighter2_id ? "sel" : ""}"
-          onclick="setPred('${f.id}','winner_id','${f.fighter2_id}')"><small>BLUE</small>${esc(f2?.name)}</button>
+          onclick="setDraft('${f.id}','winner_id','${f.fighter2_id}')"><small>BLUE</small>${esc(f2?.name)}</button>
       </div>
       ${methodChips}${roundChips}${techSelect}
-      <div class="fight-foot">
-        <span class="save-note ${p.winner_id ? "saved" : ""}">${p.winner_id ? "✓ 保存済み" : "未予想（タップで即保存）"}</span>
-        ${p.winner_id ? `<button class="clear-btn" onclick="clearPred('${f.id}')">予想を取り消す</button>` : ""}
+      <div class="confirm-bar">
+        <button class="btn decide" ${p.winner_id ? "" : "disabled"} onclick="confirmPred('${f.id}')">この予想で決定</button>
+        ${saved ? `<button class="btn ghost" onclick="cancelEdit('${f.id}')">キャンセル</button>` : ""}
+      </div>
+    </div>`;
+}
+
+// 確定ビュー：自分の予想サマリー＋編集／取り消し
+function confirmedCard(f, p) {
+  const f1 = FMAP[f.fighter1_id], f2 = FMAP[f.fighter2_id];
+  const detail = [p.method ? METHOD_LABEL[p.method] : null,
+    p.round ? `${p.round}R` : null,
+    p.technique ? TECH_LABEL[p.technique] : null].filter(Boolean).join("・");
+  const maxPts = 1 + (p.method ? 1 : 0) + (p.round ? 1 : 0) + (p.technique ? 2 : 0);
+  return `
+    <div class="fight-card confirmed" id="fc_${f.id}">
+      ${f.image_url ? `<div class="banner"><img src="${esc(f.image_url)}" alt="" loading="lazy"></div>` : ""}
+      <div class="fight-label">${fightLabel(f)}</div>
+      <div class="vs-row">
+        <div class="corner-btn c1 ${p.winner_id === f.fighter1_id ? "sel" : ""}"><small>RED</small>${esc(f1?.name)}</div>
+        <span class="vs-mark">VS</span>
+        <div class="corner-btn c2 ${p.winner_id === f.fighter2_id ? "sel" : ""}"><small>BLUE</small>${esc(f2?.name)}</div>
+      </div>
+      <div class="my-pick">
+        <span class="mp-check">✓</span>
+        <span class="mp-body"><b>${esc(FMAP[p.winner_id]?.name)}</b>${detail ? `　${esc(detail)}` : ""}
+          <span class="mp-max">的中で最大${maxPts}pt</span></span>
+      </div>
+      <div class="confirm-bar">
+        <button class="btn ghost" onclick="startEdit('${f.id}')">編集</button>
+        <button class="clear-btn" onclick="clearPred('${f.id}')">予想を取り消す</button>
       </div>
     </div>`;
 }
@@ -120,9 +153,10 @@ function previewCard(f) {
     </div>`;
 }
 
-async function setPred(fightId, key, val) {
-  const cur = myPreds[fightId] || { member_id: getMemberId(), fight_id: fightId };
-  const next = { ...cur };
+// 選択はローカルに貯めるだけ。「決定」で初めて保存される
+function setDraft(fightId, key, val) {
+  const base = drafts[fightId] || (myPreds[fightId] ? { ...myPreds[fightId] } : {});
+  const next = { ...base, member_id: getMemberId(), fight_id: fightId };
   if (key === "winner_id") {
     if (next.winner_id === val) return;
     next.winner_id = val;
@@ -133,21 +167,44 @@ async function setPred(fightId, key, val) {
     next[key] = val || null;
     if (key === "method") { next.round = null; next.technique = null; }
   }
+  drafts[fightId] = next;
+  replaceCard(fightId);
+}
+
+async function confirmPred(fightId) {
+  const p = drafts[fightId] || myPreds[fightId];
+  if (!p || !p.winner_id) return;
   try {
     await DB.upsertPrediction({
-      member_id: next.member_id, fight_id: next.fight_id,
-      winner_id: next.winner_id, method: next.method || null,
-      round: next.round || null, technique: next.technique || null,
+      member_id: getMemberId(), fight_id: fightId,
+      winner_id: p.winner_id, method: p.method || null,
+      round: p.round || null, technique: p.technique || null,
     });
-    myPreds[fightId] = next;
+    myPreds[fightId] = { ...p, member_id: getMemberId(), fight_id: fightId };
+    delete drafts[fightId];
+    editing.delete(fightId);
     replaceCard(fightId);
-    toast("保存した ✓");
+    toast("予想を決定した ✓");
   } catch (e) { toast(e.message || "保存できなかった"); }
+}
+
+function startEdit(fightId) {
+  editing.add(fightId);
+  drafts[fightId] = { ...myPreds[fightId] };
+  replaceCard(fightId);
+}
+
+function cancelEdit(fightId) {
+  editing.delete(fightId);
+  delete drafts[fightId];
+  replaceCard(fightId);
 }
 
 async function clearPred(fightId) {
   await DB.deletePrediction(getMemberId(), fightId);
   delete myPreds[fightId];
+  delete drafts[fightId];
+  editing.delete(fightId);
   replaceCard(fightId);
   toast("取り消した");
 }

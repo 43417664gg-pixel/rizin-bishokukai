@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex">
-<title>選手STATS｜RIZIN予想部</title>
+<title>選手名鑑｜RIZIN予想部</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
@@ -37,6 +37,26 @@ function buildStats(fighterId, fights) {
   return { w, l, d, finishes, fights: mine };
 }
 
+// 選手写真＝公式VSバナーの左半分（RED）or右半分（BLUE）を切り出す
+function photoOf(fighterId, fights) {
+  const f = fights.filter(x => x.image_url &&
+    (x.fighter1_id === fighterId || x.fighter2_id === fighterId))
+    .sort((a, b) => (b.event_id > a.event_id ? 1 : -1))[0];
+  if (!f) return null;
+  return { img: f.image_url, side: f.fighter1_id === fighterId ? "left" : "right" };
+}
+function photoDiv(ph, cls) {
+  if (!ph) return "";
+  return `<div class="${cls} ${ph.side}" style="background-image:url('${esc(ph.img)}')"></div>`;
+}
+
+// 階級＝直近の試合の表記を使う
+function weightOf(fighterId, fights) {
+  const f = fights.filter(x => x.weight_class &&
+    (x.fighter1_id === fighterId || x.fighter2_id === fighterId))[0];
+  return f ? f.weight_class : "";
+}
+
 async function load() {
   await renderHeader("fighter");
   const [fighters, fights, events] = await Promise.all([DB.listFighters(), DB.listFights(), DB.listEvents()]);
@@ -46,19 +66,27 @@ async function load() {
 }
 
 function renderList(fighters, fights) {
-  const withStats = fighters.map(f => ({ f, s: buildStats(f.id, fights) }));
-  // 出場試合がある選手を上に
-  withStats.sort((a, b) => (b.s.w + b.s.l + b.s.d) - (a.s.w + a.s.l + a.s.d) || a.f.name.localeCompare(b.f.name, "ja"));
+  const rows = fighters.map(f => ({
+    f, s: buildStats(f.id, fights), ph: photoOf(f.id, fights), wc: weightOf(f.id, fights),
+  }));
+  // 写真あり（=カード掲載中/掲載歴あり）を上に、次に試合数
+  rows.sort((a, b) => (!!b.ph - !!a.ph) ||
+    (b.s.w + b.s.l + b.s.d) - (a.s.w + a.s.l + a.s.d) ||
+    a.f.name.localeCompare(b.f.name, "ja"));
   document.getElementById("main").innerHTML = `
-    <h1 class="page-title">選手STATS</h1>
-    <p class="page-sub">このポータルで扱った大会の戦績を蓄積。大会を重ねるほど濃くなる。</p>
-    <div class="fighter-grid">
-      ${withStats.map(({ f, s }) => `
-        <a class="fighter-tile" href="fighter.html?id=${f.id}">
-          <div class="favatar">${esc(f.name.slice(0, 1))}</div>
-          <div>
-            <div class="fname">${esc(f.name)}</div>
-            <div class="frec">${s.w + s.l + s.d ? `${s.w}勝${s.l}敗${s.d ? s.d + "分" : ""}` : "戦績はこれから"}</div>
+    <div class="en-label">FIGHTERS</div>
+    <h1 class="page-title">選手名鑑</h1>
+    <p class="page-sub">このポータルで扱った大会の戦績を蓄積。大会を重ねるほど名鑑が濃くなる。</p>
+    <div class="meikan-grid">
+      ${rows.map(({ f, s, ph, wc }, i) => `
+        <a class="meikan-card" href="fighter.html?id=${f.id}" style="--d:${Math.min(i, 11) * 40}ms">
+          ${ph ? photoDiv(ph, "mphoto") : `<div class="mphoto none">${esc(f.name.slice(0, 1))}</div>`}
+          <div class="mbody">
+            <div class="mname">${esc(f.name)}</div>
+            <div class="mmeta">
+              ${wc ? `<span>${esc(wc)}</span>` : ""}
+              <span>${s.w + s.l + s.d ? `${s.w}勝${s.l}敗${s.d ? s.d + "分" : ""}` : "初登場"}</span>
+            </div>
           </div>
         </a>`).join("")}
     </div>`;
@@ -69,6 +97,8 @@ function renderDetail(fighter, fighters, fights, events) {
   const FMAP = fighterMap(fighters);
   const EMAP = Object.fromEntries(events.map(e => [e.id, e]));
   const s = buildStats(fighter.id, fights);
+  const ph = photoOf(fighter.id, fights);
+  const wc = weightOf(fighter.id, fights);
   const upcoming = fights.filter(f =>
     (f.fighter1_id === fighter.id || f.fighter2_id === fighter.id) && !(f.winner_id && f.result_method));
   const historyHtml = (list, decided) => list
@@ -85,7 +115,7 @@ function renderDetail(fighter, fighters, fights, events) {
       }
       return `
       <div class="history-item">
-        ${f.image_url ? `<img src="${esc(f.image_url)}" alt="">` : ""}
+        ${f.image_url ? `<img src="${esc(f.image_url)}" alt="" loading="lazy">` : ""}
         <div class="hbody">
           <div>vs ${esc(opp?.name)}　<span class="hmeta">${esc(f.weight_class || "")}</span></div>
           <div>${resLine}</div>
@@ -96,23 +126,25 @@ function renderDetail(fighter, fighters, fights, events) {
   const finishList = Object.entries(s.finishes).sort((a, b) => b[1] - a[1])
     .map(([k, v]) => `${k}×${v}`).join("、");
   document.getElementById("main").innerHTML = `
-    <div class="fdetail-head">
-      <div class="favatar">${esc(fighter.name.slice(0, 1))}</div>
-      <div>
-        <h1>${esc(fighter.name)}</h1>
-        ${fighter.nickname ? `<div class="page-sub">${esc(fighter.nickname)}</div>` : ""}
+    <div class="fhero">
+      ${ph ? photoDiv(ph, "fhero-photo") : ""}
+      <div class="fhero-body">
+        <div class="en-label">FIGHTER</div>
+        <h1 class="page-title">${esc(fighter.name)}</h1>
+        <div class="page-sub">${wc ? esc(wc) + "　" : ""}${fighter.nickname ? esc(fighter.nickname) : ""}</div>
       </div>
     </div>
     <div class="record-badges">
       <div class="rec-badge"><b>${s.w}</b><span>勝</span></div>
       <div class="rec-badge"><b>${s.l}</b><span>敗</span></div>
       ${s.d ? `<div class="rec-badge"><b>${s.d}</b><span>分</span></div>` : ""}
+      ${s.fights.length ? "" : `<div class="rec-badge fresh"><b>—</b><span>ポータル初登場</span></div>`}
     </div>
     ${finishList ? `<p class="page-sub">フィニッシュ：${esc(finishList)}</p>` : ""}
     ${fighter.rizin_url ? `<p class="page-sub"><a href="${esc(fighter.rizin_url)}" target="_blank" rel="noopener" style="text-decoration:underline">RIZIN公式プロフィール ↗</a></p>` : ""}
-    ${upcoming.length ? `<div class="section-label">Next Fight</div>${historyHtml(upcoming, false)}` : ""}
-    ${s.fights.length ? `<div class="section-label">Fight History</div>${historyHtml(s.fights, true)}` : ""}
-    ${!upcoming.length && !s.fights.length ? `<p class="page-sub">まだこのポータルで扱った試合がない。</p>` : ""}`;
+    ${upcoming.length ? `<div class="section-label">NEXT FIGHT</div>${historyHtml(upcoming, false)}` : ""}
+    ${s.fights.length ? `<div class="section-label">FIGHT HISTORY</div>${historyHtml(s.fights, true)}` : ""}
+    <p style="margin-top:20px"><a href="fighter.html" style="color:var(--muted);font-size:13px;text-decoration:underline">← 選手名鑑に戻る</a></p>`;
 }
 
 load();
