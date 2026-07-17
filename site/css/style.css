@@ -408,6 +408,41 @@ tr.top .lb-rate { color: var(--gold-hot); }
 .fhero-photo.right { background-position: right 12% top 24%; }
 .fhero-body .en-label { margin-top: 14px; }
 .rec-badge.fresh span { letter-spacing: .04em; }
+.rec-badge.career b { font-size: 20px; letter-spacing: .04em; }
+
+/* 異名 */
+.falias {
+  font-size: 14px; font-weight: 700; color: var(--gold-hot);
+  transform: skewX(-6deg); letter-spacing: .06em; margin: 2px 0 -2px;
+}
+.malias {
+  color: var(--gold-hot); font-size: 10px; font-weight: 700; margin-top: 3px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+/* フィニッシュ内訳グラフ */
+.fin-graph { margin: 4px 0 16px; }
+.fin-head {
+  display: flex; justify-content: space-between; align-items: baseline;
+  font-size: 12px; color: var(--muted); margin-bottom: 6px;
+}
+.fin-rate b { font-family: var(--num); font-size: 18px; color: var(--gold-hot); }
+.fin-bar {
+  display: flex; height: 14px; overflow: hidden;
+  clip-path: polygon(0 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+  background: var(--panel2);
+}
+.fin-seg.ko  { background: linear-gradient(90deg, var(--red), var(--red-hot)); }
+.fin-seg.sub { background: linear-gradient(90deg, #1e6fd9, #3d8bff); }
+.fin-seg.dec { background: linear-gradient(90deg, #6a6a78, #8a8a98); }
+.fin-legend { display: flex; gap: 14px; margin-top: 6px; font-size: 11px; color: var(--muted); }
+.fin-leg::before {
+  content: ""; display: inline-block; width: 8px; height: 8px; margin-right: 5px;
+  transform: skewX(-8deg);
+}
+.fin-leg.ko::before  { background: var(--red-hot); }
+.fin-leg.sub::before { background: #3d8bff; }
+.fin-leg.dec::before { background: #8a8a98; }
 .record-badges { display: flex; gap: 8px; margin: 12px 0 20px; }
 .rec-badge {
   background: var(--panel); border: 1px solid var(--line);

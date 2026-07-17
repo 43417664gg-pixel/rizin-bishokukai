@@ -85,8 +85,11 @@ function renderList(fighters, fights) {
             <div class="mname">${esc(f.name)}</div>
             <div class="mmeta">
               ${wc ? `<span>${esc(wc)}</span>` : ""}
-              <span>${s.w + s.l + s.d ? `${s.w}勝${s.l}敗${s.d ? s.d + "分" : ""}` : "初登場"}</span>
+              <span>${f.rec_w != null
+                ? `${f.rec_w}勝${f.rec_l != null ? f.rec_l + "敗" : ""}${f.rec_d ? f.rec_d + "分" : ""}`
+                : (s.w + s.l + s.d ? `${s.w}勝${s.l}敗${s.d ? s.d + "分" : ""}` : "")}</span>
             </div>
+            ${f.nickname ? `<div class="malias">${esc(f.nickname)}</div>` : ""}
             ${f.backbone ? `<div class="mbackbone">${esc(f.backbone)}</div>` : ""}
           </div>
         </a>`).join("")}
@@ -126,27 +129,64 @@ function renderDetail(fighter, fighters, fights, events) {
     }).join("");
   const finishList = Object.entries(s.finishes).sort((a, b) => b[1] - a[1])
     .map(([k, v]) => `${k}×${v}`).join("、");
+  // 通算戦績（報道ベース）とフィニッシュ内訳グラフ
+  const hasRec = fighter.rec_w != null;
+  const recText = hasRec
+    ? `${fighter.rec_w}勝${fighter.rec_l != null ? fighter.rec_l + "敗" : ""}${fighter.rec_d ? fighter.rec_d + "分" : ""}`
+    : null;
+  let finBars = "";
+  const ko = fighter.rec_ko, sub = fighter.rec_sub, dec = fighter.rec_dec;
+  if (hasRec && (ko != null || sub != null || dec != null)) {
+    const parts = [
+      { label: "KO/TKO", n: ko || 0, cls: "ko" },
+      { label: "一本", n: sub || 0, cls: "sub" },
+      { label: "判定", n: dec || 0, cls: "dec" },
+    ].filter(p => p.n > 0);
+    const total = parts.reduce((a, p) => a + p.n, 0);
+    const known = ko != null && sub != null; // 内訳が判明している場合のみフィニッシュ率
+    const finRate = known && fighter.rec_w ? Math.round(((ko || 0) + (sub || 0)) / fighter.rec_w * 100) : null;
+    if (total > 0) {
+      finBars = `
+      <div class="fin-graph">
+        <div class="fin-head"><span>勝利の内訳</span>${finRate !== null ? `<span class="fin-rate">フィニッシュ率 <b>${finRate}%</b></span>` : ""}</div>
+        <div class="fin-bar">
+          ${parts.map(p => `<div class="fin-seg ${p.cls}" style="width:${(p.n / total * 100).toFixed(1)}%"></div>`).join("")}
+        </div>
+        <div class="fin-legend">
+          ${parts.map(p => `<span class="fin-leg ${p.cls}">${p.label} ${p.n}</span>`).join("")}
+        </div>
+      </div>`;
+    }
+  }
   document.getElementById("main").innerHTML = `
     <div class="fhero">
       ${ph ? photoDiv(ph, "fhero-photo") : ""}
       <div class="fhero-body">
         <div class="en-label">FIGHTER</div>
+        ${fighter.nickname ? `<div class="falias">${esc(fighter.nickname)}</div>` : ""}
         <h1 class="page-title">${esc(fighter.name)}</h1>
-        <div class="page-sub">${wc ? esc(wc) + "　" : ""}${fighter.nickname ? esc(fighter.nickname) : ""}</div>
+        <div class="page-sub">${wc ? esc(wc) : ""}</div>
       </div>
     </div>
+    ${hasRec ? `
+    <div class="record-badges">
+      <div class="rec-badge career"><b>${esc(recText)}</b><span>通算戦績</span></div>
+    </div>` : ""}
+    ${finBars}
+    <div class="profile-table">
+      ${fighter.backbone ? `<div class="pt-row"><span class="pt-k">バックボーン</span><span class="pt-v">${esc(fighter.backbone)}</span></div>` : ""}
+      ${fighter.team ? `<div class="pt-row"><span class="pt-k">所属</span><span class="pt-v">${esc(fighter.team)}</span></div>` : ""}
+      ${fighter.origin ? `<div class="pt-row"><span class="pt-k">出身</span><span class="pt-v">${esc(fighter.origin)}</span></div>` : ""}
+      ${fighter.memo ? `<div class="pt-row"><span class="pt-k">ストーリー</span><span class="pt-v">${esc(fighter.memo)}</span></div>` : ""}
+    </div>
+    <div class="section-label">予想部STATS</div>
     <div class="record-badges">
       <div class="rec-badge"><b>${s.w}</b><span>勝</span></div>
       <div class="rec-badge"><b>${s.l}</b><span>敗</span></div>
       ${s.d ? `<div class="rec-badge"><b>${s.d}</b><span>分</span></div>` : ""}
       ${s.fights.length ? "" : `<div class="rec-badge fresh"><b>—</b><span>ポータル初登場</span></div>`}
     </div>
-    <div class="profile-table">
-      ${fighter.backbone ? `<div class="pt-row"><span class="pt-k">バックボーン</span><span class="pt-v">${esc(fighter.backbone)}</span></div>` : ""}
-      ${fighter.origin ? `<div class="pt-row"><span class="pt-k">出身</span><span class="pt-v">${esc(fighter.origin)}</span></div>` : ""}
-      ${finishList ? `<div class="pt-row"><span class="pt-k">フィニッシュ</span><span class="pt-v">${esc(finishList)}</span></div>` : ""}
-      ${fighter.memo ? `<div class="pt-row"><span class="pt-k">メモ</span><span class="pt-v">${esc(fighter.memo)}</span></div>` : ""}
-    </div>
+    ${finishList ? `<p class="page-sub">ポータル内フィニッシュ：${esc(finishList)}</p>` : ""}
     ${fighter.rizin_url ? `<p class="page-sub"><a href="${esc(fighter.rizin_url)}" target="_blank" rel="noopener" style="text-decoration:underline">RIZIN公式の関連記事 ↗</a></p>` : ""}
     ${upcoming.length ? `<div class="section-label">NEXT FIGHT</div>${historyHtml(upcoming, false)}` : ""}
     ${s.fights.length ? `<div class="section-label">FIGHT HISTORY</div>${historyHtml(s.fights, true)}` : ""}

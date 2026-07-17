@@ -8,8 +8,17 @@
   // ---------- デモモード ----------
   // シード更新時はSEED_Vを上げる。マスタ（選手・試合・大会）はシードの新値を反映しつつ、
   // ユーザーが入れた予想・結果・追加データは保持する
-  const SEED_V = 2;
+  const SEED_V = 3;
+  // v3: 本番移行——サンプル大会・デモ選手・仮メンバーを完全に取り除く
+  const PURGED = new Set([
+    "ev_demo", "demo_1", "demo_2", "demo_3",
+    "f_demo_a", "f_demo_b", "f_demo_c", "f_demo_d", "f_demo_e", "f_demo_f",
+    "m_gaku", "m_ren", "m_dai", "m_sho",
+  ]);
   function migrate(saved) {
+    for (const k of ["members", "fighters", "events", "fights", "predictions"]) {
+      saved[k] = (saved[k] || []).filter(x => !PURGED.has(x.id));
+    }
     const seed = JSON.parse(JSON.stringify(window.DEMO_SEED));
     const byId = (arr) => Object.fromEntries((arr || []).map(x => [x.id, x]));
     const savedF = byId(saved.fighters), savedFt = byId(saved.fights), savedE = byId(saved.events);
@@ -26,7 +35,11 @@
     // メンバー：保存側優先（admin追加を残す）＋シードの新顔を補完
     const members = (saved.members || []).slice();
     for (const m of seed.members) if (!members.some(x => x.id === m.id)) members.push(m);
-    return { _v: SEED_V, members, fighters, events, fights, predictions: saved.predictions || [] };
+    // 予想：消えたメンバー・試合を参照するものは落とす
+    const memberIds = new Set(members.map(m => m.id));
+    const fightIds = new Set(fights.map(f => f.id));
+    const predictions = (saved.predictions || []).filter(p => memberIds.has(p.member_id) && fightIds.has(p.fight_id));
+    return { _v: SEED_V, members, fighters, events, fights, predictions };
   }
   function demoLoad() {
     const raw = localStorage.getItem(LS_KEY);

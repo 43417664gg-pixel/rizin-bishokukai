@@ -13,10 +13,13 @@ create table members (
 create table fighters (
   id uuid primary key default gen_random_uuid(),
   name text not null,
-  nickname text,
+  nickname text,                         -- 異名・肩書
   backbone text,                         -- バックボーン（レスリング・ムエタイ等）
+  team text,                             -- 所属
   origin text,                           -- 出身
   memo text,                             -- ひとことメモ（スタイル・実績）
+  rec_w int, rec_l int, rec_d int,       -- 通算戦績（報道ベース・任意）
+  rec_ko int, rec_sub int, rec_dec int,  -- 勝利の内訳（フィニッシュグラフ用・任意）
   photo_url text,
   rizin_url text,
   created_at timestamptz not null default now()
