@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>ランキング｜RIZIN予想部</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="app-header"></div>
+<div class="wrap" id="main"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/config.js"></script>
+<script src="js/techniques.js"></script>
+<script src="js/demo-data.js"></script>
+<script src="js/api.js"></script>
+<script src="js/app.js"></script>
+<script>
+let EVENTS, MEMBERS, ALL_FIGHTS, ALL_PREDS;
+
+async function load() {
+  await renderHeader("ranking");
+  [EVENTS, MEMBERS, ALL_FIGHTS] = await Promise.all([DB.listEvents(), DB.listMembers(), DB.listFights()]);
+  ALL_PREDS = await DB.listPredictions({});
+  render(qp("event") || "");
+}
+
+function render(eventId) {
+  // 締切前の大会の予想は集計にもランキング表にも出さない（結果もまだ無いので実質同じだが明示）
+  const fights = ALL_FIGHTS.filter(f => !eventId || f.event_id === eventId);
+  const fightIds = new Set(fights.map(f => f.id));
+  const preds = ALL_PREDS.filter(p => fightIds.has(p.fight_id));
+  const rows = computeLeaderboard(MEMBERS, fights, preds);
+  document.getElementById("main").innerHTML = `
+    <h1 class="page-title">ランキング</h1>
+    <p class="page-sub">的中率で勝負。ptは深掘りの証。</p>
+    <div class="filter-row">
+      <select onchange="render(this.value)">
+        <option value="">全期間</option>
+        ${EVENTS.map(e => `<option value="${e.id}" ${eventId === e.id ? "selected" : ""}>${esc(e.name)}</option>`).join("")}
+      </select>
+    </div>
+    <table class="lb-table">
+      <tr><th></th><th>名前</th><th>的中率</th><th>的中</th><th>pt</th><th>🎯</th></tr>
+      ${rows.map((r, i) => `
+        <tr class="${i === 0 && r.rate !== null ? "top" : ""}">
+          <td class="lb-rank">${r.rate === null ? "—" : i + 1}</td>
+          <td><div class="lb-name">${esc(r.member.name)}</div>
+              <div class="lb-sub">予想 ${r.answered}試合</div></td>
+          <td><span class="lb-rate">${fmtRate(r.rate)}</span></td>
+          <td>${r.hits}/${r.decided}</td>
+          <td>${r.pts}</td>
+          <td>${r.pitari}</td>
+        </tr>`).join("")}
+    </table>
+    <div class="rules-box">
+      <b>集計ルール：</b>的中率＝勝者的中÷<b>結果が出た予想試合数</b>。未回答はノーカウント。
+      pt＝勝者1＋決まり手1＋ラウンド1＋技ピタリ2（勝者を外すと全部0）。🎯＝ピタリ賞回数。
+      ドロー・無効試合は集計から除外。
+    </div>`;
+}
+
+load();
+</script>
+</body>
+</html>

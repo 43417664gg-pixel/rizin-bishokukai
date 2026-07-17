@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>大会予想｜RIZIN予想部</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="app-header"></div>
+<div class="wrap" id="main"></div>
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/config.js"></script>
+<script src="js/techniques.js"></script>
+<script src="js/demo-data.js"></script>
+<script src="js/api.js"></script>
+<script src="js/app.js"></script>
+<script>
+let EV, FIGHTS, FMAP, MEMBERS, myPreds = {}, allPreds = [];
+
+function toast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg; t.classList.add("show");
+  clearTimeout(t._tm); t._tm = setTimeout(() => t.classList.remove("show"), 1500);
+}
+
+async function load() {
+  if (!requireMember()) return;
+  await renderHeader("home");
+  const id = qp("id");
+  EV = id ? await DB.getEvent(id) : null;
+  if (!EV) { document.getElementById("main").innerHTML = "<p class='page-sub'>大会が見つかりません。</p>"; return; }
+  FIGHTS = (await DB.listFights(EV.id)).sort((a, b) =>
+    (a.segment === b.segment) ? b.order_no - a.order_no : (a.segment === "main" ? -1 : 1));
+  FMAP = fighterMap(await DB.listFighters());
+  MEMBERS = await DB.listMembers();
+  const fightIds = FIGHTS.map(f => f.id);
+  if (isLocked(EV)) {
+    allPreds = await DB.listPredictions({ fightIds });
+  } else {
+    allPreds = await DB.listPredictions({ fightIds, memberId: getMemberId() });
+  }
+  myPreds = {};
+  for (const p of allPreds.filter(p => p.member_id === getMemberId())) myPreds[p.fight_id] = p;
+  render();
+}
+
+function fightLabel(f) {
+  const no = f.segment === "opening" ? `OPENING 第${f.order_no}試合` : `第${f.order_no}試合`;
+  return `<span class="fno">${no}</span>
+    ${f.title_label ? `<span class="title-label">${esc(f.title_label)}</span>` : ""}
+    <span>${esc(f.weight_class || "")}</span>`;
+}
+
+// ---------- 予想UI（締切前） ----------
+function predictCard(f) {
+  const p = myPreds[f.id] || {};
+  const f1 = FMAP[f.fighter1_id], f2 = FMAP[f.fighter2_id];
+  const methodChips = p.winner_id ? `
+    <div class="chips">
+      <span class="clabel">決まり手（任意 +1pt）</span>
+      ${METHODS.map(m => `<button class="chip ${p.method === m.id ? "sel" : ""}"
+        onclick="setPred('${f.id}','method','${m.id}')">${m.label}</button>`).join("")}
+    </div>` : "";
+  const roundChips = p.winner_id && p.method && p.method !== "DEC" ? `
+    <div class="chips">
+      <span class="clabel">ラウンド（任意 +1pt）</span>
+      ${Array.from({ length: f.rounds || 3 }, (_, i) => i + 1).map(r =>
+        `<button class="chip ${Number(p.round) === r ? "sel" : ""}"
+          onclick="setPred('${f.id}','round',${r})">${r}R</button>`).join("")}
+    </div>` : "";
+  const techSelect = p.winner_id && p.method && p.method !== "DEC" ? `
+    <div class="chips">
+      <span class="clabel">フィニッシュ技ピタリ賞（任意 +2pt）</span>
+      <select class="tech-select" onchange="setPred('${f.id}','technique',this.value)">
+        <option value="">— 狙わない —</option>
+        ${techsFor(p.method).map(t =>
+          `<option value="${t.id}" ${p.technique === t.id ? "selected" : ""}>${t.label}</option>`).join("")}
+      </select>
+    </div>` : "";
+  return `
+    <div class="fight-card" id="fc_${f.id}">
+      ${f.image_url ? `<div class="banner"><img src="${esc(f.image_url)}" alt=""></div>` : ""}
+      <div class="fight-label">${fightLabel(f)}</div>
+      <div class="vs-row">
+        <button class="corner-btn c1 ${p.winner_id === f.fighter1_id ? "sel" : ""}"
+          onclick="setPred('${f.id}','winner_id','${f.fighter1_id}')"><small>RED</small>${esc(f1?.name)}</button>
+        <button class="corner-btn c2 ${p.winner_id === f.fighter2_id ? "sel" : ""}"
+          onclick="setPred('${f.id}','winner_id','${f.fighter2_id}')"><small>BLUE</small>${esc(f2?.name)}</button>
+      </div>
+      ${methodChips}${roundChips}${techSelect}
+      <div class="fight-foot">
+        <span class="save-note ${p.winner_id ? "saved" : ""}">${p.winner_id ? "✓ 保存済み" : "未予想（タップで即保存）"}</span>
+        ${p.winner_id ? `<button class="clear-btn" onclick="clearPred('${f.id}')">予想を取り消す</button>` : ""}
+      </div>
+    </div>`;
+}
+
+async function setPred(fightId, key, val) {
+  const cur = myPreds[fightId] || { member_id: getMemberId(), fight_id: fightId };
+  const next = { ...cur };
+  if (key === "winner_id") {
+    if (next.winner_id === val) return;
+    next.winner_id = val;
+  } else if (next[key] === val) {
+    next[key] = null; // 同じチップ再タップで解除
+    if (key === "method") { next.round = null; next.technique = null; }
+  } else {
+    next[key] = val || null;
+    if (key === "method") { next.round = null; next.technique = null; }
+    if (key === "method" && val === "DEC") { next.round = null; next.technique = null; }
+  }
+  try {
+    await DB.upsertPrediction({
+      member_id: next.member_id, fight_id: next.fight_id,
+      winner_id: next.winner_id, method: next.method || null,
+      round: next.round || null, technique: next.technique || null,
+    });
+    myPreds[fightId] = next;
+    replaceCard(fightId);
+    toast("保存した ✓");
+  } catch (e) { toast(e.message || "保存できなかった"); }
+}
+
+async function clearPred(fightId) {
+  await DB.deletePrediction(getMemberId(), fightId);
+  delete myPreds[fightId];
+  replaceCard(fightId);
+  toast("取り消した");
+}
+
+function replaceCard(fightId) {
+  const f = FIGHTS.find(x => x.id === fightId);
+  const el = document.getElementById("fc_" + fightId);
+  const tmp = document.createElement("div");
+  tmp.innerHTML = isLocked(EV) ? resultCard(f) : predictCard(f);
+  el.replaceWith(tmp.firstElementChild);
+}
+
+// ---------- 答え合わせUI（締切後） ----------
+function resultCard(f) {
+  const f1 = FMAP[f.fighter1_id], f2 = FMAP[f.fighter2_id];
+  const decided = f.winner_id && f.result_method;
+  let resultBox = `<div class="result-box"><span class="rline">結果待ち</span></div>`;
+  if (decided) {
+    if (f.result_method === "DRAW" || f.result_method === "NC") {
+      resultBox = `<div class="result-box"><span class="rline">${METHOD_LABEL[f.result_method]}</span>（集計対象外）</div>`;
+    } else {
+      const w = FMAP[f.winner_id];
+      resultBox = `<div class="result-box">
+        <div class="rline"><span class="win">🏆 ${esc(w?.name)}</span>　${METHOD_LABEL[f.result_method] || ""}
+          ${f.result_method !== "DEC" && f.result_round ? ` ${f.result_round}R` : ""}
+          ${f.result_technique ? `／${TECH_LABEL[f.result_technique] || esc(f.result_technique)}` : ""}</div>
+      </div>`;
+    }
+  }
+  const preds = allPreds.filter(p => p.fight_id === f.id)
+    .map(p => ({ p, m: MEMBERS.find(m => m.id === p.member_id), s: decided ? scoreFight(p, f) : null }))
+    .sort((a, b) => (b.s?.pts || 0) - (a.s?.pts || 0));
+  const predRows = preds.length ? preds.map(({ p, m, s }) => {
+    const detail = [FMAP[p.winner_id]?.name,
+      p.method ? METHOD_LABEL[p.method] : null,
+      p.round ? `${p.round}R` : null,
+      p.technique ? TECH_LABEL[p.technique] : null].filter(Boolean).join("・");
+    if (!s || !s.counted) return `<div class="pred-row"><span class="pwho">${esc(m?.name)}</span><span class="pdetail">${esc(detail)}</span></div>`;
+    return `<div class="pred-row ${s.winnerHit ? "hit" : "miss"}">
+      <span class="hitmark">${s.winnerHit ? "○" : "×"}</span>
+      <span class="pwho">${esc(m?.name)}</span>
+      <span class="pdetail">${esc(detail)}${s.techHit ? "　🎯ピタリ賞!" : ""}</span>
+      <span class="ppts">${s.pts}pt</span>
+    </div>`;
+  }).join("") : `<div class="pred-row"><span class="pdetail">予想なし</span></div>`;
+  return `
+    <div class="fight-card" id="fc_${f.id}">
+      ${f.image_url ? `<div class="banner"><img src="${esc(f.image_url)}" alt=""></div>` : ""}
+      <div class="fight-label">${fightLabel(f)}</div>
+      <div class="vs-row">
+        <div class="corner-btn c1 ${decided && f.winner_id === f.fighter1_id ? "sel" : ""}"><small>RED</small>${esc(f1?.name)}</div>
+        <div class="corner-btn c2 ${decided && f.winner_id === f.fighter2_id ? "sel" : ""}"><small>BLUE</small>${esc(f2?.name)}</div>
+      </div>
+      ${resultBox}
+      ${predRows}
+    </div>`;
+}
+
+function render() {
+  const locked = isLocked(EV);
+  const main = FIGHTS.filter(f => f.segment === "main");
+  const op = FIGHTS.filter(f => f.segment === "opening");
+  const card = locked ? resultCard : predictCard;
+  document.getElementById("main").innerHTML = `
+    <h1 class="page-title">${esc(EV.name)}</h1>
+    <p class="page-sub">${fmtDate(EV.event_date)}　${locked
+      ? (EV.status === "finished" ? "結果確定・答え合わせ" : "締切済み・全員の予想を公開中")
+      : lockCountdown(EV) + "　※他のメンバーの予想は締切後に公開"}</p>
+    ${main.length ? `<div class="section-label">Main Card</div>` : ""}
+    ${main.map(card).join("")}
+    ${op.length ? `<div class="section-label">Opening Fights</div>` : ""}
+    ${op.map(card).join("")}`;
+}
+
+load();
+</script>
+</body>
+</html>

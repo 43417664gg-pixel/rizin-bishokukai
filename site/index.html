@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>RIZIN予想部</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="app-header"></div>
+<div class="wrap" id="main"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/config.js"></script>
+<script src="js/techniques.js"></script>
+<script src="js/demo-data.js"></script>
+<script src="js/api.js"></script>
+<script src="js/app.js"></script>
+<script>
+async function renderPlayerSelect() {
+  const members = await DB.listMembers();
+  document.getElementById("main").innerHTML = `
+    <h1 class="page-title">誰で参戦する？</h1>
+    <p class="page-sub">自分の名前を選んでスタート。次からは自動でログインされる。</p>
+    <div class="player-grid">
+      ${members.map(m => `
+        <button class="player-tile" onclick="choose('${m.id}')">
+          <div class="avatar" style="background:${esc(m.color)}">${esc(m.name.slice(0, 1))}</div>
+          <div class="pname">${esc(m.name)}</div>
+        </button>`).join("")}
+    </div>
+    <div class="rules-box">
+      <b>ルールは一行：</b>勝者を当てて<b class="gold">的中率</b>で競う。
+      さらに決まり手（+1pt）・ラウンド（+1pt）・フィニッシュ技ピタリ（+2pt）を深掘りするほど<b class="gold">ボーナスpt</b>が積み上がる。
+      勝者を外したらボーナスは全部パー。予想しない試合はノーカウント。
+    </div>`;
+}
+
+function choose(id) { setMemberId(id); renderHome(); }
+
+async function renderHome() {
+  await renderHeader("home");
+  const events = await DB.listEvents();
+  const rows = await Promise.all(events.map(async ev => {
+    const fights = await DB.listFights(ev.id);
+    const myPreds = await DB.listPredictions({ fightIds: fights.map(f => f.id), memberId: getMemberId() });
+    const locked = isLocked(ev);
+    const tag = ev.status === "finished"
+      ? '<span class="tag finished">結果確定</span>'
+      : locked ? '<span class="tag locked">締切済み・結果待ち</span>'
+      : '<span class="tag open">予想受付中</span>';
+    return `
+      <a class="event-card" href="event.html?id=${ev.id}">
+        ${ev.poster_url ? `<img src="${esc(ev.poster_url)}" alt="">` : ""}
+        <div class="ebody">
+          <div class="ename">${esc(ev.name)}</div>
+          <div class="emeta">
+            <span>${fmtDate(ev.event_date)}</span>
+            ${tag}
+            <span>予想済み ${myPreds.length}/${fights.length}</span>
+            ${!locked && ev.status !== "finished" ? `<span>${lockCountdown(ev)}</span>` : ""}
+          </div>
+        </div>
+      </a>`;
+  }));
+  document.getElementById("main").innerHTML = `
+    <h1 class="page-title">大会</h1>
+    <p class="page-sub">カードをタップして予想する。締切は大会開始と同時。</p>
+    ${rows.join("")}`;
+}
+
+(async () => {
+  await renderHeader("home");
+  if (getMemberId()) renderHome(); else renderPlayerSelect();
+})();
+</script>
+</body>
+</html>

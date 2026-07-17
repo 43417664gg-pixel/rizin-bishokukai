@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>選手STATS｜RIZIN予想部</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="app-header"></div>
+<div class="wrap" id="main"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/config.js"></script>
+<script src="js/techniques.js"></script>
+<script src="js/demo-data.js"></script>
+<script src="js/api.js"></script>
+<script src="js/app.js"></script>
+<script>
+// このポータルで扱った試合から選手ごとの戦績を組み立てる（サイト内完結STATS）
+function buildStats(fighterId, fights) {
+  const mine = fights.filter(f =>
+    (f.fighter1_id === fighterId || f.fighter2_id === fighterId) && f.winner_id && f.result_method);
+  let w = 0, l = 0, d = 0, finishes = {};
+  for (const f of mine) {
+    if (f.result_method === "DRAW" || f.result_method === "NC") { d++; continue; }
+    if (f.winner_id === fighterId) {
+      w++;
+      const key = f.result_technique ? (TECH_LABEL[f.result_technique] || f.result_technique)
+        : METHOD_LABEL[f.result_method];
+      finishes[key] = (finishes[key] || 0) + 1;
+    } else l++;
+  }
+  return { w, l, d, finishes, fights: mine };
+}
+
+async function load() {
+  await renderHeader("fighter");
+  const [fighters, fights, events] = await Promise.all([DB.listFighters(), DB.listFights(), DB.listEvents()]);
+  const id = qp("id");
+  if (id) renderDetail(fighters.find(f => f.id === id), fighters, fights, events);
+  else renderList(fighters, fights);
+}
+
+function renderList(fighters, fights) {
+  const withStats = fighters.map(f => ({ f, s: buildStats(f.id, fights) }));
+  // 出場試合がある選手を上に
+  withStats.sort((a, b) => (b.s.w + b.s.l + b.s.d) - (a.s.w + a.s.l + a.s.d) || a.f.name.localeCompare(b.f.name, "ja"));
+  document.getElementById("main").innerHTML = `
+    <h1 class="page-title">選手STATS</h1>
+    <p class="page-sub">このポータルで扱った大会の戦績を蓄積。大会を重ねるほど濃くなる。</p>
+    <div class="fighter-grid">
+      ${withStats.map(({ f, s }) => `
+        <a class="fighter-tile" href="fighter.html?id=${f.id}">
+          <div class="favatar">${esc(f.name.slice(0, 1))}</div>
+          <div>
+            <div class="fname">${esc(f.name)}</div>
+            <div class="frec">${s.w + s.l + s.d ? `${s.w}勝${s.l}敗${s.d ? s.d + "分" : ""}` : "戦績はこれから"}</div>
+          </div>
+        </a>`).join("")}
+    </div>`;
+}
+
+function renderDetail(fighter, fighters, fights, events) {
+  if (!fighter) { document.getElementById("main").innerHTML = "<p class='page-sub'>選手が見つかりません。</p>"; return; }
+  const FMAP = fighterMap(fighters);
+  const EMAP = Object.fromEntries(events.map(e => [e.id, e]));
+  const s = buildStats(fighter.id, fights);
+  const upcoming = fights.filter(f =>
+    (f.fighter1_id === fighter.id || f.fighter2_id === fighter.id) && !(f.winner_id && f.result_method));
+  const historyHtml = (list, decided) => list
+    .sort((a, b) => (EMAP[b.event_id]?.event_date || "").localeCompare(EMAP[a.event_id]?.event_date || ""))
+    .map(f => {
+      const opp = FMAP[f.fighter1_id === fighter.id ? f.fighter2_id : f.fighter1_id];
+      const ev = EMAP[f.event_id];
+      let resLine = `<span class="hmeta">結果待ち</span>`;
+      if (decided) {
+        const isDraw = f.result_method === "DRAW" || f.result_method === "NC";
+        const won = f.winner_id === fighter.id;
+        resLine = `<span class="hresult ${won ? "win" : "lose"}">${isDraw ? METHOD_LABEL[f.result_method] : won ? "WIN" : "LOSE"}</span>
+          <span class="hmeta">${METHOD_LABEL[f.result_method] || ""}${f.result_method !== "DEC" && f.result_round ? ` ${f.result_round}R` : ""}${f.result_technique ? `／${TECH_LABEL[f.result_technique] || esc(f.result_technique)}` : ""}</span>`;
+      }
+      return `
+      <div class="history-item">
+        ${f.image_url ? `<img src="${esc(f.image_url)}" alt="">` : ""}
+        <div class="hbody">
+          <div>vs ${esc(opp?.name)}　<span class="hmeta">${esc(f.weight_class || "")}</span></div>
+          <div>${resLine}</div>
+          <div class="hmeta">${esc(ev?.name || "")}　${fmtDate(ev?.event_date)}</div>
+        </div>
+      </div>`;
+    }).join("");
+  const finishList = Object.entries(s.finishes).sort((a, b) => b[1] - a[1])
+    .map(([k, v]) => `${k}×${v}`).join("、");
+  document.getElementById("main").innerHTML = `
+    <div class="fdetail-head">
+      <div class="favatar">${esc(fighter.name.slice(0, 1))}</div>
+      <div>
+        <h1>${esc(fighter.name)}</h1>
+        ${fighter.nickname ? `<div class="page-sub">${esc(fighter.nickname)}</div>` : ""}
+      </div>
+    </div>
+    <div class="record-badges">
+      <div class="rec-badge"><b>${s.w}</b><span>勝</span></div>
+      <div class="rec-badge"><b>${s.l}</b><span>敗</span></div>
+      ${s.d ? `<div class="rec-badge"><b>${s.d}</b><span>分</span></div>` : ""}
+    </div>
+    ${finishList ? `<p class="page-sub">フィニッシュ：${esc(finishList)}</p>` : ""}
+    ${fighter.rizin_url ? `<p class="page-sub"><a href="${esc(fighter.rizin_url)}" target="_blank" rel="noopener" style="text-decoration:underline">RIZIN公式プロフィール ↗</a></p>` : ""}
+    ${upcoming.length ? `<div class="section-label">Next Fight</div>${historyHtml(upcoming, false)}` : ""}
+    ${s.fights.length ? `<div class="section-label">Fight History</div>${historyHtml(s.fights, true)}` : ""}
+    ${!upcoming.length && !s.fights.length ? `<p class="page-sub">まだこのポータルで扱った試合がない。</p>` : ""}`;
+}
+
+load();
+</script>
+</body>
+</html>

@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>管理｜RIZIN予想部</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="app-header"></div>
+<div class="wrap" id="main"></div>
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/config.js"></script>
+<script src="js/techniques.js"></script>
+<script src="js/demo-data.js"></script>
+<script src="js/api.js"></script>
+<script src="js/app.js"></script>
+<script>
+let EVENTS, FIGHTERS, MEMBERS;
+
+function toast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg; t.classList.add("show");
+  clearTimeout(t._tm); t._tm = setTimeout(() => t.classList.remove("show"), 1800);
+}
+
+async function load() {
+  await renderHeader("");
+  if (!(await DB.isAdmin())) { renderLogin(); return; }
+  [EVENTS, FIGHTERS, MEMBERS] = await Promise.all([DB.listEvents(), DB.listFighters(), DB.listMembers()]);
+  render();
+}
+
+function renderLogin() {
+  document.getElementById("main").innerHTML = `
+    <h1 class="page-title">管理ログイン</h1>
+    <div class="admin-section">
+      <div class="form-row"><input id="lg_email" type="email" placeholder="メールアドレス"></div>
+      <div class="form-row"><input id="lg_pass" type="password" placeholder="パスワード"></div>
+      <button class="btn" onclick="doLogin()">ログイン</button>
+    </div>`;
+}
+async function doLogin() {
+  try {
+    await DB.adminLogin(document.getElementById("lg_email").value, document.getElementById("lg_pass").value);
+    load();
+  } catch (e) { toast("ログイン失敗：" + (e.message || "")); }
+}
+
+function fighterOptions(sel) {
+  return `<option value="">— 選手を選ぶ —</option>` +
+    FIGHTERS.map(f => `<option value="${f.id}" ${sel === f.id ? "selected" : ""}>${esc(f.name)}</option>`).join("");
+}
+
+function render() {
+  document.getElementById("main").innerHTML = `
+    <h1 class="page-title">管理</h1>
+    <p class="page-sub">結果の一次ソースは <a href="https://jmoc.jp/" target="_blank" rel="noopener" style="text-decoration:underline;color:var(--gold)">JMOC公式リザルト</a>、補完に各大会のRIZIN公式ページを使う。</p>
+
+    <div class="admin-section">
+      <h2>① 結果入力</h2>
+      <div class="form-row">
+        <select id="res_event" onchange="renderResultForms()">
+          <option value="">— 大会を選ぶ —</option>
+          ${EVENTS.map(e => `<option value="${e.id}">${esc(e.name)}</option>`).join("")}
+        </select>
+      </div>
+      <div id="result_forms"></div>
+    </div>
+
+    <div class="admin-section">
+      <h2>② 大会を追加</h2>
+      <div class="form-row"><input id="ev_name" placeholder="大会名（例：RIZIN.54）"></div>
+      <div class="form-row">
+        <label>開催日／予想締切（大会開始時刻）</label>
+        <input id="ev_date" type="date"><input id="ev_lock" type="datetime-local">
+      </div>
+      <div class="form-row"><input id="ev_poster" placeholder="ポスター画像パス（assets/…）"></div>
+      <div class="form-row"><input id="ev_url" placeholder="RIZIN公式大会ページURL"></div>
+      <button class="btn ghost" onclick="addEvent()">大会を追加</button>
+    </div>
+
+    <div class="admin-section">
+      <h2>③ 選手を追加</h2>
+      <div class="form-row"><input id="fi_name" placeholder="選手名"><input id="fi_url" placeholder="RIZIN公式プロフィールURL（任意）"></div>
+      <button class="btn ghost" onclick="addFighter()">選手を追加</button>
+    </div>
+
+    <div class="admin-section">
+      <h2>④ 試合（カード）を追加</h2>
+      <div class="form-row">
+        <select id="fg_event">${EVENTS.map(e => `<option value="${e.id}">${esc(e.name)}</option>`).join("")}</select>
+      </div>
+      <div class="form-row">
+        <select id="fg_f1">${fighterOptions()}</select>
+        <select id="fg_f2">${fighterOptions()}</select>
+      </div>
+      <div class="form-row">
+        <input id="fg_no" type="number" placeholder="試合番号" style="max-width:100px">
+        <select id="fg_seg"><option value="main">メインカード</option><option value="opening">オープニング</option></select>
+        <input id="fg_weight" placeholder="階級（例：61.0kg）">
+      </div>
+      <div class="form-row"><input id="fg_title" placeholder="冠（例：バンタム級タイトルマッチ／任意）"><input id="fg_img" placeholder="VSバナー画像パス（assets/…）"></div>
+      <button class="btn ghost" onclick="addFight()">試合を追加</button>
+    </div>
+
+    <div class="admin-section">
+      <h2>⑤ メンバーを追加</h2>
+      <div class="form-row">
+        <input id="mb_name" placeholder="名前">
+        <input id="mb_color" type="color" value="#e60012" style="max-width:60px;padding:2px">
+      </div>
+      <button class="btn ghost" onclick="addMember()">メンバーを追加</button>
+      <div class="admin-note">現メンバー：${MEMBERS.map(m => esc(m.name)).join("、")}</div>
+    </div>
+
+    ${window.IS_DEMO ? `
+    <div class="admin-section">
+      <h2>デモモード</h2>
+      <div class="admin-note">今はブラウザ内保存のデモで動作中。Supabase設定（js/config.js）を入れると本番になる。</div>
+      <button class="btn ghost" onclick="DB.resetDemo().then(()=>location.reload())" style="margin-top:10px">デモデータを初期状態に戻す</button>
+    </div>` : `
+    <div class="admin-section"><button class="btn ghost" onclick="DB.adminLogout().then(()=>location.reload())">ログアウト</button></div>`}`;
+}
+
+async function renderResultForms() {
+  const evId = document.getElementById("res_event").value;
+  const box = document.getElementById("result_forms");
+  if (!evId) { box.innerHTML = ""; return; }
+  const ev = EVENTS.find(e => e.id === evId);
+  const fights = (await DB.listFights(evId)).sort((a, b) =>
+    (a.segment === b.segment) ? b.order_no - a.order_no : (a.segment === "main" ? -1 : 1));
+  const FMAP = fighterMap(FIGHTERS);
+  box.innerHTML = (ev.official_url ? `<div class="admin-note" style="margin-bottom:8px"><a href="${esc(ev.official_url)}" target="_blank" rel="noopener">この大会のRIZIN公式ページ ↗</a></div>` : "") +
+    fights.map(f => {
+      const f1 = FMAP[f.fighter1_id], f2 = FMAP[f.fighter2_id];
+      const no = f.segment === "opening" ? `OP第${f.order_no}試合` : `第${f.order_no}試合`;
+      return `
+      <div class="result-fight-row" id="rf_${f.id}">
+        <div class="rf-title">${no}　${esc(f1?.name)} vs ${esc(f2?.name)}</div>
+        <div class="form-row">
+          <select id="w_${f.id}">
+            <option value="">— 勝者 —</option>
+            <option value="${f.fighter1_id}" ${f.winner_id === f.fighter1_id ? "selected" : ""}>${esc(f1?.name)}</option>
+            <option value="${f.fighter2_id}" ${f.winner_id === f.fighter2_id ? "selected" : ""}>${esc(f2?.name)}</option>
+          </select>
+          <select id="m_${f.id}">
+            <option value="">— 決着 —</option>
+            ${["KO", "SUB", "DEC", "DRAW", "NC"].map(m =>
+              `<option value="${m}" ${f.result_method === m ? "selected" : ""}>${METHOD_LABEL[m]}</option>`).join("")}
+          </select>
+          <select id="r_${f.id}">
+            <option value="">R</option>
+            ${[1, 2, 3, 4, 5].map(r => `<option value="${r}" ${f.result_round == r ? "selected" : ""}>${r}R</option>`).join("")}
+          </select>
+          <select id="t_${f.id}">
+            <option value="">— 技（任意） —</option>
+            ${TECHNIQUES.map(t => `<option value="${t.id}" ${f.result_technique === t.id ? "selected" : ""}>${t.label}</option>`).join("")}
+          </select>
+          <button class="btn gold" onclick="saveResult('${f.id}')">保存</button>
+        </div>
+      </div>`;
+    }).join("");
+}
+
+async function saveResult(fightId) {
+  const v = (p) => document.getElementById(p + "_" + fightId).value || null;
+  const method = v("m");
+  const result = {
+    winner_id: (method === "DRAW" || method === "NC") ? null : v("w"),
+    result_method: method,
+    result_round: v("r") ? Number(v("r")) : null,
+    result_technique: v("t"),
+  };
+  if (method && method !== "DRAW" && method !== "NC" && !result.winner_id) { toast("勝者を選んで"); return; }
+  try {
+    await DB.saveResult(fightId, result);
+    // 大会の全試合に結果が入ったらstatusをfinishedに
+    toast("保存した ✓ 集計に即反映");
+  } catch (e) { toast("保存失敗：" + (e.message || "")); }
+}
+
+async function addEvent() {
+  const name = document.getElementById("ev_name").value.trim();
+  const lock = document.getElementById("ev_lock").value;
+  if (!name || !lock) { toast("大会名と締切は必須"); return; }
+  await DB.upsertEvent({
+    name, event_date: document.getElementById("ev_date").value || null,
+    lock_at: new Date(lock).toISOString(),
+    poster_url: document.getElementById("ev_poster").value || null,
+    official_url: document.getElementById("ev_url").value || null,
+    status: "upcoming",
+  });
+  toast("大会を追加した ✓"); load();
+}
+
+async function addFighter() {
+  const name = document.getElementById("fi_name").value.trim();
+  if (!name) { toast("選手名は必須"); return; }
+  await DB.upsertFighter({ name, rizin_url: document.getElementById("fi_url").value || null });
+  toast("選手を追加した ✓"); load();
+}
+
+async function addFight() {
+  const f1 = document.getElementById("fg_f1").value, f2 = document.getElementById("fg_f2").value;
+  if (!f1 || !f2 || f1 === f2) { toast("選手を2人選んで"); return; }
+  await DB.upsertFight({
+    event_id: document.getElementById("fg_event").value,
+    fighter1_id: f1, fighter2_id: f2,
+    order_no: Number(document.getElementById("fg_no").value || 1),
+    segment: document.getElementById("fg_seg").value,
+    weight_class: document.getElementById("fg_weight").value || null,
+    title_label: document.getElementById("fg_title").value || null,
+    image_url: document.getElementById("fg_img").value || null,
+    rounds: 3,
+  });
+  toast("試合を追加した ✓"); load();
+}
+
+async function addMember() {
+  const name = document.getElementById("mb_name").value.trim();
+  if (!name) { toast("名前は必須"); return; }
+  await DB.upsertMember({ name, color: document.getElementById("mb_color").value });
+  toast("メンバーを追加した ✓"); load();
+}
+
+load();
+</script>
+</body>
+</html>

@@ -1,0 +1,142 @@
+// データ層。Supabase設定が空ならデモモード（localStorage保存）で動く。
+// ページ側は window.DB の非同期メソッドだけを使う——モードの差はここに閉じ込める。
+(function () {
+  const cfg = window.PORTAL_CONFIG || {};
+  const IS_DEMO = !cfg.SUPABASE_URL;
+  const LS_KEY = "rizin_portal_demo_v1";
+
+  // ---------- デモモード ----------
+  function demoLoad() {
+    const saved = localStorage.getItem(LS_KEY);
+    if (saved) {
+      try { return JSON.parse(saved); } catch (e) { /* 壊れていたらシードから再生成 */ }
+    }
+    const db = JSON.parse(JSON.stringify(window.DEMO_SEED));
+    localStorage.setItem(LS_KEY, JSON.stringify(db));
+    return db;
+  }
+  function demoSave(db) { localStorage.setItem(LS_KEY, JSON.stringify(db)); }
+  const uid = () => "x_" + Math.random().toString(36).slice(2, 10);
+
+  const demoDB = {
+    isDemo: true,
+    async listMembers() { return demoLoad().members; },
+    async listFighters() { return demoLoad().fighters; },
+    async listEvents() {
+      return demoLoad().events.sort((a, b) => (b.event_date || "").localeCompare(a.event_date || ""));
+    },
+    async getEvent(id) { return demoLoad().events.find(e => e.id === id) || null; },
+    async listFights(eventId) {
+      const db = demoLoad();
+      const fs = eventId ? db.fights.filter(f => f.event_id === eventId) : db.fights;
+      return fs.slice();
+    },
+    async listPredictions(filter = {}) {
+      let ps = demoLoad().predictions;
+      if (filter.fightIds) ps = ps.filter(p => filter.fightIds.includes(p.fight_id));
+      if (filter.memberId) ps = ps.filter(p => p.member_id === filter.memberId);
+      return ps.slice();
+    },
+    async upsertPrediction(pred) {
+      const db = demoLoad();
+      // デモでも締切は守る
+      const fight = db.fights.find(f => f.id === pred.fight_id);
+      const ev = fight && db.events.find(e => e.id === fight.event_id);
+      if (!ev || new Date(ev.lock_at) <= new Date()) throw new Error("予想の締切を過ぎています");
+      const i = db.predictions.findIndex(p => p.member_id === pred.member_id && p.fight_id === pred.fight_id);
+      if (i >= 0) db.predictions[i] = { ...db.predictions[i], ...pred, updated_at: new Date().toISOString() };
+      else db.predictions.push({ id: uid(), updated_at: new Date().toISOString(), ...pred });
+      demoSave(db);
+    },
+    async deletePrediction(memberId, fightId) {
+      const db = demoLoad();
+      db.predictions = db.predictions.filter(p => !(p.member_id === memberId && p.fight_id === fightId));
+      demoSave(db);
+    },
+    // ----- admin -----
+    async isAdmin() { return true; }, // デモでは誰でも管理可
+    async adminLogin() { return { ok: true }; },
+    async adminLogout() {},
+    async saveResult(fightId, result) {
+      const db = demoLoad();
+      const f = db.fights.find(x => x.id === fightId);
+      if (!f) throw new Error("試合が見つかりません");
+      Object.assign(f, result);
+      demoSave(db);
+    },
+    async upsertEvent(ev) {
+      const db = demoLoad();
+      if (ev.id) { Object.assign(db.events.find(e => e.id === ev.id), ev); }
+      else { ev.id = uid(); db.events.push(ev); }
+      demoSave(db); return ev.id;
+    },
+    async upsertFighter(f) {
+      const db = demoLoad();
+      if (f.id) { Object.assign(db.fighters.find(x => x.id === f.id), f); }
+      else { f.id = uid(); db.fighters.push(f); }
+      demoSave(db); return f.id;
+    },
+    async upsertFight(f) {
+      const db = demoLoad();
+      if (f.id) { Object.assign(db.fights.find(x => x.id === f.id), f); }
+      else { f.id = uid(); db.fights.push(f); }
+      demoSave(db); return f.id;
+    },
+    async upsertMember(m) {
+      const db = demoLoad();
+      if (m.id) { Object.assign(db.members.find(x => x.id === m.id), m); }
+      else { m.id = uid(); db.members.push(m); }
+      demoSave(db); return m.id;
+    },
+    async resetDemo() { localStorage.removeItem(LS_KEY); },
+  };
+
+  // ---------- Supabaseモード ----------
+  function makeSupaDB() {
+    const client = window.supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY);
+    const q = async (p) => { const { data, error } = await p; if (error) throw error; return data; };
+    return {
+      isDemo: false,
+      client,
+      async listMembers() { return q(client.from("members").select("*").order("name")); },
+      async listFighters() { return q(client.from("fighters").select("*").order("name")); },
+      async listEvents() { return q(client.from("events").select("*").order("event_date", { ascending: false })); },
+      async getEvent(id) { return q(client.from("events").select("*").eq("id", id).single()); },
+      async listFights(eventId) {
+        let query = client.from("fights").select("*");
+        if (eventId) query = query.eq("event_id", eventId);
+        return q(query);
+      },
+      async listPredictions(filter = {}) {
+        let query = client.from("predictions").select("*");
+        if (filter.fightIds) query = query.in("fight_id", filter.fightIds);
+        if (filter.memberId) query = query.eq("member_id", filter.memberId);
+        return q(query);
+      },
+      async upsertPrediction(pred) {
+        return q(client.from("predictions").upsert(
+          { ...pred, updated_at: new Date().toISOString() },
+          { onConflict: "member_id,fight_id" }
+        ));
+      },
+      async deletePrediction(memberId, fightId) {
+        return q(client.from("predictions").delete().eq("member_id", memberId).eq("fight_id", fightId));
+      },
+      async isAdmin() { const { data } = await client.auth.getSession(); return !!data.session; },
+      async adminLogin(email, password) {
+        const { error } = await client.auth.signInWithPassword({ email, password });
+        if (error) throw error; return { ok: true };
+      },
+      async adminLogout() { await client.auth.signOut(); },
+      async saveResult(fightId, result) { return q(client.from("fights").update(result).eq("id", fightId)); },
+      async upsertEvent(ev) { const d = await q(client.from("events").upsert(ev).select()); return d[0].id; },
+      async upsertFighter(f) { const d = await q(client.from("fighters").upsert(f).select()); return d[0].id; },
+      async upsertFight(f) { const d = await q(client.from("fights").upsert(f).select()); return d[0].id; },
+      async upsertMember(m) { const d = await q(client.from("members").upsert(m).select()); return d[0].id; },
+      async resetDemo() {},
+    };
+  }
+
+  window.DB = IS_DEMO ? demoDB : makeSupaDB();
+  window.IS_DEMO = IS_DEMO;
+})();
