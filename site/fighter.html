@@ -186,10 +186,10 @@ function renderDetail(fighter, fighters, fights, events) {
     <div class="fhero">
       ${ph ? photoDiv(ph, "fhero-photo") : ""}
       <div class="fhero-body">
-        <div class="en-label">FIGHTER</div>
-        ${fighter.nickname ? `<div class="falias">${esc(fighter.nickname)}</div>` : ""}
-        <h1 class="page-title">${esc(fighter.name)}</h1>
-        <div class="page-sub">${wc ? esc(wc) : ""}</div>
+        ${fighter.nickname ? `<div class="falias">“${esc(fighter.nickname)}”</div>` : `<div class="en-label">FIGHTER</div>`}
+        <h1 class="fname-big">${esc(fighter.name)}</h1>
+        ${fighter.belt ? `<div class="fbelt">🏆 ${esc(fighter.belt)}</div>` : ""}
+        <div class="page-sub" style="margin-top:6px">${wc ? esc(wc) : ""}</div>
       </div>
     </div>
     ${hasRec ? `
