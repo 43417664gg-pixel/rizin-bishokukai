@@ -8,7 +8,7 @@
   // ---------- デモモード ----------
   // シード更新時はSEED_Vを上げる。マスタ（選手・試合・大会）はシードの新値を反映しつつ、
   // ユーザーが入れた予想・結果・追加データは保持する
-  const SEED_V = 5;
+  const SEED_V = 7;
   // v3: 本番移行——サンプル大会・デモ選手・仮メンバーを完全に取り除く
   const PURGED = new Set([
     "ev_demo", "demo_1", "demo_2", "demo_3",
@@ -22,10 +22,17 @@
     const seed = JSON.parse(JSON.stringify(window.DEMO_SEED));
     const byId = (arr) => Object.fromEntries((arr || []).map(x => [x.id, x]));
     const savedF = byId(saved.fighters), savedFt = byId(saved.fights), savedE = byId(saved.events);
-    // 選手・試合：シードの内容を正とし、保存側だけにあるフィールド（結果入力等）は残す
-    const fighters = seed.fighters.map(f => ({ ...savedF[f.id], ...f }));
+    // 選手：シードを完全な正とする（旧フィールドの残留を防ぐためマージしない）。admin追加分だけ残す
+    const fighters = seed.fighters.map(f => ({ ...f }));
     for (const f of saved.fighters || []) if (!fighters.some(x => x.id === f.id)) fighters.push(f);
-    const fights = seed.fights.map(f => ({ ...savedFt[f.id], ...f }));
+    // 試合：シードのカード定義を正としつつ、結果入力（winner/method等）は保存側から引き継ぐ
+    const fights = seed.fights.map(f => {
+      const s = savedFt[f.id] || {};
+      const result = {};
+      for (const k of ["winner_id", "result_method", "result_round", "result_technique", "result_note"])
+        if (s[k] != null) result[k] = s[k];
+      return { ...f, ...result };
+    });
     for (const f of saved.fights || []) if (!fights.some(x => x.id === f.id)) fights.push(f);
     // 大会：時刻設定はシード優先、発表済みステータスだけ保持
     const events = seed.events.map(e => ({
