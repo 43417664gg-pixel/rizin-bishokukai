@@ -94,14 +94,18 @@
   window.fmtRate = (r) => r === null || r === undefined ? "—" : `${Math.round(r * 100)}%`;
 
   // 大会の状態：before_open（計量前）→ open（受付中）→ locked（締切・結果待ち）→ finished（結果発表済み）
+  // no_deadline=true の大会は締切なし。常に受付中（オープンブック：みんなの予想も常時公開）
   window.eventPhase = (ev) => {
     if (ev.status === "finished") return "finished";
+    if (ev.no_deadline) return "open";
     const now = new Date();
     if (new Date(ev.lock_at) <= now) return "locked";
     if (ev.open_at && new Date(ev.open_at) > now) return "before_open";
     return "open";
   };
   window.isLocked = (ev) => eventPhase(ev) === "locked" || eventPhase(ev) === "finished";
+  // オープンブック＝受付中でも全員の予想を公開する（締切なし大会）
+  window.isOpenBook = (ev) => !!ev.no_deadline && ev.status !== "finished";
   window.PHASE_LABEL = {
     before_open: "計量終了後に予想開始",
     open: "予想受付中",

@@ -34,8 +34,9 @@ create table events (
   id uuid primary key default gen_random_uuid(),
   name text not null,
   event_date date,
+  no_deadline boolean not null default false, -- 締切なし・オープンブック運用
   open_at timestamptz,                   -- 予想開始＝前日計量終了後（nullなら即開放）
-  lock_at timestamptz not null,          -- 予想締切＝前日の夜24:00
+  lock_at timestamptz,                   -- 予想締切＝前日の夜24:00（no_deadline時は未使用）
   poster_url text,
   official_url text,                     -- rizin.jp の大会ページ（admin参照用）
   status text not null default 'upcoming' check (status in ('upcoming','finished')),
@@ -99,28 +100,32 @@ create policy "predict in window (insert)" on predictions for insert
   with check (
     exists (select 1 from fights f join events e on e.id = f.event_id
             where f.id = fight_id
-              and (e.open_at is null or e.open_at <= now())
-              and e.lock_at > now())
+              and (e.no_deadline
+                   or ((e.open_at is null or e.open_at <= now())
+                       and e.lock_at is not null and e.lock_at > now())))
   );
 create policy "predict in window (update)" on predictions for update
   using (
     exists (select 1 from fights f join events e on e.id = f.event_id
             where f.id = fight_id
-              and (e.open_at is null or e.open_at <= now())
-              and e.lock_at > now())
+              and (e.no_deadline
+                   or ((e.open_at is null or e.open_at <= now())
+                       and e.lock_at is not null and e.lock_at > now())))
   )
   with check (
     exists (select 1 from fights f join events e on e.id = f.event_id
             where f.id = fight_id
-              and (e.open_at is null or e.open_at <= now())
-              and e.lock_at > now())
+              and (e.no_deadline
+                   or ((e.open_at is null or e.open_at <= now())
+                       and e.lock_at is not null and e.lock_at > now())))
   );
 create policy "predict in window (delete)" on predictions for delete
   using (
     exists (select 1 from fights f join events e on e.id = f.event_id
             where f.id = fight_id
-              and (e.open_at is null or e.open_at <= now())
-              and e.lock_at > now())
+              and (e.no_deadline
+                   or ((e.open_at is null or e.open_at <= now())
+                       and e.lock_at is not null and e.lock_at > now())))
   );
 
 -- 管理アカウントは予想も訂正可能

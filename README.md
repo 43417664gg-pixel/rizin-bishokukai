@@ -15,12 +15,18 @@
   - `js/config.js` Supabase接続設定。**空だとデモモード**（ブラウザ内保存）
 - `supabase/schema.sql` — DBスキーマ＋RLS（締切後の予想はDBが拒否）
 
-## 本番化の手順
+## 締切モード
+- 通常：`open_at`（計量後開放）→`lock_at`（前日24:00締切）→締切後に全員公開→結果発表
+- **締切なし**：大会に `no_deadline: true` を設定すると、いつでも予想＆編集OK・みんなの予想も常時公開（オープンブック）。現在のLANDMARK 15はこのモード
+
+## 本番化の手順（← いまここ。友達とデータ共有するには必須）
+> ⚠️ Supabase未接続の「デモモード」では予想が**各ブラウザのローカル保存**になり、他人とデータが共有されない。友達みんなで使うにはSupabase接続が必須。
 1. Supabase無料プロジェクトを作成
-2. SQL Editorで `supabase/schema.sql` を実行
+2. SQL Editorで `supabase/schema.sql` を実行（no_deadline列・RLS込み）
 3. Authentication > Users で管理用ユーザー（メール＋パスワード）を1つ作成
-4. Project Settings > API の URL と anon key を `site/js/config.js` に記入
-5. admin.html からメンバー・大会・カードを登録
+4. Project Settings > API の URL と anon key を `site/js/config.js` に記入 →「デモ」バッジが消え本番モードに
+5. admin.html にログイン → 大会に締切なしフラグ等を設定、メンバー3人は登録済み
+6. `gh repo create` でGitHub P/Pages公開 → 仲間にURL共有（noindex・限定運用）
 
 ## 画像
 選手VSバナー・ポスターはRIZIN公式（rizin.jp）から取得。仲間内限定利用。

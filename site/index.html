@@ -53,8 +53,11 @@ async function renderHome() {
     const myPreds = await DB.listPredictions({ fightIds: fights.map(f => f.id), memberId: getMemberId() });
     const phase = eventPhase(ev);
     const days = daysToEvent(ev);
-    const tag = `<span class="tag ${phase}">${PHASE_LABEL[phase]}</span>`;
-    const countdown = phase === "open" ? `
+    const openBook = isOpenBook(ev);
+    const tag = openBook
+      ? `<span class="tag open">予想受付中・締切なし</span>`
+      : `<span class="tag ${phase}">${PHASE_LABEL[phase]}</span>`;
+    const countdown = (phase === "open" && !openBook) ? `
       <div class="countdown-bar">
         <div class="cd-left">
           <span class="cd-label">予想締切まで</span>
@@ -79,7 +82,7 @@ async function renderHome() {
   document.getElementById("main").innerHTML = `
     <div class="en-label">EVENTS</div>
     <h1 class="page-title">大会</h1>
-    <p class="page-sub">計量終了後に予想開始、前日の夜24:00で締切。</p>
+    <p class="page-sub">カードをタップして予想。この大会は締切なし・いつでも編集OK。</p>
     ${rows.join("")}`;
   document.querySelectorAll(".cd-timer").forEach(el =>
     startCountdown(el, el.dataset.target, () => location.reload()));

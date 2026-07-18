@@ -8,7 +8,7 @@
   // ---------- デモモード ----------
   // シード更新時はSEED_Vを上げる。マスタ（選手・試合・大会）はシードの新値を反映しつつ、
   // ユーザーが入れた予想・結果・追加データは保持する
-  const SEED_V = 7;
+  const SEED_V = 8;
   // v3: 本番移行——サンプル大会・デモ選手・仮メンバーを完全に取り除く
   const PURGED = new Set([
     "ev_demo", "demo_1", "demo_2", "demo_3",
@@ -85,12 +85,14 @@
     },
     async upsertPrediction(pred) {
       const db = demoLoad();
-      // デモでも受付時間は守る（計量前は開いていない・前日24:00で締切）
+      // デモでも受付時間は守る（締切なし大会はスキップ）
       const fight = db.fights.find(f => f.id === pred.fight_id);
       const ev = fight && db.events.find(e => e.id === fight.event_id);
       if (!ev) throw new Error("大会が見つかりません");
-      if (ev.open_at && new Date(ev.open_at) > new Date()) throw new Error("予想は計量終了後に開始されます");
-      if (new Date(ev.lock_at) <= new Date()) throw new Error("予想の締切を過ぎています");
+      if (!ev.no_deadline) {
+        if (ev.open_at && new Date(ev.open_at) > new Date()) throw new Error("予想は計量終了後に開始されます");
+        if (new Date(ev.lock_at) <= new Date()) throw new Error("予想の締切を過ぎています");
+      }
       const i = db.predictions.findIndex(p => p.member_id === pred.member_id && p.fight_id === pred.fight_id);
       if (i >= 0) db.predictions[i] = { ...db.predictions[i], ...pred, updated_at: new Date().toISOString() };
       else db.predictions.push({ id: uid(), updated_at: new Date().toISOString(), ...pred });

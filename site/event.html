@@ -44,7 +44,7 @@ async function load() {
   FMAP = fighterMap(await DB.listFighters());
   MEMBERS = await DB.listMembers();
   const fightIds = FIGHTS.map(f => f.id);
-  if (PHASE === "locked" || PHASE === "finished") {
+  if (PHASE === "locked" || PHASE === "finished" || isOpenBook(EV)) {
     allPreds = await DB.listPredictions({ fightIds });
   } else {
     allPreds = await DB.listPredictions({ fightIds, memberId: getMemberId() });
@@ -185,6 +185,7 @@ async function confirmPred(fightId) {
     delete drafts[fightId];
     editing.delete(fightId);
     replaceCard(fightId);
+    await refreshMatrix();
     toast("予想を決定した ✓");
   } catch (e) { toast(e.message || "保存できなかった"); }
 }
@@ -207,7 +208,16 @@ async function clearPred(fightId) {
   delete drafts[fightId];
   editing.delete(fightId);
   replaceCard(fightId);
+  await refreshMatrix();
   toast("取り消した");
+}
+
+// オープンブック（締切なし）時、保存後にALL PICKSマトリクスを即時更新
+async function refreshMatrix() {
+  const box = document.getElementById("matrix-section");
+  if (!box || !(isOpenBook(EV) || PHASE === "locked" || PHASE === "finished")) return;
+  allPreds = await DB.listPredictions({ fightIds: FIGHTS.map(f => f.id) });
+  box.innerHTML = allPicksMatrix();
 }
 
 function replaceCard(fightId) {
@@ -328,25 +338,27 @@ function render() {
   const card = (PHASE === "locked" || PHASE === "finished") ? resultCard
     : PHASE === "before_open" ? previewCard : predictCard;
   const days = daysToEvent(EV);
-  const subText = {
-    before_open: "カード公開中。計量終了後に予想が開く。",
-    open: "全メンバーの予想は締切後に公開。",
-    locked: "締切済み。全員の予想を公開中——あとは試合を待つだけ。",
-    finished: "結果確定・答え合わせ",
-  }[PHASE];
+  const openBook = isOpenBook(EV);
+  const subText = openBook ? "締切なし・いつでも予想＆編集OK。みんなの予想も公開中。"
+    : {
+      before_open: "カード公開中。計量終了後に予想が開く。",
+      open: "全メンバーの予想は締切後に公開。",
+      locked: "締切済み。全員の予想を公開中——あとは試合を待つだけ。",
+      finished: "結果確定・答え合わせ",
+    }[PHASE];
   document.getElementById("main").innerHTML = `
     <div class="en-label">${PHASE === "finished" ? "RESULT" : "FIGHT CARD"}</div>
     <h1 class="page-title">${esc(EV.name)}</h1>
     <p class="page-sub">${fmtDate(EV.event_date)}　${subText}</p>
     ${PHASE === "finished" ? eventSummary() : ""}
-    ${PHASE === "locked" || PHASE === "finished" ? allPicksMatrix() : ""}
+    <div id="matrix-section">${PHASE === "locked" || PHASE === "finished" || openBook ? allPicksMatrix() : ""}</div>
     ${main.length ? `<div class="section-label">MAIN CARD</div>` : ""}
     ${main.map(card).join("")}
     ${op.length ? `<div class="section-label">OPENING FIGHTS</div>` : ""}
     ${op.map(card).join("")}`;
-  // 受付中は締切カウントダウンをスティッキー表示
+  // 締切ありの受付中のみカウントダウンをスティッキー表示（締切なし大会は非表示）
   const sc = document.getElementById("sticky-cd");
-  if (PHASE === "open") {
+  if (PHASE === "open" && !openBook) {
     sc.innerHTML = `
       <div class="countdown-bar sticky">
         <div class="cd-left">

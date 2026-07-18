@@ -297,8 +297,9 @@ window.DEMO_SEED = {
       id: "ev_lm15",
       name: "RIZIN LANDMARK 15 in HIROSHIMA",
       event_date: "2026-07-18",
-      open_at: "2026-07-17T15:00:00+09:00",  // 前日計量終了後に開放
-      lock_at: "2026-07-18T00:00:00+09:00",  // 前日の夜24:00締切
+      no_deadline: true,                     // 締切なし・オープンブック運用
+      open_at: null,
+      lock_at: "2026-07-18T00:00:00+09:00",  // no_deadline時は未使用
       poster_url: "assets/lm15/poster.jpg",
       official_url: "https://jp.rizinff.com/_ct/17841138",
       status: "upcoming",
