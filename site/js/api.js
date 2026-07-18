@@ -106,6 +106,7 @@
     // ----- admin -----
     async isAdmin() { return true; }, // デモでは誰でも管理可
     async adminLogin() { return { ok: true }; },
+    async adminSignUp() { return { ok: true }; },
     async adminLogout() {},
     async saveResult(fightId, result) {
       const db = demoLoad();
@@ -181,6 +182,15 @@
       async adminLogin(email, password) {
         const { error } = await client.auth.signInWithPassword({ email, password });
         if (error) throw error; return { ok: true };
+      },
+      // 初回のみ：管理者アカウントを作る（パスワードはGaku本人が入力）
+      async adminSignUp(email, password) {
+        const { error } = await client.auth.signUp({ email, password });
+        if (error) throw error;
+        // メール確認が有効な場合はセッションが張られないので、続けてログインを試す
+        const { error: e2 } = await client.auth.signInWithPassword({ email, password });
+        if (e2) throw new Error("アカウントは作成されましたが自動ログインできませんでした：" + e2.message);
+        return { ok: true };
       },
       async adminLogout() { await client.auth.signOut(); },
       async saveResult(fightId, result) { return q(client.from("fights").update(result).eq("id", fightId)); },

@@ -7,18 +7,18 @@
 <title>選手名鑑｜RIZIN美食会予想</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=202607181719">
+<link rel="stylesheet" href="css/style.css?v=20260718215643">
 </head>
 <body>
 <div id="app-header"></div>
 <div class="wrap" id="main"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/config.js?v=202607181719"></script>
-<script src="js/techniques.js?v=202607181719"></script>
-<script src="js/demo-data.js?v=202607181719"></script>
-<script src="js/api.js?v=202607181719"></script>
-<script src="js/app.js?v=202607181719"></script>
+<script src="js/config.js?v=20260718215643"></script>
+<script src="js/techniques.js?v=20260718215643"></script>
+<script src="js/demo-data.js?v=20260718215643"></script>
+<script src="js/api.js?v=20260718215643"></script>
+<script src="js/app.js?v=20260718215643"></script>
 <script>
 // このポータルで扱った試合から選手ごとの戦績を組み立てる（サイト内完結STATS）
 function buildStats(fighterId, fights) {
@@ -80,7 +80,9 @@ function renderList(fighters, fights) {
     <div class="meikan-grid">
       ${rows.map(({ f, s, ph, wc }, i) => `
         <a class="meikan-card" href="fighter.html?id=${f.id}" style="--d:${Math.min(i, 11) * 40}ms">
-          ${ph ? photoDiv(ph, "mphoto") : `<div class="mphoto none">${esc(f.name.slice(0, 1))}</div>`}
+          ${f.highlight_url
+            ? `<div class="mphoto portrait"><img src="${esc(f.highlight_url)}" alt="${esc(f.name)}" loading="lazy"></div>`
+            : (ph ? photoDiv(ph, "mphoto") : `<div class="mphoto none">${esc(f.name.slice(0, 1))}</div>`)}
           <div class="mbody">
             <div class="mname">${esc(f.name)}</div>
             <div class="mmeta">
@@ -184,7 +186,9 @@ function renderDetail(fighter, fighters, fights, events) {
   }
   document.getElementById("main").innerHTML = `
     <div class="fhero">
-      ${ph ? photoDiv(ph, "fhero-photo") : ""}
+      ${fighter.highlight_url
+        ? `<div class="fhero-portrait"><img src="${esc(fighter.highlight_url)}" alt="${esc(fighter.name)}" loading="lazy"></div>`
+        : (ph ? photoDiv(ph, "fhero-photo") : "")}
       <div class="fhero-body">
         ${fighter.nickname ? `<div class="falias">“${esc(fighter.nickname)}”</div>` : `<div class="en-label">FIGHTER</div>`}
         <h1 class="fname-big">${esc(fighter.name)}</h1>
@@ -205,6 +209,12 @@ function renderDetail(fighter, fighters, fights, events) {
       ${fighter.career ? `<div class="pt-row"><span class="pt-k">来歴</span><span class="pt-v">${esc(fighter.career)}</span></div>` : ""}
       ${fighter.memo ? `<div class="pt-row"><span class="pt-k">今大会</span><span class="pt-v">${esc(fighter.memo)}</span></div>` : ""}
     </div>
+    ${fighter.highlight_caption ? `
+    <div class="section-label">HIGHLIGHT</div>
+    <div class="highlight-box">
+      ${ph ? photoDiv(ph, "hl-scene") : ""}
+      <p class="hl-caption">${esc(fighter.highlight_caption)}</p>
+    </div>` : ""}
     ${upcoming.length ? `<div class="section-label">NEXT FIGHT</div>${historyHtml(upcoming, false)}` : ""}
     ${careerHistoryHtml(fighter)}
     ${s.fights.length ? `<div class="section-label">美食会アーカイブ</div>${historyHtml(s.fights, true)}` : ""}

@@ -7,7 +7,7 @@
 <title>管理｜RIZIN美食会予想</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=202607181719">
+<link rel="stylesheet" href="css/style.css?v=20260718215643">
 </head>
 <body>
 <div id="app-header"></div>
@@ -15,11 +15,11 @@
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/config.js?v=202607181719"></script>
-<script src="js/techniques.js?v=202607181719"></script>
-<script src="js/demo-data.js?v=202607181719"></script>
-<script src="js/api.js?v=202607181719"></script>
-<script src="js/app.js?v=202607181719"></script>
+<script src="js/config.js?v=20260718215643"></script>
+<script src="js/techniques.js?v=20260718215643"></script>
+<script src="js/demo-data.js?v=20260718215643"></script>
+<script src="js/api.js?v=20260718215643"></script>
+<script src="js/app.js?v=20260718215643"></script>
 <script>
 let EVENTS, FIGHTERS, MEMBERS;
 
@@ -40,9 +40,14 @@ function renderLogin() {
   document.getElementById("main").innerHTML = `
     <h1 class="page-title">管理ログイン</h1>
     <div class="admin-section">
-      <div class="form-row"><input id="lg_email" type="email" placeholder="メールアドレス"></div>
+      <div class="form-row"><input id="lg_email" type="email" placeholder="メールアドレス" value="43417664gg@gmail.com"></div>
       <div class="form-row"><input id="lg_pass" type="password" placeholder="パスワード"></div>
       <button class="btn" onclick="doLogin()">ログイン</button>
+    </div>
+    <div class="admin-section">
+      <h2>初回セットアップ（まだアカウントが無い場合）</h2>
+      <div class="admin-note">上のメール＋好きなパスワードを入れて、このボタンで管理者アカウントを作成します。作成後は自動でログインします。<br>※パスワードは6文字以上。控えておいてください。</div>
+      <button class="btn ghost" style="margin-top:10px" onclick="doSignUp()">管理者アカウントを作成する</button>
     </div>`;
 }
 async function doLogin() {
@@ -50,6 +55,16 @@ async function doLogin() {
     await DB.adminLogin(document.getElementById("lg_email").value, document.getElementById("lg_pass").value);
     load();
   } catch (e) { toast("ログイン失敗：" + (e.message || "")); }
+}
+async function doSignUp() {
+  const email = document.getElementById("lg_email").value.trim();
+  const pass = document.getElementById("lg_pass").value;
+  if (!email || pass.length < 6) { toast("メールと6文字以上のパスワードを入れて"); return; }
+  try {
+    await DB.adminSignUp(email, pass);
+    toast("管理者アカウントを作成した ✓");
+    load();
+  } catch (e) { toast("作成失敗：" + (e.message || "")); }
 }
 
 function fighterOptions(sel) {
