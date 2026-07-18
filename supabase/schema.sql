@@ -1,17 +1,17 @@
--- RIZIN勝敗予想ポータル スキーマ
+-- RIZIN美食会予想 スキーマ（本番適用済み・ID方式はtext）
 -- SupabaseプロジェクトのSQL Editorにそのまま貼り付けて実行する
 
 -- ========== テーブル ==========
 
 create table members (
-  id uuid primary key default gen_random_uuid(),
+  id text primary key,
   name text not null unique,
   color text not null default '#e60012',
   created_at timestamptz not null default now()
 );
 
 create table fighters (
-  id uuid primary key default gen_random_uuid(),
+  id text primary key,
   name text not null,
   nickname text,                         -- 異名（リングネーム）
   belt text,                             -- 王座・肩書（元五輪銀 等）
@@ -31,7 +31,7 @@ create table fighters (
 );
 
 create table events (
-  id uuid primary key default gen_random_uuid(),
+  id text primary key,
   name text not null,
   event_date date,
   no_deadline boolean not null default false, -- 締切なし・オープンブック運用
@@ -44,18 +44,18 @@ create table events (
 );
 
 create table fights (
-  id uuid primary key default gen_random_uuid(),
-  event_id uuid not null references events(id) on delete cascade,
+  id text primary key,
+  event_id text not null references events(id) on delete cascade,
   order_no int not null,                 -- 試合番号（オープニングは0番台等、表示順に使う）
   segment text not null default 'main' check (segment in ('main','opening')),
   title_label text,                      -- 「バンタム級タイトルマッチ」等
   weight_class text,                     -- 「61.0kg」等
   rounds int not null default 3,
-  fighter1_id uuid not null references fighters(id),
-  fighter2_id uuid not null references fighters(id),
+  fighter1_id text not null references fighters(id),
+  fighter2_id text not null references fighters(id),
   image_url text,                        -- RIZIN公式のVSバナー
   -- 結果（JMOC公式リザルトを一次ソースに転記）
-  winner_id uuid references fighters(id),
+  winner_id text references fighters(id),
   result_method text check (result_method in ('KO','SUB','DEC','DRAW','NC')),
   result_round int,
   result_technique text,                 -- techniques.js のIDと一致させる
@@ -64,10 +64,10 @@ create table fights (
 );
 
 create table predictions (
-  id uuid primary key default gen_random_uuid(),
-  member_id uuid not null references members(id) on delete cascade,
-  fight_id uuid not null references fights(id) on delete cascade,
-  winner_id uuid not null references fighters(id),
+  id text primary key default gen_random_uuid()::text,
+  member_id text not null references members(id) on delete cascade,
+  fight_id text not null references fights(id) on delete cascade,
+  winner_id text not null references fighters(id),
   method text check (method in ('KO','SUB','DEC')),
   round int check (round between 1 and 5),
   technique text,
