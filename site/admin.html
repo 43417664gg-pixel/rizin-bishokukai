@@ -7,7 +7,7 @@
 <title>管理｜RIZIN美食会予想</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260718215643">
+<link rel="stylesheet" href="css/style.css?v=20260718221702">
 </head>
 <body>
 <div id="app-header"></div>
@@ -15,11 +15,11 @@
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/config.js?v=20260718215643"></script>
-<script src="js/techniques.js?v=20260718215643"></script>
-<script src="js/demo-data.js?v=20260718215643"></script>
-<script src="js/api.js?v=20260718215643"></script>
-<script src="js/app.js?v=20260718215643"></script>
+<script src="js/config.js?v=20260718221702"></script>
+<script src="js/techniques.js?v=20260718221702"></script>
+<script src="js/demo-data.js?v=20260718221702"></script>
+<script src="js/api.js?v=20260718221702"></script>
+<script src="js/app.js?v=20260718221702"></script>
 <script>
 let EVENTS, FIGHTERS, MEMBERS;
 
@@ -128,6 +128,11 @@ function render() {
       <div class="form-row"><input id="fi_style" placeholder="ファイトスタイル解説"></div>
       <div class="form-row"><input id="fi_career" placeholder="来歴"></div>
       <div class="form-row"><input id="fi_memo" placeholder="今大会のストーリー・ひとこと"></div>
+      <div class="form-row">
+        <label>写真：FIGHT（ファイト）／普段着 ※パス or URL</label>
+        <input id="fi_photo_fight" placeholder="assets/fighters/f_xxx.jpg"><input id="fi_photo_casual" placeholder="普段着写真（任意）">
+      </div>
+      <div class="form-row"><input id="fi_hl" placeholder="HIGHLIGHT：象徴的なシーンの説明"></div>
       <div class="form-row"><input id="fi_url" placeholder="RIZIN公式関連URL（任意）"></div>
       <button class="btn ghost" onclick="addFighter()">保存</button>
     </div>
@@ -269,6 +274,8 @@ function pickFighter() {
   set("fi_w", f?.rec_w); set("fi_l", f?.rec_l); set("fi_d", f?.rec_d);
   set("fi_ko", f?.rec_ko); set("fi_sub", f?.rec_sub); set("fi_dec", f?.rec_dec);
   set("fi_style", f?.style); set("fi_career", f?.career);
+  set("fi_photo_fight", f?.highlight_url); set("fi_photo_casual", f?.photo_casual);
+  set("fi_hl", f?.highlight_caption);
   set("fi_memo", f?.memo); set("fi_url", f?.rizin_url);
 }
 
@@ -282,6 +289,8 @@ async function addFighter() {
     ...(editId ? { id: editId } : {}),
     name, nickname: v("fi_nickname"), belt: v("fi_belt"), backbone: v("fi_backbone"), team: v("fi_team"),
     origin: v("fi_origin"), style: v("fi_style"), career: v("fi_career"),
+    highlight_url: v("fi_photo_fight"), photo_casual: v("fi_photo_casual"),
+    highlight_caption: v("fi_hl"),
     memo: v("fi_memo"), rizin_url: v("fi_url"),
     rec_w: n("fi_w"), rec_l: n("fi_l"), rec_d: n("fi_d"),
     rec_ko: n("fi_ko"), rec_sub: n("fi_sub"), rec_dec: n("fi_dec"),

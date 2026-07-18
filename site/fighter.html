@@ -7,18 +7,18 @@
 <title>選手名鑑｜RIZIN美食会予想</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260718215643">
+<link rel="stylesheet" href="css/style.css?v=20260718221702">
 </head>
 <body>
 <div id="app-header"></div>
 <div class="wrap" id="main"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/config.js?v=20260718215643"></script>
-<script src="js/techniques.js?v=20260718215643"></script>
-<script src="js/demo-data.js?v=20260718215643"></script>
-<script src="js/api.js?v=20260718215643"></script>
-<script src="js/app.js?v=20260718215643"></script>
+<script src="js/config.js?v=20260718221702"></script>
+<script src="js/techniques.js?v=20260718221702"></script>
+<script src="js/demo-data.js?v=20260718221702"></script>
+<script src="js/api.js?v=20260718221702"></script>
+<script src="js/app.js?v=20260718221702"></script>
 <script>
 // このポータルで扱った試合から選手ごとの戦績を組み立てる（サイト内完結STATS）
 function buildStats(fighterId, fights) {
@@ -96,6 +96,12 @@ function renderList(fighters, fights) {
           </div>
         </a>`).join("")}
     </div>`;
+}
+
+// FIGHT / 普段着 の写真切替
+function switchPhoto(btn) {
+  document.getElementById("hero-photo").src = btn.dataset.src;
+  btn.parentElement.querySelectorAll("button").forEach(b => b.classList.toggle("on", b === btn));
 }
 
 // キャリア戦績：直近3試合は常時表示、残りは開閉式
@@ -187,7 +193,14 @@ function renderDetail(fighter, fighters, fights, events) {
   document.getElementById("main").innerHTML = `
     <div class="fhero">
       ${fighter.highlight_url
-        ? `<div class="fhero-portrait"><img src="${esc(fighter.highlight_url)}" alt="${esc(fighter.name)}" loading="lazy"></div>`
+        ? `<div class="fhero-portrait">
+             <img id="hero-photo" src="${esc(fighter.highlight_url)}" alt="${esc(fighter.name)}">
+             ${fighter.photo_casual ? `
+             <div class="photo-toggle">
+               <button class="on" data-src="${esc(fighter.highlight_url)}" onclick="switchPhoto(this)">FIGHT</button>
+               <button data-src="${esc(fighter.photo_casual)}" onclick="switchPhoto(this)">普段着</button>
+             </div>` : ""}
+           </div>`
         : (ph ? photoDiv(ph, "fhero-photo") : "")}
       <div class="fhero-body">
         ${fighter.nickname ? `<div class="falias">“${esc(fighter.nickname)}”</div>` : `<div class="en-label">FIGHTER</div>`}
