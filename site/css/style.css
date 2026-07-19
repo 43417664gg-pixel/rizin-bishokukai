@@ -576,6 +576,33 @@ tr.top .lb-rate { color: var(--gold-hot); }
 }
 .toast.show { opacity: 1; }
 
+/* 三段梯子（的中→ピタリ→あらます） */
+.ladder { display: grid; gap: 12px; margin-bottom: 10px; }
+.ladder-step {
+  background: var(--panel); border: 1px solid var(--line);
+  padding: 14px 16px; position: relative;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%);
+}
+.ladder-step::before {
+  content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+}
+.ladder-step.s1::before { background: var(--muted); }
+.ladder-step.s2::before { background: var(--red); }
+.ladder-step.s3::before { background: var(--gold); }
+.ls-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 6px; }
+.ls-no {
+  font-family: var(--num); font-weight: 700; font-size: 10px;
+  letter-spacing: .28em; color: var(--muted);
+}
+.ls-name { font-family: var(--display); font-weight: 400; font-size: 26px; letter-spacing: .04em; }
+.ladder-step.s2 .ls-name { color: var(--red-hot); }
+.ladder-step.s3 .ls-name {
+  color: var(--gold-hot); text-shadow: 0 0 16px rgba(212, 175, 55, .4);
+}
+.ls-desc { font-size: 12.5px; color: var(--muted); line-height: 1.75; }
+.ls-desc b { color: var(--text); }
+.ladder-note { font-size: 11px; color: var(--muted); margin-bottom: 20px; }
+
 /* ルール説明 */
 .rules-box {
   background: var(--panel); border: 1px solid var(--line);

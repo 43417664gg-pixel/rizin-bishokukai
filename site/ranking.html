@@ -7,18 +7,18 @@
 <title>ランキング｜RIZIN美食会予想</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260719105511">
+<link rel="stylesheet" href="css/style.css?v=20260719111412">
 </head>
 <body>
 <div id="app-header"></div>
 <div class="wrap" id="main"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/config.js?v=20260719105511"></script>
-<script src="js/techniques.js?v=20260719105511"></script>
-<script src="js/demo-data.js?v=20260719105511"></script>
-<script src="js/api.js?v=20260719105511"></script>
-<script src="js/app.js?v=20260719105511"></script>
+<script src="js/config.js?v=20260719111412"></script>
+<script src="js/techniques.js?v=20260719111412"></script>
+<script src="js/demo-data.js?v=20260719111412"></script>
+<script src="js/api.js?v=20260719111412"></script>
+<script src="js/app.js?v=20260719111412"></script>
 <script>
 let EVENTS, MEMBERS, ALL_FIGHTS, ALL_PREDS;
 let checked = new Set();   // 集計対象の大会ID
@@ -74,12 +74,22 @@ function render() {
           <td class="lb-num gold">${r.aramasu}</td>
         </tr>`).join("")}
     </table>
-    <div class="rules-box">
-      <b>三段梯子：</b><b>的中</b>＝勝者を当てた率（結果が出た予想試合だけが分母・未回答はノーカウント）。
-      <b>ピタリ</b>＝決まり手＋ラウンドまで一致（判定決着は決まり手のみでピタリ）。
-      <b class="gold">あらます</b>＝フィニッシュ技まで完全一致した最上位。
-      勝者を外したら全部不成立。ドロー・無効試合は集計から除外。
-    </div>`;
+    <div class="section-label">三段梯子</div>
+    <div class="ladder">
+      <div class="ladder-step s1">
+        <div class="ls-head"><span class="ls-no">STEP 1</span><b class="ls-name">的中</b></div>
+        <p class="ls-desc">勝者を当てる。ランキングの主役はこの<b>的中率</b>。<br>分母は「結果が出た予想試合」だけ——予想しなかった試合はノーカウント。</p>
+      </div>
+      <div class="ladder-step s2">
+        <div class="ls-head"><span class="ls-no">STEP 2</span><b class="ls-name">ピタリ</b></div>
+        <p class="ls-desc">決まり手＋ラウンドまで一致で成立。<br>判定決着の場合は、決まり手（判定）を当てるだけでピタリ。</p>
+      </div>
+      <div class="ladder-step s3">
+        <div class="ls-head"><span class="ls-no">STEP 3</span><b class="ls-name">あらます</b></div>
+        <p class="ls-desc">フィニッシュ技まで完全一致した最上位。<br>右フックか、リアネイキドチョークか——そこまで読み切った者だけが届く。</p>
+      </div>
+    </div>
+    <p class="ladder-note">※ 勝者を外したら、その先は全部不成立。ドロー・無効試合は集計から除外。</p>`;
 }
 
 load();
