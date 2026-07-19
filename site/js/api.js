@@ -145,6 +145,7 @@
       demoSave(db); return m.id;
     },
     async resetDemo() { localStorage.removeItem(LS_KEY); },
+    async syncSeed() { return ["デモモードでは同期不要（ローカルデータをそのまま使用中）"]; },
   };
 
   // ---------- Supabaseモード ----------
@@ -196,6 +197,39 @@
       async saveResult(fightId, result) { return q(client.from("fights").update(result).eq("id", fightId)); },
       async upsertEvent(ev) { const d = await q(client.from("events").upsert(ev).select()); return d[0].id; },
       async updateEvent(id, fields) { return q(client.from("events").update(fields).eq("id", id)); },
+      // ローカルのシード（demo-data.js）をSupabaseへ一括同期。管理ログイン必須
+      // ※Supabaseダッシュボードが不安定なため、データ更新はここから行えるようにしている
+      async syncSeed() {
+        const S = window.DEMO_SEED;
+        if (!S) throw new Error("シードデータが読み込まれていません");
+        const out = [];
+        const push = async (table, rows) => {
+          const { error } = await client.from(table).upsert(rows, { onConflict: "id" });
+          out.push(`${table}: ${error ? "NG " + error.message : rows.length + "件"}`);
+        };
+        await push("members", S.members.map(m => ({ id: m.id, name: m.name, color: m.color })));
+        await push("fighters", S.fighters.map(f => ({
+          id: f.id, name: f.name, nickname: f.nickname ?? null, belt: f.belt ?? null,
+          backbone: f.backbone ?? null, team: f.team ?? null, origin: f.origin ?? null,
+          style: f.style ?? null, career: f.career ?? null, memo: f.memo ?? null,
+          rec_w: f.rec_w ?? null, rec_l: f.rec_l ?? null, rec_d: f.rec_d ?? null, rec_nc: f.rec_nc ?? null,
+          rec_ko: f.rec_ko ?? null, rec_sub: f.rec_sub ?? null, rec_dec: f.rec_dec ?? null,
+          history: f.history ?? null, rizin_url: f.rizin_url ?? null,
+          highlight_url: f.highlight_url ?? null, highlight_caption: f.highlight_caption ?? null,
+          photo_casual: f.photo_casual ?? null,
+        })));
+        await push("events", S.events.map(e => ({
+          id: e.id, name: e.name, event_date: e.event_date, no_deadline: !!e.no_deadline,
+          open_at: e.open_at ?? null, lock_at: e.lock_at ?? null,
+          poster_url: e.poster_url ?? null, official_url: e.official_url ?? null, status: e.status,
+        })));
+        await push("fights", S.fights.map(f => ({
+          id: f.id, event_id: f.event_id, order_no: f.order_no, segment: f.segment,
+          title_label: f.title_label ?? null, weight_class: f.weight_class ?? null, rounds: f.rounds ?? 3,
+          fighter1_id: f.fighter1_id, fighter2_id: f.fighter2_id, image_url: f.image_url ?? null,
+        })));
+        return out;
+      },
       async upsertFighter(f) { const d = await q(client.from("fighters").upsert(f).select()); return d[0].id; },
       async upsertFight(f) { const d = await q(client.from("fights").upsert(f).select()); return d[0].id; },
       async upsertMember(m) { const d = await q(client.from("members").upsert(m).select()); return d[0].id; },

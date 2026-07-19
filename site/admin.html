@@ -7,7 +7,7 @@
 <title>管理｜RIZIN美食会予想</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260719102632">
+<link rel="stylesheet" href="css/style.css?v=20260719103824">
 </head>
 <body>
 <div id="app-header"></div>
@@ -15,11 +15,11 @@
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/config.js?v=20260719102632"></script>
-<script src="js/techniques.js?v=20260719102632"></script>
-<script src="js/demo-data.js?v=20260719102632"></script>
-<script src="js/api.js?v=20260719102632"></script>
-<script src="js/app.js?v=20260719102632"></script>
+<script src="js/config.js?v=20260719103824"></script>
+<script src="js/techniques.js?v=20260719103824"></script>
+<script src="js/demo-data.js?v=20260719103824"></script>
+<script src="js/api.js?v=20260719103824"></script>
+<script src="js/app.js?v=20260719103824"></script>
 <script>
 let EVENTS, FIGHTERS, MEMBERS;
 
@@ -135,6 +135,13 @@ function render() {
       <div class="form-row"><input id="fi_hl" placeholder="HIGHLIGHT：象徴的なシーンの説明"></div>
       <div class="form-row"><input id="fi_url" placeholder="RIZIN公式関連URL（任意）"></div>
       <button class="btn ghost" onclick="addFighter()">保存</button>
+    </div>
+
+    <div class="admin-section">
+      <h2>⚡ データ同期（選手情報・カードの一括反映）</h2>
+      <div class="admin-note">私（TONY）がローカルで更新した選手プロフィール・写真・キャプション・カード情報を、このボタンでSupabaseに一括反映します。Supabaseの管理画面を開く必要はありません。</div>
+      <button class="btn" style="margin-top:10px" onclick="doSync()">ローカルデータをSupabaseへ同期</button>
+      <div id="sync_result" class="admin-note"></div>
     </div>
 
     <div class="admin-section">
@@ -264,6 +271,20 @@ async function addEvent() {
     status: "upcoming",
   });
   toast("大会を追加した ✓"); load();
+}
+
+async function doSync() {
+  const box = document.getElementById("sync_result");
+  box.textContent = "同期中…";
+  try {
+    const res = await DB.syncSeed();
+    box.innerHTML = "✓ 同期完了<br>" + res.map(esc).join("<br>");
+    toast("同期完了 ✓");
+    [EVENTS, FIGHTERS, MEMBERS] = await Promise.all([DB.listEvents(), DB.listFighters(), DB.listMembers()]);
+  } catch (e) {
+    box.textContent = "✗ 失敗：" + (e.message || "");
+    toast("同期失敗");
+  }
 }
 
 function pickFighter() {
