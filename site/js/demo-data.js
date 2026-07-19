@@ -18,6 +18,7 @@ window.DEMO_SEED = {
       career: "1993年生まれ。2018年プロ転向→2020年Titan FCバンタム級王者→ベラトールを経て2024年RIZIN参戦。2025年大晦日に井上直樹をスプリット判定で下し第8代王者に。トラッシュトークも試合の一部",
       memo: "初防衛戦。挑発の口が先か、鹿志村の絞めが先か",
       history: [
+        { d: "2026.07", opp: "鹿志村仁之介", r: "W", how: "3R KO（右フック・2度目の防衛）" },
         { d: "2026.04", opp: "後藤丈治", r: "W", how: "判定3-0" },
         { d: "2025.12", opp: "井上直樹", r: "W", how: "判定2-1（王座獲得）" },
         { d: "2025.09", opp: "佐藤将光", r: "W", how: "判定2-1" },
@@ -36,6 +37,7 @@ window.DEMO_SEED = {
       career: "2001年生まれ24歳。柔道からBJJへ進み黒帯。DEEPで頭角を現し、所英男を66秒アナコンダで仕留めるなど破竹の勢い。2026年5月に平松翔を下しDEEPバンタム級暫定王者。RIZIN王座初挑戦",
       memo: "レスラー王者×柔術の刺客。グラウンドの主導権が全て",
       history: [
+        { d: "2026.07", opp: "ダニー・サバテロ", r: "L", how: "3R KO（王座挑戦）" },
         { d: "2026.05", opp: "平松翔", r: "W", how: "TKO（暫定王座獲得）" },
         { d: "2026.03", opp: "所英男", r: "W", how: "1R アナコンダチョーク（66秒）" },
         { d: "2025.11", opp: "安井飛馬", r: "W", how: "判定3-0" },
@@ -54,6 +56,7 @@ window.DEMO_SEED = {
       career: "9歳でボクシングを始め2年で全国制覇→2015年MMA転向→2016年シラット世界大会を1日3試合全KOで優勝。2018年RIZIN初参戦で朝倉未来に判定負けするも、以降10連勝中。鈴木千裕・YA-MANも撃破",
       memo: "萩原とのストライカー対決は「先に当てた方が勝ち」",
       history: [
+        { d: "2026.07", opp: "萩原京平", r: "W", how: "1R TKO 4:08（左の一撃）" },
         { d: "2025.12", opp: "久保優太", r: "NC", how: "無効試合（アイポーク）" },
         { d: "2025.03", opp: "鈴木千裕", r: "W", how: "判定2-1" },
         { d: "2024.12", opp: "YA-MAN", r: "W", how: "判定3-0" },
@@ -72,6 +75,7 @@ window.DEMO_SEED = {
       career: "地下格闘技アマ20戦16勝で名を上げ2017年プロデビュー。2020年RIZIN初参戦から5ヶ月で4試合の売り出しで大ブレイク。平本蓮を2R TKOで沈めた大晦日は伝説。2025年は2連続KO勝ちの後、秋元強真にTKO負け。前戦は相手の体重超過で無効試合",
       memo: "再起戦。「絶対倒します」とKO宣言済み。互いのKO率が「どちらかが倒れる」を保証するカード",
       history: [
+        { d: "2026.07", opp: "カルシャガ・ダウトベック", r: "L", how: "1R TKO 4:08" },
         { d: "2026.04", opp: "アバイジャ・カレオ・メヘウラ", r: "NC", how: "無効試合（相手体重超過）" },
         { d: "2025.11", opp: "秋元強真", r: "L", how: "2R TKO（パウンド）" },
         { d: "2025.05", opp: "西谷大成", r: "W", how: "1R KO（左フック）" },
@@ -90,6 +94,7 @@ window.DEMO_SEED = {
       career: "小1でレスリングを始め少年大会4連覇→国体優勝→リオ五輪銀メダル（グレコローマンでは永田克彦以来）→2019年世界選手権金。2020年大晦日MMAデビュー。序盤の連敗から巻き返し、倉本一真を27秒右フックKOなどでバンタム級トップ戦線に定着",
       memo: "サバテロ・元谷に連敗中の崖っぷち。同門シェイドゥラエフの刺客を迎え撃つ",
       history: [
+        { d: "2026.07", opp: "イリスベク・ティレノフ", r: "L", how: "2R TKO（ヒザ）" },
         { d: "2025.05", opp: "ダニー・サバテロ", r: "L", how: "3R TKO（パウンド）" },
         { d: "2024.09", opp: "元谷友貴", r: "L", how: "3R リアネイキドチョーク" },
         { d: "2024.06", opp: "ロジャー・ブランク", r: "W", how: "1R ノースサウスチョーク" },
@@ -108,6 +113,9 @@ window.DEMO_SEED = {
       style: "フィジカルの塊が前に出続ける圧力型。打撃で削って組みでも強い、キルギス山育ちの完成度",
       career: "2003年生まれ22歳。フェザー級絶対王者シェイドゥラエフと同門のイーラスMMA所属。母国で7勝1敗（4KO）の戦績を引っ提げRIZIN初参戦。「太田忍を倒して自分の名前を売る」",
       memo: "無名の刺客か、次のシェイドゥラエフか——初見殺しの怖さ",
+      history: [
+        { d: "2026.07", opp: "太田忍", r: "W", how: "2R TKO（ヒザ）" },
+      ],
       highlight_url: "assets/fighters/f_tilenov.jpg",
       highlight_caption: "母国キルギスで7勝1敗（4KO）。絶対王者シェイドゥラエフの同門から送り込まれた刺客",
       rizin_url: "https://jp.rizinff.com/_tags/イリスベク・ティレノフ" },
@@ -117,6 +125,9 @@ window.DEMO_SEED = {
       style: "戦績以上に試合が上手い技巧派サウスポー。距離管理とカウンターで格上を食う一方、トップ戦線の壁に跳ね返され続けている",
       career: "THE OUTSIDER出身の叩き上げ。朝倉未来チャレンジからRIZINに定着し、新井丈・篠塚辰樹らに勝利。現在は元谷友貴・神龍誠に連敗中で「勝たなければ次はない」",
       memo: "レスリングはアーセンが上。でもMMAなら俺——本人談",
+      history: [
+        { d: "2026.07", opp: "山本アーセン", r: "L", how: "判定0-3" },
+      ],
       highlight_url: "assets/fighters/f_hiroya.jpg",
       highlight_caption: "THE OUTSIDER出身の叩き上げ。新井丈・篠塚辰樹を撃破しRIZINに定着した",
       rizin_url: "https://jp.rizinff.com/_tags/ヒロヤ" },
@@ -127,6 +138,9 @@ window.DEMO_SEED = {
       career: "1996年生まれ。祖父はミュンヘン五輪レスラー、母は世界王者山本美憂、叔父は山本KID徳郁という格闘サラブレッド。4歳からレスリング、ハンガリー留学を経て2015年MMA転向、RIZIN創設期から参戦。大怪我からの復帰後、2025年9月伊藤裕樹に判定勝ち",
       memo: "血統の意地×ヒロヤの試合巧者ぶり。フライ級の生き残り戦",
       history: [
+        { d: "2026.07", opp: "ヒロヤ", r: "W", how: "判定3-0" },
+        { d: "2026.07", opp: "山本アーセン", r: "L", how: "判定0-3" },
+        { d: "2026.07", opp: "太田忍", r: "W", how: "2R TKO（ヒザ）" },
         { d: "2025.09", opp: "伊藤裕樹", r: "W", how: "判定3-0" },
         { d: "2025.07", opp: "神龍誠", r: "L", how: "ギロチンチョーク" },
         { d: "2025.05", opp: "冨澤大智", r: "W", how: "リアネイキドチョーク" },
@@ -144,6 +158,7 @@ window.DEMO_SEED = {
       career: "UFCで5勝2敗の実績を持ち2019年RIZIN初参戦。矢地祐介・北岡悟を撃破し、現王者ホベルト・サトシ・ソウザをTKOで下したこともある。RIZINライト級戦線の門番的存在",
       memo: "天弥にとっては超えるべき最大の壁",
       history: [
+        { d: "2026.07", opp: "天弥", r: "W", how: "1R KO 3:14" },
         { d: "2025.05", opp: "大原樹理", r: "NC", how: "無効試合（相手体重超過）" },
         { d: "2024.06", opp: "ベイノア", r: "L", how: "判定0-3" },
         { d: "2022.12", opp: "大尊伸光", r: "W", how: "1R TKO（36秒）" },
@@ -161,6 +176,9 @@ window.DEMO_SEED = {
       style: "喧嘩上がりの荒々しい打撃で前に出るストリートファイター。理詰めより勢いで殴り倒すタイプ。前戦は大幅計量オーバーで信頼を失い、今回は「中身」より「姿勢」が問われる",
       career: "格闘技の英才教育ではなくストリート出身の叩き上げ。RIZINの若手枠で売り出すも前戦は3.5kg超過の特別ルールでズマガジーに敗戦。批判を背負っての禊マッチ",
       memo: "「怖さはゼロ」と語るが、負けたら後がない",
+      history: [
+        { d: "2026.07", opp: "ジョニー・ケース", r: "L", how: "1R KO 3:14" },
+      ],
       highlight_url: "assets/fighters/f_tenya.jpg",
       highlight_caption: "前戦は大幅計量オーバーで信頼を失った。批判を背負い直す禊のリング",
       rizin_url: "https://jp.rizinff.com/_tags/天弥" },
@@ -171,6 +189,8 @@ window.DEMO_SEED = {
       career: "本名・高木恭平、1994年生まれ32歳。16歳からレスリング、青山学院大を経て29歳でMMA開始という遅咲き。2024年10月デビューから5勝1敗、直近は31秒TKOを含む3連勝中。2週間前に試合したばかりの体で篠塚辰樹（頚椎負傷欠場）の代役として大会5日前に電撃参戦",
       memo: "不死鳥の名の通り、中2週の強行軍で大舞台をつかんだ",
       history: [
+        { d: "2026.07", opp: "イ・ジェフン", r: "W", how: "3R KO" },
+        { d: "2026.07", opp: "ジョニー・ケース", r: "L", how: "1R KO 3:14" },
         { d: "2026.07", opp: "猿寿健太", r: "W", how: "1R TKO（31秒）" },
         { d: "2026.04", opp: "本田良介", r: "W", how: "1R TKO（右ストレート→パウンド）" },
         { d: "2026.02", opp: "中務修良", r: "W", how: "2R ツイスター" },
@@ -186,6 +206,9 @@ window.DEMO_SEED = {
       style: "前に出る圧とフィジカルで押し切る韓国系ファイター。口も強い",
       career: "24歳のRIZIN初参戦。「篠塚はパーティ三昧のくせに私が怖くて逃げた」と挑発を続け、代役の火の鳥にも「弱い」と一蹴",
       memo: "ビッグマウスを実力で証明できるか",
+      history: [
+        { d: "2026.07", opp: "火の鳥", r: "L", how: "3R KO" },
+      ],
       highlight_url: "assets/fighters/f_leejaehoon.jpg",
       highlight_caption: "RIZIN初参戦。「篠塚は私が怖くて逃げた」——挑発を実力で証明できるか",
       rizin_url: "https://jp.rizinff.com/_tags/イ・ジェフン" },
@@ -194,6 +217,9 @@ window.DEMO_SEED = {
       style: "オールラウンドに穴のないベテランの試合運び。若手の粗さを経験で咎める",
       career: "46歳。元修斗環太平洋ライト級王者・元GLADIATORライト級王者。現在は道場BURSTを主宰し後進を育てる立場ながら、地元広島大会のために約2年ぶりの現役復帰",
       memo: "地元のリングで魅せる、46歳の意地",
+      history: [
+        { d: "2026.07", opp: "林RICE陽太", r: "L", how: "3R TKO 2:17" },
+      ],
       highlight_url: "assets/fighters/f_sasaki.jpg",
       highlight_caption: "元修斗環太平洋ライト級王者・元GLADIATOR王者。46歳、地元広島のリングへ2年ぶり復帰",
       rizin_url: "https://jp.rizinff.com/_tags/佐々木信治" },
@@ -202,6 +228,9 @@ window.DEMO_SEED = {
       style: "ライト級とウェルター級を制した骨太のオールラウンダー。パワーで押し込む",
       career: "2017年修斗プロデビュー。GRACHANでライト級→ウェルター級の二階級制覇。「GRACHANの強さを証明したい」と大舞台へ",
       memo: "46歳のレジェンドを喰えば一気に名が売れる",
+      history: [
+        { d: "2026.07", opp: "佐々木信治", r: "W", how: "3R TKO 2:17" },
+      ],
       highlight_url: "assets/fighters/f_riceyota.jpg",
       highlight_caption: "GRACHANでライト級→ウェルター級の二階級制覇。団体の看板を背負って大舞台へ",
       rizin_url: "https://jp.rizinff.com/_tags/林RICE陽太" },
@@ -211,6 +240,9 @@ window.DEMO_SEED = {
       style: "シュートボクシング世界王者の立ち技に、一発で流れを変える怪物パンチ。MMAでも打撃で完結させたいタイプ",
       career: "41歳・元シュートボクシング世界スーパーライト級王者。MMA転向後も6勝中4KO。誕生日直後に榊原CEOへ直訴して緊急参戦を勝ち取った",
       memo: "23歳の勢いを41歳の一撃で止めにいく",
+      history: [
+        { d: "2026.07", opp: "宮川日向", r: "W", how: "2R KO 3:29" },
+      ],
       highlight_url: "assets/fighters/f_suzuki.jpg",
       highlight_caption: "2022年、昇侍を1R左フックでTKO。シュートボクシング世界王者の拳が火を噴いた一撃",
       rizin_url: "https://jp.rizinff.com/_tags/鈴木博昭" },
@@ -220,6 +252,9 @@ window.DEMO_SEED = {
       style: "萩原京平譲りの喧嘩ファイト。地下格闘技15勝1敗で鍛えた前進とラフな打撃で削る",
       career: "23歳・萩原京平の愛弟子。地下格闘技で名を上げRIZINへ。現在RIZIN2連勝を含む4連勝中の上り調子",
       memo: "師匠と同日勝利でSMOKER GYMの日にできるか",
+      history: [
+        { d: "2026.07", opp: "鈴木博昭", r: "L", how: "2R KO 3:29" },
+      ],
       highlight_url: "assets/fighters/f_miyagawa.jpg",
       highlight_caption: "地下格闘技15勝1敗からRIZINへ。師匠・萩原京平譲りの前進で4連勝中",
       rizin_url: "https://jp.rizinff.com/_tags/宮川日向" },
@@ -230,6 +265,12 @@ window.DEMO_SEED = {
       career: "アマ経験ゼロで2005年デビュー→2008年24歳でパンクラス初代王者。PANCRASE・DREAM・DEEPを渡り歩き朝倉海とも拳を交えた。一度の引退を経て2017年復帰、右前腕骨折の大手術からまた戻ってきた不屈のベテラン。実は2022年に梅野戦の相手候補だった鈴木博昭に敗れており、同日興行での雪辱も懸かる",
       memo: "「侍の誇りを持ち世界の頂点まで昇る」が名の由来。約1年8ヶ月ぶりの復帰戦",
       history: [
+        { d: "2026.07", opp: "梅野源治", r: "W", how: "判定3-0" },
+        { d: "2026.07", opp: "鈴木博昭", r: "L", how: "2R KO 3:29" },
+        { d: "2026.07", opp: "宮川日向", r: "W", how: "2R KO 3:29" },
+        { d: "2026.07", opp: "佐々木信治", r: "W", how: "3R TKO 2:17" },
+        { d: "2026.07", opp: "林RICE陽太", r: "L", how: "3R TKO 2:17" },
+        { d: "2026.07", opp: "火の鳥", r: "L", how: "3R KO" },
         { d: "2024.11", opp: "芦澤竜誠", r: "L", how: "2R KO（膝→ボディ）" },
         { d: "2022.07", opp: "ヤン・ジヨン", r: "L", how: "3R リアネイキドチョーク" },
         { d: "2022.03", opp: "鈴木博昭", r: "L", how: "1R TKO（左フック）" },
@@ -249,6 +290,7 @@ window.DEMO_SEED = {
       career: "ムエタイ最高峰ラジャダムナンのベルトを日本人で初めて巻いた立ち技のレジェンド。2024年MMA転向を発表し大晦日デビュー。大雅・芦澤竜誠に連勝→前戦はダイキに一本負け。MMA4戦目",
       memo: "昇侍との「立ち技出身対決」は打ち合い濃厚",
       history: [
+        { d: "2026.07", opp: "昇侍", r: "L", how: "判定0-3" },
         { d: "2026.05", opp: "ダイキ・ライトイヤー", r: "L", how: "1R 三角絞め" },
         { d: "2025.09", opp: "芦澤竜誠", r: "W", how: "判定3-0" },
         { d: "2024.12", opp: "大雅", r: "W", how: "判定3-0（MMAデビュー戦）" },
@@ -261,6 +303,9 @@ window.DEMO_SEED = {
       style: "組みの強さで押し込む韓国女子の実力者",
       career: "「もう一度チャンピオンに」を掲げ、伊澤星花返上の女子スーパーアトム級王座を巡る“見えないトーナメント”に参戦。結果と内容次第で大晦日の王座決定戦へ",
       memo: "須田を下せば王座戦が一気に見える",
+      history: [
+        { d: "2026.07", opp: "須田萌里", r: "W", how: "判定3-0" },
+      ],
       highlight_url: "assets/fighters/f_parksiu.jpg",
       highlight_caption: "伊澤星花返上の女子スーパーアトム級王座を巡る“見えないトーナメント”の一角",
       rizin_url: "https://jp.rizinff.com/_tags/パク・シウ" },
@@ -270,6 +315,8 @@ window.DEMO_SEED = {
       career: "DEEP JEWELS戦線で研鑽を積み、2025年に浜崎朱加へ一本勝ちの金星。超RIZIN.4でNOELに一本勝ち、今年3月はHIMEに判定勝ち。大島には過去判定負け",
       memo: "「後の3試合の選手たちを焦らす試合を」と宣言",
       history: [
+        { d: "2026.07", opp: "パク・シウ", r: "L", how: "判定0-3" },
+        { d: "2026.07", opp: "須田萌里", r: "W", how: "判定3-0" },
         { d: "2026.03", opp: "HIME", r: "W", how: "判定" },
         { d: "2025.09", opp: "大島沙緒里", r: "L", how: "判定0-3" },
         { d: "2025.07", opp: "NOEL", r: "W", how: "一本" },
@@ -286,6 +333,7 @@ window.DEMO_SEED = {
       career: "柔道20年を経て2019年MMA転向。DEEPミクロ級王者・DEEP JEWELSアトム級GP優勝・2024年ミクロ級統一王者。RIZINでは山本美憂・ソルト・クレア・ロペスに勝利し、2025年11月に伊澤星花へ挑戦（判定負け）。Invicta FC等国際経験も",
       memo: "昨年敗れたイ・イェジへのリベンジマッチ。「ここを越えないと次に進めない」",
       history: [
+        { d: "2026.07", opp: "イ・イェジ", r: "W", how: "1R ヒザ十字固め 1:40" },
         { d: "2026.03", opp: "ケイト・ロータス", r: "W", how: "判定3-0" },
         { d: "2025.11", opp: "伊澤星花", r: "L", how: "判定0-3（王座挑戦）" },
         { d: "2025.09", opp: "須田萌里", r: "W", how: "判定3-0" },
@@ -303,6 +351,7 @@ window.DEMO_SEED = {
       career: "2015年ROAD FCでプロデビューした10年選手。DEEP JEWELSで古瀬美月・竹林エルに勝利、須田に一本負け、浜崎朱加に判定負け。2025年5月に大島へ判定勝ちしており、今回はRIZIN初参戦での再戦",
       memo: "「今回も同じ流れになる」——返り討ち宣言済み",
       history: [
+        { d: "2026.07", opp: "大島沙緒里", r: "L", how: "1R ヒザ十字固め 1:40" },
         { d: "2026.05", opp: "竹林エル", r: "W", how: "判定2-1" },
         { d: "2025.11", opp: "浜崎朱加", r: "L", how: "判定0-3" },
         { d: "2025.05", opp: "大島沙緒里", r: "W", how: "判定3-0" },
@@ -317,6 +366,9 @@ window.DEMO_SEED = {
       style: "テクニカルに組み立てる正統派キックボクサー。スーパーフライ級のスピードで回る",
       career: "第3代HOOST CUPスーパーフライ級王者。RIZINのキックルール枠で参戦",
       memo: "※この試合はキックボクシングルール3分3R",
+      history: [
+        { d: "2026.07", opp: "遥心", r: "W", how: "判定3-0（キックルール）" },
+      ],
       highlight_url: "assets/fighters/f_shiba.jpg",
       highlight_caption: "第3代HOOST CUPスーパーフライ級王者。キックルールで魅せる",
       rizin_url: "https://jp.rizinff.com/_tags/芝宏二郎" },
@@ -325,6 +377,9 @@ window.DEMO_SEED = {
       style: "K-1系らしい手数とアグレッションの若手ストライカー",
       career: "22歳。K-1ジム総本部チームペガサス所属",
       memo: "※前日計量で1.6kgオーバー・条件付きでの試合実施",
+      history: [
+        { d: "2026.07", opp: "芝宏二郎", r: "L", how: "判定0-3（キックルール）" },
+      ],
       highlight_url: "assets/fighters/f_harushin.jpg",
       highlight_caption: "K-1ジム総本部チームペガサス所属、22歳。手数で押すアグレッシブな若手",
       rizin_url: "https://jp.rizinff.com/_tags/遥心" },
@@ -350,27 +405,27 @@ window.DEMO_SEED = {
       lock_at: "2026-07-18T00:00:00+09:00",  // no_deadline時は未使用
       poster_url: "assets/lm15/poster.jpg",
       official_url: "https://jp.rizinff.com/_ct/17841138",
-      status: "upcoming",
+      status: "finished",
     },
   ],
 
   fights: [
-    { id: "lm15_12", event_id: "ev_lm15", order_no: 12, segment: "main", title_label: "バンタム級タイトルマッチ", weight_class: "61.0kg", fighter1_id: "f_sabatello", fighter2_id: "f_kashimura", image_url: "assets/lm15/fight_12.jpg" },
-    { id: "lm15_11", event_id: "ev_lm15", order_no: 11, segment: "main", weight_class: "66.0kg", fighter1_id: "f_dautbek", fighter2_id: "f_hagiwara", image_url: "assets/lm15/fight_11.jpg" },
-    { id: "lm15_10", event_id: "ev_lm15", order_no: 10, segment: "main", weight_class: "61.0kg", fighter1_id: "f_ota", fighter2_id: "f_tilenov", image_url: "assets/lm15/fight_10.jpg" },
-    { id: "lm15_09", event_id: "ev_lm15", order_no: 9, segment: "main", weight_class: "57.0kg", fighter1_id: "f_hiroya", fighter2_id: "f_arsen", image_url: "assets/lm15/fight_09.jpg" },
-    { id: "lm15_08", event_id: "ev_lm15", order_no: 8, segment: "main", weight_class: "71.0kg", fighter1_id: "f_case", fighter2_id: "f_tenya", image_url: "assets/lm15/fight_08.jpg" },
-    { id: "lm15_07", event_id: "ev_lm15", order_no: 7, segment: "main", weight_class: "49.0kg", fighter1_id: "f_oshima", fighter2_id: "f_leeyeji", image_url: "assets/lm15/fight_07.jpg" },
-    { id: "lm15_06", event_id: "ev_lm15", order_no: 6, segment: "main", weight_class: "49.0kg", fighter1_id: "f_parksiu", fighter2_id: "f_suda", image_url: "assets/lm15/fight_06.jpg" },
-    { id: "lm15_05", event_id: "ev_lm15", order_no: 5, segment: "main", weight_class: "64.0kg", fighter1_id: "f_shoji", fighter2_id: "f_umeno", image_url: "assets/lm15/fight_05.jpg" },
-    { id: "lm15_04", event_id: "ev_lm15", order_no: 4, segment: "main", weight_class: "66.0kg", fighter1_id: "f_suzuki", fighter2_id: "f_miyagawa", image_url: "assets/lm15/fight_04.jpg" },
-    { id: "lm15_03", event_id: "ev_lm15", order_no: 3, segment: "main", weight_class: "77.0kg", fighter1_id: "f_sasaki", fighter2_id: "f_riceyota", image_url: "assets/lm15/fight_03.jpg" },
-    { id: "lm15_02", event_id: "ev_lm15", order_no: 2, segment: "main", weight_class: "57.0kg", fighter1_id: "f_hinotori", fighter2_id: "f_leejaehoon", image_url: "assets/lm15/fight_02.jpg" },
-    { id: "lm15_01", event_id: "ev_lm15", order_no: 1, segment: "main", title_label: "キックボクシングルール", weight_class: "54.5kg", fighter1_id: "f_shiba", fighter2_id: "f_harushin", image_url: "assets/lm15/fight_01.jpg" },
-    { id: "lm15_op4", event_id: "ev_lm15", order_no: 4, segment: "opening", weight_class: "49.0kg", fighter1_id: "f_hime", fighter2_id: "f_hirata", image_url: "assets/lm15/op_04.jpg" },
-    { id: "lm15_op3", event_id: "ev_lm15", order_no: 3, segment: "opening", weight_class: "61.0kg", fighter1_id: "f_kanda", fighter2_id: "f_nagano", image_url: "assets/lm15/op_03.jpg" },
-    { id: "lm15_op2", event_id: "ev_lm15", order_no: 2, segment: "opening", weight_class: "71.0kg", fighter1_id: "f_shivaev", fighter2_id: "f_benjamin", image_url: "assets/lm15/op_02.jpg" },
-    { id: "lm15_op1", event_id: "ev_lm15", order_no: 1, segment: "opening", weight_class: "57.0kg", fighter1_id: "f_tanaka", fighter2_id: "f_kentaro", image_url: "assets/lm15/op_01.jpg" },
+    { id: "lm15_12", event_id: "ev_lm15", order_no: 12, segment: "main", title_label: "バンタム級タイトルマッチ", weight_class: "61.0kg", fighter1_id: "f_sabatello", fighter2_id: "f_kashimura", image_url: "assets/lm15/fight_12.jpg", winner_id: "f_sabatello", result_method: "KO", result_round: 3, result_technique: "right_hook" },
+    { id: "lm15_11", event_id: "ev_lm15", order_no: 11, segment: "main", weight_class: "66.0kg", fighter1_id: "f_dautbek", fighter2_id: "f_hagiwara", image_url: "assets/lm15/fight_11.jpg", winner_id: "f_dautbek", result_method: "KO", result_round: 1, result_technique: "left_straight" },
+    { id: "lm15_10", event_id: "ev_lm15", order_no: 10, segment: "main", weight_class: "61.0kg", fighter1_id: "f_ota", fighter2_id: "f_tilenov", image_url: "assets/lm15/fight_10.jpg", winner_id: "f_tilenov", result_method: "KO", result_round: 2, result_technique: "knee" },
+    { id: "lm15_09", event_id: "ev_lm15", order_no: 9, segment: "main", weight_class: "57.0kg", fighter1_id: "f_hiroya", fighter2_id: "f_arsen", image_url: "assets/lm15/fight_09.jpg", winner_id: "f_arsen", result_method: "DEC" },
+    { id: "lm15_08", event_id: "ev_lm15", order_no: 8, segment: "main", weight_class: "71.0kg", fighter1_id: "f_case", fighter2_id: "f_tenya", image_url: "assets/lm15/fight_08.jpg", winner_id: "f_case", result_method: "KO", result_round: 1 },
+    { id: "lm15_07", event_id: "ev_lm15", order_no: 7, segment: "main", weight_class: "49.0kg", fighter1_id: "f_oshima", fighter2_id: "f_leeyeji", image_url: "assets/lm15/fight_07.jpg", winner_id: "f_oshima", result_method: "SUB", result_round: 1, result_technique: "leglock" },
+    { id: "lm15_06", event_id: "ev_lm15", order_no: 6, segment: "main", weight_class: "49.0kg", fighter1_id: "f_parksiu", fighter2_id: "f_suda", image_url: "assets/lm15/fight_06.jpg", winner_id: "f_parksiu", result_method: "DEC" },
+    { id: "lm15_05", event_id: "ev_lm15", order_no: 5, segment: "main", weight_class: "64.0kg", fighter1_id: "f_shoji", fighter2_id: "f_umeno", image_url: "assets/lm15/fight_05.jpg", winner_id: "f_shoji", result_method: "DEC" },
+    { id: "lm15_04", event_id: "ev_lm15", order_no: 4, segment: "main", weight_class: "66.0kg", fighter1_id: "f_suzuki", fighter2_id: "f_miyagawa", image_url: "assets/lm15/fight_04.jpg", winner_id: "f_suzuki", result_method: "KO", result_round: 2 },
+    { id: "lm15_03", event_id: "ev_lm15", order_no: 3, segment: "main", weight_class: "77.0kg", fighter1_id: "f_sasaki", fighter2_id: "f_riceyota", image_url: "assets/lm15/fight_03.jpg", winner_id: "f_riceyota", result_method: "KO", result_round: 3 },
+    { id: "lm15_02", event_id: "ev_lm15", order_no: 2, segment: "main", weight_class: "57.0kg", fighter1_id: "f_hinotori", fighter2_id: "f_leejaehoon", image_url: "assets/lm15/fight_02.jpg", winner_id: "f_hinotori", result_method: "KO", result_round: 3 },
+    { id: "lm15_01", event_id: "ev_lm15", order_no: 1, segment: "main", title_label: "キックボクシングルール", weight_class: "54.5kg", fighter1_id: "f_shiba", fighter2_id: "f_harushin", image_url: "assets/lm15/fight_01.jpg", winner_id: "f_shiba", result_method: "DEC" },
+    { id: "lm15_op4", event_id: "ev_lm15", order_no: 4, segment: "opening", weight_class: "49.0kg", fighter1_id: "f_hime", fighter2_id: "f_hirata", image_url: "assets/lm15/op_04.jpg", winner_id: "f_hime", result_method: "DEC" },
+    { id: "lm15_op3", event_id: "ev_lm15", order_no: 3, segment: "opening", weight_class: "61.0kg", fighter1_id: "f_kanda", fighter2_id: "f_nagano", image_url: "assets/lm15/op_03.jpg", winner_id: "f_nagano", result_method: "DEC" },
+    { id: "lm15_op2", event_id: "ev_lm15", order_no: 2, segment: "opening", weight_class: "71.0kg", fighter1_id: "f_shivaev", fighter2_id: "f_benjamin", image_url: "assets/lm15/op_02.jpg", winner_id: "f_shivaev", result_method: "DEC" },
+    { id: "lm15_op1", event_id: "ev_lm15", order_no: 1, segment: "opening", weight_class: "57.0kg", fighter1_id: "f_tanaka", fighter2_id: "f_kentaro", image_url: "assets/lm15/op_01.jpg", winner_id: "f_tanaka", result_method: "DEC" },
   ],
 
   predictions: [],

@@ -227,6 +227,8 @@
           id: f.id, event_id: f.event_id, order_no: f.order_no, segment: f.segment,
           title_label: f.title_label ?? null, weight_class: f.weight_class ?? null, rounds: f.rounds ?? 3,
           fighter1_id: f.fighter1_id, fighter2_id: f.fighter2_id, image_url: f.image_url ?? null,
+          winner_id: f.winner_id ?? null, result_method: f.result_method ?? null,
+          result_round: f.result_round ?? null, result_technique: f.result_technique ?? null,
         })));
         return out;
       },
