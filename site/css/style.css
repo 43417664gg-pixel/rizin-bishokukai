@@ -177,6 +177,17 @@ img { max-width: 100%; display: block; }
 .tag.locked { background: #2c2c36; color: #c9c9d2; }
 .tag.finished { background: var(--gold); color: #131007; }
 
+/* カード未発表（COMING SOON） */
+.event-card.soon {
+  border-style: dashed; opacity: .82;
+  background: repeating-linear-gradient(115deg, var(--panel) 0 14px, rgba(255,255,255,.015) 14px 28px);
+}
+.soon-label {
+  font-family: var(--num); font-weight: 700; font-size: 11px; letter-spacing: .34em;
+  color: var(--gold); margin-bottom: 4px;
+}
+.event-card.soon .ename { color: var(--muted); }
+
 /* ===== 試合カード ===== */
 .fight-card {
   background: var(--panel); border: 1px solid var(--line);

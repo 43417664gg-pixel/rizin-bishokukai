@@ -7,18 +7,18 @@
 <title>RIZIN美食会予想</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260719111412">
+<link rel="stylesheet" href="css/style.css?v=20260720084438">
 </head>
 <body>
 <div id="app-header"></div>
 <div class="wrap" id="main"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/config.js?v=20260719111412"></script>
-<script src="js/techniques.js?v=20260719111412"></script>
-<script src="js/demo-data.js?v=20260719111412"></script>
-<script src="js/api.js?v=20260719111412"></script>
-<script src="js/app.js?v=20260719111412"></script>
+<script src="js/config.js?v=20260720084438"></script>
+<script src="js/techniques.js?v=20260720084438"></script>
+<script src="js/demo-data.js?v=20260720084438"></script>
+<script src="js/api.js?v=20260720084438"></script>
+<script src="js/app.js?v=20260720084438"></script>
 <script>
 async function renderPlayerSelect() {
   const members = await DB.listMembers();
@@ -47,10 +47,28 @@ function choose(id) { setMemberId(id); renderHome(); }
 
 async function renderHome() {
   await renderHeader("home");
-  const events = await DB.listEvents();
+  // 開催日の近い順（未来→過去）に並べる
+  const events = (await DB.listEvents()).sort((a, b) => {
+    const fin = (e) => e.status === "finished" ? 1 : 0;
+    return fin(a) - fin(b) || (a.event_date || "").localeCompare(b.event_date || "");
+  });
   const rows = await Promise.all(events.map(async ev => {
     const fights = await DB.listFights(ev.id);
     const myPreds = await DB.listPredictions({ fightIds: fights.map(f => f.id), memberId: getMemberId() });
+    // カード未発表の大会はCOMING SOON扱い（予想不可）
+    if (!fights.length) {
+      return `
+        <div class="event-card soon">
+          <div class="ebody">
+            <div class="soon-label">COMING SOON</div>
+            <div class="ename">${esc(ev.name)}</div>
+            <div class="emeta">
+              <span>${fmtDate(ev.event_date)}</span>
+              <span class="tag before_open">対戦カード発表待ち</span>
+            </div>
+          </div>
+        </div>`;
+    }
     const phase = eventPhase(ev);
     const days = daysToEvent(ev);
     const openBook = isOpenBook(ev);
