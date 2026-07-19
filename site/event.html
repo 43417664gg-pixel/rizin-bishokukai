@@ -7,7 +7,7 @@
 <title>大会予想｜RIZIN美食会予想</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260718221702">
+<link rel="stylesheet" href="css/style.css?v=20260719102632">
 </head>
 <body>
 <div id="app-header"></div>
@@ -16,11 +16,11 @@
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/config.js?v=20260718221702"></script>
-<script src="js/techniques.js?v=20260718221702"></script>
-<script src="js/demo-data.js?v=20260718221702"></script>
-<script src="js/api.js?v=20260718221702"></script>
-<script src="js/app.js?v=20260718221702"></script>
+<script src="js/config.js?v=20260719102632"></script>
+<script src="js/techniques.js?v=20260719102632"></script>
+<script src="js/demo-data.js?v=20260719102632"></script>
+<script src="js/api.js?v=20260719102632"></script>
+<script src="js/app.js?v=20260719102632"></script>
 <script>
 let EV, PHASE, FIGHTS, FMAP, MEMBERS, myPreds = {}, allPreds = [];
 let drafts = {};              // 決定前の編集中の選択（ローカルのみ）
@@ -59,6 +59,16 @@ function fightLabel(f) {
   return `<span class="fno">${no}</span>
     ${f.title_label ? `<span class="title-label">${esc(f.title_label)}</span>` : ""}
     <span>${esc(f.weight_class || "")}</span>`;
+}
+
+// 選手名から名鑑へ飛ぶリンク行
+function profileLinks(f) {
+  const f1 = FMAP[f.fighter1_id], f2 = FMAP[f.fighter2_id];
+  return `
+    <div class="profile-links">
+      <a href="fighter.html?id=${f.fighter1_id}">${esc(f1?.name)} の名鑑 ›</a>
+      <a href="fighter.html?id=${f.fighter2_id}">${esc(f2?.name)} の名鑑 ›</a>
+    </div>`;
 }
 
 // ---------- 予想UI（受付中） ----------
@@ -101,6 +111,7 @@ function predictCard(f) {
         <button class="corner-btn c2 ${p.winner_id === f.fighter2_id ? "sel" : ""}"
           onclick="setDraft('${f.id}','winner_id','${f.fighter2_id}')"><small>BLUE</small>${esc(f2?.name)}</button>
       </div>
+      ${profileLinks(f)}
       ${methodChips}${roundChips}${techSelect}
       <div class="confirm-bar">
         <button class="btn decide" ${p.winner_id ? "" : "disabled"} onclick="confirmPred('${f.id}')">この予想で決定</button>
@@ -126,6 +137,7 @@ function confirmedCard(f, p) {
         <span class="vs-mark">VS</span>
         <div class="corner-btn c2 ${p.winner_id === f.fighter2_id ? "sel" : ""}"><small>BLUE</small>${esc(f2?.name)}</div>
       </div>
+      ${profileLinks(f)}
       <div class="my-pick">
         <span class="mp-check">✓</span>
         <span class="mp-body"><b>${esc(FMAP[p.winner_id]?.name)}</b>${detail ? `　${esc(detail)}` : ""}
@@ -150,6 +162,7 @@ function previewCard(f) {
         <span class="vs-mark">VS</span>
         <div class="corner-btn c2 disabled"><small>BLUE</small>${esc(f2?.name)}</div>
       </div>
+      ${profileLinks(f)}
       <div class="fight-foot"><span class="save-note">計量終了後に予想開始</span></div>
     </div>`;
 }
@@ -274,6 +287,7 @@ function resultCard(f) {
         <span class="vs-mark">VS</span>
         <div class="corner-btn c2 ${decided && f.winner_id === f.fighter2_id ? "sel" : ""}"><small>BLUE</small>${esc(f2?.name)}</div>
       </div>
+      ${profileLinks(f)}
       ${resultBox}
       ${predRows}
     </div>`;

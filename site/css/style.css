@@ -228,6 +228,18 @@ img { max-width: 100%; display: block; }
 }
 .corner-btn.c2.sel small { color: var(--blue-hot); }
 .corner-btn.disabled { opacity: .55; }
+/* 選手名→名鑑リンク */
+.profile-links { display: flex; gap: 8px; padding: 6px 14px 2px; }
+.profile-links a {
+  flex: 1; font-size: 11px; color: var(--muted); padding: 5px 8px;
+  border: 1px solid var(--line); background: var(--panel2);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  clip-path: polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%);
+}
+.profile-links a:first-child { text-align: left; }
+.profile-links a:last-child { text-align: right; }
+.profile-links a:active { color: var(--gold-hot); border-color: var(--gold); }
+
 .chips { display: flex; gap: 8px; flex-wrap: wrap; padding: 8px 16px; }
 .chips .clabel { width: 100%; font-size: 10px; color: var(--muted); margin-bottom: -2px; letter-spacing: .05em; }
 .chip {
