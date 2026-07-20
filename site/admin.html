@@ -7,7 +7,7 @@
 <title>管理｜RIZIN美食会予想</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260720085425">
+<link rel="stylesheet" href="css/style.css?v=20260720090315">
 </head>
 <body>
 <div id="app-header"></div>
@@ -15,11 +15,11 @@
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/config.js?v=20260720085425"></script>
-<script src="js/techniques.js?v=20260720085425"></script>
-<script src="js/demo-data.js?v=20260720085425"></script>
-<script src="js/api.js?v=20260720085425"></script>
-<script src="js/app.js?v=20260720085425"></script>
+<script src="js/config.js?v=20260720090315"></script>
+<script src="js/techniques.js?v=20260720090315"></script>
+<script src="js/demo-data.js?v=20260720090315"></script>
+<script src="js/api.js?v=20260720090315"></script>
+<script src="js/app.js?v=20260720090315"></script>
 <script>
 let EVENTS, FIGHTERS, MEMBERS;
 
@@ -79,6 +79,11 @@ function render() {
 
     <div class="admin-section">
       <h2>① 結果入力</h2>
+      <div class="admin-note" style="margin-bottom:10px">
+        <b style="color:var(--gold)">決定打の入れ方</b>：公式表記ではなく「<b>何で倒れたか</b>」を選ぶ。<br>
+        右フックでダウン→パウンドでストップなら、決定打は<b>右フック</b>。<br>
+        「パウンド（削り切り）」は殴り続けて削り切った試合だけに使う。
+      </div>
       <div class="form-row">
         <select id="res_event" onchange="renderResultForms()">
           <option value="">— 大会を選ぶ —</option>
@@ -221,7 +226,7 @@ async function renderResultForms() {
             ${[1, 2, 3, 4, 5].map(r => `<option value="${r}" ${f.result_round == r ? "selected" : ""}>${r}R</option>`).join("")}
           </select>
           <select id="t_${f.id}">
-            <option value="">— 技（任意） —</option>
+            <option value="">— 決定打（任意） —</option>
             ${TECHNIQUES.map(t => `<option value="${t.id}" ${f.result_technique === t.id ? "selected" : ""}>${t.label}</option>`).join("")}
           </select>
           <button class="btn gold" onclick="saveResult('${f.id}')">保存</button>

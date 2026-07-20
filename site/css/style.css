@@ -600,6 +600,11 @@ tr.top .lb-rate { color: var(--gold-hot); }
 .ladder-step.s1::before { background: var(--muted); }
 .ladder-step.s2::before { background: var(--red); }
 .ladder-step.s3::before { background: var(--gold); }
+.ladder-step.note {
+  background: rgba(212, 175, 55, .05); border-color: rgba(212, 175, 55, .3);
+}
+.ladder-step.note::before { background: repeating-linear-gradient(180deg, var(--gold) 0 6px, transparent 6px 12px); }
+.ladder-step.note .ls-name { color: var(--gold-hot); }
 .ls-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 6px; }
 .ls-no {
   font-family: var(--num); font-weight: 700; font-size: 10px;

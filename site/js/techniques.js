@@ -7,8 +7,11 @@ window.METHODS = [
 
 window.METHOD_LABEL = { KO: "KO/TKO", SUB: "一本", DEC: "判定", DRAW: "ドロー", NC: "無効試合" };
 
+// ★「決定打」＝相手を倒した一撃で判定する（公式の決着表記ではない）
+//   例）右フックでダウン → パウンドでストップ ＝ 決定打は「右フック」
+//   グラウンドパウンドは「純粋に殴り続けて削り切った」場合のみ選ぶ
 window.TECHNIQUES = [
-  // KO/TKO系
+  // 打撃（決定打）
   { id: "right_straight", label: "右ストレート",           method: "KO" },
   { id: "left_straight",  label: "左ストレート",           method: "KO" },
   { id: "right_hook",     label: "右フック",               method: "KO" },
@@ -16,11 +19,11 @@ window.TECHNIQUES = [
   { id: "upper",          label: "アッパー",               method: "KO" },
   { id: "elbow",          label: "肘",                     method: "KO" },
   { id: "high_kick",      label: "ハイキック",             method: "KO" },
-  { id: "body",           label: "ボディ（膝・蹴り含む）", method: "KO" },
-  { id: "knee",           label: "膝（顔面）",             method: "KO" },
-  { id: "gnp",            label: "グラウンドパウンド",     method: "KO" },
+  { id: "body",           label: "ボディ（パンチ・蹴り）", method: "KO" },
+  { id: "knee",           label: "膝",                     method: "KO" },
+  { id: "gnp",            label: "パウンド（削り切り）",   method: "KO" },
   { id: "ko_other",       label: "その他",                 method: "KO" },
-  // 一本系
+  // 一本
   { id: "rnc",            label: "リアネイキドチョーク",   method: "SUB" },
   { id: "guillotine",     label: "ギロチンチョーク",       method: "SUB" },
   { id: "triangle",       label: "三角絞め",               method: "SUB" },

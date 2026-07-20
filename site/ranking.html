@@ -7,18 +7,18 @@
 <title>ランキング｜RIZIN美食会予想</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260720085425">
+<link rel="stylesheet" href="css/style.css?v=20260720090315">
 </head>
 <body>
 <div id="app-header"></div>
 <div class="wrap" id="main"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/config.js?v=20260720085425"></script>
-<script src="js/techniques.js?v=20260720085425"></script>
-<script src="js/demo-data.js?v=20260720085425"></script>
-<script src="js/api.js?v=20260720085425"></script>
-<script src="js/app.js?v=20260720085425"></script>
+<script src="js/config.js?v=20260720090315"></script>
+<script src="js/techniques.js?v=20260720090315"></script>
+<script src="js/demo-data.js?v=20260720090315"></script>
+<script src="js/api.js?v=20260720090315"></script>
+<script src="js/app.js?v=20260720090315"></script>
 <script>
 let EVENTS, MEMBERS, ALL_FIGHTS, ALL_PREDS;
 let checked = new Set();   // 集計対象の大会ID
@@ -86,7 +86,13 @@ function render() {
       </div>
       <div class="ladder-step s3">
         <div class="ls-head"><span class="ls-no">STEP 3</span><b class="ls-name">あらます</b></div>
-        <p class="ls-desc">フィニッシュ技まで完全一致した最上位。<br>右フックか、リアネイキドチョークか——そこまで読み切った者だけが届く。</p>
+        <p class="ls-desc"><b>決定打</b>——相手を倒した一撃まで完全一致した最上位。<br>右フックか、左ストレートか、リアネイキドチョークか。そこまで読み切った者だけが届く。</p>
+      </div>
+      <div class="ladder-step note">
+        <div class="ls-head"><span class="ls-no">RULE</span><b class="ls-name" style="font-size:18px">決定打の考え方</b></div>
+        <p class="ls-desc">公式表記ではなく「<b>何で倒れたか</b>」で判定する。<br>
+        右フックでダウン→パウンドでストップ ＝ 決定打は<b>右フック</b>。<br>
+        「パウンド（削り切り）」は、殴り続けて削り切った試合だけに使う。</p>
       </div>
     </div>
     <p class="ladder-note">※ 勝者を外したら、その先は全部不成立。ドロー・無効試合は集計から除外。</p>`;
