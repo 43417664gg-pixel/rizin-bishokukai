@@ -51,16 +51,6 @@ function render() {
     <h1 class="page-title">ランキング</h1>
     <p class="page-sub">的中率で勝負。ピタリを超えた先に、あらます。</p>
 
-    <div class="ev-checks">
-      <label class="ev-check all ${allOn ? "on" : ""}">
-        <input type="checkbox" ${allOn ? "checked" : ""} onchange="toggleAll(this.checked)">全大会
-      </label>
-      ${EVENTS.map(e => `
-        <label class="ev-check ${checked.has(e.id) ? "on" : ""}">
-          <input type="checkbox" ${checked.has(e.id) ? "checked" : ""} onchange="toggleEvent('${e.id}')">${esc(e.name)}
-        </label>`).join("")}
-    </div>
-
     <table class="lb-table">
       <tr><th></th><th>名前</th><th>的中</th><th>ピタリ</th><th>あらます</th></tr>
       ${rows.map((r, i) => `
@@ -74,6 +64,18 @@ function render() {
           <td class="lb-num gold">${r.aramasu}</td>
         </tr>`).join("")}
     </table>
+
+    <div class="section-label">集計する大会</div>
+    <div class="ev-checks">
+      <label class="ev-check all ${allOn ? "on" : ""}">
+        <input type="checkbox" ${allOn ? "checked" : ""} onchange="toggleAll(this.checked)">全大会
+      </label>
+      ${EVENTS.map(e => `
+        <label class="ev-check ${checked.has(e.id) ? "on" : ""}">
+          <input type="checkbox" ${checked.has(e.id) ? "checked" : ""} onchange="toggleEvent('${e.id}')">${esc(e.name)}
+        </label>`).join("")}
+    </div>
+
     <div class="section-label">三段梯子</div>
     <div class="ladder">
       <div class="ladder-step s1">

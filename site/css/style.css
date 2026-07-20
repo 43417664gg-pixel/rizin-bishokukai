@@ -130,6 +130,7 @@ img { max-width: 100%; display: block; }
 /* ===== カウントダウン ===== */
 .countdown-bar {
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  flex-wrap: wrap;   /* 狭い画面で「あと○日」が見切れるのを防ぐ */
   background: linear-gradient(90deg, rgba(230, 0, 18, .14), rgba(230, 0, 18, .03) 65%), var(--panel);
   border-top: 1px solid rgba(230, 0, 18, .35);
   padding: 10px 14px;
@@ -153,17 +154,31 @@ img { max-width: 100%; display: block; }
   font-family: var(--num); font-weight: 700; font-size: 24px; letter-spacing: .06em;
   color: var(--gold-hot); font-variant-numeric: tabular-nums; white-space: nowrap;
 }
-.cd-days { text-align: right; line-height: 1.2; white-space: nowrap; }
+.cd-days { text-align: right; line-height: 1.2; white-space: nowrap; margin-left: auto; }
+@media (max-width: 430px) {
+  .cd-timer { font-size: 20px; letter-spacing: .03em; }
+  .countdown-bar { padding: 10px 12px; gap: 8px; }
+}
 .cd-days b { display: block; font-family: var(--num); font-size: 16px; color: var(--text); }
 .cd-days span { font-size: 10px; color: var(--muted); letter-spacing: .1em; }
 
 /* ===== 大会カード ===== */
+/* 大会ごとに1枚の独立したカードとして立たせる。
+   ポスターが縦長だと隣の大会と地続きに見えて数珠繋ぎになるため、
+   間隔・枠・影で「ここで一つ終わり」を明示する。 */
 .event-card {
   display: block; background: var(--panel); border: 1px solid var(--line);
-  overflow: hidden; margin-bottom: 16px; position: relative;
+  overflow: hidden; margin-bottom: 52px; position: relative;
   clip-path: polygon(0 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%);
   animation: rise .45s both;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, .55);
 }
+/* 上端の赤いバー＝新しい大会の始まり */
+.event-card::before {
+  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: var(--red); z-index: 2;
+}
+.event-card.soon::before { background: var(--line); }
 /* ポスターは大会ごとに縦横比が違う（B2縦・16:9横が混在）。
    クリエイティブを毎大会そのまま味わうため、切り抜かずに全体を映す。
    余白はポスター自身をぼかして敷き、黒帯に見せない。 */
