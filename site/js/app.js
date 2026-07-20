@@ -106,7 +106,13 @@
     { kg: 93, name: "ライトヘビー級" },
     { kg: 120, name: "ヘビー級" },
   ];
-  window.WEIGHT_ORDER = WEIGHT_CLASSES.map(w => w.name).concat(["契約体重", "階級未設定"]);
+  // 表示順は軽い順ではなく「男子 → 女子 → 契約体重」（Gaku方針・2026-07-20）
+  window.WEIGHT_ORDER = [
+    "フライ級", "バンタム級", "フェザー級", "ライト級",
+    "ウェルター級", "ミドル級", "ライトヘビー級", "ヘビー級",
+    "女子スーパーアトム級", "女子フライ級",
+    "契約体重", "階級未設定",
+  ];
   window.weightClassName = (wc) => {
     if (!wc) return "階級未設定";
     const kg = parseFloat(String(wc));
