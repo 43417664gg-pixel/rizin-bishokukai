@@ -236,7 +236,7 @@ window.DEMO_SEED = {
     {
       id: "f_case",
       name: "ジョニー・ケース",
-      nickname: "ハリウッド非情の貴公子",
+      nickname: "ハリウッド",
       backbone: "レスリング（元UFC）",
       origin: "アメリカ・アイオワ",
       rec_w: 28,
@@ -537,7 +537,7 @@ window.DEMO_SEED = {
     {
       id: "f_kleber",
       name: "クレベル・コイケ",
-      nickname: "RIZINの鬼神",
+      nickname: "柔術界の鬼神",
       backbone: "柔道・ブラジリアン柔術（黒帯）",
       team: "ボンサイ柔術",
       origin: "ブラジル・サンパウロ",
@@ -600,7 +600,7 @@ window.DEMO_SEED = {
     {
       id: "f_patchy",
       name: "パッチー・ミックス",
-      nickname: "ザ・ウィザード",
+      nickname: "ノー・ラブ",
       backbone: "レスリング・ブラジリアン柔術",
       team: "エクストリーム・クートゥア",
       origin: "アメリカ・ニューヨーク州",
