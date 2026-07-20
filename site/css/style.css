@@ -673,3 +673,24 @@ tr.top .lb-rate { color: var(--gold-hot); }
 
 /* admin：入力欄に添える補足（年齢の自動計算など） */
 .form-note { font-size: 11px; color: var(--muted); align-self: center; white-space: nowrap; }
+
+/* ===== 名鑑：検索・階級グループ ===== */
+.fi-search { margin: 0 0 6px; }
+.fi-search input {
+  width: 100%; background: var(--panel); border: 1px solid var(--line);
+  color: var(--text); font-family: inherit; font-size: 14px; padding: 11px 14px;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
+}
+.fi-search input::placeholder { color: var(--muted); }
+.fi-search input:focus { outline: none; border-color: var(--red); }
+/* 階級名の右に人数 */
+.section-label .sec-count {
+  font-family: var(--num); font-size: 11px; color: var(--muted); letter-spacing: .1em;
+}
+/* 王者ブロックは金で立てる */
+.section-label.champ { color: var(--gold-hot); }
+.section-label.champ::before { background: var(--gold); }
+.mchamp {
+  background: var(--gold); color: #131007; font-weight: 900;
+  font-size: 9px; letter-spacing: .14em; padding: 1px 6px;
+}

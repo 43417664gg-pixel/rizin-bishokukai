@@ -7,18 +7,18 @@
 <title>選手名鑑｜RIZIN美食会予想</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260720181810">
+<link rel="stylesheet" href="css/style.css?v=20260720210038">
 </head>
 <body>
 <div id="app-header"></div>
 <div class="wrap" id="main"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/config.js?v=20260720181810"></script>
-<script src="js/techniques.js?v=20260720181810"></script>
-<script src="js/demo-data.js?v=20260720181810"></script>
-<script src="js/api.js?v=20260720181810"></script>
-<script src="js/app.js?v=20260720181810"></script>
+<script src="js/config.js?v=20260720210038"></script>
+<script src="js/techniques.js?v=20260720210038"></script>
+<script src="js/demo-data.js?v=20260720210038"></script>
+<script src="js/api.js?v=20260720210038"></script>
+<script src="js/app.js?v=20260720210038"></script>
 <script>
 // このポータルで扱った試合から選手ごとの戦績を組み立てる（サイト内完結STATS）
 function buildStats(fighterId, fights) {
@@ -65,40 +65,85 @@ async function load() {
   else renderList(fighters, fights);
 }
 
+let LIST_ROWS = [];   // 検索で絞り込む元データ
+
+function cardHtml({ f, s, ph }, i) {
+  const wc = f._wc;
+  return `
+    <a class="meikan-card" href="fighter.html?id=${f.id}" style="--d:${Math.min(i, 11) * 40}ms">
+      ${f.highlight_url
+        ? `<div class="mphoto portrait"><img src="${esc(f.highlight_url)}" alt="${esc(f.name)}" loading="lazy"></div>`
+        : (ph ? photoDiv(ph, "mphoto") : `<div class="mphoto none">${esc(f.name.slice(0, 1))}</div>`)}
+      <div class="mbody">
+        <div class="mname">${esc(f.name)}</div>
+        <div class="mmeta">
+          ${wc ? `<span>${esc(wc)}</span>` : ""}
+          <span>${f.rec_w != null
+            ? `${f.rec_w}勝${f.rec_l != null ? f.rec_l + "敗" : ""}${f.rec_d ? f.rec_d + "分" : ""}`
+            : (s.w + s.l + s.d ? `${s.w}勝${s.l}敗${s.d ? s.d + "分" : ""}` : "")}</span>
+        </div>
+        ${f.nickname ? `<div class="malias">${esc(f.nickname)}</div>` : ""}
+        <div class="mtags">
+          ${isChampion(f) ? `<span class="mchamp">CHAMPION</span>` : ""}
+          ${f.backbone ? `<span class="mbackbone">${esc(f.backbone)}</span>` : ""}
+          ${f.stance ? `<span class="mstance">${esc(f.stance)}</span>` : ""}
+        </div>
+      </div>
+    </a>`;
+}
+
+// 検索：名前・異名・所属・バックボーン・階級のどれかに引っかかれば表示
+function matchQuery(row, q) {
+  if (!q) return true;
+  const f = row.f;
+  const hay = [f.name, f.nickname, f.team, f.backbone, f.origin, f._wc]
+    .filter(Boolean).join(" ").toLowerCase();
+  return q.toLowerCase().split(/\s+/).filter(Boolean).every(t => hay.includes(t));
+}
+
+function renderMeikan() {
+  const q = (document.getElementById("fi_search")?.value || "").trim();
+  const hit = LIST_ROWS.filter(r => matchQuery(r, q));
+
+  // 王者は階級を問わず最上段に置く（Gaku方針）
+  const champs = hit.filter(r => isChampion(r.f));
+  const rest = hit.filter(r => !isChampion(r.f));
+
+  const groups = WEIGHT_ORDER
+    .map(name => ({ name, rows: rest.filter(r => r.f._wc === name) }))
+    .filter(g => g.rows.length);
+
+  const section = (label, rows, cls = "") => `
+    <div class="section-label ${cls}">${esc(label)}<span class="sec-count">${rows.length}</span></div>
+    <div class="meikan-grid">${rows.map(cardHtml).join("")}</div>`;
+
+  const body = !hit.length
+    ? `<p class="page-sub" style="margin-top:20px">「${esc(q)}」に一致する選手はいません。</p>`
+    : (champs.length ? section("CHAMPION", champs, "champ") : "") +
+      groups.map(g => section(g.name, g.rows)).join("");
+
+  document.getElementById("meikan-body").innerHTML = body;
+}
+
 function renderList(fighters, fights) {
-  const rows = fighters.map(f => ({
-    f, s: buildStats(f.id, fights), ph: photoOf(f.id, fights), wc: weightOf(f.id, fights),
-  }));
-  // 写真あり（=カード掲載中/掲載歴あり）を上に、次に試合数
-  rows.sort((a, b) => (!!b.ph - !!a.ph) ||
-    (b.s.w + b.s.l + b.s.d) - (a.s.w + a.s.l + a.s.d) ||
+  LIST_ROWS = fighters.map(f => {
+    f._wc = weightClassName(weightOf(f.id, fights));
+    return { f, s: buildStats(f.id, fights), ph: photoOf(f.id, fights) };
+  });
+  // 階級内は 王者 → 名前順
+  LIST_ROWS.sort((a, b) => (isChampion(b.f) - isChampion(a.f)) ||
     a.f.name.localeCompare(b.f.name, "ja"));
+
   document.getElementById("main").innerHTML = `
     <div class="en-label">FIGHTERS</div>
     <h1 class="page-title">選手名鑑</h1>
     <p class="page-sub">このポータルで扱った大会の戦績を蓄積。大会を重ねるほど名鑑が濃くなる。</p>
-    <div class="meikan-grid">
-      ${rows.map(({ f, s, ph, wc }, i) => `
-        <a class="meikan-card" href="fighter.html?id=${f.id}" style="--d:${Math.min(i, 11) * 40}ms">
-          ${f.highlight_url
-            ? `<div class="mphoto portrait"><img src="${esc(f.highlight_url)}" alt="${esc(f.name)}" loading="lazy"></div>`
-            : (ph ? photoDiv(ph, "mphoto") : `<div class="mphoto none">${esc(f.name.slice(0, 1))}</div>`)}
-          <div class="mbody">
-            <div class="mname">${esc(f.name)}</div>
-            <div class="mmeta">
-              ${wc ? `<span>${esc(wc)}</span>` : ""}
-              <span>${f.rec_w != null
-                ? `${f.rec_w}勝${f.rec_l != null ? f.rec_l + "敗" : ""}${f.rec_d ? f.rec_d + "分" : ""}`
-                : (s.w + s.l + s.d ? `${s.w}勝${s.l}敗${s.d ? s.d + "分" : ""}` : "")}</span>
-            </div>
-            ${f.nickname ? `<div class="malias">${esc(f.nickname)}</div>` : ""}
-            <div class="mtags">
-              ${f.backbone ? `<span class="mbackbone">${esc(f.backbone)}</span>` : ""}
-              ${f.stance ? `<span class="mstance">${esc(f.stance)}</span>` : ""}
-            </div>
-          </div>
-        </a>`).join("")}
-    </div>`;
+    <div class="fi-search">
+      <input id="fi_search" type="search" placeholder="選手名・異名・所属・階級で検索"
+             oninput="renderMeikan()" autocomplete="off">
+    </div>
+    <div id="meikan-body"></div>`;
+  renderMeikan();
 }
 
 // FIGHT / 普段着 の写真切替

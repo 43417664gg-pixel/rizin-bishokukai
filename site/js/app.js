@@ -93,6 +93,31 @@
   };
   window.fmtRate = (r) => r === null || r === undefined ? "—" : `${Math.round(r * 100)}%`;
 
+  // 契約体重（kg表記）→ RIZIN階級名。カードの weight_class は "61.0kg" のような数値で入る。
+  const WEIGHT_CLASSES = [
+    { kg: 49, name: "女子スーパーアトム級" },
+    { kg: 52, name: "女子フライ級" },
+    { kg: 57, name: "フライ級" },
+    { kg: 61, name: "バンタム級" },
+    { kg: 66, name: "フェザー級" },
+    { kg: 71, name: "ライト級" },
+    { kg: 77, name: "ウェルター級" },
+    { kg: 84, name: "ミドル級" },
+    { kg: 93, name: "ライトヘビー級" },
+    { kg: 120, name: "ヘビー級" },
+  ];
+  window.WEIGHT_ORDER = WEIGHT_CLASSES.map(w => w.name).concat(["契約体重", "階級未設定"]);
+  window.weightClassName = (wc) => {
+    if (!wc) return "階級未設定";
+    const kg = parseFloat(String(wc));
+    if (isNaN(kg)) return "階級未設定";
+    const hit = WEIGHT_CLASSES.find(w => w.kg === kg);
+    // 規定階級に一致しない数値＝キャッチウェイト（契約体重）
+    return hit ? hit.name : "契約体重";
+  };
+  // RIZINの現王者だけを頂点に置く。五輪メダルや他団体の過去王座は対象外。
+  window.isChampion = (f) => !!f.belt && /RIZIN/.test(f.belt) && /王者|王座/.test(f.belt);
+
   // 年齢は生年月日から毎回計算する。数値を直書きすると誕生日を跨いだ瞬間に嘘になるため。
   window.ageText = (birth) => {
     if (!birth) return "";
