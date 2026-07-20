@@ -203,14 +203,33 @@
         const S = window.DEMO_SEED;
         if (!S) throw new Error("シードデータが読み込まれていません");
         const out = [];
+        // DB側にまだ存在しない列があっても同期全体を止めない。
+        // 「column X does not exist」を検知したらその列を落として再試行する。
         const push = async (table, rows) => {
-          const { error } = await client.from(table).upsert(rows, { onConflict: "id" });
-          out.push(`${table}: ${error ? "NG " + error.message : rows.length + "件"}`);
+          let payload = rows, dropped = [];
+          for (let i = 0; i < 8; i++) {
+            const { error } = await client.from(table).upsert(payload, { onConflict: "id" });
+            if (!error) {
+              out.push(`${table}: ${payload.length}件` + (dropped.length ? `（未対応列を除外: ${dropped.join(",")}）` : ""));
+              return;
+            }
+            const msg = error.message || "";
+            // PostgRESTは環境により文言が異なる：
+            //   "column fighters.stance does not exist" / "Could not find the 'stance' column of ..."
+            const m = /column \S*?\.?"?([a-z_]+)"? does not exist/i.exec(msg)
+                   || /Could not find the '([a-z_]+)' column/i.exec(msg);
+            if (!m) { out.push(`${table}: NG ${msg}`); return; }
+            const col = m[1];
+            dropped.push(col);
+            payload = payload.map(r => { const c = { ...r }; delete c[col]; return c; });
+          }
+          out.push(`${table}: NG 列の調整に失敗`);
         };
         await push("members", S.members.map(m => ({ id: m.id, name: m.name, color: m.color })));
         await push("fighters", S.fighters.map(f => ({
           id: f.id, name: f.name, nickname: f.nickname ?? null, belt: f.belt ?? null,
-          backbone: f.backbone ?? null, team: f.team ?? null, origin: f.origin ?? null,
+          backbone: f.backbone ?? null, stance: f.stance ?? null,
+          team: f.team ?? null, origin: f.origin ?? null,
           style: f.style ?? null, career: f.career ?? null, memo: f.memo ?? null,
           rec_w: f.rec_w ?? null, rec_l: f.rec_l ?? null, rec_d: f.rec_d ?? null, rec_nc: f.rec_nc ?? null,
           rec_ko: f.rec_ko ?? null, rec_sub: f.rec_sub ?? null, rec_dec: f.rec_dec ?? null,

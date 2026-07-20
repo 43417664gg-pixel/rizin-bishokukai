@@ -16,6 +16,7 @@ create table fighters (
   nickname text,                         -- 異名（リングネーム）
   belt text,                             -- 王座・肩書（元五輪銀 等）
   backbone text,                         -- バックボーン（レスリング・ムエタイ等）
+  stance text,                           -- 構え（オーソドックス／サウスポー／スイッチ）
   team text,                             -- 所属
   rec_nc int,                            -- 無効試合数
   origin text,                           -- 出身

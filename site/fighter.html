@@ -7,18 +7,18 @@
 <title>選手名鑑｜RIZIN美食会予想</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260720090315">
+<link rel="stylesheet" href="css/style.css?v=20260720091215">
 </head>
 <body>
 <div id="app-header"></div>
 <div class="wrap" id="main"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/config.js?v=20260720090315"></script>
-<script src="js/techniques.js?v=20260720090315"></script>
-<script src="js/demo-data.js?v=20260720090315"></script>
-<script src="js/api.js?v=20260720090315"></script>
-<script src="js/app.js?v=20260720090315"></script>
+<script src="js/config.js?v=20260720091215"></script>
+<script src="js/techniques.js?v=20260720091215"></script>
+<script src="js/demo-data.js?v=20260720091215"></script>
+<script src="js/api.js?v=20260720091215"></script>
+<script src="js/app.js?v=20260720091215"></script>
 <script>
 // このポータルで扱った試合から選手ごとの戦績を組み立てる（サイト内完結STATS）
 function buildStats(fighterId, fights) {
@@ -92,7 +92,10 @@ function renderList(fighters, fights) {
                 : (s.w + s.l + s.d ? `${s.w}勝${s.l}敗${s.d ? s.d + "分" : ""}` : "")}</span>
             </div>
             ${f.nickname ? `<div class="malias">${esc(f.nickname)}</div>` : ""}
-            ${f.backbone ? `<div class="mbackbone">${esc(f.backbone)}</div>` : ""}
+            <div class="mtags">
+              ${f.backbone ? `<span class="mbackbone">${esc(f.backbone)}</span>` : ""}
+              ${f.stance ? `<span class="mstance">${esc(f.stance)}</span>` : ""}
+            </div>
           </div>
         </a>`).join("")}
     </div>`;
@@ -216,7 +219,8 @@ function renderDetail(fighter, fighters, fights, events) {
     ${finBars}
     <div class="profile-table">
       ${fighter.backbone ? `<div class="pt-row"><span class="pt-k">バックボーン</span><span class="pt-v">${esc(fighter.backbone)}</span></div>` : ""}
-      ${fighter.team ? `<div class="pt-row"><span class="pt-k">所属</span><span class="pt-v">${esc(fighter.team)}</span></div>` : ""}
+      ${fighter.stance ? `<div class="pt-row"><span class="pt-k">構え</span><span class="pt-v">${esc(fighter.stance)}</span></div>` : ""}
+      ${fighter.team ? `<div class="pt-row"><span class="pt-k">所属ジム</span><span class="pt-v">${esc(fighter.team)}</span></div>` : ""}
       ${fighter.origin ? `<div class="pt-row"><span class="pt-k">出身</span><span class="pt-v">${esc(fighter.origin)}</span></div>` : ""}
       ${fighter.style ? `<div class="pt-row"><span class="pt-k">ファイトスタイル</span><span class="pt-v">${esc(fighter.style)}</span></div>` : ""}
       ${fighter.career ? `<div class="pt-row"><span class="pt-k">来歴</span><span class="pt-v">${esc(fighter.career)}</span></div>` : ""}
