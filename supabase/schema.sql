@@ -14,6 +14,7 @@ create table fighters (
   id text primary key,
   name text not null,
   nickname text,                         -- 異名（リングネーム）
+  birth_date date,                       -- 生年月日（年齢は表示時に計算する。数値直書きは毎年腐るため）
   belt text,                             -- 王座・肩書（元五輪銀 等）
   backbone text,                         -- バックボーン（レスリング・ムエタイ等）
   stance text,                           -- 構え（オーソドックス／サウスポー／スイッチ）

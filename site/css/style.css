@@ -670,3 +670,6 @@ tr.top .lb-rate { color: var(--gold-hot); }
   .page-title { font-size: 36px; }
   .fname-big { font-size: 54px; }
 }
+
+/* admin：入力欄に添える補足（年齢の自動計算など） */
+.form-note { font-size: 11px; color: var(--muted); align-self: center; white-space: nowrap; }

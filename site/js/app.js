@@ -93,6 +93,20 @@
   };
   window.fmtRate = (r) => r === null || r === undefined ? "—" : `${Math.round(r * 100)}%`;
 
+  // 年齢は生年月日から毎回計算する。数値を直書きすると誕生日を跨いだ瞬間に嘘になるため。
+  window.ageText = (birth) => {
+    if (!birth) return "";
+    const b = new Date(birth + (birth.length === 10 ? "T00:00:00" : ""));
+    if (isNaN(b)) return "";
+    const now = new Date();
+    let age = now.getFullYear() - b.getFullYear();
+    const beforeBirthday =
+      now.getMonth() < b.getMonth() ||
+      (now.getMonth() === b.getMonth() && now.getDate() < b.getDate());
+    if (beforeBirthday) age--;
+    return `${age}歳（${b.getFullYear()}.${b.getMonth() + 1}.${b.getDate()}）`;
+  };
+
   // 大会の状態：before_open（計量前）→ open（受付中）→ locked（締切・結果待ち）→ finished（結果発表済み）
   // no_deadline=true の大会は締切なし。常に受付中（オープンブック：みんなの予想も常時公開）
   window.eventPhase = (ev) => {

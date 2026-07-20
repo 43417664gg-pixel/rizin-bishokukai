@@ -228,6 +228,7 @@
         await push("members", S.members.map(m => ({ id: m.id, name: m.name, color: m.color })));
         await push("fighters", S.fighters.map(f => ({
           id: f.id, name: f.name, nickname: f.nickname ?? null, belt: f.belt ?? null,
+          birth_date: f.birth_date ?? null,
           backbone: f.backbone ?? null, stance: f.stance ?? null,
           team: f.team ?? null, origin: f.origin ?? null,
           style: f.style ?? null, career: f.career ?? null, memo: f.memo ?? null,

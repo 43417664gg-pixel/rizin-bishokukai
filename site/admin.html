@@ -7,7 +7,7 @@
 <title>管理｜RIZIN美食会予想</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260720091215">
+<link rel="stylesheet" href="css/style.css?v=20260720181810">
 </head>
 <body>
 <div id="app-header"></div>
@@ -15,11 +15,11 @@
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/config.js?v=20260720091215"></script>
-<script src="js/techniques.js?v=20260720091215"></script>
-<script src="js/demo-data.js?v=20260720091215"></script>
-<script src="js/api.js?v=20260720091215"></script>
-<script src="js/app.js?v=20260720091215"></script>
+<script src="js/config.js?v=20260720181810"></script>
+<script src="js/techniques.js?v=20260720181810"></script>
+<script src="js/demo-data.js?v=20260720181810"></script>
+<script src="js/api.js?v=20260720181810"></script>
+<script src="js/app.js?v=20260720181810"></script>
 <script>
 let EVENTS, FIGHTERS, MEMBERS;
 
@@ -120,6 +120,7 @@ function render() {
       </div>
       <div class="form-row"><input id="fi_name" placeholder="選手名"><input id="fi_nickname" placeholder="異名（リングネーム・任意）"></div>
       <div class="form-row"><input id="fi_belt" placeholder="王座・肩書（例：元五輪銀メダリスト・任意）"></div>
+      <div class="form-row"><input id="fi_birth" type="date" placeholder="生年月日"><span class="form-note">年齢は生年月日から自動計算</span></div>
       <div class="form-row">
         <input id="fi_backbone" placeholder="バックボーン（例：レスリング）">
         <select id="fi_stance">
@@ -305,6 +306,7 @@ function pickFighter() {
   const f = FIGHTERS.find(x => x.id === document.getElementById("fi_edit").value);
   const set = (id, v) => document.getElementById(id).value = v ?? "";
   set("fi_name", f?.name); set("fi_nickname", f?.nickname); set("fi_belt", f?.belt);
+  set("fi_birth", f?.birth_date);
   set("fi_backbone", f?.backbone); set("fi_stance", f?.stance);
   set("fi_team", f?.team); set("fi_origin", f?.origin);
   set("fi_w", f?.rec_w); set("fi_l", f?.rec_l); set("fi_d", f?.rec_d);
@@ -323,7 +325,8 @@ async function addFighter() {
   const editId = document.getElementById("fi_edit").value || undefined;
   await DB.upsertFighter({
     ...(editId ? { id: editId } : {}),
-    name, nickname: v("fi_nickname"), belt: v("fi_belt"), backbone: v("fi_backbone"),
+    name, nickname: v("fi_nickname"), belt: v("fi_belt"), birth_date: v("fi_birth"),
+    backbone: v("fi_backbone"),
     stance: v("fi_stance"), team: v("fi_team"),
     origin: v("fi_origin"), style: v("fi_style"), career: v("fi_career"),
     highlight_url: v("fi_photo_fight"), photo_casual: v("fi_photo_casual"),
