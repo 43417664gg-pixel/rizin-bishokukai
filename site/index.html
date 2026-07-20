@@ -85,7 +85,7 @@ async function renderHome() {
       </div>` : "";
     return `
       <a class="event-card" href="event.html?id=${ev.id}">
-        ${ev.poster_url ? `<img src="${esc(ev.poster_url)}" alt="">` : ""}
+        ${ev.poster_url ? `<div class="eposter" style="background-image:url('${esc(ev.poster_url)}')"><img src="${esc(ev.poster_url)}" alt=""></div>` : ""}
         <div class="ebody">
           <div class="ename">${esc(ev.name)}</div>
           <div class="emeta">

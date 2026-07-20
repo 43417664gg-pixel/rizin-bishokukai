@@ -164,7 +164,22 @@ img { max-width: 100%; display: block; }
   clip-path: polygon(0 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%);
   animation: rise .45s both;
 }
-.event-card img { width: 100%; }
+/* ポスターは大会ごとに縦横比が違う（B2縦・16:9横が混在）。
+   クリエイティブを毎大会そのまま味わうため、切り抜かずに全体を映す。
+   余白はポスター自身をぼかして敷き、黒帯に見せない。 */
+.event-card .eposter {
+  position: relative; background-size: cover; background-position: center;
+  display: flex; justify-content: center; overflow: hidden;
+}
+.event-card .eposter::before {
+  content: ""; position: absolute; inset: -40px;
+  backdrop-filter: blur(28px) saturate(.7) brightness(.45);
+  background: rgba(0, 0, 0, .35);
+}
+.event-card .eposter img {
+  position: relative; display: block; width: auto; max-width: 100%;
+  max-height: 68vh; object-fit: contain;
+}
 .event-card .ebody { padding: 12px 14px; }
 .event-card .ename { font-weight: 900; font-size: 15px; letter-spacing: .02em; }
 .event-card .emeta { color: var(--muted); font-size: 11px; margin-top: 3px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
