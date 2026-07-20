@@ -15,7 +15,7 @@
 | LANDMARK 15（7/18） | 結果発表済み（11試合） |
 | RIZIN.54（8/11） | **予想受付中**（9試合・結果未入力） |
 | LANDMARK 16（10/3）・17（11/8） | カード未発表 → COMING SOON表示 |
-| 公開（URL発行） | **未完了**。現状ローカルのみで、仲間はまだ使えない |
+| 公開（URL発行） | **完了（2026-07-20）** → https://43417664gg-pixel.github.io/rizin-bishokukai/ |
 
 ---
 
@@ -100,12 +100,14 @@ supabase/schema.sql  ※実DBと差異あり（下記「既知の負債」参照
 RIZIN.54のサムネがロゴ＋日付だけのテキスト画像（公式og:imageをそのまま使った）。
 **選手が写ったビジュアルを探す。無ければメインイベントのVSバナーを流用**（Gaku方針）。
 
-### D. 公開（GitHub Pages）
-1. ~~`brew install gh`~~ **完了（2026-07-20）** — gh 2.96.0 導入済み
-2. **`gh auth login` はGakuの手**（認証操作はAIがやらない）← **いまここ**
-3. 以降：`gh repo create` → push → Pages有効化 → URL発行
+### D. 公開（GitHub Pages）— **完了（2026-07-20）**
+**URL：https://43417664gg-pixel.github.io/rizin-bishokukai/**
 
-公開前チェックは通過済み：全5ページ `noindex` あり／`config.js` は publishable key のみ（secret無し）／assets 5.6MB。
+- リポジトリ：`43417664gg-pixel/rizin-bishokukai`（public・無料枠のため）
+- 配信方式：**GitHub Actions**（`.github/workflows/pages.yml`）。`site/` がサブディレクトリでブランチ配信（ルート or `/docs`）では出せないため
+- **main へ push すれば自動デプロイ**。所要2〜3分
+- 公開前チェック通過：全5ページ `noindex` ／`config.js` は publishable key のみ（secret無し）／assets 5.6MB
+- 本番URLで検証済み：`IS_DEMO=false`（Supabase実接続）・members 3・events 4・RIZIN.54は9試合で受付中（締切 2026-08-11 00:00 JST）・コンソールエラーなし
 
 無料枠のためリポジトリは公開になる。`config.js` の publishable key も公開されるが**RLS前提の設計通り**（secret keyは含まない）。RIZIN公式画像を含む点はGaku了承済み・全ページ `noindex` 済み。
 
