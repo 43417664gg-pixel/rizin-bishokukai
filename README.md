@@ -83,11 +83,8 @@ supabase/schema.sql  ※実DBと差異あり（下記「既知の負債」参照
 ## 既知の負債（次セッションで対応）
 
 ### A. バグ・負債
-1. **`supabase/schema.sql` に `highlight_url` / `highlight_caption` / `photo_casual` が無い**
-   同期処理は「DBに無い列は黙って落として続行」する堅牢化が入っているため**エラーが出ない**。
-   本番DBは手動ALTER済みで動いているが、**schema.sqlから再構築すると写真が全部消える**。要修正。
-   併せて `photo_url`（コードから未参照の死に列）を削除、`stance` を追記。
-2. **`demo-data.js` にUnicodeエスケープが1839箇所** — ブラウザ再生成時に `JSON.stringify` が日本語をescapeした。動作はするが**人間が読めずgrepもできない**。実文字に戻す
+1. ~~`supabase/schema.sql` の写真3列欠落~~ **解消（2026-07-20）** — `highlight_url` / `highlight_caption` / `photo_casual` を追加。死に列 `photo_url` を削除。`stance` は元から入っていた（前回READMEの記述誤り）。api.js の同期payloadと全テーブル全列を突き合わせ済み
+2. ~~`demo-data.js` のUnicodeエスケープ1839箇所~~ **解消（2026-07-20）** — 全て実文字化。ブラウザで DEMO_SEED の件数（3/40/4/20）と描画・コンソールを検証済み
 3. **死んだUI** — 本番モードで `resetDemo()` が空実装。adminの「デモデータを戻す」ボタンが無反応
 4. **未参照アセット7点** — 削除済みの選手・試合の画像が残存
 
@@ -104,10 +101,11 @@ RIZIN.54のサムネがロゴ＋日付だけのテキスト画像（公式og:ima
 **選手が写ったビジュアルを探す。無ければメインイベントのVSバナーを流用**（Gaku方針）。
 
 ### D. 公開（GitHub Pages）
-**GitHub認証が一切ない**：gh未インストール／SSH鍵なし／credential helper未設定／git remote未設定。
-1. `brew install gh`
-2. **`gh auth login` はGakuの手**（認証操作はAIがやらない）
+1. ~~`brew install gh`~~ **完了（2026-07-20）** — gh 2.96.0 導入済み
+2. **`gh auth login` はGakuの手**（認証操作はAIがやらない）← **いまここ**
 3. 以降：`gh repo create` → push → Pages有効化 → URL発行
+
+公開前チェックは通過済み：全5ページ `noindex` あり／`config.js` は publishable key のみ（secret無し）／assets 5.6MB。
 
 無料枠のためリポジトリは公開になる。`config.js` の publishable key も公開されるが**RLS前提の設計通り**（secret keyは含まない）。RIZIN公式画像を含む点はGaku了承済み・全ページ `noindex` 済み。
 
