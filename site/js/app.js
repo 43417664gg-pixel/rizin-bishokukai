@@ -117,6 +117,14 @@
   };
   // RIZINの現王者だけを頂点に置く。五輪メダルや他団体の過去王座は対象外。
   window.isChampion = (f) => !!f.belt && /RIZIN/.test(f.belt) && /王者|王座/.test(f.belt);
+  // 王者はこのポータルの大会に出ていないことがあり、試合から階級を引けない。
+  // その場合は belt の「RIZINフェザー級王者」から階級名を取る（列を増やさずに済む）。
+  window.weightFromBelt = (f) => {
+    const m = /RIZIN\s*(女子)?\s*([ぁ-んァ-ヶ一-龠ー]+?級)/.exec(f.belt || "");
+    if (!m) return "";
+    const name = (m[1] || "") + m[2];
+    return WEIGHT_ORDER.includes(name) ? name : "";
+  };
 
   // 年齢は生年月日から毎回計算する。数値を直書きすると誕生日を跨いだ瞬間に嘘になるため。
   window.ageText = (birth) => {
