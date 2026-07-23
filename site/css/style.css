@@ -694,3 +694,14 @@ tr.top .lb-rate { color: var(--gold-hot); }
   background: var(--gold); color: #131007; font-weight: 900;
   font-size: 9px; letter-spacing: .14em; padding: 1px 6px;
 }
+
+/* オープンブック：各カード下の「みんなの予想」併記 */
+.ob-picks {
+  margin: -6px 0 16px; padding: 10px 14px 4px;
+  background: var(--panel); border: 1px solid var(--line); border-top: none;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
+}
+.ob-head {
+  font-family: var(--num); font-size: 11px; letter-spacing: .2em; color: var(--muted);
+  text-transform: uppercase; margin-bottom: 6px;
+}

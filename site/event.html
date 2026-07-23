@@ -7,7 +7,7 @@
 <title>大会予想｜RIZIN美食会予想</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260720213839">
+<link rel="stylesheet" href="css/style.css?v=20260724000234">
 </head>
 <body>
 <div id="app-header"></div>
@@ -16,11 +16,11 @@
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/config.js?v=20260720213839"></script>
-<script src="js/techniques.js?v=20260720213839"></script>
-<script src="js/demo-data.js?v=20260720213839"></script>
-<script src="js/api.js?v=20260720213839"></script>
-<script src="js/app.js?v=20260720213839"></script>
+<script src="js/config.js?v=20260724000234"></script>
+<script src="js/techniques.js?v=20260724000234"></script>
+<script src="js/demo-data.js?v=20260724000234"></script>
+<script src="js/api.js?v=20260724000234"></script>
+<script src="js/app.js?v=20260724000234"></script>
 <script>
 let EV, PHASE, FIGHTS, FMAP, MEMBERS, myPreds = {}, allPreds = [];
 let drafts = {};              // 決定前の編集中の選択（ローカルのみ）
@@ -225,12 +225,17 @@ async function clearPred(fightId) {
   toast("取り消した");
 }
 
-// オープンブック（締切なし）時、保存後にALL PICKSマトリクスを即時更新
+// オープンブック（締切なし）時、保存後にALL PICKS一覧と各カードの併記を即時更新
 async function refreshMatrix() {
-  const box = document.getElementById("matrix-section");
-  if (!box || !(isOpenBook(EV) || PHASE === "locked" || PHASE === "finished")) return;
+  if (!(isOpenBook(EV) || PHASE === "locked" || PHASE === "finished")) return;
   allPreds = await DB.listPredictions({ fightIds: FIGHTS.map(f => f.id) });
-  box.innerHTML = allPicksMatrix();
+  const box = document.getElementById("matrix-section");
+  if (box) box.innerHTML = allPicksMatrix();
+  // 各カード下の「みんなの予想」も貼り直す（自分のピックが増減するため）
+  FIGHTS.forEach(f => {
+    const el = document.getElementById("op_" + f.id);
+    if (el) el.innerHTML = `<div class="ob-head">みんなの予想</div>${picksRows(f)}`;
+  });
 }
 
 function replaceCard(fightId) {
@@ -259,10 +264,30 @@ function resultCard(f) {
       </div>`;
     }
   }
+  return `
+    <div class="fight-card" id="fc_${f.id}">
+      ${f.image_url ? `<div class="banner"><img src="${esc(f.image_url)}" alt="" loading="lazy"></div>` : ""}
+      <div class="fight-label">${fightLabel(f)}</div>
+      <div class="vs-row">
+        <div class="corner-btn c1 ${decided && f.winner_id === f.fighter1_id ? "sel" : ""}"><small>RED</small>${esc(f1?.name)}</div>
+        <span class="vs-mark">VS</span>
+        <div class="corner-btn c2 ${decided && f.winner_id === f.fighter2_id ? "sel" : ""}"><small>BLUE</small>${esc(f2?.name)}</div>
+      </div>
+      ${profileLinks(f)}
+      ${resultBox}
+      ${picksRows(f)}
+    </div>`;
+}
+
+// 1試合分の「全員の予想」行。結果が出ていれば○×・ピタリ・あらますを付ける。
+// 答え合わせカード（締切後）とオープンブックの各カード下の両方で使う。
+function picksRows(f) {
+  const decided = f.winner_id && f.result_method && !["DRAW", "NC"].includes(f.result_method);
   const preds = allPreds.filter(p => p.fight_id === f.id)
     .map(p => ({ p, m: MEMBERS.find(m => m.id === p.member_id), s: decided ? scoreFight(p, f) : null }))
     .sort((a, b) => (b.s?.pts || 0) - (a.s?.pts || 0));
-  const predRows = preds.length ? preds.map(({ p, m, s }) => {
+  if (!preds.length) return `<div class="pred-row"><span class="pdetail">まだ予想なし</span></div>`;
+  return preds.map(({ p, m, s }) => {
     const detail = [FMAP[p.winner_id]?.name,
       p.method ? METHOD_LABEL[p.method] : null,
       p.round ? `${p.round}R` : null,
@@ -277,20 +302,16 @@ function resultCard(f) {
       <span class="pdetail">${esc(detail)}</span>
       ${tier}
     </div>`;
-  }).join("") : `<div class="pred-row"><span class="pdetail">予想なし</span></div>`;
-  return `
-    <div class="fight-card" id="fc_${f.id}">
-      ${f.image_url ? `<div class="banner"><img src="${esc(f.image_url)}" alt="" loading="lazy"></div>` : ""}
-      <div class="fight-label">${fightLabel(f)}</div>
-      <div class="vs-row">
-        <div class="corner-btn c1 ${decided && f.winner_id === f.fighter1_id ? "sel" : ""}"><small>RED</small>${esc(f1?.name)}</div>
-        <span class="vs-mark">VS</span>
-        <div class="corner-btn c2 ${decided && f.winner_id === f.fighter2_id ? "sel" : ""}"><small>BLUE</small>${esc(f2?.name)}</div>
-      </div>
-      ${profileLinks(f)}
-      ${resultBox}
-      ${predRows}
-    </div>`;
+  }).join("");
+}
+
+// オープンブック大会：各カードの下に出す「みんなの予想」ブロック。
+// 予想UIは上のカードに残しつつ、その下に全員のピックを併記する。
+function othersBlock(f) {
+  return `<div class="ob-picks" id="op_${f.id}">
+    <div class="ob-head">みんなの予想</div>
+    ${picksRows(f)}
+  </div>`;
 }
 
 // ---------- 全員の予想マトリクス（締切後） ----------
@@ -349,8 +370,13 @@ function eventSummary() {
 function render() {
   const main = FIGHTS.filter(f => f.segment === "main");
   const op = FIGHTS.filter(f => f.segment === "opening");
-  const card = (PHASE === "locked" || PHASE === "finished") ? resultCard
+  const base = (PHASE === "locked" || PHASE === "finished") ? resultCard
     : PHASE === "before_open" ? previewCard : predictCard;
+  // オープンブックで「予想受付中」の間だけ、各カードの下に全員のピックを併記する。
+  // 締切後・結果発表後は resultCard が既に全員のピックを内包しているので二重にしない。
+  const card = isOpenBook(EV) && base === predictCard
+    ? (f) => base(f) + othersBlock(f)
+    : base;
   const days = daysToEvent(EV);
   const openBook = isOpenBook(EV);
   const subText = openBook ? "締切なし・いつでも予想＆編集OK。みんなの予想も公開中。"
