@@ -12,6 +12,7 @@ window.DEMO_SEED = {
     {
       id: "f_mikuru",
       name: "朝倉未来",
+      nickname: "路上の伝説",
       birth_date: "1992-07-15",
       backbone: "空手",
       team: "JAPAN TOP TEAM",
@@ -36,6 +37,7 @@ window.DEMO_SEED = {
     {
       id: "f_aoki",
       name: "青木真也",
+      nickname: "バカサバイバー",
       birth_date: "1983-05-09",
       backbone: "柔道",
       team: "Twitter：",
@@ -69,6 +71,7 @@ window.DEMO_SEED = {
     {
       id: "f_hiramoto",
       name: "平本蓮",
+      nickname: "令和の黒きカリスマ",
       birth_date: "1998-06-27",
       backbone: "キックボクシング",
       team: "剛毅會",
@@ -94,6 +97,7 @@ window.DEMO_SEED = {
     {
       id: "f_saito",
       name: "斎藤裕",
+      nickname: "令和の修斗伝承者",
       birth_date: "1987-10-08",
       backbone: "空手",
       team: "パラエストラ小岩",
@@ -120,6 +124,7 @@ window.DEMO_SEED = {
     {
       id: "f_yaman",
       name: "YA-MAN",
+      nickname: "キングオブストリートファイト",
       birth_date: "1996-05-31",
       backbone: "キックボクシング",
       team: "TARGET SHIBUYA",
@@ -143,6 +148,7 @@ window.DEMO_SEED = {
     {
       id: "f_satoshi",
       name: "ホベルト・サトシ・ソウザ",
+      nickname: "シン・柔術マジシャン",
       birth_date: "1989-09-19",
       backbone: "ブラジリアン柔術",
       team: "ボンサイ柔術",
@@ -195,6 +201,7 @@ window.DEMO_SEED = {
     {
       id: "f_keramov",
       name: "ヴガール・ケラモフ",
+      nickname: "コーカサスの雷",
       birth_date: "1992-02-20",
       backbone: "散打",
       team: "Gabala Club",
@@ -218,6 +225,7 @@ window.DEMO_SEED = {
     {
       id: "f_takagi",
       name: "高木凌",
+      nickname: "一撃秒殺スラッガー",
       birth_date: "1999-09-12",
       backbone: "野球",
       team: "フリー",
@@ -244,6 +252,7 @@ window.DEMO_SEED = {
     {
       id: "f_tomizawa",
       name: "冨澤大智",
+      nickname: "孤高の闘神",
       birth_date: "1997-10-03",
       backbone: "キックボクシング",
       team: "FIGHTER’S FLOW",
@@ -275,6 +284,7 @@ window.DEMO_SEED = {
     {
       id: "f_rena",
       name: "RENA",
+      nickname: "ツヨカワ女王・クイーン",
       birth_date: "1991-06-29",
       backbone: "キックボクシング",
       team: "SHOOTBOXING/シーザージム",
@@ -467,6 +477,7 @@ window.DEMO_SEED = {
     {
       id: "f_dautbek",
       name: "カルシャガ・ダウトベック",
+      birth_date: "1993-12-07",
       nickname: "キングオブカザフスタン",
       backbone: "ボクシング・シラット",
       team: "アメリカン・トップチーム",
@@ -986,6 +997,7 @@ window.DEMO_SEED = {
     {
       id: "f_satomasa",
       name: "佐藤将光",
+      nickname: "ミスターいぶし銀",
       rec_w: 38,
       rec_l: 17,
       rec_d: 2,
@@ -1037,6 +1049,7 @@ window.DEMO_SEED = {
     {
       id: "f_goto",
       name: "後藤丈治",
+      nickname: "北海の宮本武蔵",
       rec_w: 19,
       rec_l: 9,
       rec_ko: 10,
@@ -1091,6 +1104,7 @@ window.DEMO_SEED = {
     {
       id: "f_itoyuki",
       name: "伊藤裕樹",
+      nickname: "DEEPの殴り者",
       rec_w: 20,
       rec_l: 7,
       history: [
@@ -1142,6 +1156,7 @@ window.DEMO_SEED = {
     {
       id: "f_mashima",
       name: "摩嶋一整",
+      nickname: "毛利一族のグラップラー",
       rec_w: 19,
       rec_l: 6,
       history: [
@@ -1167,6 +1182,7 @@ window.DEMO_SEED = {
     {
       id: "f_takeda",
       name: "武田光司",
+      nickname: "漆黒のヘラクレス",
       rec_w: 19,
       rec_l: 8,
       history: [
@@ -1192,6 +1208,7 @@ window.DEMO_SEED = {
     {
       id: "f_kate",
       name: "ケイト・ロータス",
+      nickname: "不屈の睡蓮",
       backbone: "空手",
       rec_w: 10,
       rec_l: 8,
@@ -1220,6 +1237,7 @@ window.DEMO_SEED = {
     {
       id: "f_noel",
       name: "NOEL",
+      nickname: "白鵬女子高等学校2年7組出席番号19番",
       rec_w: 4,
       rec_l: 2,
       history: [
@@ -1300,6 +1318,7 @@ window.DEMO_SEED = {
     {
       id: "f_naoki",
       name: "直樹",
+      nickname: "倒し屋ジョーカー",
       rec_w: 2,
       rec_l: 2,
       rec_ko: 1,
@@ -1337,6 +1356,7 @@ window.DEMO_SEED = {
     {
       id: "f_hiramotojo",
       name: "平本丈",
+      nickname: "美しき金狼",
       rec_w: 3,
       rec_l: 2,
       rec_ko: 0,
