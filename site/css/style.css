@@ -705,3 +705,25 @@ tr.top .lb-rate { color: var(--gold-hot); }
   font-family: var(--num); font-size: 11px; letter-spacing: .2em; color: var(--muted);
   text-transform: uppercase; margin-bottom: 6px;
 }
+
+/* ===== 予想の一致／割れ を瞬間で視認 ===== */
+/* 併記ブロック：一致は金の左帯、割れは赤の左帯 */
+.ob-picks.unanimous { border-left: 3px solid var(--gold); }
+.ob-picks.split     { border-left: 3px solid var(--red); }
+.ob-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.cons {
+  font-family: var(--num); font-size: 11px; font-weight: 700; letter-spacing: .04em;
+  padding: 2px 9px; border-radius: 100px; white-space: nowrap;
+}
+.cons.agree { color: #131007; background: var(--gold-hot); }
+.cons.split { color: #fff; background: var(--red); }
+
+/* マトリクス：一致した試合の番号セルを金、割れを赤で縁取り */
+.matrix tr.mxrow.unanimous .mx-fight {
+  color: var(--gold-hot); box-shadow: inset 3px 0 0 var(--gold);
+}
+.matrix tr.mxrow.split .mx-fight {
+  color: var(--red-hot); box-shadow: inset 3px 0 0 var(--red);
+}
+/* 一致した試合は行をほんのり金でハイライト（割れは素のまま＝コントラストで割れが目立つ） */
+.matrix tr.mxrow.unanimous td { background: color-mix(in srgb, var(--gold) 8%, transparent); }

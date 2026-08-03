@@ -7,7 +7,7 @@
 <title>大会予想｜RIZIN美食会予想</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260803191355">
+<link rel="stylesheet" href="css/style.css?v=20260803201022">
 </head>
 <body>
 <div id="app-header"></div>
@@ -16,11 +16,11 @@
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/config.js?v=20260803191355"></script>
-<script src="js/techniques.js?v=20260803191355"></script>
-<script src="js/demo-data.js?v=20260803191355"></script>
-<script src="js/api.js?v=20260803191355"></script>
-<script src="js/app.js?v=20260803191355"></script>
+<script src="js/config.js?v=20260803201022"></script>
+<script src="js/techniques.js?v=20260803201022"></script>
+<script src="js/demo-data.js?v=20260803201022"></script>
+<script src="js/api.js?v=20260803201022"></script>
+<script src="js/app.js?v=20260803201022"></script>
 <script>
 let EV, PHASE, FIGHTS, FMAP, MEMBERS, myPreds = {}, allPreds = [];
 let drafts = {};              // 決定前の編集中の選択（ローカルのみ）
@@ -230,10 +230,10 @@ async function refreshMatrix() {
   allPreds = await DB.listPredictions({ fightIds: FIGHTS.map(f => f.id) });
   const box = document.getElementById("matrix-section");
   if (box) box.innerHTML = allPicksMatrix();
-  // 各カード下の「みんなの予想」も貼り直す（自分のピックが増減するため）
+  // 各カード下の「みんなの予想」も貼り直す（自分のピックが増減し、一致/割れも変わるため）
   FIGHTS.forEach(f => {
     const el = document.getElementById("op_" + f.id);
-    if (el) el.innerHTML = `<div class="ob-head">みんなの予想</div>${picksRows(f)}`;
+    if (el) el.outerHTML = othersBlock(f);
   });
 }
 
@@ -304,11 +304,25 @@ function picksRows(f) {
   }).join("");
 }
 
-// オープンブック大会：各カードの下に出す「みんなの予想」ブロック。
-// 予想UIは上のカードに残しつつ、その下に全員のピックを併記する。
+// その試合で「全員の勝者予想が揃っているか」を判定する。
+//   unanimous＝予想した全員が同じ勝者／split＝割れている／none＝1人以下
+function consensus(f) {
+  const picks = allPreds.filter(p => p.fight_id === f.id);
+  if (picks.length < 2) return { level: "none", n: picks.length };
+  const winners = new Set(picks.map(p => p.winner_id));
+  return winners.size === 1
+    ? { level: "unanimous", winner: [...winners][0], n: picks.length }
+    : { level: "split", n: picks.length };
+}
+
+// 各カードの下に出す「みんなの予想」ブロック。一致／割れを色とバッジで即視認できる。
 function othersBlock(f) {
-  return `<div class="ob-picks" id="op_${f.id}">
-    <div class="ob-head">みんなの予想</div>
+  const c = consensus(f);
+  const badge = c.level === "unanimous"
+    ? `<span class="cons agree">全員一致 → ${esc(FMAP[c.winner]?.name || "")}</span>`
+    : c.level === "split" ? `<span class="cons split">予想が割れた</span>` : "";
+  return `<div class="ob-picks ${c.level}" id="op_${f.id}">
+    <div class="ob-head">みんなの予想${badge}</div>
     ${picksRows(f)}
   </div>`;
 }
@@ -335,7 +349,8 @@ function allPicksMatrix() {
         ${sub || mark ? `<span class="mx-sub">${esc(sub)}${mark}</span>` : ""}
       </td>`;
     }).join("");
-    return `<tr><th class="mx-fight">${no}</th>${cells}</tr>`;
+    const c = decided ? { level: "" } : consensus(f);  // 結果が出たら○×優先、未確定なら一致/割れ
+    return `<tr class="mxrow ${c.level}"><th class="mx-fight">${no}</th>${cells}</tr>`;
   }).join("");
   return `
     <div class="section-label">ALL PICKS</div>
