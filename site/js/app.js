@@ -12,6 +12,9 @@
   // → あらます（ピタリ＋フィニッシュ技まで完全一致）。勝者を外したら全て不成立。
   // ドロー・無効試合は集計から除外。
   window.scoreFight = function (pred, fight) {
+    if (fight.cancelled) {  // 中止・延期は集計対象外（勝者を外しても不成立にならない）
+      return { counted: false, winnerHit: false, methodHit: false, roundHit: false, techHit: false, pitari: false, aramasu: false };
+    }
     if (!fight.winner_id || !fight.result_method) return null; // 結果未確定
     if (fight.result_method === "DRAW" || fight.result_method === "NC") {
       return { counted: false, winnerHit: false, methodHit: false, roundHit: false, techHit: false, pitari: false, aramasu: false };
@@ -35,9 +38,9 @@
     const rows = members.map(m => {
       const row = { member: m, answered: 0, decided: 0, hits: 0, pitari: 0, aramasu: 0 };
       for (const p of predictions.filter(p => p.member_id === m.id)) {
-        row.answered += 1;
         const f = fightById[p.fight_id];
-        if (!f) continue;
+        if (!f || f.cancelled) continue;  // 中止試合の予想はカウントしない
+        row.answered += 1;
         const s = window.scoreFight(p, f);
         if (!s || !s.counted) continue;
         row.decided += 1;

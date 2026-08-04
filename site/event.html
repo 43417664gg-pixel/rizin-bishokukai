@@ -7,7 +7,7 @@
 <title>大会予想｜RIZIN美食会予想</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260803203041">
+<link rel="stylesheet" href="css/style.css?v=20260803204315">
 </head>
 <body>
 <div id="app-header"></div>
@@ -16,11 +16,11 @@
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/config.js?v=20260803203041"></script>
-<script src="js/techniques.js?v=20260803203041"></script>
-<script src="js/demo-data.js?v=20260803203041"></script>
-<script src="js/api.js?v=20260803203041"></script>
-<script src="js/app.js?v=20260803203041"></script>
+<script src="js/config.js?v=20260803204315"></script>
+<script src="js/techniques.js?v=20260803204315"></script>
+<script src="js/demo-data.js?v=20260803204315"></script>
+<script src="js/api.js?v=20260803204315"></script>
+<script src="js/app.js?v=20260803204315"></script>
 <script>
 let EV, PHASE, FIGHTS, FMAP, MEMBERS, myPreds = {}, allPreds = [];
 let drafts = {};              // 決定前の編集中の選択（ローカルのみ）
@@ -166,6 +166,29 @@ function previewCard(f) {
     </div>`;
 }
 
+// ---------- 中止・延期の試合 ----------
+// カードに大きくCANCELLEDを重ね、理由を添える。予想は採点外だが一応見れる。
+function cancelledCard(f) {
+  const f1 = FMAP[f.fighter1_id], f2 = FMAP[f.fighter2_id];
+  const picks = allPreds.filter(p => p.fight_id === f.id).length;
+  return `
+    <div class="fight-card cancelled" id="fc_${f.id}">
+      <div class="cancel-stamp">CANCELLED</div>
+      ${f.image_url ? `<div class="banner"><img src="${esc(f.image_url)}" alt="" loading="lazy"></div>` : ""}
+      <div class="fight-label">${fightLabel(f)}</div>
+      <div class="vs-row">
+        <div class="corner-btn c1 disabled"><small>RED</small>${esc(f1?.name)}</div>
+        <span class="vs-mark">VS</span>
+        <div class="corner-btn c2 disabled"><small>BLUE</small>${esc(f2?.name)}</div>
+      </div>
+      <div class="cancel-note">${esc(f.cancel_note || "この試合は中止・延期になりました")}</div>
+      ${picks ? `<div class="ob-picks" id="op_${f.id}">
+        <div class="ob-head">この試合の予想（採点対象外）</div>
+        ${picksRows(f)}
+      </div>` : ""}
+    </div>`;
+}
+
 // 選択はローカルに貯めるだけ。「決定」で初めて保存される
 function setDraft(fightId, key, val) {
   const base = drafts[fightId] || (myPreds[fightId] ? { ...myPreds[fightId] } : {});
@@ -231,7 +254,9 @@ async function refreshMatrix() {
   const box = document.getElementById("matrix-section");
   if (box) box.innerHTML = allPicksMatrix();
   // 各カード下の「みんなの予想」も貼り直す（自分のピックが増減し、一致/割れも変わるため）
+  // 中止試合のブロックは専用カード側で描画済みなので触らない。
   FIGHTS.forEach(f => {
+    if (f.cancelled) return;
     const el = document.getElementById("op_" + f.id);
     if (el) el.outerHTML = othersBlock(f);
   });
@@ -349,6 +374,9 @@ function allPicksMatrix() {
         ${sub || mark ? `<span class="mx-sub">${esc(sub)}${mark}</span>` : ""}
       </td>`;
     }).join("");
+    if (f.cancelled) {  // 中止試合：番号に×を付け、行をグレーアウト（ピックは残す）
+      return `<tr class="mxrow cancelled"><th class="mx-fight">${no}<span class="mx-x">中止</span></th>${cells}</tr>`;
+    }
     const c = decided ? { level: "" } : consensus(f);  // 結果が出たら○×優先、未確定なら一致/割れ
     return `<tr class="mxrow ${c.level}"><th class="mx-fight">${no}</th>${cells}</tr>`;
   }).join("");
@@ -389,9 +417,9 @@ function render() {
   // 予想受付中は、大会の締切有無に関わらず各カードの下に全員のピックを併記する
   // （Gaku方針：みんなの予想は常時公開）。締切後・結果発表後は resultCard が
   // 既に全員のピックを内包しているので、二重にしないため predictCard のときだけ足す。
-  const card = base === predictCard
-    ? (f) => base(f) + othersBlock(f)
-    : base;
+  // 中止・延期の試合は専用カード（大きくCANCELLED・予想は見れる）に差し替える。
+  const card = (f) => f.cancelled ? cancelledCard(f)
+    : base === predictCard ? base(f) + othersBlock(f) : base(f);
   const days = daysToEvent(EV);
   const openBook = isOpenBook(EV);
   const subText = openBook ? "締切なし・いつでも予想＆編集OK。みんなの予想も公開中。"

@@ -64,6 +64,8 @@ create table fights (
   result_round int,
   result_technique text,                 -- techniques.js のIDと一致させる
   result_note text,
+  cancelled boolean not null default false,  -- 中止・延期でこの大会では実施されない試合
+  cancel_note text,                          -- 中止/延期の理由（例：負傷欠場→別大会へ延期）
   created_at timestamptz not null default now()
 );
 

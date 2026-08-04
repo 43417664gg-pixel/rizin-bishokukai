@@ -727,3 +727,33 @@ tr.top .lb-rate { color: var(--gold-hot); }
 }
 /* 一致した試合は行をほんのり金でハイライト（割れは素のまま＝コントラストで割れが目立つ） */
 .matrix tr.mxrow.unanimous td { background: color-mix(in srgb, var(--gold) 8%, transparent); }
+
+/* ===== 中止・延期の試合 ===== */
+.fight-card.cancelled { position: relative; opacity: .96; }
+.fight-card.cancelled .banner,
+.fight-card.cancelled .vs-row { filter: grayscale(1) brightness(.5); }
+/* 大きな斜めスタンプ */
+.cancel-stamp {
+  position: absolute; top: 50%; left: 50%; z-index: 3;
+  transform: translate(-50%, -50%) rotate(-14deg);
+  font-family: var(--display); font-size: clamp(34px, 12vw, 72px);
+  letter-spacing: .06em; color: var(--red-hot);
+  border: 5px solid var(--red-hot); border-radius: 10px;
+  padding: 4px 22px; background: rgba(8, 8, 11, .55);
+  text-shadow: 0 2px 14px rgba(0, 0, 0, .8); pointer-events: none;
+  white-space: nowrap;
+}
+.cancel-note {
+  margin: 12px 14px; padding: 10px 14px; font-size: 13px; color: var(--text);
+  background: color-mix(in srgb, var(--red) 12%, var(--panel));
+  border-left: 3px solid var(--red);
+}
+/* マトリクスの中止行 */
+.matrix tr.mxrow.cancelled td { filter: grayscale(1); opacity: .5; }
+.matrix tr.mxrow.cancelled .mx-fight {
+  color: var(--muted); box-shadow: inset 3px 0 0 var(--red); position: relative;
+}
+.matrix .mx-x {
+  display: block; font-size: 9px; font-weight: 800; color: var(--red-hot);
+  letter-spacing: .1em;
+}

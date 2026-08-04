@@ -1523,7 +1523,7 @@ window.DEMO_SEED = {
     { id: "r54_07", event_id: "ev_r54", order_no: 7, segment: "main", weight_class: "61.0kg", rounds: 3, fighter1_id: "f_goto", fighter2_id: "f_temirov", image_url: "assets/r54/fight_03.jpg" },
     { id: "r54_06", event_id: "ev_r54", order_no: 6, segment: "main", weight_class: "57.0kg", rounds: 3, fighter1_id: "f_itoyuki", fighter2_id: "f_gadzhamatov", image_url: "assets/r54/fight_04.jpg" },
     { id: "r54_05", event_id: "ev_r54", order_no: 5, segment: "main", weight_class: "71.0kg", rounds: 3, fighter1_id: "f_mashima", fighter2_id: "f_takeda", image_url: "assets/r54/fight_05.jpg" },
-    { id: "r54_04", event_id: "ev_r54", order_no: 4, segment: "main", weight_class: "49.0kg", rounds: 3, fighter1_id: "f_kate", fighter2_id: "f_noel", image_url: "assets/r54/fight_06.jpg" },
+    { id: "r54_04", event_id: "ev_r54", order_no: 4, segment: "main", weight_class: "49.0kg", rounds: 3, fighter1_id: "f_kate", fighter2_id: "f_noel", image_url: "assets/r54/fight_06.jpg", cancelled: true, cancel_note: "ケイト・ロータスが左膝負傷（全治2ヶ月）で欠場。10/3 LANDMARK 16 へ延期" },
     { id: "r54_03", event_id: "ev_r54", order_no: 3, segment: "main", weight_class: "66.0kg", rounds: 3, fighter1_id: "f_mizuno", fighter2_id: "f_leekaiwen", image_url: "assets/r54/fight_07.jpg" },
     { id: "r54_02", event_id: "ev_r54", order_no: 2, segment: "main", weight_class: "69.0kg", rounds: 3, fighter1_id: "f_naoki", fighter2_id: "f_hosokawa", image_url: "assets/r54/fight_08.jpg" },
     { id: "r54_01", event_id: "ev_r54", order_no: 1, segment: "main", weight_class: "57.0kg", rounds: 3, fighter1_id: "f_hiramotojo", fighter2_id: "f_jolly", image_url: "assets/r54/fight_09.jpg" },

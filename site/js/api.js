@@ -249,6 +249,7 @@
           fighter1_id: f.fighter1_id, fighter2_id: f.fighter2_id, image_url: f.image_url ?? null,
           winner_id: f.winner_id ?? null, result_method: f.result_method ?? null,
           result_round: f.result_round ?? null, result_technique: f.result_technique ?? null,
+          cancelled: f.cancelled ?? false, cancel_note: f.cancel_note ?? null,
         })));
         return out;
       },
