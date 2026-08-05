@@ -46,7 +46,9 @@
     const memberIds = new Set(members.map(m => m.id));
     const fightIds = new Set(fights.map(f => f.id));
     const predictions = (saved.predictions || []).filter(p => memberIds.has(p.member_id) && fightIds.has(p.fight_id));
-    return { _v: SEED_V, members, fighters, events, fights, predictions };
+    // 応援（予想とは別。誰がどの選手を応援するか）
+    const supports = (saved.supports || []).filter(s => memberIds.has(s.member_id) && fightIds.has(s.fight_id));
+    return { _v: SEED_V, members, fighters, events, fights, predictions, supports };
   }
   function demoLoad() {
     const raw = localStorage.getItem(LS_KEY);

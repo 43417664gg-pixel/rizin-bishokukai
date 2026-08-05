@@ -7,7 +7,7 @@
 <title>大会予想｜RIZIN美食会予想</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260805221653">
+<link rel="stylesheet" href="css/style.css?v=20260805222936">
 </head>
 <body>
 <div id="app-header"></div>
@@ -16,11 +16,11 @@
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/config.js?v=20260805221653"></script>
-<script src="js/techniques.js?v=20260805221653"></script>
-<script src="js/demo-data.js?v=20260805221653"></script>
-<script src="js/api.js?v=20260805221653"></script>
-<script src="js/app.js?v=20260805221653"></script>
+<script src="js/config.js?v=20260805222936"></script>
+<script src="js/techniques.js?v=20260805222936"></script>
+<script src="js/demo-data.js?v=20260805222936"></script>
+<script src="js/api.js?v=20260805222936"></script>
+<script src="js/app.js?v=20260805222936"></script>
 <script>
 let EV, PHASE, FIGHTS, FMAP, MEMBERS, myPreds = {}, allPreds = [];
 let drafts = {};              // 決定前の編集中の選択（ローカルのみ）
@@ -371,14 +371,10 @@ function voteBar(f) {
     </div>`;
 }
 
-// 各カードの下に出す「みんなの予想」ブロック。得票率グラフ＋一致／割れを即視認できる。
+// 各カードの下に出す「みんなの予想」ブロック。得票率グラフで割れ具合は一目なので文言バッジは出さない。
 function othersBlock(f) {
-  const c = consensus(f);
-  const badge = c.level === "unanimous"
-    ? `<span class="cons agree">全員一致 → ${esc(FMAP[c.winner]?.name || "")}</span>`
-    : c.level === "split" ? `<span class="cons split">予想が割れた</span>` : "";
-  return `<div class="ob-picks ${c.level}" id="op_${f.id}">
-    <div class="ob-head">みんなの予想${badge}</div>
+  return `<div class="ob-picks" id="op_${f.id}">
+    <div class="ob-head">みんなの予想</div>
     ${voteBar(f)}
     ${picksRows(f)}
   </div>`;
@@ -390,12 +386,19 @@ function allPicksMatrix() {
   if (!activeMembers.length) return "";
   const ordered = FIGHTS;  // renderと同じ並び（メイン降順→オープニング降順）
   const rows = ordered.map(f => {
-    const no = f.segment === "opening" ? `OP${f.order_no}` : `第${f.order_no}`;
-    // 予想一覧にもカード写真（VSバナー）を小さく添える
+    // 行頭はカード写真（適度な大きさ）＋得票率ミニ棒グラフ。番号（第X）は出さない。
     const thumb = f.image_url
       ? `<img class="mx-thumb" src="${esc(f.image_url)}" alt="" loading="lazy"
-           style="width:46px;height:auto;display:block;margin:0 auto 3px;border-radius:4px">`
+           style="width:84px;height:auto;display:block;border-radius:4px">`
       : "";
+    const mp = allPreds.filter(p => p.fight_id === f.id);
+    const mn1 = mp.filter(p => p.winner_id === f.fighter1_id).length;
+    const mpr1 = mp.length ? Math.round(mn1 / mp.length * 100) : 0, mpr2 = 100 - mpr1;
+    const miniBar = mp.length ? `
+      <div style="display:flex;height:7px;border-radius:3px;overflow:hidden;margin-top:4px">
+        <div style="width:${mpr1}%;background:#e60012"></div><div style="width:${mpr2}%;background:#1e6fd9"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:9px;color:#999;margin-top:1px"><span>${mpr1}%</span><span>${mpr2}%</span></div>` : "";
     const decided = f.winner_id && f.result_method && !["DRAW", "NC"].includes(f.result_method);
     const cells = activeMembers.map(m => {
       const p = allPreds.find(x => x.fight_id === f.id && x.member_id === m.id);
@@ -411,10 +414,10 @@ function allPicksMatrix() {
       </td>`;
     }).join("");
     if (f.cancelled) {  // 中止試合：番号に×を付け、行をグレーアウト（ピックは残す）
-      return `<tr class="mxrow cancelled"><th class="mx-fight">${thumb}${no}<span class="mx-x">中止</span></th>${cells}</tr>`;
+      return `<tr class="mxrow cancelled"><th class="mx-fight">${thumb}<span class="mx-x">中止</span></th>${cells}</tr>`;
     }
     const c = decided ? { level: "" } : consensus(f);  // 結果が出たら○×優先、未確定なら一致/割れ
-    return `<tr class="mxrow ${c.level}"><th class="mx-fight">${thumb}${no}</th>${cells}</tr>`;
+    return `<tr class="mxrow ${c.level}"><th class="mx-fight">${thumb}${miniBar}</th>${cells}</tr>`;
   }).join("");
   return `
     <div class="section-label">ALL PICKS</div>
