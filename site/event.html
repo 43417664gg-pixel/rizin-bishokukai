@@ -7,7 +7,7 @@
 <title>大会予想｜RIZIN美食会予想</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260803204315">
+<link rel="stylesheet" href="css/style.css?v=20260805221653">
 </head>
 <body>
 <div id="app-header"></div>
@@ -16,15 +16,23 @@
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/config.js?v=20260803204315"></script>
-<script src="js/techniques.js?v=20260803204315"></script>
-<script src="js/demo-data.js?v=20260803204315"></script>
-<script src="js/api.js?v=20260803204315"></script>
-<script src="js/app.js?v=20260803204315"></script>
+<script src="js/config.js?v=20260805221653"></script>
+<script src="js/techniques.js?v=20260805221653"></script>
+<script src="js/demo-data.js?v=20260805221653"></script>
+<script src="js/api.js?v=20260805221653"></script>
+<script src="js/app.js?v=20260805221653"></script>
 <script>
 let EV, PHASE, FIGHTS, FMAP, MEMBERS, myPreds = {}, allPreds = [];
 let drafts = {};              // 決定前の編集中の選択（ローカルのみ）
 const editing = new Set();    // 「編集」で開き直した試合ID
+
+// 美食会の3人（ハメ・抜き・丸山）は一覧では左・各カードでは最上部に固定する（Gaku方針）
+const FRIEND_IDS = ["m_hame", "m_nuki", "m_maruyama"];
+const friendRank = (id) => { const i = FRIEND_IDS.indexOf(id); return i < 0 ? 99 : i; };
+// 3人を先頭（固定順）→ 残りは元の順。安定ソート。
+const orderMembers = (list) => [...list].sort((a, b) => friendRank(a.id) - friendRank(b.id));
+// 結果が出ている時の見せ場ランク（あらます>ピタリ>的中>その他）
+const predRank = (s) => s ? (s.aramasu ? 3 : s.pitari ? 2 : s.winnerHit ? 1 : 0) : 0;
 
 function toast(msg) {
   const t = document.getElementById("toast");
@@ -77,26 +85,20 @@ function predictCard(f) {
   if (saved && !editing.has(f.id)) return confirmedCard(f, saved);
   const p = drafts[f.id] || (saved ? { ...saved } : {});
   const f1 = FMAP[f.fighter1_id], f2 = FMAP[f.fighter2_id];
-  const methodChips = p.winner_id ? `
+  // 決まり手＝「判定」or 具体的な決定打を1つ選ぶ（当てれば“ピタリ”）。任意。
+  const curKim = p.method === "DEC" ? "DEC" : (p.technique || "");
+  const kimSelect = p.winner_id ? `
     <div class="chips">
-      <span class="clabel">決まり手 — ラウンドまで揃えば“ピタリ”</span>
-      ${METHODS.map(m => `<button class="chip ${p.method === m.id ? "sel" : ""}"
-        onclick="setDraft('${f.id}','method','${m.id}')">${m.label}</button>`).join("")}
-    </div>` : "";
-  const roundChips = p.winner_id && p.method && p.method !== "DEC" ? `
-    <div class="chips">
-      <span class="clabel">ラウンド — 当てて“ピタリ”</span>
-      ${Array.from({ length: f.rounds || 3 }, (_, i) => i + 1).map(r =>
-        `<button class="chip ${Number(p.round) === r ? "sel" : ""}"
-          onclick="setDraft('${f.id}','round',${r})">${r}R</button>`).join("")}
-    </div>` : "";
-  const techSelect = p.winner_id && p.method && p.method !== "DEC" ? `
-    <div class="chips">
-      <span class="clabel">決定打（倒した一撃） — 読み切れば“あらます”</span>
-      <select class="tech-select" onchange="setDraft('${f.id}','technique',this.value)">
-        <option value="">— 狙わない —</option>
-        ${techsFor(p.method).map(t =>
-          `<option value="${t.id}" ${p.technique === t.id ? "selected" : ""}>${t.label}</option>`).join("")}
+      <span class="clabel">決まり手 — 当てれば“ピタリ”（任意）</span>
+      <select class="tech-select" onchange="setKimarite('${f.id}',this.value)">
+        <option value="">— 狙わない（的中のみ）—</option>
+        <option value="DEC" ${curKim === "DEC" ? "selected" : ""}>判定</option>
+        <optgroup label="KO/TKO">
+          ${techsFor("KO").map(t => `<option value="${t.id}" ${curKim === t.id ? "selected" : ""}>${t.label}</option>`).join("")}
+        </optgroup>
+        <optgroup label="一本">
+          ${techsFor("SUB").map(t => `<option value="${t.id}" ${curKim === t.id ? "selected" : ""}>${t.label}</option>`).join("")}
+        </optgroup>
       </select>
     </div>` : "";
   return `
@@ -111,7 +113,7 @@ function predictCard(f) {
           onclick="setDraft('${f.id}','winner_id','${f.fighter2_id}')"><small>BLUE</small>${esc(f2?.name)}</button>
       </div>
       ${profileLinks(f)}
-      ${methodChips}${roundChips}${techSelect}
+      ${kimSelect}
       <div class="confirm-bar">
         <button class="btn decide" ${p.winner_id ? "" : "disabled"} onclick="confirmPred('${f.id}')">この予想で決定</button>
         ${saved ? `<button class="btn ghost" onclick="cancelEdit('${f.id}')">キャンセル</button>` : ""}
@@ -122,11 +124,9 @@ function predictCard(f) {
 // 確定ビュー：自分の予想サマリー＋編集／取り消し
 function confirmedCard(f, p) {
   const f1 = FMAP[f.fighter1_id], f2 = FMAP[f.fighter2_id];
-  const detail = [p.method ? METHOD_LABEL[p.method] : null,
-    p.round ? `${p.round}R` : null,
-    p.technique ? TECH_LABEL[p.technique] : null].filter(Boolean).join("・");
-  const tier = p.technique ? "あらます狙い"
-    : (p.method && (p.method === "DEC" || p.round)) ? "ピタリ狙い" : "的中狙い";
+  const kim = p.method === "DEC" ? "判定" : (p.technique ? TECH_LABEL[p.technique] : null);
+  const detail = kim || "";
+  const tier = kim ? "ピタリ狙い" : "的中狙い";
   return `
     <div class="fight-card confirmed" id="fc_${f.id}">
       ${f.image_url ? `<div class="banner"><img src="${esc(f.image_url)}" alt="" loading="lazy"></div>` : ""}
@@ -203,6 +203,18 @@ function setDraft(fightId, key, val) {
     next[key] = val || null;
     if (key === "method") { next.round = null; next.technique = null; }
   }
+  drafts[fightId] = next;
+  replaceCard(fightId);
+}
+
+// 決まり手ピッカー：判定 or 決定打(technique)を1つ。method を自動で決める。ラウンドは廃止。
+function setKimarite(fightId, val) {
+  const base = drafts[fightId] || (myPreds[fightId] ? { ...myPreds[fightId] } : {});
+  const next = { ...base, member_id: getMemberId(), fight_id: fightId };
+  if (!val) { next.method = null; next.technique = null; }
+  else if (val === "DEC") { next.method = "DEC"; next.technique = null; }
+  else { const t = TECHNIQUES.find(x => x.id === val); next.method = t ? t.method : null; next.technique = val; }
+  next.round = null;
   drafts[fightId] = next;
   replaceCard(fightId);
 }
@@ -299,6 +311,7 @@ function resultCard(f) {
       </div>
       ${profileLinks(f)}
       ${resultBox}
+      ${voteBar(f)}
       ${picksRows(f)}
     </div>`;
 }
@@ -309,16 +322,14 @@ function picksRows(f) {
   const decided = f.winner_id && f.result_method && !["DRAW", "NC"].includes(f.result_method);
   const preds = allPreds.filter(p => p.fight_id === f.id)
     .map(p => ({ p, m: MEMBERS.find(m => m.id === p.member_id), s: decided ? scoreFight(p, f) : null }))
-    .sort((a, b) => (b.s?.pts || 0) - (a.s?.pts || 0));
+    // 3人を最上部に固定 → その中/外で見せ場順（あらます>ピタリ>的中）
+    .sort((a, b) => friendRank(a.p.member_id) - friendRank(b.p.member_id) || predRank(b.s) - predRank(a.s));
   if (!preds.length) return `<div class="pred-row"><span class="pdetail">まだ予想なし</span></div>`;
   return preds.map(({ p, m, s }) => {
-    const detail = [FMAP[p.winner_id]?.name,
-      p.method ? METHOD_LABEL[p.method] : null,
-      p.round ? `${p.round}R` : null,
-      p.technique ? TECH_LABEL[p.technique] : null].filter(Boolean).join("・");
+    const kim = p.method === "DEC" ? "判定" : (p.technique ? TECH_LABEL[p.technique] : null);
+    const detail = [FMAP[p.winner_id]?.name, kim].filter(Boolean).join("・");
     if (!s || !s.counted) return `<div class="pred-row"><span class="pwho">${esc(m?.name)}</span><span class="pdetail">${esc(detail)}</span></div>`;
-    const tier = s.aramasu ? `<span class="ptier aramasu">🎯あらます!!</span>`
-      : s.pitari ? `<span class="ptier pitari">ピタリ!</span>`
+    const tier = s.pitari ? `<span class="ptier pitari">ピタリ!</span>`
       : s.winnerHit ? `<span class="ptier">的中</span>` : "";
     return `<div class="pred-row ${s.winnerHit ? "hit" : "miss"}">
       <span class="hitmark">${s.winnerHit ? "○" : "×"}</span>
@@ -340,7 +351,27 @@ function consensus(f) {
     : { level: "split", n: picks.length };
 }
 
-// 各カードの下に出す「みんなの予想」ブロック。一致／割れを色とバッジで即視認できる。
+// 得票率の横グラフ（オッズ可視化）。赤=RED側・青=BLUE側の勝者予想の割合。
+function voteBar(f) {
+  const picks = allPreds.filter(p => p.fight_id === f.id);
+  const n = picks.length;
+  if (!n) return "";
+  const f1 = FMAP[f.fighter1_id], f2 = FMAP[f.fighter2_id];
+  const n1 = picks.filter(p => p.winner_id === f.fighter1_id).length;
+  const p1 = Math.round(n1 / n * 100), p2 = 100 - p1;
+  return `
+    <div class="votebar" style="margin:8px 0 4px">
+      <div style="display:flex;height:22px;border-radius:5px;overflow:hidden;font:700 12px/22px 'Noto Sans JP',sans-serif;color:#fff">
+        <div style="width:${p1}%;background:#e60012;padding:0 6px;white-space:nowrap;overflow:hidden">${p1 >= 12 ? p1 + "%" : ""}</div>
+        <div style="width:${p2}%;background:#1e6fd9;text-align:right;padding:0 6px;white-space:nowrap;overflow:hidden">${p2 >= 12 ? p2 + "%" : ""}</div>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:#888;margin-top:3px">
+        <span>${esc(f1?.name)} ${p1}%</span><span>${p2}% ${esc(f2?.name)}</span>
+      </div>
+    </div>`;
+}
+
+// 各カードの下に出す「みんなの予想」ブロック。得票率グラフ＋一致／割れを即視認できる。
 function othersBlock(f) {
   const c = consensus(f);
   const badge = c.level === "unanimous"
@@ -348,37 +379,42 @@ function othersBlock(f) {
     : c.level === "split" ? `<span class="cons split">予想が割れた</span>` : "";
   return `<div class="ob-picks ${c.level}" id="op_${f.id}">
     <div class="ob-head">みんなの予想${badge}</div>
+    ${voteBar(f)}
     ${picksRows(f)}
   </div>`;
 }
 
 // ---------- 全員の予想マトリクス（締切後） ----------
 function allPicksMatrix() {
-  const activeMembers = MEMBERS.filter(m => allPreds.some(p => p.member_id === m.id));
+  const activeMembers = orderMembers(MEMBERS.filter(m => allPreds.some(p => p.member_id === m.id)));
   if (!activeMembers.length) return "";
   const ordered = FIGHTS;  // renderと同じ並び（メイン降順→オープニング降順）
   const rows = ordered.map(f => {
     const no = f.segment === "opening" ? `OP${f.order_no}` : `第${f.order_no}`;
+    // 予想一覧にもカード写真（VSバナー）を小さく添える
+    const thumb = f.image_url
+      ? `<img class="mx-thumb" src="${esc(f.image_url)}" alt="" loading="lazy"
+           style="width:46px;height:auto;display:block;margin:0 auto 3px;border-radius:4px">`
+      : "";
     const decided = f.winner_id && f.result_method && !["DRAW", "NC"].includes(f.result_method);
     const cells = activeMembers.map(m => {
       const p = allPreds.find(x => x.fight_id === f.id && x.member_id === m.id);
       if (!p) return `<td class="mx-cell none">—</td>`;
       const corner = p.winner_id === f.fighter1_id ? "c1" : "c2";
       const hitCls = decided ? (p.winner_id === f.winner_id ? " hit" : " miss") : "";
-      const sub = [p.method ? METHOD_LABEL[p.method] : null, p.round ? `${p.round}R` : null]
-        .filter(Boolean).join(" ");
+      const sub = p.method === "DEC" ? "判定" : (p.technique ? techShort(p.technique) : "");
       const s = decided ? scoreFight(p, f) : null;
-      const mark = s?.aramasu ? " 🎯あらます" : s?.pitari ? " ピタリ" : "";
+      const mark = s?.pitari ? " ピタリ" : "";
       return `<td class="mx-cell ${corner}${hitCls}">
         <span class="mx-name">${esc(FMAP[p.winner_id]?.name || "")}</span>
         ${sub || mark ? `<span class="mx-sub">${esc(sub)}${mark}</span>` : ""}
       </td>`;
     }).join("");
     if (f.cancelled) {  // 中止試合：番号に×を付け、行をグレーアウト（ピックは残す）
-      return `<tr class="mxrow cancelled"><th class="mx-fight">${no}<span class="mx-x">中止</span></th>${cells}</tr>`;
+      return `<tr class="mxrow cancelled"><th class="mx-fight">${thumb}${no}<span class="mx-x">中止</span></th>${cells}</tr>`;
     }
     const c = decided ? { level: "" } : consensus(f);  // 結果が出たら○×優先、未確定なら一致/割れ
-    return `<tr class="mxrow ${c.level}"><th class="mx-fight">${no}</th>${cells}</tr>`;
+    return `<tr class="mxrow ${c.level}"><th class="mx-fight">${thumb}${no}</th>${cells}</tr>`;
   }).join("");
   return `
     <div class="section-label">ALL PICKS</div>
@@ -404,7 +440,7 @@ function eventSummary() {
           <span class="srank">${i + 1}</span>
           <span class="sname">${esc(r.member.name)}${i === 0 ? "　👑" : ""}</span>
           <span class="srate">${fmtRate(r.rate)}</span>
-          <span class="ssub">${r.hits}/${r.decided}的中${r.pitari ? `・ピタリ${r.pitari}` : ""}${r.aramasu ? `・あらます${r.aramasu}` : ""}</span>
+          <span class="ssub">${r.hits}/${r.decided}的中${r.pitari ? `・ピタリ${r.pitari}` : ""}</span>
         </div>`).join("")}
     </div>`;
 }

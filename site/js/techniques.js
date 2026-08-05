@@ -55,3 +55,15 @@ window.TECHNIQUES = [
 
 window.TECH_LABEL = Object.fromEntries(window.TECHNIQUES.map(t => [t.id, t.label]));
 window.techsFor = (method) => window.TECHNIQUES.filter(t => t.method === method);
+
+// 略称マスタ：ALL PICKSの表など狭い場所で使う。長い技だけ短くする（無ければフルラベル）。
+window.TECH_SHORT = {
+  right_straight: "右スト", left_straight: "左スト", right_hook: "右フック", left_hook: "左フック",
+  upper: "アッパー", high_kick: "ハイK", middle_kick: "ミドルK", low_kick: "ローK",
+  body: "ボディ", elbow: "肘", knee: "膝", gnp: "パウンド", ko_other: "KO他",
+  rnc: "RNC", guillotine: "ギロチン", triangle: "三角", darce: "ダース", anaconda: "アナコンダ",
+  front_choke: "フロント", kata_gatame: "肩固め", north_south: "N-S", armbar: "腕十字",
+  kimura: "キムラ", leglock: "ヒール", kneebar: "ニーバー", neck_crank: "ネック",
+  twister: "ツイスター", sub_other: "一本他",
+};
+window.techShort = (id) => window.TECH_SHORT[id] || window.TECH_LABEL[id] || "";

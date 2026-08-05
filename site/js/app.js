@@ -7,36 +7,40 @@
   window.setMemberId = (id) => localStorage.setItem(MEMBER_KEY, id);
   window.clearMemberId = () => localStorage.removeItem(MEMBER_KEY);
 
-  // ---------- スコアリング（ルールの正本） ----------
-  // 三段梯子：的中（勝者）→ ピタリ（決まり手＋ラウンドまで一致・判定は決まり手のみ）
-  // → あらます（ピタリ＋フィニッシュ技まで完全一致）。勝者を外したら全て不成立。
-  // ドロー・無効試合は集計から除外。
+  // ---------- スコアリング（ルールの正本・2段に簡素化 2026-08-05） ----------
+  // 二段梯子：的中（勝者）→ ピタリ（勝者＋決まり手まで一致）。勝者を外したら不成立。
+  // 決まり手＝「判定」or 具体的な決定打（右フック／リアネイキドチョーク等）を1つ。
+  //   ・判定決着 → 予想が「判定」でピタリ
+  //   ・KO/一本決着 → 予想の決定打(technique)が結果の決定打と一致でピタリ
+  // ラウンド・あらます（旧3段目）は廃止。ドロー・無効試合は集計から除外。
+  window.kimarite = function (method, technique) {
+    // 採点用の「決まり手」キー。判定は"DEC"、それ以外は具体的な決定打(technique)。
+    if (method === "DEC") return "DEC";
+    return technique || null;  // KO/一本で技を指定していなければ決まり手なし＝的中止まり
+  };
   window.scoreFight = function (pred, fight) {
     if (fight.cancelled) {  // 中止・延期は集計対象外（勝者を外しても不成立にならない）
-      return { counted: false, winnerHit: false, methodHit: false, roundHit: false, techHit: false, pitari: false, aramasu: false };
+      return { counted: false, winnerHit: false, pitari: false };
     }
     if (!fight.winner_id || !fight.result_method) return null; // 結果未確定
     if (fight.result_method === "DRAW" || fight.result_method === "NC") {
-      return { counted: false, winnerHit: false, methodHit: false, roundHit: false, techHit: false, pitari: false, aramasu: false };
+      return { counted: false, winnerHit: false, pitari: false };
     }
     const winnerHit = pred.winner_id === fight.winner_id;
-    let methodHit = false, roundHit = false, techHit = false, pitari = false, aramasu = false;
+    let pitari = false;
     if (winnerHit) {
-      methodHit = !!(pred.method && pred.method === fight.result_method);
-      roundHit = !!(pred.round && fight.result_round && Number(pred.round) === Number(fight.result_round)
-          && fight.result_method !== "DEC");
-      techHit = !!(pred.technique && pred.technique === fight.result_technique);
-      pitari = methodHit && (fight.result_method === "DEC" || roundHit);
-      aramasu = pitari && techHit;
+      const pk = window.kimarite(pred.method, pred.technique);
+      const rk = window.kimarite(fight.result_method, fight.result_technique);
+      pitari = !!(pk && rk && pk === rk);
     }
-    return { counted: true, winnerHit, methodHit, roundHit, techHit, pitari, aramasu };
+    return { counted: true, winnerHit, pitari };
   };
 
   // メンバー×確定試合からランキング行を作る
   window.computeLeaderboard = function (members, fights, predictions) {
     const fightById = Object.fromEntries(fights.map(f => [f.id, f]));
     const rows = members.map(m => {
-      const row = { member: m, answered: 0, decided: 0, hits: 0, pitari: 0, aramasu: 0 };
+      const row = { member: m, answered: 0, decided: 0, hits: 0, pitari: 0 };
       for (const p of predictions.filter(p => p.member_id === m.id)) {
         const f = fightById[p.fight_id];
         if (!f || f.cancelled) continue;  // 中止試合の予想はカウントしない
@@ -46,12 +50,11 @@
         row.decided += 1;
         if (s.winnerHit) row.hits += 1;
         if (s.pitari) row.pitari += 1;
-        if (s.aramasu) row.aramasu += 1;
       }
       row.rate = row.decided ? row.hits / row.decided : null;
       return row;
     });
-    rows.sort((a, b) => (b.rate ?? -1) - (a.rate ?? -1) || b.aramasu - a.aramasu || b.pitari - a.pitari || b.decided - a.decided);
+    rows.sort((a, b) => (b.rate ?? -1) - (a.rate ?? -1) || b.pitari - a.pitari || b.decided - a.decided);
     return rows;
   };
 

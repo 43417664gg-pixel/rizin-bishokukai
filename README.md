@@ -110,6 +110,21 @@ supabase/schema.sql  ※実DBと差異あり（下記「既知の負債」参照
 
 ---
 
+## 外部予想の取り込み（NotebookLM → ポータル）※2026-08-04新設
+インフルエンサー・各選手の勝敗予想を取り込み、**的中率ランキングの母集団を厚くする**（事業ビジョン＝オッズの主場化の布石）。スキル＝`rizin-prediction-intake`。
+
+パイプライン：
+```
+YouTube予想動画 → NotebookLMにソース追加＋prompts/notebooklm_prediction_extract.md を貼る
+  → 構造化出力ブロック → TONYに貼る → ingest_predictions.py で機械照合＋member化
+  → admin コンソールに upsertスニペットを貼る → 本番へ即反映 → influencer_sources.md に出典記録
+```
+- **データモデル**：各予想者を `members` に1人足す（`m_yt_<slug>`）。既存の予想/ランキング機構をそのまま流用。将来「一般ユーザー予想」も同じ器
+- **出典必須**：仲間内・noindex なら載せてOK。ただし各取り込みにチャンネル名＋動画URL＋投稿日を紐づける（`influencer_sources.md`）。**出典を示せない予想は載せない**
+- **設計の芯**：選手名をLLMに要約させない（`ingest_predictions.py` が文字列照合）。`不明`は埋めない。技名は `techniques.js` の id だけ
+- **プロンプト正本**：`prompts/notebooklm_prediction_extract.md`（出力フォーマットを規定・スクリプトと対で直す）
+- **自動化ロードマップ**：v1手動→v2 admin取込欄→v3 字幕API（NotebookLM不要）→v4 catchup統合で無人化
+
 ## 既知の負債（次セッションで対応）
 
 ### A. バグ・負債
