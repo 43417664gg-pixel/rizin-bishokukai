@@ -7,7 +7,7 @@
 <title>予想カード｜RIZIN美食会予想</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260806202803">
+<link rel="stylesheet" href="css/style.css?v=20260806203044">
 <style>
 /* SNSで一枚歩きする「予想カード」。縦長・自己完結・スクショ映えを最優先。 */
 .pk-wrap { max-width: 480px; margin: 0 auto; padding: 14px; }
@@ -45,24 +45,24 @@
 .pk-mark { display:block; font-weight:900; font-size:18px; margin-top:1px; }
 .pk-mark.hit{color:#2ba84a} .pk-mark.miss{color:#c0343f} .pk-mark.pit{color:#c9a84a; font-size:11px}
 .pk-none { flex:1; color:#6a6a72; font-size:12px; }
-/* カード写真（VSバナー）に勝者側の丸を直接重ねる */
-.pk-row2 { padding:8px 4px; border-bottom:1px solid #1c1c22; }
+/* カード写真（VSバナー）に勝者側の丸を直接重ねる。1スクショに収まるよう横並び＆圧縮。 */
+.pk-row2 { display:flex; align-items:center; gap:9px; padding:4px 2px; border-bottom:1px solid #1c1c22; }
 .pk-row2:last-child { border-bottom:none; }
-.pk-bwrap { position:relative; border-radius:8px; overflow:hidden; line-height:0; }
+.pk-bwrap { position:relative; width:104px; flex:none; border-radius:5px; overflow:hidden; line-height:0; }
 .pk-banner { width:100%; height:auto; display:block; }
-.pk-circle { position:absolute; top:8%; height:72%; aspect-ratio:1/1; border-radius:50%;
-  box-shadow:0 0 0 3px rgba(0,0,0,.4); pointer-events:none; }
-.pk-circle.red { left:6%; border:4px solid #ff2e3e; }
-.pk-circle.blue { right:6%; border:4px solid #2e78ff; }
-.pk-no2 { position:absolute; top:4px; left:5px; font-family:Oswald,sans-serif; font-size:11px; font-weight:700;
-  color:#fff; background:rgba(0,0,0,.6); padding:1px 6px; border-radius:4px; }
-.pk-mk2 { position:absolute; top:4px; right:5px; font-weight:900; font-size:15px; padding:1px 8px; border-radius:6px; }
+.pk-circle { position:absolute; top:9%; height:66%; aspect-ratio:1/1; border-radius:50%;
+  box-shadow:0 0 0 2px rgba(0,0,0,.4); pointer-events:none; }
+.pk-circle.red { left:6%; border:3px solid #ff2e3e; }
+.pk-circle.blue { right:6%; border:3px solid #2e78ff; }
+.pk-no2 { position:absolute; top:2px; left:3px; font-family:Oswald,sans-serif; font-size:9px; font-weight:700;
+  color:#fff; background:rgba(0,0,0,.6); padding:0 4px; border-radius:3px; }
+.pk-mk2 { position:absolute; top:2px; right:3px; font-weight:900; font-size:12px; padding:0 5px; border-radius:4px; }
 .pk-mk2.hit{ background:#2ba84a; color:#fff } .pk-mk2.miss{ background:#c0343f; color:#fff }
-.pk-mk2.pit{ background:#c9a84a; color:#111; font-size:12px }
-.pk-cap { display:flex; align-items:baseline; gap:8px; padding:6px 4px 2px; }
-.pk-nm2 { font-weight:900; font-size:15px; flex:1; min-width:0; }
+.pk-mk2.pit{ background:#c9a84a; color:#111; font-size:10px }
+.pk-cap { flex:1; min-width:0; padding:0; }
+.pk-nm2 { display:block; font-weight:900; font-size:15px; line-height:1.15; }
 .pk-nm2.red{ color:#ff5a67 } .pk-nm2.blue{ color:#5aa0ff }
-.pk-crowd2 { flex:none; font-size:11px; color:#9a9aa2; }
+.pk-crowd2 { display:block; font-size:11px; color:#9a9aa2; margin-top:2px; }
 .pk-foot { padding:10px 16px 14px; font-size:10px; color:#6a6a72; display:flex; justify-content:space-between; align-items:center; }
 .pk-empty { padding:30px; text-align:center; color:#8a8a92; }
 .pk-actions { max-width:480px; margin: 10px auto 40px; text-align:center; }
@@ -77,11 +77,11 @@
 <div class="pk-actions" id="acts"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/config.js?v=20260806202803"></script>
-<script src="js/techniques.js?v=20260806202803"></script>
-<script src="js/demo-data.js?v=20260806202803"></script>
-<script src="js/api.js?v=20260806202803"></script>
-<script src="js/app.js?v=20260806202803"></script>
+<script src="js/config.js?v=20260806203044"></script>
+<script src="js/techniques.js?v=20260806203044"></script>
+<script src="js/demo-data.js?v=20260806203044"></script>
+<script src="js/api.js?v=20260806203044"></script>
+<script src="js/app.js?v=20260806203044"></script>
 <script>
 async function load() {
   const evId = qp("event"), memId = qp("member");

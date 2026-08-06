@@ -105,6 +105,25 @@
       db.predictions = db.predictions.filter(p => !(p.member_id === memberId && p.fight_id === fightId));
       demoSave(db);
     },
+    // ----- 応援（予想とは別。誰がどの選手を応援するか） -----
+    async listSupports(filter = {}) {
+      let ss = demoLoad().supports || [];
+      if (filter.fightIds) ss = ss.filter(s => filter.fightIds.includes(s.fight_id));
+      if (filter.memberId) ss = ss.filter(s => s.member_id === filter.memberId);
+      return ss.slice();
+    },
+    async upsertSupport(sup) {
+      const db = demoLoad(); if (!db.supports) db.supports = [];
+      const i = db.supports.findIndex(s => s.member_id === sup.member_id && s.fight_id === sup.fight_id);
+      if (i >= 0) db.supports[i] = { ...db.supports[i], ...sup, updated_at: new Date().toISOString() };
+      else db.supports.push({ id: uid(), updated_at: new Date().toISOString(), ...sup });
+      demoSave(db);
+    },
+    async deleteSupport(memberId, fightId) {
+      const db = demoLoad();
+      db.supports = (db.supports || []).filter(s => !(s.member_id === memberId && s.fight_id === fightId));
+      demoSave(db);
+    },
     // ----- admin -----
     async isAdmin() { return true; }, // デモでは誰でも管理可
     async adminLogin() { return { ok: true }; },
