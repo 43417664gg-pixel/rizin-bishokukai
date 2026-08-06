@@ -7,43 +7,70 @@
 <title>RIZIN美食会予想</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260806203414">
+<link rel="stylesheet" href="css/style.css?v=20260806231347">
 </head>
 <body>
 <div id="app-header"></div>
 <div class="wrap" id="main"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/config.js?v=20260806203414"></script>
-<script src="js/techniques.js?v=20260806203414"></script>
-<script src="js/demo-data.js?v=20260806203414"></script>
-<script src="js/api.js?v=20260806203414"></script>
-<script src="js/app.js?v=20260806203414"></script>
+<script src="js/config.js?v=20260806231347"></script>
+<script src="js/techniques.js?v=20260806231347"></script>
+<script src="js/demo-data.js?v=20260806231347"></script>
+<script src="js/api.js?v=20260806231347"></script>
+<script src="js/app.js?v=20260806231347"></script>
 <script>
 async function renderPlayerSelect() {
   const members = await DB.listMembers();
+  // 美食会コア（3人）だけ既存タイルで復帰可。インフルエンサーは予想の出典であって"なりすまし入口"にしない。
+  const FRIEND_IDS = ["m_hame", "m_nuki", "m_maruyama"];
+  const friends = members.filter(m => FRIEND_IDS.includes(m.id));
   document.getElementById("main").innerHTML = `
     <div class="ps-hero">
-      <div class="en-label">CHOOSE YOUR FIGHTER</div>
-      <h1 class="page-title">誰で参戦する？</h1>
-      <p class="page-sub">名前を選んでエントリー。次からは自動で入場。</p>
+      <div class="en-label">JOIN FREE</div>
+      <h1 class="page-title">予想を始めよう</h1>
+      <p class="page-sub">名前を決めるだけ。登録不要で今すぐ予想＆応援できる。</p>
     </div>
-    <div class="player-grid">
-      ${members.map((m, i) => `
-        <button class="player-tile" style="--c:${esc(m.color)};--d:${i * 70}ms" data-initial="${esc(m.name.slice(0, 1))}" onclick="choose('${m.id}')">
-          <span class="entry-no">ENTRY ${String(i + 1).padStart(2, "0")}</span>
-          <span class="pname">${esc(m.name)}</span>
-        </button>`).join("")}
+    <div class="guest-box" style="background:#131318;border:1px solid #2a2a33;border-radius:12px;padding:16px;margin:0 auto;max-width:460px">
+      <input id="gname" placeholder="ニックネーム（例：格闘技太郎）" maxlength="20"
+        style="width:100%;box-sizing:border-box;padding:12px;font-size:16px;border-radius:8px;border:1px solid #3a3a44;background:#0d0d10;color:#fff"
+        onkeydown="if(event.key==='Enter')startGuest()">
+      <button onclick="startGuest()"
+        style="width:100%;margin-top:10px;padding:13px;font-size:15px;font-weight:900;border:none;border-radius:8px;background:#e60012;color:#fff;cursor:pointer">この名前で始める →</button>
+      <p style="font-size:11px;color:#8a8a92;margin:8px 0 0">※記録はこの端末に保存。別端末で引き継ぎたい人は後からアカウント連携（近日）。</p>
     </div>
+    ${friends.length ? `
+    <details style="max-width:460px;margin:16px auto 0">
+      <summary style="cursor:pointer;color:#9a9aa2;font-size:13px;padding:6px">美食会メンバー・前に参加した人はこちら</summary>
+      <div class="player-grid" style="margin-top:10px">
+        ${friends.map((m, i) => `
+          <button class="player-tile" style="--c:${esc(m.color)};--d:${i * 70}ms" data-initial="${esc(m.name.slice(0, 1))}" onclick="choose('${m.id}')">
+            <span class="entry-no">MEMBER</span>
+            <span class="pname">${esc(m.name)}</span>
+          </button>`).join("")}
+      </div>
+    </details>` : ""}
     <div class="rules-box">
-      <b>ルールは三段梯子：</b>勝者を当てて<b class="gold">的中</b>、
-      決まり手＋ラウンドまで揃えば<b class="gold">ピタリ</b>、
-      フィニッシュ技まで極めれば<b class="gold">あらます</b>。
-      勝者を外したら全部パー。予想しない試合はノーカウント。
+      <b>ルールは二段：</b>勝者を当てて<b class="gold">的中</b>、
+      決まり手＋ラウンドまで揃えば<b class="gold">ピタリ</b>。
+      勝者を外したらパー。予想しない試合はノーカウント。
     </div>`;
 }
 
 function choose(id) { setMemberId(id); renderHome(); }
+
+// ゲスト登録：名前だけで自分専用のメンバーを作って即プレイ（ゼロ障壁）
+async function startGuest() {
+  const name = (document.getElementById("gname").value || "").trim();
+  if (!name) { alert("ニックネームを入れてね"); return; }
+  const pal = ["#e17055", "#00b894", "#0984e3", "#e84393", "#00cec9", "#6c5ce7", "#fdcb6e", "#d63031"];
+  const id = "m_g_" + Math.random().toString(36).slice(2, 9);
+  try {
+    await DB.upsertMember({ id, name, color: pal[Math.floor(Math.random() * pal.length)] });
+    setMemberId(id);
+    renderHome();
+  } catch (e) { alert("登録できませんでした（メンバー作成のRLS未設定かも）：" + (e.message || e)); }
+}
 
 async function renderHome() {
   await renderHeader("home");
