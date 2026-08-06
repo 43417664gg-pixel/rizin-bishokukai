@@ -7,7 +7,7 @@
 <title>大会予想｜RIZIN美食会予想</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260806090312">
+<link rel="stylesheet" href="css/style.css?v=20260806091538">
 </head>
 <body>
 <div id="app-header"></div>
@@ -16,11 +16,11 @@
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/config.js?v=20260806090312"></script>
-<script src="js/techniques.js?v=20260806090312"></script>
-<script src="js/demo-data.js?v=20260806090312"></script>
-<script src="js/api.js?v=20260806090312"></script>
-<script src="js/app.js?v=20260806090312"></script>
+<script src="js/config.js?v=20260806091538"></script>
+<script src="js/techniques.js?v=20260806091538"></script>
+<script src="js/demo-data.js?v=20260806091538"></script>
+<script src="js/api.js?v=20260806091538"></script>
+<script src="js/app.js?v=20260806091538"></script>
 <script>
 let EV, PHASE, FIGHTS, FMAP, MEMBERS, myPreds = {}, allPreds = [];
 let drafts = {};              // 決定前の編集中の選択（ローカルのみ）
@@ -104,6 +104,7 @@ function predictCard(f) {
   return `
     <div class="fight-card" id="fc_${f.id}">
       ${f.image_url ? `<div class="banner"><img src="${esc(f.image_url)}" alt="" loading="lazy"></div>` : ""}
+      ${voteBar(f)}
       <div class="fight-label">${fightLabel(f)}</div>
       <div class="vs-row">
         <button class="corner-btn c1 ${p.winner_id === f.fighter1_id ? "sel" : ""}"
@@ -130,6 +131,7 @@ function confirmedCard(f, p) {
   return `
     <div class="fight-card confirmed" id="fc_${f.id}">
       ${f.image_url ? `<div class="banner"><img src="${esc(f.image_url)}" alt="" loading="lazy"></div>` : ""}
+      ${voteBar(f)}
       <div class="fight-label">${fightLabel(f)}</div>
       <div class="vs-row">
         <div class="corner-btn c1 ${p.winner_id === f.fighter1_id ? "sel" : ""}"><small>RED</small>${esc(f1?.name)}</div>
@@ -155,6 +157,7 @@ function previewCard(f) {
   return `
     <div class="fight-card" id="fc_${f.id}">
       ${f.image_url ? `<div class="banner"><img src="${esc(f.image_url)}" alt="" loading="lazy"></div>` : ""}
+      ${voteBar(f)}
       <div class="fight-label">${fightLabel(f)}</div>
       <div class="vs-row">
         <div class="corner-btn c1 disabled"><small>RED</small>${esc(f1?.name)}</div>
@@ -175,6 +178,7 @@ function cancelledCard(f) {
     <div class="fight-card cancelled" id="fc_${f.id}">
       <div class="cancel-stamp">CANCELLED</div>
       ${f.image_url ? `<div class="banner"><img src="${esc(f.image_url)}" alt="" loading="lazy"></div>` : ""}
+      ${voteBar(f)}
       <div class="fight-label">${fightLabel(f)}</div>
       <div class="vs-row">
         <div class="corner-btn c1 disabled"><small>RED</small>${esc(f1?.name)}</div>
@@ -303,6 +307,7 @@ function resultCard(f) {
   return `
     <div class="fight-card" id="fc_${f.id}">
       ${f.image_url ? `<div class="banner"><img src="${esc(f.image_url)}" alt="" loading="lazy"></div>` : ""}
+      ${voteBar(f)}
       <div class="fight-label">${fightLabel(f)}</div>
       <div class="vs-row">
         <div class="corner-btn c1 ${decided && f.winner_id === f.fighter1_id ? "sel" : ""}"><small>RED</small>${esc(f1?.name)}</div>
@@ -311,7 +316,6 @@ function resultCard(f) {
       </div>
       ${profileLinks(f)}
       ${resultBox}
-      ${voteBar(f)}
       ${picksRows(f)}
     </div>`;
 }
@@ -375,7 +379,6 @@ function voteBar(f) {
 function othersBlock(f) {
   return `<div class="ob-picks" id="op_${f.id}">
     <div class="ob-head">みんなの予想</div>
-    ${voteBar(f)}
     ${picksRows(f)}
   </div>`;
 }
@@ -389,7 +392,7 @@ function allPicksMatrix() {
     // 行頭はカード写真（適度な大きさ）＋得票率ミニ棒グラフ。番号（第X）は出さない。
     const thumb = f.image_url
       ? `<img class="mx-thumb" src="${esc(f.image_url)}" alt="" loading="lazy"
-           style="width:84px;height:auto;display:block;border-radius:4px">`
+           style="width:112px;height:auto;display:block;border-radius:4px">`
       : "";
     const mp = allPreds.filter(p => p.fight_id === f.id);
     const mn1 = mp.filter(p => p.winner_id === f.fighter1_id).length;
@@ -423,7 +426,7 @@ function allPicksMatrix() {
     <div class="section-label">ALL PICKS</div>
     <div class="matrix-wrap">
       <table class="matrix">
-        <tr><th></th>${activeMembers.map(m => `<th class="mx-member"><a href="picks.html?event=${EV.id}&member=${m.id}" style="color:inherit;text-decoration:none" title="${esc(m.name)}の予想カード">${esc(m.name)} ›</a></th>`).join("")}</tr>
+        <tr><th></th>${activeMembers.map(m => `<th class="mx-member"><a href="picks.html?event=${EV.id}&member=${m.id}" style="color:inherit;text-decoration:none;display:block">${esc(m.name)}<span style="display:block;font-size:9px;color:#c9a84a;font-weight:700;margin-top:1px">▶ 予想カード</span></a></th>`).join("")}</tr>
         ${rows}
       </table>
     </div>
