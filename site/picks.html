@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>予想カード｜RIZIN美食会予想</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=20260806090312">
+<style>
+/* SNSで一枚歩きする「予想カード」。縦長・自己完結・スクショ映えを最優先。 */
+.pk-wrap { max-width: 480px; margin: 0 auto; padding: 14px; }
+.pk-card { background: #0d0d0f; border: 1px solid #26262c; border-radius: 14px; overflow: hidden;
+  box-shadow: 0 8px 30px rgba(0,0,0,.5); }
+.pk-head { padding: 16px 16px 12px; background: linear-gradient(135deg,#1a1013,#0d0d0f);
+  border-bottom: 2px solid #e60012; position: relative; }
+.pk-brand { font-family: Anton,sans-serif; letter-spacing:.04em; font-size: 13px; color:#e60012; }
+.pk-brand span { color:#c9a84a; }
+.pk-ev { font-weight: 900; font-size: 18px; margin-top: 2px; }
+.pk-date { font-size: 11px; color:#8a8a92; }
+.pk-who { display:flex; align-items:center; gap:10px; margin-top:10px; }
+.pk-dot { width: 12px; height: 12px; border-radius: 50%; flex: none; }
+.pk-name { font-weight: 900; font-size: 20px; }
+.pk-rate { margin-left:auto; text-align:right; }
+.pk-rate b { font-family:Oswald,sans-serif; font-size: 26px; color:#c9a84a; display:block; line-height:1; }
+.pk-rate small { font-size: 10px; color:#8a8a92; }
+.pk-list { padding: 6px 10px 10px; }
+.pk-row { display:flex; align-items:center; gap:9px; padding:9px 6px; border-bottom:1px solid #1c1c22; }
+.pk-row:last-child { border-bottom:none; }
+.pk-no { font-family:Oswald,sans-serif; font-size:11px; color:#6a6a72; width:26px; flex:none; text-align:center; }
+.pk-vs { flex:none; width:118px; font-size:11px; color:#9a9aa2; line-height:1.35; }
+.pk-vs .r{color:#ff5a67} .pk-vs .b{color:#5aa0ff} .pk-vs i{font-style:normal;color:#55555c;margin:0 3px}
+.pk-pick { flex:1; min-width:0; }
+.pk-pick b { font-weight:900; font-size:14px; }
+.pk-pick.red b{color:#ff5a67} .pk-pick.blue b{color:#5aa0ff}
+.pk-kime { font-size:11px; color:#9a9aa2; }
+.pk-mark { flex:none; width:30px; text-align:center; font-weight:900; font-size:17px; }
+.pk-mark.hit{color:#2ba84a} .pk-mark.miss{color:#c0343f} .pk-mark.pit{color:#c9a84a; font-size:12px}
+.pk-foot { padding:10px 16px 14px; font-size:10px; color:#6a6a72; display:flex; justify-content:space-between; align-items:center; }
+.pk-empty { padding:30px; text-align:center; color:#8a8a92; }
+.pk-actions { max-width:480px; margin: 10px auto 40px; text-align:center; }
+.pk-actions button { background:#1a1a20; color:#eee; border:1px solid #33333a; border-radius:8px;
+  padding:9px 16px; font-size:13px; cursor:pointer; }
+</style>
+</head>
+<body>
+<div id="app-header"></div>
+<div class="pk-actions" id="topnav"></div>
+<div class="pk-wrap"><div class="pk-card" id="card"><div class="pk-empty">読み込み中…</div></div></div>
+<div class="pk-actions" id="acts"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/config.js?v=20260806090312"></script>
+<script src="js/techniques.js?v=20260806090312"></script>
+<script src="js/demo-data.js?v=20260806090312"></script>
+<script src="js/api.js?v=20260806090312"></script>
+<script src="js/app.js?v=20260806090312"></script>
+<script>
+async function load() {
+  const evId = qp("event"), memId = qp("member");
+  const card = document.getElementById("card");
+  if (!evId || !memId) { card.innerHTML = "<div class='pk-empty'>予想者と大会を指定してください。</div>"; return; }
+  const [ev, members, fighters] = await Promise.all([DB.getEvent(evId), DB.listMembers(), DB.listFighters()]);
+  const FMAP = fighterMap(fighters);
+  const me = members.find(m => m.id === memId);
+  if (!ev || !me) { card.innerHTML = "<div class='pk-empty'>見つかりませんでした。</div>"; return; }
+  const fights = (await DB.listFights(evId)).filter(f => !f.cancelled)
+    .sort((a, b) => b.order_no - a.order_no);
+  const preds = await DB.listPredictions({ fightIds: fights.map(f => f.id), memberId: memId });
+  const predBy = Object.fromEntries(preds.map(p => [p.fight_id, p]));
+
+  // 成績（この大会・的中率）
+  let decided = 0, hits = 0, pitari = 0;
+  const rows = fights.map(f => {
+    const p = predBy[f.id];
+    const f1 = FMAP[f.fighter1_id], f2 = FMAP[f.fighter2_id];
+    const no = f.segment === "opening" ? `OP${f.order_no}` : `第${f.order_no}`;
+    const vs = `<span class="r">${esc(f1?.name)}</span><i>vs</i><span class="b">${esc(f2?.name)}</span>`;
+    if (!p) return `<div class="pk-row"><span class="pk-no">${no}</span>
+      <span class="pk-vs">${vs}</span><span class="pk-pick"><span class="pk-kime">— 予想なし —</span></span><span class="pk-mark"></span></div>`;
+    const side = p.winner_id === f.fighter1_id ? "red" : "blue";
+    const kim = p.method === "DEC" ? "判定" : (p.technique ? TECH_LABEL[p.technique] : "");
+    const s = scoreFight(p, f);
+    let mark = "";
+    if (s && s.counted) {
+      decided++; if (s.winnerHit) hits++; if (s.pitari) pitari++;
+      mark = s.pitari ? `<span class="pk-mark pit">◎<br>ピタリ</span>`
+        : s.winnerHit ? `<span class="pk-mark hit">○</span>` : `<span class="pk-mark miss">✕</span>`;
+    }
+    return `<div class="pk-row"><span class="pk-no">${no}</span>
+      <span class="pk-vs">${vs}</span>
+      <span class="pk-pick ${side}"><b>${esc(FMAP[p.winner_id]?.name)}</b>${kim ? `<span class="pk-kime">　${esc(kim)}</span>` : ""}</span>
+      ${mark}</div>`;
+  }).join("");
+
+  const rate = decided ? Math.round(hits / decided * 100) + "%" : "—";
+  const rateBox = decided
+    ? `<div class="pk-rate"><b>${rate}</b><small>的中 ${hits}/${decided}${pitari ? `・ピタリ${pitari}` : ""}</small></div>`
+    : `<div class="pk-rate"><b>予想</b><small>${preds.length}試合</small></div>`;
+
+  card.innerHTML = `
+    <div class="pk-head">
+      <div class="pk-brand">RIZIN<span>美食会予想</span></div>
+      <div class="pk-ev">${esc(ev.name)}</div>
+      <div class="pk-date">${fmtDate(ev.event_date)}${decided ? "　結果確定" : "　予想"}</div>
+      <div class="pk-who">
+        <span class="pk-dot" style="background:${esc(me.color || "#e60012")}"></span>
+        <span class="pk-name">${esc(me.name)}</span>
+        ${rateBox}
+      </div>
+    </div>
+    <div class="pk-list">${rows}</div>
+    <div class="pk-foot"><span>予想は本人の公開動画より（出典明記）</span><span>rizin-bishokukai</span></div>`;
+
+  document.getElementById("acts").innerHTML =
+    `<button onclick="location.href='event.html?id=${evId}'">大会ページへ</button>`;
+}
+renderHeader("").catch(()=>{});
+load();
+</script>
+</body>
+</html>
