@@ -200,6 +200,20 @@
       async deletePrediction(memberId, fightId) {
         return q(client.from("predictions").delete().eq("member_id", memberId).eq("fight_id", fightId));
       },
+      // ----- 応援 -----
+      async listSupports(filter = {}) {
+        let query = client.from("supports").select("*");
+        if (filter.fightIds) query = query.in("fight_id", filter.fightIds);
+        if (filter.memberId) query = query.eq("member_id", filter.memberId);
+        return q(query);
+      },
+      async upsertSupport(sup) {
+        return q(client.from("supports").upsert(
+          { ...sup, updated_at: new Date().toISOString() }, { onConflict: "member_id,fight_id" }));
+      },
+      async deleteSupport(memberId, fightId) {
+        return q(client.from("supports").delete().eq("member_id", memberId).eq("fight_id", fightId));
+      },
       async isAdmin() { const { data } = await client.auth.getSession(); return !!data.session; },
       async adminLogin(email, password) {
         const { error } = await client.auth.signInWithPassword({ email, password });

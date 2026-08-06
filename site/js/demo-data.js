@@ -1550,4 +1550,5 @@ window.DEMO_SEED = {
   ],
 
   predictions: [],
+  supports: [],
 };

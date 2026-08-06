@@ -7,7 +7,7 @@
 <title>大会予想｜RIZIN美食会予想</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260806203044">
+<link rel="stylesheet" href="css/style.css?v=20260806203414">
 </head>
 <body>
 <div id="app-header"></div>
@@ -16,13 +16,13 @@
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/config.js?v=20260806203044"></script>
-<script src="js/techniques.js?v=20260806203044"></script>
-<script src="js/demo-data.js?v=20260806203044"></script>
-<script src="js/api.js?v=20260806203044"></script>
-<script src="js/app.js?v=20260806203044"></script>
+<script src="js/config.js?v=20260806203414"></script>
+<script src="js/techniques.js?v=20260806203414"></script>
+<script src="js/demo-data.js?v=20260806203414"></script>
+<script src="js/api.js?v=20260806203414"></script>
+<script src="js/app.js?v=20260806203414"></script>
 <script>
-let EV, PHASE, FIGHTS, FMAP, MEMBERS, myPreds = {}, allPreds = [];
+let EV, PHASE, FIGHTS, FMAP, MEMBERS, myPreds = {}, allPreds = [], ALL_SUPPORTS = [];
 let drafts = {};              // 決定前の編集中の選択（ローカルのみ）
 const editing = new Set();    // 「編集」で開き直した試合ID
 
@@ -58,7 +58,38 @@ async function load() {
     : await DB.listPredictions({ fightIds });
   myPreds = {};
   for (const p of allPreds.filter(p => p.member_id === getMemberId())) myPreds[p.fight_id] = p;
+  // 応援（supportsテーブル未作成でもページを落とさない）
+  try { ALL_SUPPORTS = PHASE === "before_open" ? [] : await DB.listSupports({ fightIds }); }
+  catch (e) { ALL_SUPPORTS = []; }
   render();
+}
+
+// 📣応援：予想とは別に「どっちを応援するか」。締切に関係なくいつでも。
+function supportRow(f) {
+  const mid = getMemberId();
+  const mine = ALL_SUPPORTS.find(s => s.fight_id === f.id && s.member_id === mid);
+  const c1 = ALL_SUPPORTS.filter(s => s.fight_id === f.id && s.fighter_id === f.fighter1_id).length;
+  const c2 = ALL_SUPPORTS.filter(s => s.fight_id === f.id && s.fighter_id === f.fighter2_id).length;
+  const f1 = FMAP[f.fighter1_id], f2 = FMAP[f.fighter2_id];
+  const btn = (fid, name, cnt, cls) =>
+    `<button class="sup-btn ${cls} ${mine?.fighter_id === fid ? "sel" : ""}"
+      onclick="toggleSupport('${f.id}','${fid}')"
+      style="flex:1;min-width:0;padding:6px 8px;border-radius:8px;border:1px solid #33333a;background:${mine?.fighter_id===fid?(cls==="c1"?"#3a1418":"#14213a"):"#161620"};color:#eee;font-weight:700;font-size:12px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">📣 ${esc(name)}${cnt ? ` <b style="color:#c9a84a">${cnt}</b>` : ""}</button>`;
+  return `<div class="support-row" style="display:flex;gap:6px;align-items:center;margin-top:8px">
+    <span style="font-size:11px;color:#8a8a92;flex:none">応援</span>
+    ${btn(f.fighter1_id, f1?.name, c1, "c1")}${btn(f.fighter2_id, f2?.name, c2, "c2")}
+  </div>`;
+}
+async function toggleSupport(fightId, fighterId) {
+  const mid = getMemberId();
+  const cur = ALL_SUPPORTS.find(s => s.fight_id === fightId && s.member_id === mid);
+  try {
+    if (cur && cur.fighter_id === fighterId) await DB.deleteSupport(mid, fightId);
+    else await DB.upsertSupport({ member_id: mid, fight_id: fightId, fighter_id: fighterId });
+    ALL_SUPPORTS = await DB.listSupports({ fightIds: FIGHTS.map(f => f.id) });
+    replaceCard(fightId);
+    toast("📣 応援を更新した");
+  } catch (e) { toast("応援テーブルが未作成かも（要SQL）"); }
 }
 
 function fightLabel(f) {
@@ -121,6 +152,7 @@ function predictCard(f) {
           onclick="setDraft('${f.id}','winner_id','${f.fighter2_id}')"><small>BLUE</small>${esc(f2?.name)}</button>
       </div>
       ${profileLinks(f)}
+      ${supportRow(f)}
       ${kimSelect}${roundChips}
       <div class="confirm-bar">
         <button class="btn decide" ${p.winner_id ? "" : "disabled"} onclick="confirmPred('${f.id}')">この予想で決定</button>
@@ -146,6 +178,7 @@ function confirmedCard(f, p) {
         <div class="corner-btn c2 ${p.winner_id === f.fighter2_id ? "sel" : ""}"><small>BLUE</small>${esc(f2?.name)}</div>
       </div>
       ${profileLinks(f)}
+      ${supportRow(f)}
       <div class="my-pick">
         <span class="mp-check">✓</span>
         <span class="mp-body"><b>${esc(FMAP[p.winner_id]?.name)}</b>${detail ? `　${esc(detail)}` : ""}
@@ -172,6 +205,7 @@ function previewCard(f) {
         <div class="corner-btn c2 disabled"><small>BLUE</small>${esc(f2?.name)}</div>
       </div>
       ${profileLinks(f)}
+      ${supportRow(f)}
       <div class="fight-foot"><span class="save-note">計量終了後に予想開始</span></div>
     </div>`;
 }
@@ -322,6 +356,7 @@ function resultCard(f) {
         <div class="corner-btn c2 ${decided && f.winner_id === f.fighter2_id ? "sel" : ""}"><small>BLUE</small>${esc(f2?.name)}</div>
       </div>
       ${profileLinks(f)}
+      ${supportRow(f)}
       ${resultBox}
       ${picksRows(f)}
     </div>`;
