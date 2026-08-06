@@ -7,7 +7,7 @@
 <title>大会予想｜RIZIN美食会予想</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260806182113">
+<link rel="stylesheet" href="css/style.css?v=20260806202803">
 </head>
 <body>
 <div id="app-header"></div>
@@ -16,11 +16,11 @@
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/config.js?v=20260806182113"></script>
-<script src="js/techniques.js?v=20260806182113"></script>
-<script src="js/demo-data.js?v=20260806182113"></script>
-<script src="js/api.js?v=20260806182113"></script>
-<script src="js/app.js?v=20260806182113"></script>
+<script src="js/config.js?v=20260806202803"></script>
+<script src="js/techniques.js?v=20260806202803"></script>
+<script src="js/demo-data.js?v=20260806202803"></script>
+<script src="js/api.js?v=20260806202803"></script>
+<script src="js/app.js?v=20260806202803"></script>
 <script>
 let EV, PHASE, FIGHTS, FMAP, MEMBERS, myPreds = {}, allPreds = [];
 let drafts = {};              // 決定前の編集中の選択（ローカルのみ）
@@ -101,6 +101,13 @@ function predictCard(f) {
         </optgroup>
       </select>
     </div>` : "";
+  // KO/一本を選んだ時だけラウンド選択（ピタリ＝決まり手＋ラウンド）。判定はラウンド無し。
+  const roundChips = (p.winner_id && p.method && p.method !== "DEC") ? `
+    <div class="chips">
+      <span class="clabel">ラウンド — 決まり手とラウンド両方一致で“ピタリ”</span>
+      ${Array.from({ length: f.rounds || 3 }, (_, i) => i + 1).map(r =>
+        `<button class="chip ${Number(p.round) === r ? "sel" : ""}" onclick="setDraft('${f.id}','round',${r})">${r}R</button>`).join("")}
+    </div>` : "";
   return `
     <div class="fight-card" id="fc_${f.id}">
       ${f.image_url ? `<div class="banner"><img src="${esc(f.image_url)}" alt="" loading="lazy"></div>` : ""}
@@ -114,7 +121,7 @@ function predictCard(f) {
           onclick="setDraft('${f.id}','winner_id','${f.fighter2_id}')"><small>BLUE</small>${esc(f2?.name)}</button>
       </div>
       ${profileLinks(f)}
-      ${kimSelect}
+      ${kimSelect}${roundChips}
       <div class="confirm-bar">
         <button class="btn decide" ${p.winner_id ? "" : "disabled"} onclick="confirmPred('${f.id}')">この予想で決定</button>
         ${saved ? `<button class="btn ghost" onclick="cancelEdit('${f.id}')">キャンセル</button>` : ""}
@@ -126,7 +133,7 @@ function predictCard(f) {
 function confirmedCard(f, p) {
   const f1 = FMAP[f.fighter1_id], f2 = FMAP[f.fighter2_id];
   const kim = p.method === "DEC" ? "判定" : (p.technique ? TECH_LABEL[p.technique] : null);
-  const detail = kim || "";
+  const detail = [kim, (p.method !== "DEC" && p.round) ? `${p.round}R` : null].filter(Boolean).join("・");
   const tier = kim ? "ピタリ狙い" : "的中狙い";
   return `
     <div class="fight-card confirmed" id="fc_${f.id}">
@@ -331,7 +338,7 @@ function picksRows(f) {
   if (!preds.length) return `<div class="pred-row"><span class="pdetail">まだ予想なし</span></div>`;
   return preds.map(({ p, m, s }) => {
     const kim = p.method === "DEC" ? "判定" : (p.technique ? TECH_LABEL[p.technique] : null);
-    const detail = [FMAP[p.winner_id]?.name, kim].filter(Boolean).join("・");
+    const detail = [FMAP[p.winner_id]?.name, kim, (p.method !== "DEC" && p.round) ? `${p.round}R` : null].filter(Boolean).join("・");
     if (!s || !s.counted) return `<div class="pred-row"><span class="pwho">${esc(m?.name)}</span><span class="pdetail">${esc(detail)}</span></div>`;
     const tier = s.pitari ? `<span class="ptier pitari">ピタリ!</span>`
       : s.winnerHit ? `<span class="ptier">的中</span>` : "";
@@ -408,7 +415,8 @@ function allPicksMatrix() {
       if (!p) return `<td class="mx-cell none">—</td>`;
       const corner = p.winner_id === f.fighter1_id ? "c1" : "c2";
       const hitCls = decided ? (p.winner_id === f.winner_id ? " hit" : " miss") : "";
-      const sub = p.method === "DEC" ? "判定" : (p.technique ? techShort(p.technique) : "");
+      const sub = p.method === "DEC" ? "判定"
+        : [p.technique ? techShort(p.technique) : "", p.round ? `${p.round}R` : ""].filter(Boolean).join(" ");
       const s = decided ? scoreFight(p, f) : null;
       const mark = s?.pitari ? " ピタリ" : "";
       return `<td class="mx-cell ${corner}${hitCls}">

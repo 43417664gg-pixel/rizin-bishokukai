@@ -7,7 +7,7 @@
 <title>予想カード｜RIZIN美食会予想</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260806182113">
+<link rel="stylesheet" href="css/style.css?v=20260806202803">
 <style>
 /* SNSで一枚歩きする「予想カード」。縦長・自己完結・スクショ映えを最優先。 */
 .pk-wrap { max-width: 480px; margin: 0 auto; padding: 14px; }
@@ -45,6 +45,24 @@
 .pk-mark { display:block; font-weight:900; font-size:18px; margin-top:1px; }
 .pk-mark.hit{color:#2ba84a} .pk-mark.miss{color:#c0343f} .pk-mark.pit{color:#c9a84a; font-size:11px}
 .pk-none { flex:1; color:#6a6a72; font-size:12px; }
+/* カード写真（VSバナー）に勝者側の丸を直接重ねる */
+.pk-row2 { padding:8px 4px; border-bottom:1px solid #1c1c22; }
+.pk-row2:last-child { border-bottom:none; }
+.pk-bwrap { position:relative; border-radius:8px; overflow:hidden; line-height:0; }
+.pk-banner { width:100%; height:auto; display:block; }
+.pk-circle { position:absolute; top:8%; height:72%; aspect-ratio:1/1; border-radius:50%;
+  box-shadow:0 0 0 3px rgba(0,0,0,.4); pointer-events:none; }
+.pk-circle.red { left:6%; border:4px solid #ff2e3e; }
+.pk-circle.blue { right:6%; border:4px solid #2e78ff; }
+.pk-no2 { position:absolute; top:4px; left:5px; font-family:Oswald,sans-serif; font-size:11px; font-weight:700;
+  color:#fff; background:rgba(0,0,0,.6); padding:1px 6px; border-radius:4px; }
+.pk-mk2 { position:absolute; top:4px; right:5px; font-weight:900; font-size:15px; padding:1px 8px; border-radius:6px; }
+.pk-mk2.hit{ background:#2ba84a; color:#fff } .pk-mk2.miss{ background:#c0343f; color:#fff }
+.pk-mk2.pit{ background:#c9a84a; color:#111; font-size:12px }
+.pk-cap { display:flex; align-items:baseline; gap:8px; padding:6px 4px 2px; }
+.pk-nm2 { font-weight:900; font-size:15px; flex:1; min-width:0; }
+.pk-nm2.red{ color:#ff5a67 } .pk-nm2.blue{ color:#5aa0ff }
+.pk-crowd2 { flex:none; font-size:11px; color:#9a9aa2; }
 .pk-foot { padding:10px 16px 14px; font-size:10px; color:#6a6a72; display:flex; justify-content:space-between; align-items:center; }
 .pk-empty { padding:30px; text-align:center; color:#8a8a92; }
 .pk-actions { max-width:480px; margin: 10px auto 40px; text-align:center; }
@@ -59,11 +77,11 @@
 <div class="pk-actions" id="acts"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/config.js?v=20260806182113"></script>
-<script src="js/techniques.js?v=20260806182113"></script>
-<script src="js/demo-data.js?v=20260806182113"></script>
-<script src="js/api.js?v=20260806182113"></script>
-<script src="js/app.js?v=20260806182113"></script>
+<script src="js/config.js?v=20260806202803"></script>
+<script src="js/techniques.js?v=20260806202803"></script>
+<script src="js/demo-data.js?v=20260806202803"></script>
+<script src="js/api.js?v=20260806202803"></script>
+<script src="js/app.js?v=20260806202803"></script>
 <script>
 async function load() {
   const evId = qp("event"), memId = qp("member");
@@ -87,29 +105,30 @@ async function load() {
     const no = f.segment === "opening" ? `OP${f.order_no}` : `第${f.order_no}`;
     const vs = `<span class="r">${esc(f1?.name)}</span><i>vs</i><span class="b">${esc(f2?.name)}</span>`;
     if (!p) return `<div class="pk-row"><span class="pk-no">${no}</span><span class="pk-none">${vs}　— 予想なし —</span></div>`;
-    const side = p.winner_id === f.fighter1_id ? "red" : "blue";
-    const kim = p.method === "DEC" ? "判定" : (p.technique ? TECH_LABEL[p.technique] : "");
+    const side = p.winner_id === f.fighter1_id ? "red" : "blue";  // 赤=左(fighter1) / 青=右(fighter2)
     const w = FMAP[p.winner_id];
-    const ava = w?.highlight_url
-      ? `<img class="pk-ava ${side}" src="${esc(w.highlight_url)}" alt="" loading="lazy">`
-      : `<span class="pk-ava ${side} noimg">${esc((w?.name || "?").slice(0, 1))}</span>`;
+    const kim = p.method === "DEC" ? "判定" : (p.technique ? TECH_LABEL[p.technique] : "");
+    const kimround = [kim, (p.method !== "DEC" && p.round) ? `${p.round}R` : ""].filter(Boolean).join(" ");
     const cp = allPreds.filter(x => x.fight_id === f.id);
     const cpct = cp.length ? Math.round(cp.filter(x => x.winner_id === p.winner_id).length / cp.length * 100) : 0;
     const s = scoreFight(p, f);
-    let mark = "";
+    let mk = "";
     if (s && s.counted) {
       decided++; if (s.winnerHit) hits++; if (s.pitari) pitari++;
-      mark = s.pitari ? `<span class="pk-mark pit">◎ピタリ</span>`
-        : s.winnerHit ? `<span class="pk-mark hit">○</span>` : `<span class="pk-mark miss">✕</span>`;
+      mk = s.pitari ? `<span class="pk-mk2 pit">◎ピタリ</span>`
+        : s.winnerHit ? `<span class="pk-mk2 hit">○</span>` : `<span class="pk-mk2 miss">✕</span>`;
     }
-    return `<div class="pk-row">
-      <span class="pk-no">${no}</span>
-      ${ava}
-      <span class="pk-mid">
-        <span class="pk-vs">${vs}</span>
-        <span class="pk-nm ${side}">${esc(w?.name)}</span>${kim ? `<span class="pk-kime">　${esc(kim)}</span>` : ""}
-      </span>
-      <span class="pk-side">${cp.length ? `<span class="pk-crowd">みんな${cpct}%</span>` : ""}${mark}</span>
+    // カード写真（VSバナー）に、予想した勝者側へ直接マルを重ねる
+    const banner = f.image_url
+      ? `<div class="pk-bwrap"><img class="pk-banner" src="${esc(f.image_url)}" alt="">
+           <span class="pk-circle ${side}"></span><span class="pk-no2">${no}</span>${mk}</div>`
+      : `<div class="pk-cap"><span class="pk-no">${no}</span>${vs}</div>`;
+    return `<div class="pk-row2">
+      ${banner}
+      <div class="pk-cap">
+        <span class="pk-nm2 ${side}">${esc(w?.name)}${kimround ? `　<span class="pk-kime">${esc(kimround)}</span>` : ""}</span>
+        <span class="pk-crowd2">${cp.length ? `${cpct}%が支持` : ""}</span>
+      </div>
     </div>`;
   }).join("");
 

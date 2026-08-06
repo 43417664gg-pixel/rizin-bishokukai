@@ -31,7 +31,11 @@
     if (winnerHit) {
       const pk = window.kimarite(pred.method, pred.technique);
       const rk = window.kimarite(fight.result_method, fight.result_technique);
-      pitari = !!(pk && rk && pk === rk);
+      const kimOk = !!(pk && rk && pk === rk);       // 決まり手（判定 or 決定打）一致
+      // ラウンド：判定はラウンド無し＝免除。KO/一本は予想ラウンドと一致が必要。
+      const roundOk = fight.result_method === "DEC" ? true
+        : !!(pred.round && fight.result_round && Number(pred.round) === Number(fight.result_round));
+      pitari = kimOk && roundOk;                       // ピタリ＝決まり手＋ラウンド
     }
     return { counted: true, winnerHit, pitari };
   };
