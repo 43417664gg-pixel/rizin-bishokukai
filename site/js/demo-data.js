@@ -407,6 +407,7 @@ window.DEMO_SEED = {
       id: "f_shaydullaev",
       name: "ラジャブアリ・シェイドゥラエフ",
       nickname: "キルギスの犬鷲",
+      backbone: "レスリング・柔道・柔術",
       birth_date: "2000-10-11",
       belt: "RIZINフェザー級王者",
       team: "Ihlas",
