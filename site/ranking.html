@@ -7,18 +7,18 @@
 <title>ランキング｜RIZIN美食会予想</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260806231347">
+<link rel="stylesheet" href="css/style.css?v=20260807001510">
 </head>
 <body>
 <div id="app-header"></div>
 <div class="wrap" id="main"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/config.js?v=20260806231347"></script>
-<script src="js/techniques.js?v=20260806231347"></script>
-<script src="js/demo-data.js?v=20260806231347"></script>
-<script src="js/api.js?v=20260806231347"></script>
-<script src="js/app.js?v=20260806231347"></script>
+<script src="js/config.js?v=20260807001510"></script>
+<script src="js/techniques.js?v=20260807001510"></script>
+<script src="js/demo-data.js?v=20260807001510"></script>
+<script src="js/api.js?v=20260807001510"></script>
+<script src="js/app.js?v=20260807001510"></script>
 <script>
 let EVENTS, MEMBERS, ALL_FIGHTS, ALL_PREDS;
 let checked = new Set();   // 集計対象の大会ID
@@ -49,20 +49,20 @@ function render() {
   document.getElementById("main").innerHTML = `
     <div class="en-label">RANKING</div>
     <h1 class="page-title">ランキング</h1>
-    <p class="page-sub">的中率で勝負。ピタリを超えた先に、あらます。</p>
+    <p class="page-sub">的中率で称号を上げろ。ルーキーから絶対王者まで。</p>
 
     <table class="lb-table">
-      <tr><th></th><th>名前</th><th>的中</th><th>ピタリ</th><th>あらます</th></tr>
-      ${rows.map((r, i) => `
+      <tr><th></th><th>名前</th><th>称号</th><th>的中率</th><th>ピタリ</th></tr>
+      ${rows.map((r, i) => { const t = tierOf(r); return `
         <tr class="${i === 0 && r.rate !== null ? "top" : ""}">
           <td class="lb-rank">${r.rate === null ? "—" : i + 1}</td>
           <td><div class="lb-name">${esc(r.member.name)}</div>
               <div class="lb-sub">予想 ${r.answered}試合</div></td>
+          <td><span style="font-weight:900;color:${t.color};white-space:nowrap;font-size:13px">${t.icon} ${t.name}</span></td>
           <td><span class="lb-rate">${fmtRate(r.rate)}</span>
               <div class="lb-sub">${r.hits}/${r.decided}</div></td>
           <td class="lb-num">${r.pitari}</td>
-          <td class="lb-num gold">${r.aramasu}</td>
-        </tr>`).join("")}
+        </tr>`; }).join("")}
     </table>
 
     <div class="section-label">集計する大会</div>
@@ -76,28 +76,18 @@ function render() {
         </label>`).join("")}
     </div>
 
-    <div class="section-label">三段梯子</div>
-    <div class="ladder">
-      <div class="ladder-step s1">
-        <div class="ls-head"><span class="ls-no">STEP 1</span><b class="ls-name">的中</b></div>
-        <p class="ls-desc">勝者を当てる。ランキングの主役はこの<b>的中率</b>。<br>分母は「結果が出た予想試合」だけ——予想しなかった試合はノーカウント。</p>
-      </div>
-      <div class="ladder-step s2">
-        <div class="ls-head"><span class="ls-no">STEP 2</span><b class="ls-name">ピタリ</b></div>
-        <p class="ls-desc">決まり手＋ラウンドまで一致で成立。<br>判定決着の場合は、決まり手（判定）を当てるだけでピタリ。</p>
-      </div>
-      <div class="ladder-step s3">
-        <div class="ls-head"><span class="ls-no">STEP 3</span><b class="ls-name">あらます</b></div>
-        <p class="ls-desc"><b>決定打</b>——相手を倒した一撃まで完全一致した最上位。<br>右フックか、左ストレートか、リアネイキドチョークか。そこまで読み切った者だけが届く。</p>
-      </div>
-      <div class="ladder-step note">
-        <div class="ls-head"><span class="ls-no">RULE</span><b class="ls-name" style="font-size:18px">決定打の考え方</b></div>
-        <p class="ls-desc">公式表記ではなく「<b>何で倒れたか</b>」で判定する。<br>
-        右フックでダウン→パウンドでストップ ＝ 決定打は<b>右フック</b>。<br>
-        「パウンド（削り切り）」は、殴り続けて削り切った試合だけに使う。</p>
-      </div>
+    <div class="section-label">称号ラダー</div>
+    <div style="display:flex;flex-direction:column;gap:6px;margin:8px 0 4px">
+      ${TIERS.map(t => `
+        <div style="display:flex;align-items:center;gap:10px;padding:9px 12px;background:#131318;border-left:3px solid ${t.color};border-radius:6px">
+          <span style="font-size:20px">${t.icon}</span>
+          <b style="color:${t.color};min-width:96px;font-size:14px">${t.name}</b>
+          <span style="font-size:12px;color:#9a9aa2">${t.min > 0 ? `的中率 ${Math.round(t.min * 100)}% 以上` : "それ未満／記録が溜まるまで"}</span>
+        </div>`).join("")}
     </div>
-    <p class="ladder-note">※ 勝者を外したら、その先は全部不成立。ドロー・無効試合は集計から除外。</p>`;
+    <p class="ladder-note">※ 結果の出た予想が <b>${window.TIER_MIN_DECIDED}試合</b> 溜まると称号がつく。<br>
+      <b>的中</b>＝勝者を当てる（ランキングの本体）。<b>ピタリ</b>＝決まり手＋ラウンドまで一致（判定は「判定」を当てればピタリ）。<br>
+      勝者を外したらその先は不成立。予想しなかった試合はノーカウント。ドロー・無効試合は除外。</p>`;
 }
 
 load();

@@ -62,6 +62,22 @@
     return rows;
   };
 
+  // ---------- 称号ラダー（的中率でティアが上がる。MMA/pick'em業界の定石） ----------
+  // 結果が出た予想が一定数（MIN）溜まって初めて称号がつく。それまではルーキー。
+  window.TIERS = [
+    { min: 0.80, name: "絶対王者", icon: "👑", color: "#c9a84a" },
+    { min: 0.70, name: "チャンピオン", icon: "🏆", color: "#e6be55" },
+    { min: 0.62, name: "コンテンダー", icon: "🥊", color: "#d98a3e" },
+    { min: 0.55, name: "ランカー", icon: "🔥", color: "#c9683f" },
+    { min: 0.00, name: "ルーキー", icon: "🐣", color: "#8a8a92" },
+  ];
+  window.TIER_MIN_DECIDED = 5;
+  window.tierOf = function (row) {
+    if (!row || row.rate == null || (row.decided || 0) < window.TIER_MIN_DECIDED)
+      return { name: "ルーキー", icon: "🐣", color: "#8a8a92", pending: true };
+    return window.TIERS.find(t => row.rate >= t.min) || window.TIERS[window.TIERS.length - 1];
+  };
+
   // ---------- 共通ヘッダー ----------
   window.renderHeader = async function (active) {
     const el = document.getElementById("app-header");
