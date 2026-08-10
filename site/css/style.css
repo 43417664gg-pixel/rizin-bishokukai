@@ -757,3 +757,12 @@ tr.top .lb-rate { color: var(--gold-hot); }
   display: block; font-size: 9px; font-weight: 800; color: var(--red-hot);
   letter-spacing: .1em;
 }
+/* 体重超過＝予想対象外（試合はやる） */
+.fight-label .ns-badge {
+  background: #4a2f00; color: #ffcf66; border: 1px solid #7a5200;
+  border-radius: 5px; padding: 2px 8px; font-size: 11px; font-weight: 900;
+  letter-spacing: .02em; line-height: 1.5;
+}
+.matrix tr.mxrow.noscore td { opacity: .62; }
+.matrix tr.mxrow.noscore .mx-fight { box-shadow: inset 3px 0 0 #b8860b; }
+.matrix .mx-x.ns { color: #ffcf66; }

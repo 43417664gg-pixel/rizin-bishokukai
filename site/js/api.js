@@ -285,6 +285,7 @@
           winner_id: f.winner_id ?? null, result_method: f.result_method ?? null,
           result_round: f.result_round ?? null, result_technique: f.result_technique ?? null,
           cancelled: f.cancelled ?? false, cancel_note: f.cancel_note ?? null,
+          no_score: f.no_score ?? false, no_score_note: f.no_score_note ?? null,
         })));
         return out;
       },

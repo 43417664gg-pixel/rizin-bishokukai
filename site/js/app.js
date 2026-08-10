@@ -22,6 +22,9 @@
     if (fight.cancelled) {  // 中止・延期は集計対象外（勝者を外しても不成立にならない）
       return { counted: false, winnerHit: false, pitari: false };
     }
+    if (fight.no_score) {  // 体重超過など＝試合はやるが予想対象外（採点しない）
+      return { counted: false, winnerHit: false, pitari: false };
+    }
     if (!fight.winner_id || !fight.result_method) return null; // 結果未確定
     if (fight.result_method === "DRAW" || fight.result_method === "NC") {
       return { counted: false, winnerHit: false, pitari: false };
@@ -47,7 +50,7 @@
       const row = { member: m, answered: 0, decided: 0, hits: 0, pitari: 0 };
       for (const p of predictions.filter(p => p.member_id === m.id)) {
         const f = fightById[p.fight_id];
-        if (!f || f.cancelled) continue;  // 中止試合の予想はカウントしない
+        if (!f || f.cancelled || f.no_score) continue;  // 中止・体重超過（予想対象外）はカウントしない
         row.answered += 1;
         const s = window.scoreFight(p, f);
         if (!s || !s.counted) continue;

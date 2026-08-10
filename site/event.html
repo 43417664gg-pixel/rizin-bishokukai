@@ -7,7 +7,7 @@
 <title>大会予想｜RIZIN美食会予想</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260809235915">
+<link rel="stylesheet" href="css/style.css?v=20260810231906">
 </head>
 <body>
 <div id="app-header"></div>
@@ -16,11 +16,11 @@
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/config.js?v=20260809235915"></script>
-<script src="js/techniques.js?v=20260809235915"></script>
-<script src="js/demo-data.js?v=20260809235915"></script>
-<script src="js/api.js?v=20260809235915"></script>
-<script src="js/app.js?v=20260809235915"></script>
+<script src="js/config.js?v=20260810231906"></script>
+<script src="js/techniques.js?v=20260810231906"></script>
+<script src="js/demo-data.js?v=20260810231906"></script>
+<script src="js/api.js?v=20260810231906"></script>
+<script src="js/app.js?v=20260810231906"></script>
 <script>
 let EV, PHASE, FIGHTS, FMAP, MEMBERS, myPreds = {}, allPreds = [], ALL_SUPPORTS = [];
 let drafts = {};              // 決定前の編集中の選択（ローカルのみ）
@@ -96,7 +96,8 @@ function fightLabel(f) {
   const no = f.segment === "opening" ? `OPENING 第${f.order_no}試合` : `第${f.order_no}試合`;
   return `<span class="fno">${no}</span>
     ${f.title_label ? `<span class="title-label">${esc(f.title_label)}</span>` : ""}
-    <span>${esc(f.weight_class || "")}</span>`;
+    <span>${esc(f.weight_class || "")}</span>
+    ${f.no_score ? `<span class="ns-badge">⚠️ ${esc(f.no_score_note || "体重超過")}｜予想対象外</span>` : ""}`;
 }
 
 // 選手名から名鑑へ飛ぶリンク行
@@ -331,9 +332,11 @@ function replaceCard(fightId) {
 // ---------- 答え合わせUI（締切後） ----------
 function resultCard(f) {
   const f1 = FMAP[f.fighter1_id], f2 = FMAP[f.fighter2_id];
-  const decided = f.winner_id && f.result_method;
+  const decided = f.winner_id && f.result_method && !f.no_score;
   let resultBox = `<div class="result-box waiting"><span class="rline">結果待ち</span></div>`;
-  if (decided) {
+  if (f.no_score) {
+    resultBox = `<div class="result-box"><span class="rline">⚠️ ${esc(f.no_score_note || "体重超過")}</span>（予想対象外・集計に含めない）</div>`;
+  } else if (decided) {
     if (f.result_method === "DRAW" || f.result_method === "NC") {
       resultBox = `<div class="result-box"><span class="rline">${METHOD_LABEL[f.result_method]}</span>（集計対象外）</div>`;
     } else {
@@ -365,7 +368,7 @@ function resultCard(f) {
 // 1試合分の「全員の予想」行。結果が出ていれば○×・ピタリ・あらますを付ける。
 // 答え合わせカード（締切後）とオープンブックの各カード下の両方で使う。
 function picksRows(f) {
-  const decided = f.winner_id && f.result_method && !["DRAW", "NC"].includes(f.result_method);
+  const decided = f.winner_id && f.result_method && !f.no_score && !["DRAW", "NC"].includes(f.result_method);
   const preds = allPreds.filter(p => p.fight_id === f.id)
     .map(p => ({ p, m: MEMBERS.find(m => m.id === p.member_id), s: decided ? scoreFight(p, f) : null }))
     // 3人を最上部に固定 → その中/外で見せ場順（あらます>ピタリ>的中）
@@ -444,7 +447,7 @@ function allPicksMatrix() {
         <div style="width:${mpr1}%;background:#e60012"></div><div style="width:${mpr2}%;background:#1e6fd9"></div>
       </div>
       <div style="display:flex;justify-content:space-between;font-size:9px;color:#999;margin-top:1px"><span>${mpr1}%</span><span>${mpr2}%</span></div>` : "";
-    const decided = f.winner_id && f.result_method && !["DRAW", "NC"].includes(f.result_method);
+    const decided = f.winner_id && f.result_method && !f.no_score && !["DRAW", "NC"].includes(f.result_method);
     const cells = activeMembers.map(m => {
       const p = allPreds.find(x => x.fight_id === f.id && x.member_id === m.id);
       if (!p) return `<td class="mx-cell none">—</td>`;
@@ -461,6 +464,9 @@ function allPicksMatrix() {
     }).join("");
     if (f.cancelled) {  // 中止試合：番号に×を付け、行をグレーアウト（ピックは残す）
       return `<tr class="mxrow cancelled"><th class="mx-fight">${thumb}<span class="mx-x">中止</span></th>${cells}</tr>`;
+    }
+    if (f.no_score) {  // 体重超過：試合はやるが予想対象外。琥珀タグ＋ピックは残す
+      return `<tr class="mxrow noscore"><th class="mx-fight">${thumb}<span class="mx-x ns">体重超過｜対象外</span></th>${cells}</tr>`;
     }
     const c = decided ? { level: "" } : consensus(f);  // 結果が出たら○×優先、未確定なら一致/割れ
     return `<tr class="mxrow ${c.level}"><th class="mx-fight">${thumb}${miniBar}</th>${cells}</tr>`;
