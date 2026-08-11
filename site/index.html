@@ -7,18 +7,18 @@
 <title>RIZIN美食会予想</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260811204409">
+<link rel="stylesheet" href="css/style.css?v=20260811205115">
 </head>
 <body>
 <div id="app-header"></div>
 <div class="wrap" id="main"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/config.js?v=20260811204409"></script>
-<script src="js/techniques.js?v=20260811204409"></script>
-<script src="js/demo-data.js?v=20260811204409"></script>
-<script src="js/api.js?v=20260811204409"></script>
-<script src="js/app.js?v=20260811204409"></script>
+<script src="js/config.js?v=20260811205115"></script>
+<script src="js/techniques.js?v=20260811205115"></script>
+<script src="js/demo-data.js?v=20260811205115"></script>
+<script src="js/api.js?v=20260811205115"></script>
+<script src="js/app.js?v=20260811205115"></script>
 <script>
 async function renderPlayerSelect() {
   const members = await DB.listMembers();
@@ -82,11 +82,12 @@ async function renderHome() {
   const all = await DB.listEvents();
   const FMAP = fighterMap(await DB.listFighters());
   const isFin = (e) => e.status === "finished";
-  // 直近45日以内に終わった大会だけ「結果ダイジェスト」として上部に残す（しばらく＝それ以降は下の過去へ落ちる）
-  const isRecent = (e) => isFin(e) && (daysToEvent(e) ?? -999) >= -45;
-  const recentFinished = all.filter(isRecent).sort((a, b) => (b.event_date || "").localeCompare(a.event_date || ""));
+  // 「結果ダイジェスト」は直近の1大会だけ上部に残す（Gaku方針・2026-08-11）。残りの終了大会は下の「これまでの大会」へ。
+  const finishedDesc = all.filter(isFin).sort((a, b) => (b.event_date || "").localeCompare(a.event_date || ""));
+  const recentFinished = finishedDesc.slice(0, 1);
+  const recentIds = new Set(recentFinished.map(e => e.id));
   const live = all.filter(e => !isFin(e)).sort((a, b) => (a.event_date || "").localeCompare(b.event_date || ""));
-  const pastFinished = all.filter(e => isFin(e) && !isRecent(e)).sort((a, b) => (b.event_date || "").localeCompare(a.event_date || ""));
+  const pastFinished = finishedDesc.filter(e => !recentIds.has(e.id));
 
   // 半分サイズの結果ダイジェスト（メイン結果を匂わせて「結果＆ランキングを見る」へ誘導）
   const compactCard = async (ev) => {
