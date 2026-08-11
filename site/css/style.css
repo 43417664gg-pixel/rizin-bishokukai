@@ -207,6 +207,30 @@ img { max-width: 100%; display: block; }
 .tag.locked { background: #2c2c36; color: #c9c9d2; }
 .tag.finished { background: var(--gold); color: #131007; }
 
+/* 半分サイズの結果ダイジェスト（直近の結果を上部に残す・匂わせ） */
+.event-card.compact {
+  display: flex; align-items: stretch; margin-bottom: 20px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, .45);
+}
+.event-card.compact::before { background: var(--gold); }
+.event-card.compact .eposter.mini {
+  flex: none; width: 92px; background-size: cover; background-position: center;
+  border-right: 1px solid var(--line);
+}
+.event-card.compact .ebody { flex: 1; min-width: 0; padding: 10px 12px; display: flex; flex-direction: column; justify-content: center; gap: 3px; }
+.event-card.compact .ename.small { font-size: 13px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.result-flag { font-size: 9px; font-weight: 900; letter-spacing: .08em; color: #131007; background: var(--gold); padding: 1px 7px; border-radius: 3px; }
+.compact-main { font-size: 12px; color: #e8e8ee; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.compact-hook { font-size: 11px; color: var(--gold); font-weight: 700; }
+
+/* 次大会の匂わせラベル */
+.next-flag {
+  display: inline-flex; align-items: center; gap: 6px; margin: 2px 0 8px;
+  font-size: 12px; font-weight: 900; letter-spacing: .04em; color: #fff;
+  background: linear-gradient(90deg, var(--red), #7a0a12); padding: 5px 12px;
+  clip-path: polygon(0 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+}
+
 /* カード未発表（COMING SOON） */
 .event-card.soon {
   border-style: dashed; opacity: .82;

@@ -7,18 +7,18 @@
 <title>RIZIN美食会予想</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260811203259">
+<link rel="stylesheet" href="css/style.css?v=20260811204409">
 </head>
 <body>
 <div id="app-header"></div>
 <div class="wrap" id="main"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/config.js?v=20260811203259"></script>
-<script src="js/techniques.js?v=20260811203259"></script>
-<script src="js/demo-data.js?v=20260811203259"></script>
-<script src="js/api.js?v=20260811203259"></script>
-<script src="js/app.js?v=20260811203259"></script>
+<script src="js/config.js?v=20260811204409"></script>
+<script src="js/techniques.js?v=20260811204409"></script>
+<script src="js/demo-data.js?v=20260811204409"></script>
+<script src="js/api.js?v=20260811204409"></script>
+<script src="js/app.js?v=20260811204409"></script>
 <script>
 async function renderPlayerSelect() {
   const members = await DB.listMembers();
@@ -79,40 +79,54 @@ async function startGuest() {
 
 async function renderHome() {
   await renderHeader("home");
-  // 開催日の近い順（未来→過去）に並べる
-  const events = (await DB.listEvents()).sort((a, b) => {
-    const fin = (e) => e.status === "finished" ? 1 : 0;
-    return fin(a) - fin(b) || (a.event_date || "").localeCompare(b.event_date || "");
-  });
-  const rows = await Promise.all(events.map(async ev => {
+  const all = await DB.listEvents();
+  const FMAP = fighterMap(await DB.listFighters());
+  const isFin = (e) => e.status === "finished";
+  // 直近45日以内に終わった大会だけ「結果ダイジェスト」として上部に残す（しばらく＝それ以降は下の過去へ落ちる）
+  const isRecent = (e) => isFin(e) && (daysToEvent(e) ?? -999) >= -45;
+  const recentFinished = all.filter(isRecent).sort((a, b) => (b.event_date || "").localeCompare(a.event_date || ""));
+  const live = all.filter(e => !isFin(e)).sort((a, b) => (a.event_date || "").localeCompare(b.event_date || ""));
+  const pastFinished = all.filter(e => isFin(e) && !isRecent(e)).sort((a, b) => (b.event_date || "").localeCompare(a.event_date || ""));
+
+  // 半分サイズの結果ダイジェスト（メイン結果を匂わせて「結果＆ランキングを見る」へ誘導）
+  const compactCard = async (ev) => {
+    const fights = await DB.listFights(ev.id);
+    const done = fights.filter(f => f.winner_id && f.result_method && !f.cancelled)
+      .sort((a, b) => b.order_no - a.order_no);
+    const main = done[0];
+    const mainTxt = main
+      ? `🏆 ${esc(FMAP[main.winner_id]?.name || "")}　${METHOD_LABEL[main.result_method] || ""}`
+      : "結果発表";
+    return `
+      <a class="event-card compact result" href="event.html?id=${ev.id}">
+        ${ev.poster_url ? `<div class="eposter mini" style="background-image:url('${esc(ev.poster_url)}')"></div>` : ""}
+        <div class="ebody">
+          <div class="ename small">${esc(ev.name)}<span class="result-flag">結果発表</span></div>
+          <div class="compact-main">${mainTxt}</div>
+          <div class="compact-hook">全結果＆ランキングを見る ›</div>
+        </div>
+      </a>`;
+  };
+
+  // 通常サイズ（受付中・COMING SOON・過去）
+  const fullCard = async (ev) => {
     const fights = await DB.listFights(ev.id);
     const myPreds = await DB.listPredictions({ fightIds: fights.map(f => f.id), memberId: getMemberId() });
-    // カード未発表の大会はCOMING SOON扱い（予想不可）
     if (!fights.length) {
       return `
         <div class="event-card soon">
           <div class="ebody">
             <div class="soon-label">COMING SOON</div>
             <div class="ename">${esc(ev.name)}</div>
-            <div class="emeta">
-              <span>${fmtDate(ev.event_date)}</span>
-              <span class="tag before_open">対戦カード発表待ち</span>
-            </div>
+            <div class="emeta"><span>${fmtDate(ev.event_date)}</span><span class="tag before_open">対戦カード発表待ち</span></div>
           </div>
         </div>`;
     }
-    const phase = eventPhase(ev);
-    const days = daysToEvent(ev);
-    const openBook = isOpenBook(ev);
-    const tag = openBook
-      ? `<span class="tag open">予想受付中・締切なし</span>`
-      : `<span class="tag ${phase}">${PHASE_LABEL[phase]}</span>`;
+    const phase = eventPhase(ev), days = daysToEvent(ev), openBook = isOpenBook(ev);
+    const tag = openBook ? `<span class="tag open">予想受付中・締切なし</span>` : `<span class="tag ${phase}">${PHASE_LABEL[phase]}</span>`;
     const countdown = (phase === "open" && !openBook) ? `
       <div class="countdown-bar">
-        <div class="cd-left">
-          <span class="cd-label">予想締切まで</span>
-          <span class="cd-timer" data-target="${ev.lock_at}">--:--:--</span>
-        </div>
+        <div class="cd-left"><span class="cd-label">予想締切まで</span><span class="cd-timer" data-target="${ev.lock_at}">--:--:--</span></div>
         ${days !== null && days >= 0 ? `<div class="cd-days"><b>${days === 0 ? "本日" : "あと" + days + "日"}</b><span>大会${days === 0 ? "開催" : "まで"}</span></div>` : ""}
       </div>` : "";
     return `
@@ -120,20 +134,26 @@ async function renderHome() {
         ${ev.poster_url ? `<div class="eposter" style="background-image:url('${esc(ev.poster_url)}')"><img src="${esc(ev.poster_url)}" alt=""></div>` : ""}
         <div class="ebody">
           <div class="ename">${esc(ev.name)}</div>
-          <div class="emeta">
-            <span>${fmtDate(ev.event_date)}</span>
-            ${tag}
-            <span>予想済み ${myPreds.length}/${fights.length}</span>
-          </div>
+          <div class="emeta"><span>${fmtDate(ev.event_date)}</span>${tag}<span>予想済み ${myPreds.length}/${fights.length}</span></div>
         </div>
         ${countdown}
       </a>`;
-  }));
+  };
+
+  const recentHtml = (await Promise.all(recentFinished.map(compactCard))).join("");
+  const liveCards = await Promise.all(live.map(fullCard));
+  // 先頭の未来大会＝次大会。NEXTで匂わせる。
+  const liveHtml = liveCards.map((html, i) =>
+    i === 0 ? `<div class="next-flag">🔥 NEXT EVENT ・ 次はこれ</div>${html}` : html).join("");
+  const pastHtml = (await Promise.all(pastFinished.map(fullCard))).join("");
+
   document.getElementById("main").innerHTML = `
     <div class="en-label">EVENTS</div>
     <h1 class="page-title">大会</h1>
     <p class="page-sub">カードをタップして予想。この大会は締切なし・いつでも編集OK。</p>
-    ${rows.join("")}`;
+    ${recentHtml ? `<div class="section-label">直近の結果</div>${recentHtml}` : ""}
+    ${liveHtml}
+    ${pastHtml ? `<div class="section-label">これまでの大会</div>${pastHtml}` : ""}`;
   document.querySelectorAll(".cd-timer").forEach(el =>
     startCountdown(el, el.dataset.target, () => location.reload()));
 }
