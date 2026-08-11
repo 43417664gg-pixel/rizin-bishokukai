@@ -15,7 +15,8 @@
 | 2026-08-02 | 元谷友貴 | ev_r54 | 2件 | https://www.youtube.com/watch?v=qKGHR1q9OE8 | m_yt_7487b80a |
 | 2026-08-02 | ジョビンチャンネル | ev_r54 | 6件 | https://www.youtube.com/watch?v=rovflGPzsqY | m_yt_922c02ef |
 | 2026-07-28 | 秋元強真　Kyoma Akimoto | ev_r54 | 8件 | https://www.youtube.com/watch?v=z8NLva1ncCg | m_yt_kyomaakimoto |
-| 2026-08-04 | 松嶋こよみ Koyomi Matsushima | ev_r54 | 1件 | https://www.youtube.com/watch?v=Hf-OltOZW3k | m_yt_koyomimatsushima |
-| 2026-08-09 | 北方大地のLife is fight TV | ev_r54 | 0件 | https://www.youtube.com/watch?v=U4pdx7WZD88 | m_yt_lifeisfighttv |
-| 2026-08-08 | ヌルの格闘技ラジオ | ev_r54 | 0件 | https://www.youtube.com/watch?v=dY9-iHgNtuc | m_yt_e1ff8ceb |
-| 2026-08-05 | 扇久保博正 おぎちゃんねる。Ogichannel | ev_r54 | 0件 | https://www.youtube.com/watch?v=jjibTomr4GA | m_yt_ogichannel |
+| 2026-08-04 | 松嶋こよみ Koyomi Matsushima | ev_r54 | 9件 | https://www.youtube.com/watch?v=Hf-OltOZW3k | m_yt_koyomimatsushima |
+| 2026-08-05 | 扇久保博正 おぎちゃんねる。Ogichannel | ev_r54 | 7件 | https://www.youtube.com/watch?v=jjibTomr4GA | m_yt_ogichannel |
+| 2026-08-09 | ジョビンチャンネル | ev_r54 | 10件 | https://www.youtube.com/watch?v=QJpIbNoiY04 | m_yt_922c02ef |
+| 2026-08-09 | 格闘キャスト | ev_r54 | 6件 | https://www.youtube.com/watch?v=lD9tzFZAWKU | m_yt_90f221ad |
+| 2026-08-01 | 石渡伸太郎 Shintaro Ishiwatari | ev_r54 | 6件 | https://www.youtube.com/watch?v=yB2tPLoOXGA | m_yt_shintaroishiwatari |
