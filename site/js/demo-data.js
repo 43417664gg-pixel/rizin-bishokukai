@@ -1007,6 +1007,7 @@ window.DEMO_SEED = {
       highlight_url: "assets/fighters/f_kleber.jpg",
       rizin_url: "https://jp.rizinff.com/_tags/クレベル・コイケ",
       history: [
+        { d: "2026.08", opp: "秋元強真", r: "L", how: "判定負け（0-3）" },
         { d: "2025.12", opp: "ヴガール・ケラモフ", r: "W", how: "判定3-0" },
         { d: "2025.07", opp: "朝倉未来", r: "L", how: "判定1-2" },
         { d: "2025.05", opp: "ラジャブアリ・シェイドゥラエフ", r: "L", how: "1R KO（王座陥落）" },
@@ -1033,6 +1034,7 @@ window.DEMO_SEED = {
       highlight_url: "assets/fighters/f_akimoto.jpg",
       rizin_url: "https://jp.rizinff.com/_tags/秋元強真",
       history: [
+        { d: "2026.08", opp: "クレベル・コイケ", r: "W", how: "3-0判定" },
         { d: "2026.03", opp: "パッチー・ミックス", r: "W", how: "2R TKO" },
         { d: "2025.12", opp: "新井丈", r: "W", how: "TKO" },
         { d: "2025.11", opp: "萩原京平", r: "W", how: "2R TKO" },
@@ -1049,6 +1051,7 @@ window.DEMO_SEED = {
       rec_d: 2,
       rec_nc: 1,
       history: [
+        { d: "2026.08", opp: "パッチー・ミックス", r: "W", how: "3-0判定（相手体重超過）" },
         { d: "2026.03", opp: "ジョン・スウィーニー", r: "W", how: "1R 三角絞め" },
         { d: "2025.09", opp: "ダニー・サバテロ", r: "L", how: "判定 (スプリット)" },
         { d: "2025.05", opp: "キム・スーチョル", r: "W", how: "判定 (全会一致)" },
@@ -1087,6 +1090,7 @@ window.DEMO_SEED = {
       highlight_url: "assets/fighters/f_patchy.jpg",
       rizin_url: "https://jp.rizinff.com/_tags/パッチー・ミックス",
       history: [
+        { d: "2026.08", opp: "佐藤将光", r: "L", how: "判定負け（0-3・自身体重超過）" },
         { d: "2026.03", opp: "秋元強真", r: "L", how: "2R TKO" },
         { d: "2025.10", opp: "ヤクブ・ヴィクワチ", r: "L", how: "判定" },
         { d: "2025.06", opp: "マリオ・バティスタ", r: "L", how: "判定" },
@@ -1102,6 +1106,7 @@ window.DEMO_SEED = {
       rec_sub: 3,
       rec_dec: 6,
       history: [
+        { d: "2026.08", opp: "アジズベク・テミロフ", r: "W", how: "1R リアネイキドチョークで一本" },
         { d: "2026.04", opp: "ダニー・サバテロ", r: "L", how: "判定 (全会一致)" },
         { d: "2025.12", opp: "ホセ・トーレス", r: "W", how: "判定 (スプリット)" },
         { d: "2025.11", opp: "中島太一", r: "W", how: "1R KO (パンチ)" },
@@ -1130,6 +1135,7 @@ window.DEMO_SEED = {
       rec_sub: 0,
       rec_dec: 0,
       history: [
+        { d: "2026.08", opp: "後藤丈治", r: "L", how: "1R 一本負け（RNC）" },
         { d: "2026.04", opp: "福田龍彌", r: "W", how: "2R KO (パンチ)" },
         { d: "2025.09", opp: "イリスベク・ティレノフ", r: "L", how: "判定 (全会一致)" },
         { d: "2025.03", opp: "DanielAraujo", r: "L", how: "判定 (全会一致)" },
@@ -1155,6 +1161,7 @@ window.DEMO_SEED = {
       rec_w: 20,
       rec_l: 7,
       history: [
+        { d: "2026.08", opp: "アリベク・ガジャマトフ", r: "W", how: "2R パンチでTKO（相手体重超過）" },
         { d: "2026.03", opp: "カルロス・モタ", r: "W", how: "1R KO (ハイキックとパンチ)" },
         { d: "2025.09", opp: "山本アーセン", r: "L", how: "判定 (全会一致)" },
         { d: "2025.07", opp: "エンカジムーロ・ズールー", r: "W", how: "判定 (全会一致)" },
@@ -1184,6 +1191,7 @@ window.DEMO_SEED = {
       rec_sub: 1,
       rec_dec: 0,
       history: [
+        { d: "2026.08", opp: "伊藤裕樹", r: "L", how: "2R TKO負け（自身体重超過）" },
         { d: "2025.09", opp: "扇久保博正", r: "L", how: "判定 (全会一致)" },
         { d: "2025.07", opp: "征矢貴", r: "W", how: "3R パンチによるTKO" },
         { d: "2024.11", opp: "北方大地", r: "W", how: "1R TKO (膝とパンチ)" },
@@ -1208,6 +1216,7 @@ window.DEMO_SEED = {
       rec_w: 19,
       rec_l: 6,
       history: [
+        { d: "2026.08", opp: "武田光司", r: "L", how: "1R 一本負け（アームバー）" },
         { d: "2026.04", opp: "ジェームズ・ギャラガー", r: "W", how: "3R 肩固め" },
         { d: "2025.11", opp: "木村柊也", r: "W", how: "2R リアネイキッドチョーク" },
         { d: "2024.11", opp: "ヴガール・ケラモフ", r: "L", how: "1R TKO (パンチとエルボー)" },
@@ -1234,6 +1243,7 @@ window.DEMO_SEED = {
       rec_w: 19,
       rec_l: 8,
       history: [
+        { d: "2026.08", opp: "摩嶋一整", r: "W", how: "1R アームバーで一本" },
         { d: "2026.03", opp: "ビクター・コレスニック", r: "W", how: "判定 (全会一致)" },
         { d: "2025.12", opp: "奥山貴大", r: "W", how: "1R リアネイキッドチョーク" },
         { d: "2025.05", opp: "ジ・ヒョクミン", r: "L", how: "2R TKO (膝とパンチ)" },
@@ -1316,6 +1326,7 @@ window.DEMO_SEED = {
       rec_sub: 1,
       rec_dec: 6,
       history: [
+        { d: "2026.08", opp: "リー・カイウェン", r: "L", how: "1R TKO負け（左フック→鉄槌）" },
         { d: "2026.05", opp: "牛久絢太郎", r: "W", how: "判定 (全会一致)" },
         { d: "2025.12", opp: "青井人", r: "L", how: "判定 (スプリット)" },
         { d: "2025.08", opp: "高橋遼伍", r: "W", how: "判定 (全会一致)" },
@@ -1344,6 +1355,7 @@ window.DEMO_SEED = {
       rec_sub: 1,
       rec_dec: 6,
       history: [
+        { d: "2026.08", opp: "水野新太", r: "W", how: "1R 左フック→鉄槌でTKO" },
         { d: "2026.05", opp: "高木凌", r: "L", how: "1R KO (パンチ)" },
         { d: "2025.12", opp: "TatsuyaTomozane", r: "W", how: "1R TKO (パンチとエルボー)" },
         { d: "2025.08", opp: "中村京一郎", r: "L", how: "判定 (全会一致)" },
@@ -1373,6 +1385,7 @@ window.DEMO_SEED = {
       rec_sub: 1,
       rec_dec: 0,
       history: [
+        { d: "2026.08", opp: "細川一颯", r: "W", how: "2R 負傷TKO" },
         { d: "2026.03", opp: "木下カラテ", r: "W", how: "1R リアネイキッドチョーク" },
         { d: "2025.11", opp: "三井俊希", r: "L", how: "1R KO (パンチ)" },
         { d: "2025.07", opp: "芦田崇宏", r: "L", how: "判定 (全会一致)" },
@@ -1391,6 +1404,7 @@ window.DEMO_SEED = {
     {
       id: "f_hosokawa",
       name: "細川一颯",
+      history: [ { d: "2026.08", opp: "直樹", r: "L", how: "2R 負傷TKO負け" } ],
       birth_date: "2000-04-07",
       team: "フリー",
       backbone: "極真空手",
@@ -1411,6 +1425,7 @@ window.DEMO_SEED = {
       rec_sub: 1,
       rec_dec: 2,
       history: [
+        { d: "2026.08", opp: "ジョリー", r: "W", how: "1R 右フックでKO" },
         { d: "2026.05", opp: "飴山聖也", r: "W", how: "2R リアネイキッドチョーク" },
         { d: "2025.09", opp: "冨澤大智", r: "L", how: "判定 (スプリット)" },
         { d: "2025.05", opp: "田丸辰", r: "W", how: "判定 (全会一致)" },
@@ -1434,6 +1449,7 @@ window.DEMO_SEED = {
       rec_w: 4,
       rec_l: 0,
       history: [
+        { d: "2026.08", opp: "平本丈", r: "L", how: "1R KO負け（右フック）" },
         { d: "2026.05", opp: "児玉兼慎", r: "W", how: "1R 腕ひしぎ十字固め" },
         { d: "2025.12", opp: "芦澤竜誠", r: "W", how: "1R 腕ひしぎ十字固め" },
         { d: "2018.06", opp: "ShotaIguchi", r: "W", how: "2R TKO (ドクターストップ)" },
@@ -1451,20 +1467,24 @@ window.DEMO_SEED = {
     {
       id: "f_ueda",
       name: "上田幹雄",
+      history: [ { d: "2026.08", opp: "エドポロキング", r: "L", how: "2R TKO負け（膝）" } ],
       backbone: "空手",
     },
     {
       id: "f_edpolo",
       name: "エドポロキング",
+      history: [ { d: "2026.08", opp: "上田幹雄", r: "W", how: "2R 顔面への膝でTKO" } ],
     },
     {
       id: "f_sudario",
       name: "スダリオ剛",
+      history: [ { d: "2026.08", opp: "酒井リョウ", r: "W", how: "1R パンチでTKO" } ],
       backbone: "相撲",
     },
     {
       id: "f_sakairyo",
       name: "酒井リョウ",
+      history: [ { d: "2026.08", opp: "スダリオ剛", r: "L", how: "1R TKO負け（パンチ）" } ],
     },
   ],
 
@@ -1487,7 +1507,7 @@ window.DEMO_SEED = {
       no_deadline: false,
       lock_at: "2026-08-11T00:00:00+09:00",
       official_url: "https://jp.rizinff.com/_ct/17846026",
-      status: "upcoming",
+      status: "finished",
     },
     {
       id: "ev_cho5",
@@ -1537,17 +1557,17 @@ window.DEMO_SEED = {
     { id: "lm15_04", event_id: "ev_lm15", order_no: 4, segment: "main", weight_class: "66.0kg", fighter1_id: "f_suzuki", fighter2_id: "f_miyagawa", image_url: "assets/lm15/fight_04.jpg", winner_id: "f_suzuki", result_method: "KO", result_round: 2, result_technique: "elbow" },
     { id: "lm15_03", event_id: "ev_lm15", order_no: 3, segment: "main", weight_class: "77.0kg", fighter1_id: "f_sasaki", fighter2_id: "f_riceyota", image_url: "assets/lm15/fight_03.jpg", winner_id: "f_riceyota", result_method: "KO", result_round: 3, result_technique: "knee" },
     { id: "lm15_02", event_id: "ev_lm15", order_no: 2, segment: "main", weight_class: "57.0kg", fighter1_id: "f_hinotori", fighter2_id: "f_leejaehoon", image_url: "assets/lm15/fight_02.jpg", winner_id: "f_hinotori", result_method: "KO", result_round: 3, result_technique: "gnp" },
-    { id: "r54_10", event_id: "ev_r54", order_no: 7, segment: "main", weight_class: "120.0kg", rounds: 3, fighter1_id: "f_ueda", fighter2_id: "f_edpolo", image_url: "assets/r54/fight_04.jpg" },
-    { id: "r54_11", event_id: "ev_r54", order_no: 6, segment: "main", weight_class: "120.0kg", rounds: 3, fighter1_id: "f_sudario", fighter2_id: "f_sakairyo", image_url: "assets/r54/fight_05.jpg" },
-    { id: "r54_09", event_id: "ev_r54", order_no: 10, segment: "main", weight_class: "66.0kg", rounds: 3, fighter1_id: "f_kleber", fighter2_id: "f_akimoto", image_url: "assets/r54/fight_01.jpg" },
-    { id: "r54_08", event_id: "ev_r54", order_no: 9, segment: "main", weight_class: "61.0kg", rounds: 3, fighter1_id: "f_satomasa", fighter2_id: "f_patchy", image_url: "assets/r54/fight_02.jpg", no_score: true, no_score_note: "体重超過（パッチー +2.85kg／減点2・勝てばNC）" },
-    { id: "r54_07", event_id: "ev_r54", order_no: 4, segment: "main", weight_class: "61.0kg", rounds: 3, fighter1_id: "f_goto", fighter2_id: "f_temirov", image_url: "assets/r54/fight_07.jpg" },
-    { id: "r54_06", event_id: "ev_r54", order_no: 8, segment: "main", weight_class: "57.0kg", rounds: 3, fighter1_id: "f_itoyuki", fighter2_id: "f_gadzhamatov", image_url: "assets/r54/fight_03.jpg", no_score: true, no_score_note: "体重超過（ガジャマトフ +1.75kg）" },
-    { id: "r54_05", event_id: "ev_r54", order_no: 5, segment: "main", weight_class: "71.0kg", rounds: 3, fighter1_id: "f_mashima", fighter2_id: "f_takeda", image_url: "assets/r54/fight_06.jpg" },
+    { id: "r54_10", event_id: "ev_r54", order_no: 7, segment: "main", weight_class: "120.0kg", rounds: 3, fighter1_id: "f_ueda", fighter2_id: "f_edpolo", image_url: "assets/r54/fight_04.jpg", winner_id: "f_edpolo", result_method: "KO", result_round: 2, result_technique: "knee" },
+    { id: "r54_11", event_id: "ev_r54", order_no: 6, segment: "main", weight_class: "120.0kg", rounds: 3, fighter1_id: "f_sudario", fighter2_id: "f_sakairyo", image_url: "assets/r54/fight_05.jpg", winner_id: "f_sudario", result_method: "KO", result_round: 1, result_technique: null },
+    { id: "r54_09", event_id: "ev_r54", order_no: 10, segment: "main", weight_class: "66.0kg", rounds: 3, fighter1_id: "f_kleber", fighter2_id: "f_akimoto", image_url: "assets/r54/fight_01.jpg", winner_id: "f_akimoto", result_method: "DEC", result_round: null, result_technique: null },
+    { id: "r54_08", event_id: "ev_r54", order_no: 9, segment: "main", weight_class: "61.0kg", rounds: 3, fighter1_id: "f_satomasa", fighter2_id: "f_patchy", image_url: "assets/r54/fight_02.jpg", no_score: true, no_score_note: "体重超過（パッチー +2.85kg／減点2・勝てばNC）", winner_id: "f_satomasa", result_method: "DEC", result_round: null, result_technique: null },
+    { id: "r54_07", event_id: "ev_r54", order_no: 4, segment: "main", weight_class: "61.0kg", rounds: 3, fighter1_id: "f_goto", fighter2_id: "f_temirov", image_url: "assets/r54/fight_07.jpg", winner_id: "f_goto", result_method: "SUB", result_round: 1, result_technique: "rnc" },
+    { id: "r54_06", event_id: "ev_r54", order_no: 8, segment: "main", weight_class: "57.0kg", rounds: 3, fighter1_id: "f_itoyuki", fighter2_id: "f_gadzhamatov", image_url: "assets/r54/fight_03.jpg", no_score: true, no_score_note: "体重超過（ガジャマトフ +1.75kg）", winner_id: "f_itoyuki", result_method: "KO", result_round: 2, result_technique: null },
+    { id: "r54_05", event_id: "ev_r54", order_no: 5, segment: "main", weight_class: "71.0kg", rounds: 3, fighter1_id: "f_mashima", fighter2_id: "f_takeda", image_url: "assets/r54/fight_06.jpg", winner_id: "f_takeda", result_method: "SUB", result_round: 1, result_technique: "armbar" },
     { id: "r54_04", event_id: "ev_r54", order_no: 0, segment: "main", weight_class: "49.0kg", rounds: 3, fighter1_id: "f_kate", fighter2_id: "f_noel", cancelled: true, cancel_note: "ケイト・ロータスが左膝負傷（全治2ヶ月）で欠場。10/3 LANDMARK 16 へ延期" },
-    { id: "r54_03", event_id: "ev_r54", order_no: 1, segment: "main", weight_class: "66.0kg", rounds: 3, fighter1_id: "f_mizuno", fighter2_id: "f_leekaiwen", image_url: "assets/r54/fight_10.jpg" },
-    { id: "r54_02", event_id: "ev_r54", order_no: 2, segment: "main", weight_class: "69.0kg", rounds: 3, fighter1_id: "f_naoki", fighter2_id: "f_hosokawa", image_url: "assets/r54/fight_09.jpg" },
-    { id: "r54_01", event_id: "ev_r54", order_no: 3, segment: "main", weight_class: "57.0kg", rounds: 3, fighter1_id: "f_hiramotojo", fighter2_id: "f_jolly", image_url: "assets/r54/fight_08.jpg" },
+    { id: "r54_03", event_id: "ev_r54", order_no: 1, segment: "main", weight_class: "66.0kg", rounds: 3, fighter1_id: "f_mizuno", fighter2_id: "f_leekaiwen", image_url: "assets/r54/fight_10.jpg", winner_id: "f_leekaiwen", result_method: "KO", result_round: 1, result_technique: "left_hook" },
+    { id: "r54_02", event_id: "ev_r54", order_no: 2, segment: "main", weight_class: "69.0kg", rounds: 3, fighter1_id: "f_naoki", fighter2_id: "f_hosokawa", image_url: "assets/r54/fight_09.jpg", winner_id: "f_naoki", result_method: "KO", result_round: 2, result_technique: null },
+    { id: "r54_01", event_id: "ev_r54", order_no: 3, segment: "main", weight_class: "57.0kg", rounds: 3, fighter1_id: "f_hiramotojo", fighter2_id: "f_jolly", image_url: "assets/r54/fight_08.jpg", winner_id: "f_hiramotojo", result_method: "KO", result_round: 1, result_technique: "right_hook" },
   ],
 
   predictions: [],

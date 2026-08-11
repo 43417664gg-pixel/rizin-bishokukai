@@ -7,7 +7,7 @@
 <title>大会予想｜RIZIN美食会予想</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260810231906">
+<link rel="stylesheet" href="css/style.css?v=20260811203259">
 </head>
 <body>
 <div id="app-header"></div>
@@ -16,11 +16,11 @@
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/config.js?v=20260810231906"></script>
-<script src="js/techniques.js?v=20260810231906"></script>
-<script src="js/demo-data.js?v=20260810231906"></script>
-<script src="js/api.js?v=20260810231906"></script>
-<script src="js/app.js?v=20260810231906"></script>
+<script src="js/config.js?v=20260811203259"></script>
+<script src="js/techniques.js?v=20260811203259"></script>
+<script src="js/demo-data.js?v=20260811203259"></script>
+<script src="js/api.js?v=20260811203259"></script>
+<script src="js/app.js?v=20260811203259"></script>
 <script>
 let EV, PHASE, FIGHTS, FMAP, MEMBERS, myPreds = {}, allPreds = [], ALL_SUPPORTS = [];
 let drafts = {};              // 決定前の編集中の選択（ローカルのみ）
@@ -335,7 +335,11 @@ function resultCard(f) {
   const decided = f.winner_id && f.result_method && !f.no_score;
   let resultBox = `<div class="result-box waiting"><span class="rline">結果待ち</span></div>`;
   if (f.no_score) {
-    resultBox = `<div class="result-box"><span class="rline">⚠️ ${esc(f.no_score_note || "体重超過")}</span>（予想対象外・集計に含めない）</div>`;
+    const w = FMAP[f.winner_id];
+    const res = (f.winner_id && f.result_method)
+      ? `<div class="rline"><span class="win">🏆 ${esc(w?.name)}</span>　${METHOD_LABEL[f.result_method] || ""}${f.result_method !== "DEC" && f.result_round ? ` ${f.result_round}R` : ""}${f.result_technique ? `／${TECH_LABEL[f.result_technique] || esc(f.result_technique)}` : ""}</div>`
+      : "";
+    resultBox = `<div class="result-box">${res}<span class="rline" style="color:#ffcf66">⚠️ ${esc(f.no_score_note || "体重超過")}（予想対象外・集計に含めない）</span></div>`;
   } else if (decided) {
     if (f.result_method === "DRAW" || f.result_method === "NC") {
       resultBox = `<div class="result-box"><span class="rline">${METHOD_LABEL[f.result_method]}</span>（集計対象外）</div>`;
