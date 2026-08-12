@@ -223,6 +223,18 @@
     tick();
     el._cd = setInterval(tick, 1000);
   };
+  // 出身地(origin)→国旗絵文字。部分一致で引く。ダゲスタン等はロシア国旗。
+  const FLAGS = [
+    ["日本", "🇯🇵"], ["韓国", "🇰🇷"], ["中国", "🇨🇳"], ["ブラジル", "🇧🇷"],
+    ["キルギス", "🇰🇬"], ["カザフ", "🇰🇿"], ["ウズベキ", "🇺🇿"], ["アゼルバイジャン", "🇦🇿"],
+    ["ダゲスタン", "🇷🇺"], ["ロシア", "🇷🇺"], ["アメリカ", "🇺🇸"], ["タジキスタン", "🇹🇯"],
+  ];
+  window.flagOf = (origin) => {
+    if (!origin) return "";
+    for (const [k, f] of FLAGS) if (origin.includes(k)) return f;
+    return "";
+  };
+
   window.fighterMap = (fighters) => Object.fromEntries(fighters.map(f => [f.id, f]));
 
   // 未選択ならプレイヤー選択（index）へ戻す
