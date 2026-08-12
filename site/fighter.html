@@ -7,18 +7,18 @@
 <title>選手名鑑｜RIZIN美食会予想</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260812222155">
+<link rel="stylesheet" href="css/style.css?v=20260812230714">
 </head>
 <body>
 <div id="app-header"></div>
 <div class="wrap" id="main"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/config.js?v=20260812222155"></script>
-<script src="js/techniques.js?v=20260812222155"></script>
-<script src="js/demo-data.js?v=20260812222155"></script>
-<script src="js/api.js?v=20260812222155"></script>
-<script src="js/app.js?v=20260812222155"></script>
+<script src="js/config.js?v=20260812230714"></script>
+<script src="js/techniques.js?v=20260812230714"></script>
+<script src="js/demo-data.js?v=20260812230714"></script>
+<script src="js/api.js?v=20260812230714"></script>
+<script src="js/app.js?v=20260812230714"></script>
 <script>
 // このポータルで扱った試合から選手ごとの戦績を組み立てる（サイト内完結STATS）
 function buildStats(fighterId, fights) {
@@ -44,7 +44,11 @@ function latestFight(fighterId, fights, EMAP, filterKey) {
     (x.fighter1_id === fighterId || x.fighter2_id === fighterId))
     .sort((a, b) => (EMAP[b.event_id]?.event_date || "").localeCompare(EMAP[a.event_id]?.event_date || ""))[0];
 }
-// 選手写真＝直近の試合の公式VSバナーの左半分（RED）or右半分（BLUE）を切り出す
+// 選手写真＝直近の試合の公式VSバナーの左半分（RED）or右半分（BLUE）を切り出す。
+// ※生写真（立ち合いカット）をここに使うのは不可：カメラアングル次第で左右が入れ替わり、
+//   RED=左という前提が崩れて別人が出る（秋元のカードにクレベルが出た・2026-08-12）。
+//   VSバナーは fighter1=左 が構図として保証されているので人物同定が確実。
+//   生写真は「試合」に紐づけて詳細ページのギャラリーで見せる（両者が写るため）。
 function photoOf(fighterId, fights, EMAP) {
   const f = latestFight(fighterId, fights, EMAP, "image_url");
   if (!f) return null;
@@ -271,14 +275,28 @@ function renderDetail(fighter, fighters, fights, events) {
     const total = parts.reduce((a, p) => a + p.n, 0);
     const finRate = Math.round(((ko || 0) + (sub || 0)) / fighter.rec_w * 100);
     if (total > 0) {
+      // 円グラフ（ドーナツ）：conic-gradient で KO/一本/判定 の比率を描き、中央にフィニッシュ率を置く
+      const COLOR = { ko: "#e60012", sub: "#1e6fd9", dec: "#8a8a92" };
+      let acc = 0;
+      const stops = parts.map(p => {
+        const from = acc / total * 360;
+        acc += p.n;
+        const to = acc / total * 360;
+        return `${COLOR[p.cls]} ${from.toFixed(1)}deg ${to.toFixed(1)}deg`;
+      }).join(", ");
       finBars = `
       <div class="fin-graph">
-        <div class="fin-head"><span>勝利の内訳</span>${finRate !== null ? `<span class="fin-rate">フィニッシュ率 <b>${finRate}%</b></span>` : ""}</div>
-        <div class="fin-bar">
-          ${parts.map(p => `<div class="fin-seg ${p.cls}" style="width:${(p.n / total * 100).toFixed(1)}%"></div>`).join("")}
-        </div>
-        <div class="fin-legend">
-          ${parts.map(p => `<span class="fin-leg ${p.cls}">${p.label} ${p.n}</span>`).join("")}
+        <div class="fin-head"><span>勝利の内訳</span></div>
+        <div class="fin-pie-wrap">
+          <div class="fin-pie" style="background:conic-gradient(${stops})">
+            <div class="fin-pie-hole">
+              <b>${finRate}%</b>
+              <span>フィニッシュ率</span>
+            </div>
+          </div>
+          <div class="fin-legend">
+            ${parts.map(p => `<span class="fin-leg ${p.cls}">${p.label} <b>${p.n}</b>（${Math.round(p.n / total * 100)}%）</span>`).join("")}
+          </div>
         </div>
       </div>`;
     }
