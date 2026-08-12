@@ -1472,6 +1472,7 @@ window.DEMO_SEED = {
     {
       id: "f_ueda",
       name: "上田幹雄",
+      rec_w: 5, rec_l: 4, rec_d: 0,
       history: [ { d: "2026.08", opp: "エドポロキング", r: "L", how: "2R TKO負け（膝）" } ],
       backbone: "空手",
     },
@@ -1484,6 +1485,7 @@ window.DEMO_SEED = {
     {
       id: "f_sudario",
       name: "スダリオ剛",
+      rec_w: 10, rec_l: 4, rec_d: 0,
       history: [ { d: "2026.08", opp: "酒井リョウ", r: "W", how: "1R パンチでTKO" } ],
       backbone: "相撲",
     },
