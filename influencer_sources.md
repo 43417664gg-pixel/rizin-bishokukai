@@ -22,3 +22,5 @@
 > ※除外：松嶋こよみ(Hf-OltOZW3k)・格闘キャスト(lD9tzFZAWKU)＝複数人パネルで単独予想として攻略不可（話者混在・誤読確認）。単独/本人インタビュー形式のみ採用（2026-08-11）。| 2026-08-07 | 青木真也  [ SHINYA AOKI ] チャンネル | ev_r54 | 7件 | https://www.youtube.com/watch?v=JBJXUMhbDqg | m_yt_shinyaaoki |
 | 2026-08-06 | 青木真也  [ SHINYA AOKI ] チャンネル | ev_r54 | 2件 | https://www.youtube.com/watch?v=HOHNU38C4Vk | m_yt_shinyaaoki |
 | 2026-08-11 | 青木真也  [ SHINYA AOKI ] チャンネル | ev_r54 | 1件 | https://www.youtube.com/watch?v=g5SxvlbZLmM | m_yt_shinyaaoki |
+| 2026-07-26 | 扇久保博正 おぎちゃんねる。Ogichannel | ev_r54 | 1件 | https://www.youtube.com/watch?v=dM9HR1Cw4hQ | m_yt_ogichannel |
+| 2026-08-03 | 扇久保博正 おぎちゃんねる。Ogichannel | ev_r54 | 1件 | https://www.youtube.com/watch?v=sBL_176HKrY | m_yt_ogichannel |

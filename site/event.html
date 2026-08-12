@@ -7,7 +7,7 @@
 <title>大会予想｜RIZIN美食会予想</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260812094222">
+<link rel="stylesheet" href="css/style.css?v=20260812141354">
 </head>
 <body>
 <div id="app-header"></div>
@@ -16,11 +16,11 @@
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/config.js?v=20260812094222"></script>
-<script src="js/techniques.js?v=20260812094222"></script>
-<script src="js/demo-data.js?v=20260812094222"></script>
-<script src="js/api.js?v=20260812094222"></script>
-<script src="js/app.js?v=20260812094222"></script>
+<script src="js/config.js?v=20260812141354"></script>
+<script src="js/techniques.js?v=20260812141354"></script>
+<script src="js/demo-data.js?v=20260812141354"></script>
+<script src="js/api.js?v=20260812141354"></script>
+<script src="js/app.js?v=20260812141354"></script>
 <script>
 let EV, PHASE, FIGHTS, FMAP, MEMBERS, myPreds = {}, allPreds = [], ALL_SUPPORTS = [];
 let drafts = {};              // 決定前の編集中の選択（ローカルのみ）
@@ -460,7 +460,8 @@ function allPicksMatrix() {
     const cells = activeMembers.map(m => {
       const p = allPreds.find(x => x.fight_id === f.id && x.member_id === m.id);
       const sup = ALL_SUPPORTS.find(s => s.fight_id === f.id && s.member_id === m.id);
-      const supMk = sup ? `<span class="mx-sup ${sup.fighter_id === f.fighter1_id ? "r" : "b"}" title="応援">📣</span>` : "";
+      const supNm = sup ? esc((FMAP[sup.fighter_id]?.name || "").replace(/[ 　].*$/, "").slice(0, 5)) : "";
+      const supMk = sup ? `<span class="mx-sup ${sup.fighter_id === f.fighter1_id ? "r" : "b"}">📣${supNm}</span>` : "";
       if (!p) return `<td class="mx-cell none">${supMk || "—"}</td>`;
       const corner = p.winner_id === f.fighter1_id ? "c1" : "c2";
       const hitCls = decided ? (p.winner_id === f.winner_id ? " hit" : " miss") : "";
@@ -469,8 +470,9 @@ function allPicksMatrix() {
       const s = decided ? scoreFight(p, f) : null;
       const mark = s?.pitari ? " ピタリ" : "";
       return `<td class="mx-cell ${corner}${hitCls}">
-        <span class="mx-name">${esc(FMAP[p.winner_id]?.name || "")}${supMk}</span>
+        <span class="mx-name">${esc(FMAP[p.winner_id]?.name || "")}</span>
         ${sub || mark ? `<span class="mx-sub">${esc(sub)}${mark}</span>` : ""}
+        ${supMk}
       </td>`;
     }).join("");
     if (f.cancelled) {  // 中止試合：番号に×を付け、行をグレーアウト（ピックは残す）
