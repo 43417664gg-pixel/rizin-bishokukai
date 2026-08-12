@@ -7,18 +7,18 @@
 <title>ランキング｜RIZIN美食会予想</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260812091904">
+<link rel="stylesheet" href="css/style.css?v=20260812092406">
 </head>
 <body>
 <div id="app-header"></div>
 <div class="wrap" id="main"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/config.js?v=20260812091904"></script>
-<script src="js/techniques.js?v=20260812091904"></script>
-<script src="js/demo-data.js?v=20260812091904"></script>
-<script src="js/api.js?v=20260812091904"></script>
-<script src="js/app.js?v=20260812091904"></script>
+<script src="js/config.js?v=20260812092406"></script>
+<script src="js/techniques.js?v=20260812092406"></script>
+<script src="js/demo-data.js?v=20260812092406"></script>
+<script src="js/api.js?v=20260812092406"></script>
+<script src="js/app.js?v=20260812092406"></script>
 <script>
 let EVENTS, MEMBERS, ALL_FIGHTS, ALL_PREDS, FMAP = {};
 let checked = new Set();   // 集計対象の大会ID
@@ -77,11 +77,13 @@ function render() {
           <td><span class="lb-rate">${fmtRate(r.rate)}</span>
               <div class="lb-sub">${r.hits}/${r.decided}</div></td>
           <td class="lb-num">${r.pitari
-            ? `<button class="pit-btn" onclick="showPitari('${r.member.id}')">${r.pitari}</button>`
+            ? `<span class="pit-cell" tabindex="0" onclick="this.classList.toggle('open')">
+                 <span class="pit-btn">${r.pitari}</span>
+                 <span class="pit-pop"><b class="pit-head">🎯 ${esc(r.member.name)} のピタリ</b>${(window.PITARI[r.member.id] || []).map(s => `<span class="pit-row">${s}</span>`).join("")}</span>
+               </span>`
             : `<span class="pit-zero">0</span>`}</td>
         </tr>`; }).join("")}
     </table>
-    <div id="pitari-detail" class="pit-detail"></div>
 
     <div class="section-label">集計する大会</div>
     <div class="ev-checks">
