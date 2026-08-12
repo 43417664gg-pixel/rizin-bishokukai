@@ -19,4 +19,6 @@
 | 2026-08-09 | ジョビンチャンネル | ev_r54 | 10件 | https://www.youtube.com/watch?v=QJpIbNoiY04 | m_yt_922c02ef |
 | 2026-08-01 | 石渡伸太郎 Shintaro Ishiwatari | ev_r54 | 6件 | https://www.youtube.com/watch?v=yB2tPLoOXGA | m_yt_shintaroishiwatari |
 
-> ※除外：松嶋こよみ(Hf-OltOZW3k)・格闘キャスト(lD9tzFZAWKU)＝複数人パネルで単独予想として攻略不可（話者混在・誤読確認）。単独/本人インタビュー形式のみ採用（2026-08-11）。
+> ※除外：松嶋こよみ(Hf-OltOZW3k)・格闘キャスト(lD9tzFZAWKU)＝複数人パネルで単独予想として攻略不可（話者混在・誤読確認）。単独/本人インタビュー形式のみ採用（2026-08-11）。| 2026-08-07 | 青木真也  [ SHINYA AOKI ] チャンネル | ev_r54 | 7件 | https://www.youtube.com/watch?v=JBJXUMhbDqg | m_yt_shinyaaoki |
+| 2026-08-06 | 青木真也  [ SHINYA AOKI ] チャンネル | ev_r54 | 2件 | https://www.youtube.com/watch?v=HOHNU38C4Vk | m_yt_shinyaaoki |
+| 2026-08-11 | 青木真也  [ SHINYA AOKI ] チャンネル | ev_r54 | 1件 | https://www.youtube.com/watch?v=g5SxvlbZLmM | m_yt_shinyaaoki |
