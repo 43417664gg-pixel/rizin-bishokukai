@@ -463,6 +463,7 @@ window.DEMO_SEED = {
     {
       id: "f_sabatello",
       name: "ダニー・サバテロ",
+      birth_date: "1993-03-31",
       nickname: "ジ・イタリアンギャングスター",
       belt: "RIZINバンタム級王者（第8代）",
       backbone: "レスリング",
@@ -494,6 +495,7 @@ window.DEMO_SEED = {
     {
       id: "f_kashimura",
       name: "鹿志村仁之介",
+      birth_date: "2001-08-12",
       nickname: "黒帯のリベリオン",
       backbone: "柔道・ブラジリアン柔術（黒帯）",
       team: "Battle-Box",
@@ -554,6 +556,7 @@ window.DEMO_SEED = {
     {
       id: "f_hagiwara",
       name: "萩原京平",
+      birth_date: "1995-12-28",
       nickname: "アンダーグラウンドエンペラー",
       backbone: "キックボクシング・喧嘩",
       team: "SMOKER GYM／TRIBE TOKYO MMA",
@@ -583,6 +586,7 @@ window.DEMO_SEED = {
     {
       id: "f_ota",
       name: "太田忍",
+      birth_date: "1993-12-28",
       nickname: "銀の忍者レスラー",
       belt: "リオ五輪グレコローマン銀メダリスト",
       backbone: "レスリング（グレコローマン）",
@@ -614,6 +618,7 @@ window.DEMO_SEED = {
     {
       id: "f_tilenov",
       name: "イリスベク・ティレノフ",
+      birth_date: "2003-12-14",
       backbone: "MMA",
       team: "イーラスMMA",
       origin: "キルギス・オシ州",
@@ -635,6 +640,7 @@ window.DEMO_SEED = {
     {
       id: "f_hiroya",
       name: "ヒロヤ",
+      birth_date: "1998-05-07",
       nickname: "不屈のヤングガン",
       backbone: "空手・キックボクシング",
       team: "JAPAN TOP TEAM",
@@ -658,6 +664,7 @@ window.DEMO_SEED = {
     {
       id: "f_arsen",
       name: "山本アーセン",
+      birth_date: "1996-09-08",
       nickname: "格闘一家の最強DNA",
       backbone: "アマチュアレスリング",
       team: "KRAZY BEE",
@@ -688,6 +695,7 @@ window.DEMO_SEED = {
     {
       id: "f_case",
       name: "ジョニー・ケース",
+      birth_date: "1989-06-28", team: "MMA LAB",
       nickname: "ハリウッド",
       backbone: "レスリング（元UFC）",
       origin: "アメリカ・アイオワ",
@@ -716,6 +724,7 @@ window.DEMO_SEED = {
     {
       id: "f_tenya",
       name: "天弥",
+      birth_date: "2004-05-07", team: "和術慧舟會HEARTS",
       backbone: "ストリート",
       origin: "日本",
       rec_w: 5,
@@ -733,6 +742,7 @@ window.DEMO_SEED = {
     {
       id: "f_hinotori",
       name: "火の鳥",
+      birth_date: "1994-03-22", team: "BRAVE GYM",
       backbone: "レスリング（青山学院大）",
       origin: "日本",
       rec_w: 5,
@@ -760,6 +770,7 @@ window.DEMO_SEED = {
     {
       id: "f_leejaehoon",
       name: "イ・ジェフン",
+      birth_date: "2002-12-09",
       rec_w: 3, rec_l: 1, rec_d: 0,
       team: "サンスン・マーシャルアーツアカデミー",
       origin: "韓国",
@@ -776,6 +787,7 @@ window.DEMO_SEED = {
     {
       id: "f_sasaki",
       name: "佐々木信治",
+      birth_date: "1980-05-02",
       rec_w: 20, rec_l: 14, rec_d: 0,
       backbone: "MMA",
       team: "総合格闘技道場BURST（主宰）",
@@ -793,6 +805,7 @@ window.DEMO_SEED = {
     {
       id: "f_riceyota",
       name: "林RICE陽太",
+      birth_date: "1993-06-02", team: "reversal gym osaka anne",
       belt: "GRACHAN二階級制覇王者",
       backbone: "修斗",
       origin: "日本",
@@ -809,6 +822,7 @@ window.DEMO_SEED = {
     {
       id: "f_suzuki",
       name: "鈴木博昭",
+      birth_date: "1984-12-06",
       nickname: "怪物くん",
       backbone: "空手道・シュートボクシング",
       team: "BELLWOOD FIGHT TEAM",
@@ -829,6 +843,7 @@ window.DEMO_SEED = {
     {
       id: "f_miyagawa",
       name: "宮川日向",
+      birth_date: "2002-07-15",
       backbone: "ストライカー",
       team: "SMOKER GYM",
       origin: "日本",
@@ -848,6 +863,7 @@ window.DEMO_SEED = {
     {
       id: "f_shoji",
       name: "昇侍",
+      birth_date: "1983-04-24",
       nickname: "瞬殺侍",
       belt: "初代パンクラス・ライトヘビー級王者",
       backbone: "ムエタイ",
@@ -885,6 +901,7 @@ window.DEMO_SEED = {
     {
       id: "f_umeno",
       name: "梅野源治",
+      birth_date: "1988-12-13",
       nickname: "日本ムエタイ界の至宝",
       backbone: "ムエタイ",
       team: "PHOENIX／FIGHTER'S FLOW",
@@ -908,6 +925,8 @@ window.DEMO_SEED = {
     {
       id: "f_parksiu",
       name: "パク・シウ",
+      backbone: "テコンドー",
+      birth_date: "1991-06-26", team: "HAVAS",
       rec_w: 13, rec_l: 6, rec_d: 0,
       origin: "韓国",
       style: "組みの強さで押し込む韓国女子の実力者",
@@ -923,6 +942,7 @@ window.DEMO_SEED = {
     {
       id: "f_suda",
       name: "須田萌里",
+      birth_date: "2004-07-29", team: "SCORPION GYM",
       rec_w: 15, rec_l: 7, rec_d: 0,
       backbone: "MMA",
       origin: "日本",
@@ -945,6 +965,7 @@ window.DEMO_SEED = {
     {
       id: "f_oshima",
       name: "大島沙緒里",
+      birth_date: "1994-11-14",
       nickname: "極めのミクロクイーン",
       backbone: "柔道（弐段）",
       team: "リバーサルジム新宿Me,We",
@@ -974,6 +995,7 @@ window.DEMO_SEED = {
     {
       id: "f_leeyeji",
       name: "イ・イェジ",
+      birth_date: "1999-07-03", team: "AOM",
       rec_w: 6, rec_l: 8, rec_d: 0,
       origin: "韓国",
       style: "「攻め続けるのがポリシー」と語る前進型。判定までペースを渡さないスタミナが持ち味",
@@ -1472,6 +1494,7 @@ window.DEMO_SEED = {
     {
       id: "f_ueda",
       name: "上田幹雄",
+      birth_date: "1995-05-01", team: "BRAVE", origin: "日本 東京都",
       rec_w: 5, rec_l: 4, rec_d: 0,
       history: [ { d: "2026.08", opp: "エドポロキング", r: "L", how: "2R TKO負け（膝）" } ],
       backbone: "空手",
@@ -1479,6 +1502,8 @@ window.DEMO_SEED = {
     {
       id: "f_edpolo",
       name: "エドポロキング",
+      backbone: "野球",
+      birth_date: "2001-02-08", team: "ROOTS GYM", origin: "日本 大阪府",
       rec_w: 4, rec_l: 0, rec_d: 0,
       history: [ { d: "2026.08", opp: "上田幹雄", r: "W", how: "2R 顔面への膝でTKO" } ],
     },
@@ -1492,6 +1517,7 @@ window.DEMO_SEED = {
     {
       id: "f_sakairyo",
       name: "酒井リョウ",
+      birth_date: "1987-03-24", team: "レンジャージム", origin: "日本 栃木県",
       rec_w: 15, rec_l: 15, rec_d: 0,
       history: [ { d: "2026.08", opp: "スダリオ剛", r: "L", how: "1R TKO負け（パンチ）" } ],
     },
