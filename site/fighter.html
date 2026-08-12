@@ -7,18 +7,18 @@
 <title>選手名鑑｜RIZIN美食会予想</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260812141354">
+<link rel="stylesheet" href="css/style.css?v=20260812141739">
 </head>
 <body>
 <div id="app-header"></div>
 <div class="wrap" id="main"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/config.js?v=20260812141354"></script>
-<script src="js/techniques.js?v=20260812141354"></script>
-<script src="js/demo-data.js?v=20260812141354"></script>
-<script src="js/api.js?v=20260812141354"></script>
-<script src="js/app.js?v=20260812141354"></script>
+<script src="js/config.js?v=20260812141739"></script>
+<script src="js/techniques.js?v=20260812141739"></script>
+<script src="js/demo-data.js?v=20260812141739"></script>
+<script src="js/api.js?v=20260812141739"></script>
+<script src="js/app.js?v=20260812141739"></script>
 <script>
 // このポータルで扱った試合から選手ごとの戦績を組み立てる（サイト内完結STATS）
 function buildStats(fighterId, fights) {
@@ -85,7 +85,8 @@ function cardHtml({ f, s, ph }, i) {
         ${f.nickname ? `<div class="malias">${esc(f.nickname)}</div>` : ""}
         <div class="mtags">
           ${isChampion(f) ? `<span class="mchamp">CHAMPION</span>` : ""}
-          ${f.backbone ? `<span class="mbackbone">${esc(f.backbone)}</span>` : ""}
+          ${f.team ? `<span class="mteam" data-q="${esc(f.team)}" onclick="filterChip(event,this)" title="この所属で絞り込み">🏠 ${esc(f.team)}</span>` : ""}
+          ${f.backbone ? `<span class="mbackbone" data-q="${esc(f.backbone)}" onclick="filterChip(event,this)" title="このバックボーンで絞り込み">${esc(f.backbone)}</span>` : ""}
           ${f.stance ? `<span class="mstance">${esc(f.stance)}</span>` : ""}
         </div>
       </div>
@@ -125,6 +126,16 @@ function renderMeikan() {
   document.getElementById("meikan-body").innerHTML = body;
 }
 
+// ジム名・バックボーンのチップを押したら、その語で名鑑を絞り込む（＝所属ジムの選手一覧）
+window.filterBy = function (term) {
+  const el = document.getElementById("fi_search");
+  if (!el) { location.href = "fighter.html?q=" + encodeURIComponent(term); return; }
+  el.value = term; renderMeikan(); window.scrollTo({ top: 0, behavior: "smooth" });
+};
+window.filterChip = function (ev, el) {
+  ev.preventDefault(); ev.stopPropagation(); filterBy(el.dataset.q || "");
+};
+
 function renderList(fighters, fights) {
   LIST_ROWS = fighters.map(f => {
     // 試合から階級を引く。出場歴が無い王者は belt から取る
@@ -142,7 +153,7 @@ function renderList(fighters, fights) {
     <p class="page-sub">このポータルで扱った大会の戦績を蓄積。大会を重ねるほど名鑑が濃くなる。</p>
     <div class="fi-search">
       <input id="fi_search" type="search" placeholder="選手名・異名・所属・階級で検索"
-             oninput="renderMeikan()" autocomplete="off">
+             value="${esc(qp('q') || '')}" oninput="renderMeikan()" autocomplete="off">
     </div>
     <div id="meikan-body"></div>`;
   renderMeikan();
@@ -266,9 +277,9 @@ function renderDetail(fighter, fighters, fights, events) {
     ${finBars}
     <div class="profile-table">
       ${ageText(fighter.birth_date) ? `<div class="pt-row"><span class="pt-k">年齢</span><span class="pt-v">${esc(ageText(fighter.birth_date))}</span></div>` : ""}
-      ${fighter.backbone ? `<div class="pt-row"><span class="pt-k">バックボーン</span><span class="pt-v">${esc(fighter.backbone)}</span></div>` : ""}
+      ${fighter.backbone ? `<div class="pt-row"><span class="pt-k">バックボーン</span><span class="pt-v"><a class="pt-link" href="fighter.html?q=${encodeURIComponent(fighter.backbone)}">${esc(fighter.backbone)} ›</a></span></div>` : ""}
       ${fighter.stance ? `<div class="pt-row"><span class="pt-k">構え</span><span class="pt-v">${esc(fighter.stance)}</span></div>` : ""}
-      ${fighter.team ? `<div class="pt-row"><span class="pt-k">所属ジム</span><span class="pt-v">${esc(fighter.team)}</span></div>` : ""}
+      ${fighter.team ? `<div class="pt-row"><span class="pt-k">所属ジム</span><span class="pt-v"><a class="pt-link" href="fighter.html?q=${encodeURIComponent(fighter.team)}">🏠 ${esc(fighter.team)} ›</a></span></div>` : ""}
       ${fighter.origin ? `<div class="pt-row"><span class="pt-k">出身</span><span class="pt-v">${esc(fighter.origin)}</span></div>` : ""}
       ${fighter.style ? `<div class="pt-row"><span class="pt-k">ファイトスタイル</span><span class="pt-v">${esc(fighter.style)}</span></div>` : ""}
       ${fighter.career ? `<div class="pt-row"><span class="pt-k">来歴</span><span class="pt-v">${esc(fighter.career)}</span></div>` : ""}

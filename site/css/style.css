@@ -792,6 +792,13 @@ tr.top .lb-rate { color: var(--gold-hot); }
 .matrix .mx-x.ns { color: #ffcf66; }
 .mx-sup { display: block; font-size: 9px; font-weight: 700; margin-top: 2px; white-space: nowrap; }
 .mx-sup.r { color: #ff5a67; } .mx-sup.b { color: #5aa0ff; }
+/* 名鑑：所属ジム／バックボーンをクリックで絞り込み */
+.mteam { display: inline-block; font-size: 10px; font-weight: 700; color: #8ec7ff; background: #12202e;
+  border: 1px solid #24455e; border-radius: 4px; padding: 1px 6px; cursor: pointer; }
+.mteam:hover { background: #1a3448; }
+.mbackbone { cursor: pointer; }
+.pt-link { color: #8ec7ff; text-decoration: none; font-weight: 700; }
+.pt-link:hover { text-decoration: underline; }
 /* ランキングのピタリ＝金色で強調＋クリックで内訳 */
 .pit-cell { position: relative; display: inline-block; cursor: pointer; outline: none; }
 .pit-btn { background: var(--gold); color: #131007; font-weight: 900; font-family: var(--num);
