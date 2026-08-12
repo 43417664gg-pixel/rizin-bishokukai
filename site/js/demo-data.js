@@ -165,7 +165,7 @@ window.DEMO_SEED = {
     {
       id: "f_satoshi",
       name: "ホベルト・サトシ・ソウザ",
-      nickname: "シン・柔術マジシャン",
+      nickname: "カナリア色の大和魂",
       birth_date: "1989-09-19",
       backbone: "ブラジリアン柔術",
       team: "ボンサイ柔術",
@@ -251,7 +251,7 @@ window.DEMO_SEED = {
     {
       id: "f_takagi",
       name: "高木凌",
-      nickname: "一撃秒殺スラッガー",
+      nickname: "ゴールデンライト",
       birth_date: "1999-09-12",
       backbone: "野球",
       team: "フリー",
@@ -1157,7 +1157,7 @@ window.DEMO_SEED = {
     {
       id: "f_itoyuki",
       name: "伊藤裕樹",
-      nickname: "DEEPの殴り者",
+      nickname: "ザ・ギャンブラー",
       rec_w: 21,
       rec_l: 7,
       history: [
@@ -1212,7 +1212,7 @@ window.DEMO_SEED = {
     {
       id: "f_mashima",
       name: "摩嶋一整",
-      nickname: "毛利一族のグラップラー",
+      nickname: "町工場のグラップラー",
       rec_w: 19,
       rec_l: 7,
       history: [
