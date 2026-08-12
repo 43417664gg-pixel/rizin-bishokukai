@@ -7,18 +7,18 @@
 <title>選手名鑑｜RIZIN美食会予想</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260812145316">
+<link rel="stylesheet" href="css/style.css?v=20260812215519">
 </head>
 <body>
 <div id="app-header"></div>
 <div class="wrap" id="main"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/config.js?v=20260812145316"></script>
-<script src="js/techniques.js?v=20260812145316"></script>
-<script src="js/demo-data.js?v=20260812145316"></script>
-<script src="js/api.js?v=20260812145316"></script>
-<script src="js/app.js?v=20260812145316"></script>
+<script src="js/config.js?v=20260812215519"></script>
+<script src="js/techniques.js?v=20260812215519"></script>
+<script src="js/demo-data.js?v=20260812215519"></script>
+<script src="js/api.js?v=20260812215519"></script>
+<script src="js/app.js?v=20260812215519"></script>
 <script>
 // このポータルで扱った試合から選手ごとの戦績を組み立てる（サイト内完結STATS）
 function buildStats(fighterId, fights) {
@@ -37,11 +37,16 @@ function buildStats(fighterId, fights) {
   return { w, l, d, finishes, fights: mine };
 }
 
-// 選手写真＝公式VSバナーの左半分（RED）or右半分（BLUE）を切り出す
-function photoOf(fighterId, fights) {
-  const f = fights.filter(x => x.image_url &&
+// 「直近」の判定は必ず event_date（実際の開催日）で行う。event_id の文字列比較
+// （"ev_cho5" vs "ev_r54"）は開催順にならない——過去に直近試合の写真/階級を取り違えた事故あり。
+function latestFight(fighterId, fights, EMAP, filterKey) {
+  return fights.filter(x => (!filterKey || x[filterKey]) &&
     (x.fighter1_id === fighterId || x.fighter2_id === fighterId))
-    .sort((a, b) => (b.event_id > a.event_id ? 1 : -1))[0];
+    .sort((a, b) => (EMAP[b.event_id]?.event_date || "").localeCompare(EMAP[a.event_id]?.event_date || ""))[0];
+}
+// 選手写真＝直近の試合の公式VSバナーの左半分（RED）or右半分（BLUE）を切り出す
+function photoOf(fighterId, fights, EMAP) {
+  const f = latestFight(fighterId, fights, EMAP, "image_url");
   if (!f) return null;
   return { img: f.image_url, side: f.fighter1_id === fighterId ? "left" : "right" };
 }
@@ -51,9 +56,8 @@ function photoDiv(ph, cls) {
 }
 
 // 階級＝直近の試合の表記を使う
-function weightOf(fighterId, fights) {
-  const f = fights.filter(x => x.weight_class &&
-    (x.fighter1_id === fighterId || x.fighter2_id === fighterId))[0];
+function weightOf(fighterId, fights, EMAP) {
+  const f = latestFight(fighterId, fights, EMAP, "weight_class");
   return f ? f.weight_class : "";
 }
 
@@ -62,7 +66,7 @@ async function load() {
   const [fighters, fights, events] = await Promise.all([DB.listFighters(), DB.listFights(), DB.listEvents()]);
   const id = qp("id");
   if (id) renderDetail(fighters.find(f => f.id === id), fighters, fights, events);
-  else renderList(fighters, fights);
+  else renderList(fighters, fights, events);
 }
 
 let LIST_ROWS = [];   // 検索で絞り込む元データ
@@ -71,9 +75,10 @@ function cardHtml({ f, s, ph }, i) {
   const wc = f._wc;
   return `
     <a class="meikan-card" href="fighter.html?id=${f.id}" style="--d:${Math.min(i, 11) * 40}ms">
-      ${f.highlight_url
-        ? `<div class="mphoto portrait"><img src="${esc(f.highlight_url)}" alt="${esc(f.name)}" loading="lazy"></div>`
-        : (ph ? photoDiv(ph, "mphoto") : `<div class="mphoto none">${esc(f.name.slice(0, 1))}</div>`)}
+      ${ph ? photoDiv(ph, "mphoto")
+        : (f.highlight_url
+          ? `<div class="mphoto portrait"><img src="${esc(f.highlight_url)}" alt="${esc(f.name)}" loading="lazy"></div>`
+          : `<div class="mphoto none">${esc(f.name.slice(0, 1))}</div>`)}
       <div class="mbody">
         <div class="mname">${flagOf(f.origin) ? `<span class="mflag">${flagOf(f.origin)}</span>` : ""}${esc(f.name)}</div>
         <div class="mmeta">
@@ -136,12 +141,13 @@ window.filterChip = function (ev, el) {
   ev.preventDefault(); ev.stopPropagation(); filterBy(el.dataset.q || "");
 };
 
-function renderList(fighters, fights) {
+function renderList(fighters, fights, events) {
+  const EMAP = Object.fromEntries(events.map(e => [e.id, e]));
   LIST_ROWS = fighters.map(f => {
     // 試合から階級を引く。出場歴が無い王者は belt から取る
-    const wc = weightOf(f.id, fights);
+    const wc = weightOf(f.id, fights, EMAP);
     f._wc = wc ? weightClassName(wc) : (weightFromBelt(f) || "階級未設定");
-    return { f, s: buildStats(f.id, fights), ph: photoOf(f.id, fights) };
+    return { f, s: buildStats(f.id, fights), ph: photoOf(f.id, fights, EMAP) };
   });
   // 階級内は 王者 → 名前順
   LIST_ROWS.sort((a, b) => (isChampion(b.f) - isChampion(a.f)) ||
@@ -194,8 +200,8 @@ function renderDetail(fighter, fighters, fights, events) {
   const FMAP = fighterMap(fighters);
   const EMAP = Object.fromEntries(events.map(e => [e.id, e]));
   const s = buildStats(fighter.id, fights);
-  const ph = photoOf(fighter.id, fights);
-  const wc = weightOf(fighter.id, fights);
+  const ph = photoOf(fighter.id, fights, EMAP);
+  const wc = weightOf(fighter.id, fights, EMAP);
   const upcoming = fights.filter(f =>
     (f.fighter1_id === fighter.id || f.fighter2_id === fighter.id) && !(f.winner_id && f.result_method));
   const historyHtml = (list, decided) => list
