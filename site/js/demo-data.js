@@ -760,6 +760,7 @@ window.DEMO_SEED = {
     {
       id: "f_leejaehoon",
       name: "イ・ジェフン",
+      rec_w: 3, rec_l: 1, rec_d: 0,
       team: "サンスン・マーシャルアーツアカデミー",
       origin: "韓国",
       style: "前に出る圧とフィジカルで押し切る韓国系ファイター。口も強い",
@@ -775,6 +776,7 @@ window.DEMO_SEED = {
     {
       id: "f_sasaki",
       name: "佐々木信治",
+      rec_w: 20, rec_l: 14, rec_d: 0,
       backbone: "MMA",
       team: "総合格闘技道場BURST（主宰）",
       origin: "日本・広島県福山市",
@@ -906,6 +908,7 @@ window.DEMO_SEED = {
     {
       id: "f_parksiu",
       name: "パク・シウ",
+      rec_w: 13, rec_l: 6, rec_d: 0,
       origin: "韓国",
       style: "組みの強さで押し込む韓国女子の実力者",
       career: "「もう一度チャンピオンに」を掲げ、伊澤星花返上の女子スーパーアトム級王座を巡る“見えないトーナメント”に参戦。結果と内容次第で大晦日の王座決定戦へ",
@@ -920,6 +923,7 @@ window.DEMO_SEED = {
     {
       id: "f_suda",
       name: "須田萌里",
+      rec_w: 15, rec_l: 7, rec_d: 0,
       backbone: "MMA",
       origin: "日本",
       style: "組んでからの絞め・関節に強い一本型。元RIZIN王者・浜崎朱加から一本を奪った極めは本物",
@@ -970,6 +974,7 @@ window.DEMO_SEED = {
     {
       id: "f_leeyeji",
       name: "イ・イェジ",
+      rec_w: 6, rec_l: 8, rec_d: 0,
       origin: "韓国",
       style: "「攻め続けるのがポリシー」と語る前進型。判定までペースを渡さないスタミナが持ち味",
       career: "2015年ROAD FCでプロデビューした10年選手。DEEP JEWELSで古瀬美月・竹林エルに勝利、須田に一本負け、浜崎朱加に判定負け。2025年5月に大島へ判定勝ちしており、今回はRIZIN初参戦での再戦",
@@ -1473,6 +1478,7 @@ window.DEMO_SEED = {
     {
       id: "f_edpolo",
       name: "エドポロキング",
+      rec_w: 4, rec_l: 0, rec_d: 0,
       history: [ { d: "2026.08", opp: "上田幹雄", r: "W", how: "2R 顔面への膝でTKO" } ],
     },
     {
@@ -1484,6 +1490,7 @@ window.DEMO_SEED = {
     {
       id: "f_sakairyo",
       name: "酒井リョウ",
+      rec_w: 15, rec_l: 15, rec_d: 0,
       history: [ { d: "2026.08", opp: "スダリオ剛", r: "L", how: "1R TKO負け（パンチ）" } ],
     },
   ],
