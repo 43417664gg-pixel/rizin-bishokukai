@@ -7,7 +7,7 @@
 <title>大会予想｜RIZIN美食会予想</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260811205115">
+<link rel="stylesheet" href="css/style.css?v=20260812091904">
 </head>
 <body>
 <div id="app-header"></div>
@@ -16,11 +16,11 @@
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/config.js?v=20260811205115"></script>
-<script src="js/techniques.js?v=20260811205115"></script>
-<script src="js/demo-data.js?v=20260811205115"></script>
-<script src="js/api.js?v=20260811205115"></script>
-<script src="js/app.js?v=20260811205115"></script>
+<script src="js/config.js?v=20260812091904"></script>
+<script src="js/techniques.js?v=20260812091904"></script>
+<script src="js/demo-data.js?v=20260812091904"></script>
+<script src="js/api.js?v=20260812091904"></script>
+<script src="js/app.js?v=20260812091904"></script>
 <script>
 let EV, PHASE, FIGHTS, FMAP, MEMBERS, myPreds = {}, allPreds = [], ALL_SUPPORTS = [];
 let drafts = {};              // 決定前の編集中の選択（ローカルのみ）
@@ -451,6 +451,11 @@ function allPicksMatrix() {
         <div style="width:${mpr1}%;background:#e60012"></div><div style="width:${mpr2}%;background:#1e6fd9"></div>
       </div>
       <div style="display:flex;justify-content:space-between;font-size:9px;color:#999;margin-top:1px"><span>${mpr1}%</span><span>${mpr2}%</span></div>` : "";
+    // 応援📣もALL PICKSに出す（予想とは別軸・どちらを応援したか）
+    const sc1 = ALL_SUPPORTS.filter(s => s.fight_id === f.id && s.fighter_id === f.fighter1_id).length;
+    const sc2 = ALL_SUPPORTS.filter(s => s.fight_id === f.id && s.fighter_id === f.fighter2_id).length;
+    const supBadge = (sc1 || sc2)
+      ? `<div style="font-size:9px;color:#c9a84a;font-weight:700;margin-top:2px">📣 <span style="color:#ff5a67">${sc1}</span> - <span style="color:#5aa0ff">${sc2}</span></div>` : "";
     const decided = f.winner_id && f.result_method && !f.no_score && !["DRAW", "NC"].includes(f.result_method);
     const cells = activeMembers.map(m => {
       const p = allPreds.find(x => x.fight_id === f.id && x.member_id === m.id);
@@ -473,7 +478,7 @@ function allPicksMatrix() {
       return `<tr class="mxrow noscore"><th class="mx-fight">${thumb}<span class="mx-x ns">体重超過｜対象外</span></th>${cells}</tr>`;
     }
     const c = decided ? { level: "" } : consensus(f);  // 結果が出たら○×優先、未確定なら一致/割れ
-    return `<tr class="mxrow ${c.level}"><th class="mx-fight">${thumb}${miniBar}</th>${cells}</tr>`;
+    return `<tr class="mxrow ${c.level}"><th class="mx-fight">${thumb}${miniBar}${supBadge}</th>${cells}</tr>`;
   }).join("");
   return `
     <div class="section-label">ALL PICKS</div>

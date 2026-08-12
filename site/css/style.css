@@ -790,3 +790,12 @@ tr.top .lb-rate { color: var(--gold-hot); }
 .matrix tr.mxrow.noscore td { opacity: .62; }
 .matrix tr.mxrow.noscore .mx-fight { box-shadow: inset 3px 0 0 #b8860b; }
 .matrix .mx-x.ns { color: #ffcf66; }
+/* ランキングのピタリ＝金色で強調＋クリックで内訳 */
+.pit-btn { background: var(--gold); color: #131007; font-weight: 900; font-family: var(--num);
+  font-size: 15px; border: none; border-radius: 6px; padding: 3px 11px; cursor: pointer; }
+.pit-btn:hover { filter: brightness(1.1); }
+.pit-zero { color: var(--muted); font-family: var(--num); }
+.pit-detail:not(:empty) { margin: 10px 0 4px; padding: 12px 14px; background: #1a1710;
+  border-left: 3px solid var(--gold); border-radius: 6px; }
+.pit-head { font-weight: 900; color: var(--gold); font-size: 13px; margin-bottom: 6px; }
+.pit-row { font-size: 13px; color: var(--text); padding: 3px 0; border-top: 1px solid #2a2416; }

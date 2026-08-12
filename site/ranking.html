@@ -7,25 +7,28 @@
 <title>ランキング｜RIZIN美食会予想</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260811205115">
+<link rel="stylesheet" href="css/style.css?v=20260812091904">
 </head>
 <body>
 <div id="app-header"></div>
 <div class="wrap" id="main"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/config.js?v=20260811205115"></script>
-<script src="js/techniques.js?v=20260811205115"></script>
-<script src="js/demo-data.js?v=20260811205115"></script>
-<script src="js/api.js?v=20260811205115"></script>
-<script src="js/app.js?v=20260811205115"></script>
+<script src="js/config.js?v=20260812091904"></script>
+<script src="js/techniques.js?v=20260812091904"></script>
+<script src="js/demo-data.js?v=20260812091904"></script>
+<script src="js/api.js?v=20260812091904"></script>
+<script src="js/app.js?v=20260812091904"></script>
 <script>
-let EVENTS, MEMBERS, ALL_FIGHTS, ALL_PREDS;
+let EVENTS, MEMBERS, ALL_FIGHTS, ALL_PREDS, FMAP = {};
 let checked = new Set();   // 集計対象の大会ID
+window.PITARI = {};        // member_id → ピタリの内訳（どこで何が）
 
 async function load() {
   await renderHeader("ranking");
-  [EVENTS, MEMBERS, ALL_FIGHTS] = await Promise.all([DB.listEvents(), DB.listMembers(), DB.listFights()]);
+  let FIGHTERS;
+  [EVENTS, MEMBERS, ALL_FIGHTS, FIGHTERS] = await Promise.all([DB.listEvents(), DB.listMembers(), DB.listFights(), DB.listFighters()]);
+  FMAP = fighterMap(FIGHTERS);
   ALL_PREDS = await DB.listPredictions({});
   checked = new Set(EVENTS.map(e => e.id));  // 初期状態＝全選択
   render();
@@ -45,6 +48,18 @@ function render() {
   const fightIds = new Set(fights.map(f => f.id));
   const preds = ALL_PREDS.filter(p => fightIds.has(p.fight_id));
   const rows = computeLeaderboard(MEMBERS, fights, preds);
+  // ピタリの内訳（どの試合で・誰を・何で当てたか）をメンバー別に用意
+  const fById = Object.fromEntries(fights.map(f => [f.id, f]));
+  window.PITARI = {};
+  for (const p of preds) {
+    const f = fById[p.fight_id]; if (!f) continue;
+    const s = scoreFight(p, f);
+    if (!s || !s.pitari) continue;
+    const w = FMAP[p.winner_id];
+    const kim = p.method === "DEC" ? "判定" : (p.technique ? (TECH_LABEL[p.technique] || p.technique) : "");
+    const kr = [kim, (p.method !== "DEC" && p.round) ? `${p.round}R` : ""].filter(Boolean).join(" ");
+    (window.PITARI[p.member_id] ||= []).push(`第${f.order_no} ◎ ${esc(w?.name || "")}　${esc(kr)}`);
+  }
   const allOn = checked.size === EVENTS.length;
   document.getElementById("main").innerHTML = `
     <div class="en-label">RANKING</div>
@@ -61,9 +76,12 @@ function render() {
           <td><span style="font-weight:900;color:${t.color};white-space:nowrap;font-size:13px">${t.icon} ${t.name}</span></td>
           <td><span class="lb-rate">${fmtRate(r.rate)}</span>
               <div class="lb-sub">${r.hits}/${r.decided}</div></td>
-          <td class="lb-num">${r.pitari}</td>
+          <td class="lb-num">${r.pitari
+            ? `<button class="pit-btn" onclick="showPitari('${r.member.id}')">${r.pitari}</button>`
+            : `<span class="pit-zero">0</span>`}</td>
         </tr>`; }).join("")}
     </table>
+    <div id="pitari-detail" class="pit-detail"></div>
 
     <div class="section-label">集計する大会</div>
     <div class="ev-checks">
@@ -89,6 +107,17 @@ function render() {
       <b>的中</b>＝勝者を当てる（ランキングの本体）。<b>ピタリ</b>＝決まり手＋ラウンドまで一致（判定は「判定」を当てればピタリ）。<br>
       勝者を外したらその先は不成立。予想しなかった試合はノーカウント。ドロー・無効試合は除外。</p>`;
 }
+
+window.showPitari = function (mid) {
+  const list = (window.PITARI[mid] || []);
+  const m = MEMBERS.find(x => x.id === mid);
+  const el = document.getElementById("pitari-detail");
+  if (!el) return;
+  el.innerHTML = list.length
+    ? `<div class="pit-head">🎯 ${esc(m ? m.name : "")} のピタリ（${list.length}）</div>${list.map(s => `<div class="pit-row">${s}</div>`).join("")}`
+    : "";
+  el.scrollIntoView({ behavior: "smooth", block: "nearest" });
+};
 
 load();
 </script>
