@@ -269,6 +269,7 @@
           style: f.style ?? null, career: f.career ?? null, memo: f.memo ?? null,
           rec_w: f.rec_w ?? null, rec_l: f.rec_l ?? null, rec_d: f.rec_d ?? null, rec_nc: f.rec_nc ?? null,
           rec_ko: f.rec_ko ?? null, rec_sub: f.rec_sub ?? null, rec_dec: f.rec_dec ?? null,
+          rec_other: f.rec_other ?? null,
           history: f.history ?? null, rizin_url: f.rizin_url ?? null,
           highlight_url: f.highlight_url ?? null, highlight_caption: f.highlight_caption ?? null,
           photo_casual: f.photo_casual ?? null,

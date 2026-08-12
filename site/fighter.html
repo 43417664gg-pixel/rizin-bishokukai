@@ -7,18 +7,18 @@
 <title>選手名鑑｜RIZIN美食会予想</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260812231358">
+<link rel="stylesheet" href="css/style.css?v=20260813085326">
 </head>
 <body>
 <div id="app-header"></div>
 <div class="wrap" id="main"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/config.js?v=20260812231358"></script>
-<script src="js/techniques.js?v=20260812231358"></script>
-<script src="js/demo-data.js?v=20260812231358"></script>
-<script src="js/api.js?v=20260812231358"></script>
-<script src="js/app.js?v=20260812231358"></script>
+<script src="js/config.js?v=20260813085326"></script>
+<script src="js/techniques.js?v=20260813085326"></script>
+<script src="js/demo-data.js?v=20260813085326"></script>
+<script src="js/api.js?v=20260813085326"></script>
+<script src="js/app.js?v=20260813085326"></script>
 <script>
 // このポータルで扱った試合から選手ごとの戦績を組み立てる（サイト内完結STATS）
 function buildStats(fighterId, fights) {
@@ -44,18 +44,24 @@ function latestFight(fighterId, fights, EMAP, filterKey) {
     (x.fighter1_id === fighterId || x.fighter2_id === fighterId))
     .sort((a, b) => (EMAP[b.event_id]?.event_date || "").localeCompare(EMAP[a.event_id]?.event_date || ""))[0];
 }
-// 選手写真＝直近の試合の公式VSバナーの左半分（RED）or右半分（BLUE）を切り出す。
-// ※生写真（立ち合いカット）をここに使うのは不可：カメラアングル次第で左右が入れ替わり、
-//   RED=左という前提が崩れて別人が出る（秋元のカードにクレベルが出た・2026-08-12）。
-//   VSバナーは fighter1=左 が構図として保証されているので人物同定が確実。
-//   生写真は「試合」に紐づけて詳細ページのギャラリーで見せる（両者が写るため）。
+// 選手写真＝直近の試合の生写真。ただし「その選手だけが写っているカット」に限る。
+// 「勝利の雄叫び」（勝利者コメント）は勝者が単独で写る構図なので、勝った選手はこれを使える。
+// ※立ち合い等の両者が写るカットを左右で切り分けるのは不可：カメラアングル次第で左右が
+//   入れ替わり、別人が出る（秋元のカードにクレベルが出た・2026-08-12）。
+// 生写真が使えない場合は公式VSバナー（fighter1=左が構図として保証）に落とす。
 function photoOf(fighterId, fights, EMAP) {
+  const won = latestFight(fighterId, fights, EMAP, "gallery");
+  if (won && won.winner_id === fighterId) {
+    const solo = (won.gallery || []).find(p => p.label === "勝利の雄叫び");
+    if (solo) return { img: solo.url, solo: true };
+  }
   const f = latestFight(fighterId, fights, EMAP, "image_url");
   if (!f) return null;
   return { img: f.image_url, side: f.fighter1_id === fighterId ? "left" : "right" };
 }
 function photoDiv(ph, cls) {
   if (!ph) return "";
+  if (ph.solo) return `<div class="${cls} solo" style="background-image:url('${esc(ph.img)}')"></div>`;
   return `<div class="${cls} ${ph.side}" style="background-image:url('${esc(ph.img)}')"></div>`;
 }
 
@@ -265,18 +271,22 @@ function renderDetail(fighter, fighters, fights, events) {
     : null;
   let finBars = "";
   const ko = fighter.rec_ko, sub = fighter.rec_sub, dec = fighter.rec_dec;
+  // 反則勝ち・ドクターストップ等は KO でも一本でも判定でもない＝「その他」として持つ。
+  // これが無いと、その他勝ちがある選手（青木真也・ケラモフ）で内訳が勝数に届かずグラフが出ない。
+  const oth = fighter.rec_other;
   // 内訳が勝数と一致する（＝完全に判明している）場合だけグラフを出す。中途半端な内訳は出さない
-  if (hasRec && ((ko || 0) + (sub || 0) + (dec || 0)) === fighter.rec_w && fighter.rec_w > 0) {
+  if (hasRec && ((ko || 0) + (sub || 0) + (dec || 0) + (oth || 0)) === fighter.rec_w && fighter.rec_w > 0) {
     const parts = [
       { label: "KO/TKO", n: ko || 0, cls: "ko" },
       { label: "一本", n: sub || 0, cls: "sub" },
       { label: "判定", n: dec || 0, cls: "dec" },
+      { label: "その他", n: oth || 0, cls: "oth" },
     ].filter(p => p.n > 0);
     const total = parts.reduce((a, p) => a + p.n, 0);
     const finRate = Math.round(((ko || 0) + (sub || 0)) / fighter.rec_w * 100);
     if (total > 0) {
       // 円グラフ（ドーナツ）：conic-gradient で KO/一本/判定 の比率を描き、中央にフィニッシュ率を置く
-      const COLOR = { ko: "#e60012", sub: "#1e6fd9", dec: "#8a8a92" };
+      const COLOR = { ko: "#e60012", sub: "#1e6fd9", dec: "#8a8a92", oth: "#4a4a52" };
       let acc = 0;
       const stops = parts.map(p => {
         const from = acc / total * 360;

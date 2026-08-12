@@ -460,6 +460,8 @@ tr.top .lb-rate { color: var(--gold-hot); }
 }
 .mphoto.left { background-position: left 8% top 18%; }
 .mphoto.right { background-position: right 8% top 18%; }
+/* 生写真（勝者単独カット）：全体を素直に見せる（切り分け不要） */
+.mphoto.solo { background-size: cover; background-position: center 22%; }
 .mphoto.none {
   display: flex; align-items: center; justify-content: center;
   font-family: var(--display); font-size: 56px; color: rgba(255, 255, 255, .12);
@@ -597,6 +599,7 @@ tr.top .lb-rate { color: var(--gold-hot); }
 .fin-leg.ko::before  { background: var(--red-hot); }
 .fin-leg.sub::before { background: #3d8bff; }
 .fin-leg.dec::before { background: #8a8a98; }
+.fin-leg.oth::before { background: #4a4a52; }
 
 /* キャリア戦績リスト（直近3＋開閉） */
 .career-list { border-top: 1px solid var(--line); }
