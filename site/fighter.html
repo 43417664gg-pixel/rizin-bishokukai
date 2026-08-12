@@ -7,18 +7,18 @@
 <title>選手名鑑｜RIZIN美食会予想</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260812215519">
+<link rel="stylesheet" href="css/style.css?v=20260812222155">
 </head>
 <body>
 <div id="app-header"></div>
 <div class="wrap" id="main"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/config.js?v=20260812215519"></script>
-<script src="js/techniques.js?v=20260812215519"></script>
-<script src="js/demo-data.js?v=20260812215519"></script>
-<script src="js/api.js?v=20260812215519"></script>
-<script src="js/app.js?v=20260812215519"></script>
+<script src="js/config.js?v=20260812222155"></script>
+<script src="js/techniques.js?v=20260812222155"></script>
+<script src="js/demo-data.js?v=20260812222155"></script>
+<script src="js/api.js?v=20260812222155"></script>
+<script src="js/app.js?v=20260812222155"></script>
 <script>
 // このポータルで扱った試合から選手ごとの戦績を組み立てる（サイト内完結STATS）
 function buildStats(fighterId, fights) {
@@ -195,6 +195,32 @@ function careerHistoryHtml(fighter) {
     </div>`;
 }
 
+// 出場試合の生写真（RIZIN公式の試合結果記事から機械抽出：立ち合い/ROUND中/勝利の雄叫び）。
+// 写真は「試合」に紐づく（両者が写るため片方だけの所有物にしない）。直近の試合から新しい順。
+function actionGalleryHtml(fighter, fights, EMAP) {
+  const mine = fights.filter(f =>
+    (f.fighter1_id === fighter.id || f.fighter2_id === fighter.id) && (f.gallery || []).length)
+    .sort((a, b) => (EMAP[b.event_id]?.event_date || "").localeCompare(EMAP[a.event_id]?.event_date || ""));
+  if (!mine.length) return "";
+  const block = (f) => {
+    const opp = f.fighter1_id === fighter.id ? f.fighter2_id : f.fighter1_id;
+    const ev = EMAP[f.event_id];
+    return `
+      <div class="gal-event">${esc(ev?.name || "")}${ev?.event_date ? "　" + fmtDate(ev.event_date) : ""}</div>
+      <div class="gal-row">
+        ${f.gallery.map(p => `
+          <div class="gal-item">
+            <img src="${esc(p.url)}" alt="${esc(p.label)}" loading="lazy">
+            <span class="gal-label">${esc(p.label)}</span>
+          </div>`).join("")}
+      </div>`;
+  };
+  return `
+    <div class="section-label">試合の生写真</div>
+    ${mine.map(block).join("")}
+    <p class="page-sub" style="margin-top:4px">RIZIN公式の試合結果記事より（© RIZIN FF）</p>`;
+}
+
 function renderDetail(fighter, fighters, fights, events) {
   if (!fighter) { document.getElementById("main").innerHTML = "<p class='page-sub'>選手が見つかりません。</p>"; return; }
   const FMAP = fighterMap(fighters);
@@ -299,6 +325,7 @@ function renderDetail(fighter, fighters, fights, events) {
     </div>` : ""}
     ${upcoming.length ? `<div class="section-label">NEXT FIGHT</div>${historyHtml(upcoming, false)}` : ""}
     ${careerHistoryHtml(fighter)}
+    ${actionGalleryHtml(fighter, fights, EMAP)}
     ${s.fights.length ? `<div class="section-label">美食会アーカイブ</div>${historyHtml(s.fights, true)}` : ""}
     ${fighter.rizin_url ? `<p class="page-sub" style="margin-top:16px"><a href="${esc(fighter.rizin_url)}" target="_blank" rel="noopener" style="text-decoration:underline">RIZIN公式の関連記事 ↗</a></p>` : ""}
     <p style="margin-top:20px"><a href="fighter.html" style="color:var(--muted);font-size:13px;text-decoration:underline">← 選手名鑑に戻る</a></p>`;

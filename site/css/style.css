@@ -817,3 +817,9 @@ tr.top .lb-rate { color: var(--gold-hot); }
 .pit-pop .pit-row { display: block; font-size: 13px; color: var(--text); padding: 3px 0; border-top: 1px solid #2a2416; white-space: nowrap; }
 
 .mflag { margin-right: 4px; }
+/* 試合の生写真ギャラリー */
+.gal-event { font-size: 12px; color: var(--gold); font-weight: 700; margin: 14px 0 6px; }
+.gal-row { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
+.gal-item { flex: none; width: 150px; }
+.gal-item img { width: 150px; height: 100px; object-fit: cover; border-radius: 6px; border: 1px solid var(--line); }
+.gal-label { display: block; font-size: 10px; color: var(--muted); margin-top: 3px; text-align: center; }
