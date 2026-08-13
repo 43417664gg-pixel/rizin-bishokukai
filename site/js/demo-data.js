@@ -1016,6 +1016,7 @@ window.DEMO_SEED = {
     {
       id: "f_kleber",
       name: "クレベル・コイケ",
+      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2026/08/11/50f6b4e0c136a7deab7bea662964e7597c4f116b_xlarge.jpg",
       birth_date: "1989-10-16",
       nickname: "柔術界の鬼神",
       backbone: "柔道・ブラジリアン柔術（黒帯）",
@@ -1045,6 +1046,7 @@ window.DEMO_SEED = {
     {
       id: "f_akimoto",
       name: "秋元強真",
+      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2026/08/11/40debd2872c67e4d46e5528269be206b3b2a6d51_xlarge.jpg",
       birth_date: "2006-03-08",
       nickname: "超強真星",
       backbone: "ボクシング",
@@ -1072,6 +1074,7 @@ window.DEMO_SEED = {
     {
       id: "f_satomasa",
       name: "佐藤将光",
+      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2026/08/11/f00b6d53dfc5e2ac9ccd7920eca3dcb733c7b96f_xlarge.jpg",
       nickname: "ミスターいぶし銀",
       rec_w: 39, rec_ko: 20, rec_sub: 4, rec_dec: 15,
       rec_l: 17,
@@ -1101,6 +1104,7 @@ window.DEMO_SEED = {
     {
       id: "f_patchy",
       name: "パッチー・ミックス",
+      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2026/08/11/1a40c224a42cb93c0a73ffbd2e9faced080b4348_xlarge.jpg",
       birth_date: "1993-08-16",
       nickname: "ノー・ラブ",
       backbone: "レスリング・ブラジリアン柔術",
@@ -1126,6 +1130,7 @@ window.DEMO_SEED = {
     {
       id: "f_goto",
       name: "後藤丈治",
+      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2026/08/11/974e787422db530896411efda3eda8089cf8843e_xlarge.jpg",
       nickname: "北海の宮本武蔵",
       rec_w: 20,
       rec_l: 9,
@@ -1156,6 +1161,7 @@ window.DEMO_SEED = {
     {
       id: "f_temirov",
       name: "アジズベク・テミロフ",
+      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2026/08/11/a1979a3be626c2032a3f9abe9ec4394cb200d74f_xlarge.jpg",
       rec_w: 6,
       rec_l: 3,
       rec_ko: 6,
@@ -1184,6 +1190,7 @@ window.DEMO_SEED = {
     {
       id: "f_itoyuki",
       name: "伊藤裕樹",
+      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2026/08/11/12cd35c84fed4995367c9c3f6ef4a3f045e431b1_xlarge.jpg",
       nickname: "ザ・ギャンブラー",
       rec_w: 21, rec_ko: 10, rec_sub: 2, rec_dec: 9,
       rec_l: 7,
@@ -1211,6 +1218,7 @@ window.DEMO_SEED = {
     {
       id: "f_gadzhamatov",
       name: "アリベク・ガジャマトフ",
+      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2026/08/11/70d0ca4eda2be62fb8f235dc60ae36a43f5d6ce9_xlarge.jpg",
       nickname: "修羅の国の散打王",
       backbone: "散打",
       rec_w: 6,
@@ -1240,6 +1248,7 @@ window.DEMO_SEED = {
     {
       id: "f_mashima",
       name: "摩嶋一整",
+      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2026/08/11/20fa72b862601519c7e826bc41d863aa1cfb438f_xlarge.jpg",
       nickname: "町工場のグラップラー",
       rec_w: 19, rec_ko: 1, rec_sub: 16, rec_dec: 2,
       rec_l: 7,
@@ -1267,6 +1276,7 @@ window.DEMO_SEED = {
     {
       id: "f_takeda",
       name: "武田光司",
+      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2026/08/11/fd057961a89ac3cbdb06ca3cb76c64de6eb16c90_xlarge.jpg",
       nickname: "漆黒のヘラクレス",
       rec_w: 20, rec_ko: 3, rec_sub: 6, rec_dec: 11,
       rec_l: 8,
@@ -1348,6 +1358,7 @@ window.DEMO_SEED = {
     {
       id: "f_mizuno",
       name: "水野新太",
+      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2026/08/11/e3dc0ee94abcc6117bb041ebaa5a178ff59ccbd7_xlarge.jpg",
       rec_w: 9,
       rec_l: 2,
       rec_ko: 2,
@@ -1377,6 +1388,7 @@ window.DEMO_SEED = {
     {
       id: "f_leekaiwen",
       name: "リー・カイウェン",
+      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2026/08/11/fd7bf48d04ee266f9bc4530167682d032d739d1a_xlarge.jpg",
       rec_w: 17,
       rec_l: 8,
       rec_ko: 10,
@@ -1406,6 +1418,7 @@ window.DEMO_SEED = {
     {
       id: "f_naoki",
       name: "直樹",
+      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2026/08/11/40263ec01348f294f1d30043090debfe6d02052f_xlarge.jpg",
       nickname: "倒し屋ジョーカー",
       rec_w: 3,
       rec_l: 2,
@@ -1432,6 +1445,7 @@ window.DEMO_SEED = {
     {
       id: "f_hosokawa",
       name: "細川一颯",
+      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2026/08/11/58274aee8be18d91572f1ea0c3b80121f70c34c7_xlarge.jpg",
       history: [ { d: "2026.08", opp: "直樹", r: "L", how: "2R 負傷TKO負け" } ],
       birth_date: "2000-04-07",
       team: "フリー",
@@ -1446,6 +1460,7 @@ window.DEMO_SEED = {
     {
       id: "f_hiramotojo",
       name: "平本丈",
+      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2026/08/11/3b8350ee218ce867d04b88156b95d503d65eb3cd_xlarge.jpg",
       nickname: "美しき金狼",
       rec_w: 4,
       rec_l: 2,
@@ -1474,6 +1489,7 @@ window.DEMO_SEED = {
     {
       id: "f_jolly",
       name: "ジョリー",
+      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2026/08/11/9263b93bfc9262c3aa94598545c47966a4b921ee_xlarge.jpg",
       rec_w: 4, rec_ko: 2, rec_sub: 2, rec_dec: 0,
       rec_l: 1,
       history: [
@@ -1495,6 +1511,7 @@ window.DEMO_SEED = {
     {
       id: "f_ueda",
       name: "上田幹雄",
+      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2026/08/11/58a99566c74a6c8a8d3d092d2ba588b9e134da7b_xlarge.jpg",
       birth_date: "1995-05-01", team: "BRAVE", origin: "日本 東京都",
       rec_w: 5, rec_ko: 5, rec_sub: 0, rec_dec: 0, rec_l: 4, rec_d: 0,
       history: [ { d: "2026.08", opp: "エドポロキング", r: "L", how: "2R TKO負け（膝）" } ],
@@ -1503,6 +1520,7 @@ window.DEMO_SEED = {
     {
       id: "f_edpolo",
       name: "エドポロキング",
+      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2026/08/11/ff09f5ef5defda63494470e1efd5cad5b37a425f_xlarge.jpg",
       backbone: "野球",
       birth_date: "2001-02-08", team: "ROOTS GYM", origin: "日本 大阪府",
       rec_w: 4, rec_ko: 4, rec_sub: 0, rec_dec: 0, rec_l: 0, rec_d: 0,
@@ -1511,6 +1529,7 @@ window.DEMO_SEED = {
     {
       id: "f_sudario",
       name: "スダリオ剛",
+      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2026/08/11/170b9d28bac77b249b345512b1dfc630df68b0de_xlarge.jpg",
       rec_w: 10, rec_ko: 9, rec_sub: 0, rec_dec: 1, rec_l: 4, rec_d: 0,
       history: [ { d: "2026.08", opp: "酒井リョウ", r: "W", how: "1R パンチでTKO" } ],
       backbone: "相撲",
@@ -1518,6 +1537,7 @@ window.DEMO_SEED = {
     {
       id: "f_sakairyo",
       name: "酒井リョウ",
+      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2026/08/11/3e09b09d743177e9c64a667d44b5c1ec8fa6092d_xlarge.jpg",
       birth_date: "1987-03-24", team: "レンジャージム", origin: "日本 栃木県",
       rec_w: 15, rec_ko: 10, rec_sub: 0, rec_dec: 5, rec_l: 15, rec_d: 0,
       history: [ { d: "2026.08", opp: "スダリオ剛", r: "L", how: "1R TKO負け（パンチ）" } ],
