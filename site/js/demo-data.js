@@ -281,6 +281,7 @@ window.DEMO_SEED = {
     {
       id: "f_tomizawa",
       name: "冨澤大智",
+      weight_class_fixed: "フライ級",
       nickname: "孤高の闘神",
       birth_date: "1997-10-03",
       backbone: "キックボクシング",
@@ -463,6 +464,7 @@ window.DEMO_SEED = {
     {
       id: "f_sabatello",
       name: "ダニー・サバテロ",
+      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2026/07/18/62c80a0cccfb67cc25646cc3fb358b29bdd38c80_xlarge.jpg",
       birth_date: "1993-03-31",
       nickname: "ジ・イタリアンギャングスター",
       belt: "RIZINバンタム級王者（第8代）",
@@ -495,6 +497,7 @@ window.DEMO_SEED = {
     {
       id: "f_kashimura",
       name: "鹿志村仁之介",
+      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2026/07/18/ff43a854d6ff6050953bd90e3955f5f20e53a86e_xlarge.jpg",
       birth_date: "2001-08-12",
       nickname: "黒帯のリベリオン",
       backbone: "柔道・ブラジリアン柔術（黒帯）",
@@ -525,6 +528,7 @@ window.DEMO_SEED = {
     {
       id: "f_dautbek",
       name: "カルシャガ・ダウトベック",
+      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2026/07/18/c38f09582ee3433b8cd6f23fb6933103ef84accd_xlarge.jpg",
       birth_date: "1993-12-07",
       nickname: "キングオブカザフスタン",
       backbone: "ボクシング・シラット",
@@ -556,6 +560,7 @@ window.DEMO_SEED = {
     {
       id: "f_hagiwara",
       name: "萩原京平",
+      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2026/07/18/b679f407279bfce0ad123b1235e5b3a51589c89b_xlarge.jpg",
       birth_date: "1995-12-28",
       nickname: "アンダーグラウンドエンペラー",
       backbone: "キックボクシング・喧嘩",
@@ -586,6 +591,7 @@ window.DEMO_SEED = {
     {
       id: "f_ota",
       name: "太田忍",
+      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2026/07/18/cb070ef105b09009b92e278c00637dd110faccaf_xlarge.jpg",
       birth_date: "1993-12-28",
       nickname: "銀の忍者レスラー",
       belt: "リオ五輪グレコローマン銀メダリスト",
@@ -618,6 +624,7 @@ window.DEMO_SEED = {
     {
       id: "f_tilenov",
       name: "イリスベク・ティレノフ",
+      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2026/07/18/1fd713395279b2becb7fe4065add835f756ea297_xlarge.jpg",
       birth_date: "2003-12-14",
       backbone: "MMA",
       team: "イーラスMMA",
@@ -640,6 +647,7 @@ window.DEMO_SEED = {
     {
       id: "f_hiroya",
       name: "ヒロヤ",
+      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2026/07/18/18dd64672b99c6c6edff2024aafa4bc5334d51ba_xlarge.jpg",
       birth_date: "1998-05-07",
       nickname: "不屈のヤングガン",
       backbone: "空手・キックボクシング",
@@ -664,6 +672,7 @@ window.DEMO_SEED = {
     {
       id: "f_arsen",
       name: "山本アーセン",
+      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2026/07/18/d3411a77beb9549edaf61d10fbf19c9eb0f2c3a7_xlarge.jpg",
       birth_date: "1996-09-08",
       nickname: "格闘一家の最強DNA",
       backbone: "アマチュアレスリング",
@@ -695,6 +704,7 @@ window.DEMO_SEED = {
     {
       id: "f_case",
       name: "ジョニー・ケース",
+      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2026/07/18/3f85385cba4872016346eb76a9f6600a3ad36be1_xlarge.jpg",
       birth_date: "1989-06-28", team: "MMA LAB",
       nickname: "ハリウッド",
       backbone: "レスリング（元UFC）",
@@ -724,6 +734,7 @@ window.DEMO_SEED = {
     {
       id: "f_tenya",
       name: "天弥",
+      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2026/07/18/bff7d4b21d43b580d14060d76705a9e766c928f3_xlarge.jpg",
       birth_date: "2004-05-07", team: "和術慧舟會HEARTS",
       backbone: "ストリート",
       origin: "日本",
@@ -742,6 +753,7 @@ window.DEMO_SEED = {
     {
       id: "f_hinotori",
       name: "火の鳥",
+      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2026/07/18/4a5509e6c070b07d5932b8ee63dde572bcc3be4e_xlarge.jpg",
       birth_date: "1994-03-22", team: "BRAVE GYM",
       backbone: "レスリング（青山学院大）",
       origin: "日本",
@@ -770,6 +782,7 @@ window.DEMO_SEED = {
     {
       id: "f_leejaehoon",
       name: "イ・ジェフン",
+      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2026/07/18/5ec8b3c5061e65c92999b50a8bd506ee143e6a36_xlarge.jpg",
       birth_date: "2002-12-09",
       rec_w: 3, rec_ko: 2, rec_sub: 0, rec_dec: 1, rec_l: 1, rec_d: 0,
       team: "サンスン・マーシャルアーツアカデミー",
@@ -787,6 +800,7 @@ window.DEMO_SEED = {
     {
       id: "f_sasaki",
       name: "佐々木信治",
+      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2026/07/18/1727fd4cbbbb3ab7ed819e5e7ecb0242ebaee1db_xlarge.jpg",
       birth_date: "1980-05-02",
       rec_w: 20, rec_ko: 4, rec_sub: 11, rec_dec: 5, rec_l: 14, rec_d: 0,
       backbone: "MMA",
@@ -805,6 +819,7 @@ window.DEMO_SEED = {
     {
       id: "f_riceyota",
       name: "林RICE陽太",
+      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2026/07/18/19201a8c8899501a714076acac45684491d58623_xlarge.jpg",
       birth_date: "1993-06-02", team: "reversal gym osaka anne",
       belt: "GRACHAN二階級制覇王者",
       backbone: "修斗",
@@ -822,6 +837,7 @@ window.DEMO_SEED = {
     {
       id: "f_suzuki",
       name: "鈴木博昭",
+      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2026/07/18/2cbcf17743bc1450e24aa4459960d8c42232637c_xlarge.jpg",
       birth_date: "1984-12-06",
       nickname: "怪物くん",
       backbone: "空手道・シュートボクシング",
@@ -843,6 +859,7 @@ window.DEMO_SEED = {
     {
       id: "f_miyagawa",
       name: "宮川日向",
+      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2026/07/18/30deae2aaae7bea563373a06784aed6403c0eee0_xlarge.jpg",
       birth_date: "2002-07-15",
       backbone: "ストライカー",
       team: "SMOKER GYM",
@@ -863,6 +880,8 @@ window.DEMO_SEED = {
     {
       id: "f_shoji",
       name: "昇侍",
+      weight_class_fixed: "バンタム級",
+      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2026/07/18/e125f77bb2d7612422fbdbbe9b520ebbe9949e77_xlarge.jpg",
       birth_date: "1983-04-24",
       nickname: "瞬殺侍",
       belt: "初代パンクラス・ライトヘビー級王者",
@@ -901,6 +920,8 @@ window.DEMO_SEED = {
     {
       id: "f_umeno",
       name: "梅野源治",
+      weight_class_fixed: "バンタム級",
+      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2026/07/18/c1310befaf5d0325b2742c4c6b70bdd7d954e85a_xlarge.jpg",
       birth_date: "1988-12-13",
       nickname: "日本ムエタイ界の至宝",
       backbone: "ムエタイ",
@@ -925,6 +946,7 @@ window.DEMO_SEED = {
     {
       id: "f_parksiu",
       name: "パク・シウ",
+      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2026/07/18/01c98ec10357b4741dd59c9e54c4099fe577b8a8_xlarge.jpg",
       backbone: "テコンドー",
       birth_date: "1991-06-26", team: "HAVAS",
       rec_w: 13, rec_ko: 3, rec_sub: 0, rec_dec: 10, rec_l: 6, rec_d: 0,
@@ -942,6 +964,7 @@ window.DEMO_SEED = {
     {
       id: "f_suda",
       name: "須田萌里",
+      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2026/07/18/e85d80724e1862bad8330d710e5badcb273c06d8_xlarge.jpg",
       birth_date: "2004-07-29", team: "SCORPION GYM",
       rec_w: 15, rec_ko: 0, rec_sub: 10, rec_dec: 5, rec_l: 7, rec_d: 0,
       backbone: "MMA",
@@ -965,6 +988,7 @@ window.DEMO_SEED = {
     {
       id: "f_oshima",
       name: "大島沙緒里",
+      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2026/07/18/16b1250ef3f1180cb372a1328f07f513fc7339a8_xlarge.jpg",
       birth_date: "1994-11-14",
       nickname: "極めのミクロクイーン",
       backbone: "柔道（弐段）",
@@ -995,6 +1019,7 @@ window.DEMO_SEED = {
     {
       id: "f_leeyeji",
       name: "イ・イェジ",
+      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2026/07/18/cc415329071cd99601f41b10177f8abd844d4fdd_xlarge.jpg",
       birth_date: "1999-07-03", team: "AOM",
       rec_w: 6, rec_ko: 1, rec_sub: 1, rec_dec: 4, rec_l: 8, rec_d: 0,
       origin: "韓国",
@@ -1418,6 +1443,7 @@ window.DEMO_SEED = {
     {
       id: "f_naoki",
       name: "直樹",
+      weight_class_fixed: "フェザー級",
       action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2026/08/11/40263ec01348f294f1d30043090debfe6d02052f_xlarge.jpg",
       nickname: "倒し屋ジョーカー",
       rec_w: 3,
@@ -1445,6 +1471,7 @@ window.DEMO_SEED = {
     {
       id: "f_hosokawa",
       name: "細川一颯",
+      weight_class_fixed: "ライト級",
       action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2026/08/11/58274aee8be18d91572f1ea0c3b80121f70c34c7_xlarge.jpg",
       history: [ { d: "2026.08", opp: "直樹", r: "L", how: "2R 負傷TKO負け" } ],
       birth_date: "2000-04-07",

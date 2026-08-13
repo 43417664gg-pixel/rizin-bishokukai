@@ -7,18 +7,18 @@
 <title>選手名鑑｜RIZIN美食会予想</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260813090457">
+<link rel="stylesheet" href="css/style.css?v=20260813091412">
 </head>
 <body>
 <div id="app-header"></div>
 <div class="wrap" id="main"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/config.js?v=20260813090457"></script>
-<script src="js/techniques.js?v=20260813090457"></script>
-<script src="js/demo-data.js?v=20260813090457"></script>
-<script src="js/api.js?v=20260813090457"></script>
-<script src="js/app.js?v=20260813090457"></script>
+<script src="js/config.js?v=20260813091412"></script>
+<script src="js/techniques.js?v=20260813091412"></script>
+<script src="js/demo-data.js?v=20260813091412"></script>
+<script src="js/api.js?v=20260813091412"></script>
+<script src="js/app.js?v=20260813091412"></script>
 <script>
 // このポータルで扱った試合から選手ごとの戦績を組み立てる（サイト内完結STATS）
 function buildStats(fighterId, fights) {
@@ -123,7 +123,10 @@ function renderMeikan() {
   const champs = hit.filter(r => isChampion(r.f));
   const rest = hit.filter(r => !isChampion(r.f));
 
+  // ウェルター級は名鑑に出さない（Gaku指定・2026-08-13）。該当選手と試合データは保持する
+  const HIDDEN_WEIGHTS = new Set(["ウェルター級"]);
   const groups = WEIGHT_ORDER
+    .filter(name => !HIDDEN_WEIGHTS.has(name))
     .map(name => ({ name, rows: rest.filter(r => r.f._wc === name) }))
     .filter(g => g.rows.length);
 
@@ -153,8 +156,10 @@ function renderList(fighters, fights, events) {
   const EMAP = Object.fromEntries(events.map(e => [e.id, e]));
   LIST_ROWS = fighters.map(f => {
     // 試合から階級を引く。出場歴が無い王者は belt から取る
+    // 階級は「選手側の固定値」を最優先。試合のkg表記から引くと契約体重で誤った階級に出るため
+    // （冨澤=フライ級/梅野・昇侍=バンタム級/直樹=フェザー級/細川=ライト級・Gaku指定 2026-08-13）
     const wc = weightOf(f.id, fights, EMAP);
-    f._wc = wc ? weightClassName(wc) : (weightFromBelt(f) || "階級未設定");
+    f._wc = f.weight_class_fixed || (wc ? weightClassName(wc) : (weightFromBelt(f) || "階級未設定"));
     return { f, s: buildStats(f.id, fights), ph: photoOf(f.id, fights, EMAP, f) };
   });
   // 階級内は 王者 → 名前順
