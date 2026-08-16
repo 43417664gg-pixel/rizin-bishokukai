@@ -142,7 +142,7 @@ window.DEMO_SEED = {
     {
       id: "f_yaman",
       name: "YA-MAN",
-      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2025/07/27/8ef5ac58bd94d43af96bf378c6177a1bd89707b0_xlarge.jpg",
+      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2025/07/27/0aa560dd13e5188513c09c47467b215462034ddb_xlarge.jpg",
       nickname: "キングオブストリートファイト",
       birth_date: "1996-05-31",
       backbone: "キックボクシング",
@@ -170,7 +170,7 @@ window.DEMO_SEED = {
     {
       id: "f_satoshi",
       name: "ホベルト・サトシ・ソウザ",
-      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2025/12/31/b657e4ad2ac3de70e8df31337aa9e19efcabd0ee_xlarge.jpg",
+      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2025/12/31/daf24247a0561a5edbb6f1ce69491e0f874cc3b0_xlarge.jpg",
       nickname: "カナリア色の大和魂",
       birth_date: "1989-09-19",
       backbone: "ブラジリアン柔術",
@@ -449,7 +449,7 @@ window.DEMO_SEED = {
     {
       id: "f_sinryu",
       name: "神龍誠",
-      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2026/06/06/4ce766ec24d3048516a08982fb2307988a6cc00d_xlarge.jpg",
+      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2026/06/06/26308fbacc1339e1eae1ab38013f65354395e60b_xlarge.jpg",
       nickname: "日本のラフ・ダイヤモンド",
       birth_date: "2000-07-05",
       belt: "RIZINフライ級王者",
@@ -936,7 +936,7 @@ window.DEMO_SEED = {
       id: "f_umeno",
       name: "梅野源治",
       weight_class_fixed: "バンタム級",
-      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2026/07/18/c1310befaf5d0325b2742c4c6b70bdd7d954e85a_xlarge.jpg",
+      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2026/07/18/fd5bee785e83efe34a20cf4a81c686a5fc563f0e_xlarge.jpg",
       birth_date: "1988-12-13",
       nickname: "日本ムエタイ界の至宝",
       backbone: "ムエタイ",
@@ -1288,7 +1288,7 @@ window.DEMO_SEED = {
     {
       id: "f_mashima",
       name: "摩嶋一整",
-      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2026/08/11/20fa72b862601519c7e826bc41d863aa1cfb438f_xlarge.jpg",
+      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2026/08/11/b3448aaaabf8002744554367fa5e057eee5bdb90_xlarge.jpg",
       nickname: "町工場のグラップラー",
       rec_w: 19, rec_ko: 1, rec_sub: 16, rec_dec: 2,
       rec_l: 7,
@@ -1344,7 +1344,7 @@ window.DEMO_SEED = {
     {
       id: "f_kate",
       name: "ケイト・ロータス",
-      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2026/05/10/7386f4dedfeac032bcdede84c003874edc32728e_xlarge.jpg",
+      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2026/05/10/282a3183c45fa572fc0e71517ee0c56c521d9897_xlarge.jpg",
       nickname: "不屈の睡蓮",
       backbone: "空手",
       rec_w: 10,
