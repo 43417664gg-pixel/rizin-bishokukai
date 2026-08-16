@@ -841,7 +841,8 @@ tr.top .lb-rate { color: var(--gold-hot); }
 .pit-pop .pit-head { display: block; font-weight: 900; color: var(--gold); font-size: 12px; margin-bottom: 5px; }
 .pit-pop .pit-row { display: block; font-size: 13px; color: var(--text); padding: 3px 0; border-top: 1px solid #2a2416; white-space: nowrap; }
 
-.mflag { margin-right: 4px; }
+/* 国旗は名前の左に一回り大きく（カード右側に余白があるので詰まらない） */
+.mflag { margin-right: 5px; font-size: 17px; line-height: 1; vertical-align: -2px; }
 /* 試合の生写真ギャラリー */
 .gal-event { font-size: 12px; color: var(--gold); font-weight: 700; margin: 14px 0 6px; }
 .gal-row { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
