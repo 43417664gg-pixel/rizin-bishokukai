@@ -113,6 +113,7 @@ window.DEMO_SEED = {
     {
       id: "f_saito",
       name: "斎藤裕",
+      former_belt: "元RIZINフェザー級王者（初代）",
       action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2023/12/31/8770b7116bd5a7ee8bb6cd6fa0fc0018052fcd9c_xlarge.jpg",
       nickname: "令和の修斗伝承者",
       birth_date: "1987-10-08",
@@ -172,6 +173,7 @@ window.DEMO_SEED = {
     {
       id: "f_satoshi",
       name: "ホベルト・サトシ・ソウザ",
+      former_belt: "元RIZINライト級王者（初代）",
       action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2025/12/31/daf24247a0561a5edbb6f1ce69491e0f874cc3b0_xlarge.jpg",
       nickname: "カナリア色の大和魂",
       birth_date: "1989-09-19",
@@ -233,6 +235,7 @@ window.DEMO_SEED = {
     {
       id: "f_keramov",
       name: "ヴガール・ケラモフ",
+      former_belt: "元RIZINフェザー級王者（第4代）",
       action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2025/12/31/38387615a426b7fbc4425a59e4101881938f5b57_xlarge.jpg",
       nickname: "コーカサスの雷",
       birth_date: "1992-02-20",
@@ -1058,6 +1061,7 @@ window.DEMO_SEED = {
     {
       id: "f_kleber",
       name: "クレベル・コイケ",
+      former_belt: "元RIZINフェザー級王者（第3代・第6代）",
       action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2026/08/11/50f6b4e0c136a7deab7bea662964e7597c4f116b_xlarge.jpg",
       birth_date: "1989-10-16",
       nickname: "柔術界の鬼神",

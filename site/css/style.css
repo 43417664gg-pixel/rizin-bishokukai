@@ -549,6 +549,10 @@ tr.top .lb-rate { color: var(--gold-hot); }
   background: rgba(212, 175, 55, .12); border: 1px solid rgba(212, 175, 55, .5); color: var(--gold-hot);
   clip-path: polygon(5px 0, 100% 0, calc(100% - 5px) 100%, 0 100%);
 }
+.fbelt.ex {
+  background: rgba(154, 160, 166, .12); border-color: rgba(154, 160, 166, .5); color: #c3c8cd;
+  margin-left: 6px;
+}
 .malias {
   color: var(--gold-hot); font-size: 11px; font-weight: 700; margin-top: 3px;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
@@ -742,6 +746,11 @@ tr.top .lb-rate { color: var(--gold-hot); }
 .mchamp {
   background: var(--gold); color: #131007; font-weight: 900;
   font-size: 9px; letter-spacing: .14em; padding: 1px 6px;
+}
+/* 元王者は銀。現役王者（金）と一目で区別する */
+.mexchamp {
+  background: #9aa0a6; color: #14161a; font-weight: 900;
+  font-size: 9px; letter-spacing: .1em; padding: 1px 6px;
 }
 
 /* オープンブック：各カード下の「みんなの予想」併記 */

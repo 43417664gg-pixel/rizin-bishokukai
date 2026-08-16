@@ -276,6 +276,7 @@
           action_photo: f.action_photo ?? null,
           weight_class_fixed: f.weight_class_fixed ?? null,
           action_photo_credit: f.action_photo_credit ?? null,
+          former_belt: f.former_belt ?? null,
         })));
         await push("events", S.events.map(e => ({
           id: e.id, name: e.name, event_date: e.event_date, no_deadline: !!e.no_deadline,
