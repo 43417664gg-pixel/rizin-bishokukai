@@ -849,3 +849,5 @@ tr.top .lb-rate { color: var(--gold-hot); }
 .gal-item { flex: none; width: 150px; }
 .gal-item img { width: 150px; height: 100px; object-fit: cover; border-radius: 6px; border: 1px solid var(--line); }
 .gal-label { display: block; font-size: 10px; color: var(--muted); margin-top: 3px; text-align: center; }
+
+.photo-credit { font-size: 10px; color: var(--muted); text-align: right; padding: 3px 6px 0; }
