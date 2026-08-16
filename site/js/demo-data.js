@@ -12,6 +12,7 @@ window.DEMO_SEED = {
     {
       id: "f_mikuru",
       name: "朝倉未来",
+      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2025/12/31/bc5287477bef54f1844491922908e471895002ba_xlarge.jpg",
       nickname: "路上の伝説",
       birth_date: "1992-07-15",
       backbone: "空手",
@@ -68,6 +69,7 @@ window.DEMO_SEED = {
     {
       id: "f_mckee",
       name: "AJ・マッキー",
+      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2022/12/31/ae1dee5442c8257e567e875c22ec098e793d5fc7_xlarge.jpg",
       birth_date: "1995-04-07",
       team: "Team Bodyshop MMA",
       origin: "アメリカ",
@@ -79,6 +81,7 @@ window.DEMO_SEED = {
     {
       id: "f_hiramoto",
       name: "平本蓮",
+      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2026/05/10/a6e74b8a97aefe9481fb09338635db8952b0c3f2_xlarge.jpg",
       nickname: "令和の黒きカリスマ",
       birth_date: "1998-06-27",
       backbone: "キックボクシング",
@@ -138,6 +141,7 @@ window.DEMO_SEED = {
     {
       id: "f_yaman",
       name: "YA-MAN",
+      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2025/07/27/8ef5ac58bd94d43af96bf378c6177a1bd89707b0_xlarge.jpg",
       nickname: "キングオブストリートファイト",
       birth_date: "1996-05-31",
       backbone: "キックボクシング",
@@ -165,6 +169,7 @@ window.DEMO_SEED = {
     {
       id: "f_satoshi",
       name: "ホベルト・サトシ・ソウザ",
+      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2025/12/31/b657e4ad2ac3de70e8df31337aa9e19efcabd0ee_xlarge.jpg",
       nickname: "カナリア色の大和魂",
       birth_date: "1989-09-19",
       backbone: "ブラジリアン柔術",
@@ -195,6 +200,7 @@ window.DEMO_SEED = {
     {
       id: "f_nomura",
       name: "野村駿太",
+      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2025/07/27/a67b836894284942ba87602378d5c81a2690cc46_xlarge.jpg",
       birth_date: "1997-10-11",
       backbone: "空手",
       team: "BRAVE",
@@ -224,6 +230,7 @@ window.DEMO_SEED = {
     {
       id: "f_keramov",
       name: "ヴガール・ケラモフ",
+      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2025/12/31/38387615a426b7fbc4425a59e4101881938f5b57_xlarge.jpg",
       nickname: "コーカサスの雷",
       birth_date: "1992-02-20",
       backbone: "散打",
@@ -251,6 +258,7 @@ window.DEMO_SEED = {
     {
       id: "f_takagi",
       name: "高木凌",
+      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2026/05/10/37808494dadb11c90962ab918092cb9dd6f34552_xlarge.jpg",
       nickname: "ゴールデンライト",
       birth_date: "1999-09-12",
       backbone: "野球",
@@ -281,6 +289,7 @@ window.DEMO_SEED = {
     {
       id: "f_tomizawa",
       name: "冨澤大智",
+      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2026/06/06/e053ce13a94bf5569b5a72e64025922f4adc6df0_xlarge.jpg",
       weight_class_fixed: "フライ級",
       nickname: "孤高の闘神",
       birth_date: "1997-10-03",
@@ -321,6 +330,7 @@ window.DEMO_SEED = {
     {
       id: "f_rena",
       name: "RENA",
+      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2025/12/31/ca09d00290278ae45d8db37ff7ef1e531ea798c7_xlarge.jpg",
       nickname: "ツヨカワ女王・クイーン",
       birth_date: "1991-06-29",
       backbone: "キックボクシング",
@@ -351,6 +361,7 @@ window.DEMO_SEED = {
     {
       id: "f_kuziutina",
       name: "ナターシャ・クジュティナ",
+      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2026/04/12/f5720ab076e0a0ed5ea49c0294dbf2bcfb5737a1_xlarge.jpg",
       birth_date: "1989-05-08",
       backbone: "柔道",
       team: "American Top Team/ Ural and Western Siberia",
@@ -380,6 +391,7 @@ window.DEMO_SEED = {
     {
       id: "f_gustavo",
       name: "ルイス・グスタボ",
+      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2026/05/10/4a0930b41ce445297ac7a6a38237f712ecd3833c_xlarge.jpg",
       nickname: "ファベーラの必殺仕事人",
       birth_date: "1996-05-25",
       belt: "RIZINライト級王者",
@@ -407,6 +419,7 @@ window.DEMO_SEED = {
     {
       id: "f_shaydullaev",
       name: "ラジャブアリ・シェイドゥラエフ",
+      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2026/04/12/7c56ff58a91d097a66147258e21fd6c3f6e2aca2_xlarge.jpg",
       nickname: "キルギスの犬鷲",
       backbone: "レスリング・柔道・柔術",
       birth_date: "2000-10-11",
@@ -435,6 +448,7 @@ window.DEMO_SEED = {
     {
       id: "f_sinryu",
       name: "神龍誠",
+      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2026/06/06/4ce766ec24d3048516a08982fb2307988a6cc00d_xlarge.jpg",
       nickname: "日本のラフ・ダイヤモンド",
       birth_date: "2000-07-05",
       belt: "RIZINフライ級王者",
@@ -1329,6 +1343,7 @@ window.DEMO_SEED = {
     {
       id: "f_kate",
       name: "ケイト・ロータス",
+      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2026/05/10/7386f4dedfeac032bcdede84c003874edc32728e_xlarge.jpg",
       nickname: "不屈の睡蓮",
       backbone: "空手",
       rec_w: 10,
@@ -1358,6 +1373,7 @@ window.DEMO_SEED = {
     {
       id: "f_noel",
       name: "NOEL",
+      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2026/03/07/b969ae8ade9ea833d5e6a9eb2f41722820b1e2fe_xlarge.jpg",
       nickname: "白鵬女子高等学校2年7組出席番号19番",
       rec_w: 4, rec_ko: 0, rec_sub: 4, rec_dec: 0,
       rec_l: 2,
