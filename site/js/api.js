@@ -274,6 +274,7 @@
           highlight_url: f.highlight_url ?? null, highlight_caption: f.highlight_caption ?? null,
           photo_casual: f.photo_casual ?? null,
           action_photo: f.action_photo ?? null,
+          weight_class_fixed: f.weight_class_fixed ?? null,
         })));
         await push("events", S.events.map(e => ({
           id: e.id, name: e.name, event_date: e.event_date, no_deadline: !!e.no_deadline,
