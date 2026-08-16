@@ -111,6 +111,7 @@ window.DEMO_SEED = {
     {
       id: "f_saito",
       name: "斎藤裕",
+      action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2023/12/31/8770b7116bd5a7ee8bb6cd6fa0fc0018052fcd9c_xlarge.jpg",
       nickname: "令和の修斗伝承者",
       birth_date: "1987-10-08",
       backbone: "空手",
