@@ -7,18 +7,18 @@
 <title>選手名鑑｜RIZIN美食会予想</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260817093105">
+<link rel="stylesheet" href="css/style.css?v=20260817094931">
 </head>
 <body>
 <div id="app-header"></div>
 <div class="wrap" id="main"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/config.js?v=20260817093105"></script>
-<script src="js/techniques.js?v=20260817093105"></script>
-<script src="js/demo-data.js?v=20260817093105"></script>
-<script src="js/api.js?v=20260817093105"></script>
-<script src="js/app.js?v=20260817093105"></script>
+<script src="js/config.js?v=20260817094931"></script>
+<script src="js/techniques.js?v=20260817094931"></script>
+<script src="js/demo-data.js?v=20260817094931"></script>
+<script src="js/api.js?v=20260817094931"></script>
+<script src="js/app.js?v=20260817094931"></script>
 <script>
 // このポータルで扱った試合から選手ごとの戦績を組み立てる（サイト内完結STATS）
 function buildStats(fighterId, fights) {
@@ -156,9 +156,13 @@ window.filterChip = function (ev, el) {
   ev.preventDefault(); ev.stopPropagation(); filterBy(el.dataset.q || "");
 };
 
+// 名鑑に出さない選手（Gaku指定）。試合データと詳細ページは残すので、
+// event.html の対戦カードや過去の結果からは今までどおり辿れる
+const HIDDEN_FIGHTERS = new Set(["f_mizuno", "f_leejaehoon"]);   // 水野新太／イ・ジェフン（2026-08-17）
+
 function renderList(fighters, fights, events) {
   const EMAP = Object.fromEntries(events.map(e => [e.id, e]));
-  LIST_ROWS = fighters.map(f => {
+  LIST_ROWS = fighters.filter(f => !HIDDEN_FIGHTERS.has(f.id)).map(f => {
     // 試合から階級を引く。出場歴が無い王者は belt から取る
     // 階級は「選手側の固定値」を最優先。試合のkg表記から引くと契約体重で誤った階級に出るため
     // （冨澤=フライ級/梅野・昇侍=バンタム級/直樹=フェザー級/細川=ライト級・Gaku指定 2026-08-13）
