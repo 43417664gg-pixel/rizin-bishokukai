@@ -7,18 +7,18 @@
 <title>選手名鑑｜RIZIN美食会予想</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260817081322">
+<link rel="stylesheet" href="css/style.css?v=20260817093105">
 </head>
 <body>
 <div id="app-header"></div>
 <div class="wrap" id="main"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/config.js?v=20260817081322"></script>
-<script src="js/techniques.js?v=20260817081322"></script>
-<script src="js/demo-data.js?v=20260817081322"></script>
-<script src="js/api.js?v=20260817081322"></script>
-<script src="js/app.js?v=20260817081322"></script>
+<script src="js/config.js?v=20260817093105"></script>
+<script src="js/techniques.js?v=20260817093105"></script>
+<script src="js/demo-data.js?v=20260817093105"></script>
+<script src="js/api.js?v=20260817093105"></script>
+<script src="js/app.js?v=20260817093105"></script>
 <script>
 // このポータルで扱った試合から選手ごとの戦績を組み立てる（サイト内完結STATS）
 function buildStats(fighterId, fights) {
@@ -120,9 +120,11 @@ function renderMeikan() {
   const q = (document.getElementById("fi_search")?.value || "").trim();
   const hit = LIST_ROWS.filter(r => matchQuery(r, q));
 
-  // 王者は階級を問わず最上段に置く（Gaku方針）
+  // 王者は階級を問わず最上段（Gaku方針）。その次に元王者をまとめる——階級グループに散ると
+  // RIZINの歴史を担った面々が埋もれるため（Gaku指定・2026-08-17）
   const champs = hit.filter(r => isChampion(r.f));
-  const rest = hit.filter(r => !isChampion(r.f));
+  const exChamps = hit.filter(r => !isChampion(r.f) && r.f.former_belt);
+  const rest = hit.filter(r => !isChampion(r.f) && !r.f.former_belt);
 
   // ウェルター級は名鑑に出さない（Gaku指定・2026-08-13）。該当選手と試合データは保持する
   const HIDDEN_WEIGHTS = new Set(["ウェルター級"]);
@@ -138,6 +140,7 @@ function renderMeikan() {
   const body = !hit.length
     ? `<p class="page-sub" style="margin-top:20px">「${esc(q)}」に一致する選手はいません。</p>`
     : (champs.length ? section("CHAMPION", champs, "champ") : "") +
+      (exChamps.length ? section("EX-CHAMPION", exChamps, "exchamp") : "") +
       groups.map(g => section(g.name, g.rows)).join("");
 
   document.getElementById("meikan-body").innerHTML = body;

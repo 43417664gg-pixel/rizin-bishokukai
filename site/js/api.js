@@ -170,6 +170,25 @@
   };
 
   // ---------- Supabaseモード ----------
+  // 選手・大会・試合カードは「編集されない静的マスタ」で、正本は demo-data.js。
+  // Supabaseはそのコピーに過ぎないのに、フィールドを1つ増やすたびに人手のDDL（SQL Editor）が要り、
+  // それが通るまで本番に出ない——という詰まりが繰り返し起きた（former_belt / action_photo_credit で再発・2026-08-17）。
+  // service_roleキーはPostgREST止まりでDDLを流せないので、列を待つのではなく
+  // 「DB側に無い／空のフィールドだけ、正本のseedから補う」ことで構造的に解消する。
+  // ユーザー生成データ（予想・応援・結果入力）は対象外＝DBが正のまま。
+  function fillFromSeed(rows, seedRows) {
+    const seed = Object.fromEntries((seedRows || []).map(x => [x.id, x]));
+    return (rows || []).map(r => {
+      const s = seed[r.id];
+      if (!s) return r;
+      const out = { ...r };
+      for (const [k, v] of Object.entries(s)) {
+        if (out[k] === undefined || out[k] === null) out[k] = v;
+      }
+      return out;
+    });
+  }
+
   function makeSupaDB() {
     const client = window.supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY);
     const q = async (p) => { const { data, error } = await p; if (error) throw error; return data; };
@@ -177,13 +196,16 @@
       isDemo: false,
       client,
       async listMembers() { return q(client.from("members").select("*").order("name")); },
-      async listFighters() { return q(client.from("fighters").select("*").order("name")); },
+      async listFighters() {
+        const rows = await q(client.from("fighters").select("*").order("name"));
+        return fillFromSeed(rows, window.DEMO_SEED?.fighters);
+      },
       async listEvents() { return q(client.from("events").select("*").order("event_date", { ascending: false })); },
       async getEvent(id) { return q(client.from("events").select("*").eq("id", id).single()); },
       async listFights(eventId) {
         let query = client.from("fights").select("*");
         if (eventId) query = query.eq("event_id", eventId);
-        return q(query);
+        return fillFromSeed(await q(query), window.DEMO_SEED?.fights);
       },
       async listPredictions(filter = {}) {
         let query = client.from("predictions").select("*");

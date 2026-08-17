@@ -530,6 +530,9 @@ tr.top .lb-rate { color: var(--gold-hot); }
 }
 .fhero-photo.left { background-position: left 12% top 24%; }
 .fhero-photo.right { background-position: right 12% top 24%; }
+/* 手で選定した生写真（solo）は片側に寄せて切らない。200%ズームのままだと左上だけが写り、
+   被写体が右側にいる写真で本人が枠外に出る（堀口恭司で発生・2026-08-17） */
+.fhero-photo.solo { background-size: cover; background-position: center 25%; }
 .fhero-body .en-label { margin-top: 14px; }
 .rec-badge.fresh span { letter-spacing: .04em; }
 .rec-badge.career b { font-size: 20px; letter-spacing: .04em; }
@@ -743,6 +746,9 @@ tr.top .lb-rate { color: var(--gold-hot); }
 /* 王者ブロックは金で立てる */
 .section-label.champ { color: var(--gold-hot); }
 .section-label.champ::before { background: var(--gold); }
+/* 元王者セクションは銀（現役の金と一目で区別） */
+.section-label.exchamp { color: #c3c8cd; }
+.section-label.exchamp::before { background: #9aa0a6; }
 .mchamp {
   background: var(--gold); color: #131007; font-weight: 900;
   font-size: 9px; letter-spacing: .14em; padding: 1px 6px;
