@@ -7,18 +7,18 @@
 <title>ランキング｜RIZIN美食会予想</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260818211148">
+<link rel="stylesheet" href="css/style.css?v=20260821153659">
 </head>
 <body>
 <div id="app-header"></div>
 <div class="wrap" id="main"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/config.js?v=20260818211148"></script>
-<script src="js/techniques.js?v=20260818211148"></script>
-<script src="js/demo-data.js?v=20260818211148"></script>
-<script src="js/api.js?v=20260818211148"></script>
-<script src="js/app.js?v=20260818211148"></script>
+<script src="js/config.js?v=20260821153659"></script>
+<script src="js/techniques.js?v=20260821153659"></script>
+<script src="js/demo-data.js?v=20260821153659"></script>
+<script src="js/api.js?v=20260821153659"></script>
+<script src="js/app.js?v=20260821153659"></script>
 <script>
 let EVENTS, MEMBERS, ALL_FIGHTS, ALL_PREDS, FMAP = {};
 let checked = new Set();   // 集計対象の大会ID
@@ -47,13 +47,16 @@ function render() {
   const fights = ALL_FIGHTS.filter(f => checked.has(f.event_id));
   const fightIds = new Set(fights.map(f => f.id));
   const preds = ALL_PREDS.filter(p => fightIds.has(p.fight_id));
-  const rows = computeLeaderboard(MEMBERS, fights, preds);
+  // 大会が1つだけ選ばれていれば「その大会の的中率」＝event、複数なら通算＝career。
+  // event_only（キック等）は career では数えない（Gaku確定・2026-08-21）。
+  const scope = checked.size === 1 ? "event" : "career";
+  const rows = computeLeaderboard(MEMBERS, fights, preds, { scope });
   // ピタリの内訳（どの試合で・誰を・何で当てたか）をメンバー別に用意
   const fById = Object.fromEntries(fights.map(f => [f.id, f]));
   window.PITARI = {};
   for (const p of preds) {
     const f = fById[p.fight_id]; if (!f) continue;
-    const s = scoreFight(p, f);
+    const s = scoreFight(p, f, { scope });
     if (!s || !s.pitari) continue;
     const w = FMAP[p.winner_id];
     const kim = p.method === "DEC" ? "判定" : (p.technique ? (TECH_LABEL[p.technique] || p.technique) : "");

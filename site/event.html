@@ -7,7 +7,7 @@
 <title>大会予想｜RIZIN美食会予想</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260818211148">
+<link rel="stylesheet" href="css/style.css?v=20260821153659">
 </head>
 <body>
 <div id="app-header"></div>
@@ -16,11 +16,11 @@
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/config.js?v=20260818211148"></script>
-<script src="js/techniques.js?v=20260818211148"></script>
-<script src="js/demo-data.js?v=20260818211148"></script>
-<script src="js/api.js?v=20260818211148"></script>
-<script src="js/app.js?v=20260818211148"></script>
+<script src="js/config.js?v=20260821153659"></script>
+<script src="js/techniques.js?v=20260821153659"></script>
+<script src="js/demo-data.js?v=20260821153659"></script>
+<script src="js/api.js?v=20260821153659"></script>
+<script src="js/app.js?v=20260821153659"></script>
 <script>
 let EV, PHASE, FIGHTS, FMAP, MEMBERS, myPreds = {}, allPreds = [], ALL_SUPPORTS = [];
 let drafts = {};              // 決定前の編集中の選択（ローカルのみ）
@@ -97,7 +97,8 @@ function fightLabel(f) {
   return `<span class="fno">${no}</span>
     ${f.title_label ? `<span class="title-label">${esc(f.title_label)}</span>` : ""}
     <span>${esc(f.weight_class || "")}</span>
-    ${f.no_score ? `<span class="ns-badge">⚠️ ${esc(f.no_score_note || "体重超過")}｜予想対象外</span>` : ""}`;
+    ${f.no_score ? `<span class="ns-badge">⚠️ ${esc(f.no_score_note || "体重超過")}｜予想対象外</span>` : ""}
+    ${f.event_only ? `<span class="ns-badge">${esc(f.event_only_note || "MMA以外のルール")}｜予想は任意・通算対象外</span>` : ""}`;
 }
 
 // 選手名から名鑑へ飛ぶリンク行
@@ -481,6 +482,9 @@ function allPicksMatrix() {
     if (f.no_score) {  // 体重超過：試合はやるが予想対象外。琥珀タグ＋ピックは残す
       return `<tr class="mxrow noscore"><th class="mx-fight">${thumb}<span class="mx-x ns">体重超過｜対象外</span></th>${cells}</tr>`;
     }
+    if (f.event_only) {  // キック等：この大会の的中率には入るが通算には入らない
+      return `<tr class="mxrow noscore"><th class="mx-fight">${thumb}<span class="mx-x ns">任意｜通算対象外</span></th>${cells}</tr>`;
+    }
     const c = decided ? { level: "" } : consensus(f);  // 結果が出たら○×優先、未確定なら一致/割れ
     return `<tr class="mxrow ${c.level}"><th class="mx-fight">${thumb}${miniBar}${supBadge}</th>${cells}</tr>`;
   }).join("");
@@ -497,7 +501,7 @@ function allPicksMatrix() {
 
 // ---------- 結果発表（finished時の大会サマリー） ----------
 function eventSummary() {
-  const rows = computeLeaderboard(MEMBERS, FIGHTS, allPreds).filter(r => r.answered > 0);
+  const rows = computeLeaderboard(MEMBERS, FIGHTS, allPreds, { scope: "event" }).filter(r => r.answered > 0);
   if (!rows.length) return "";
   return `
     <div class="summary-box">

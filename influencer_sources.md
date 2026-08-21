@@ -59,3 +59,20 @@
 >   07-21「全試合の感想」＝朝倉／08-18「超ガチ分析」＝青木 → **投稿日の新しい08-18の青木真也を採用**
 > - **要確認**：怪物くんチャンネル(wStY5p0i8B8)はホベルト・サトシ・ソウザ本人がゲスト。
 >   予想の中身は実質サトシのものだが、member はチャンネル名で登録している（表記の是非はGaku判断）
+| 2026-07-22 | Valentine Hosokawa / Positive  Classroom | ev_cho5 | 5件 | https://www.youtube.com/watch?v=41pS2rgjU9A | m_yt_valentinehosokawapos |
+| 2026-08-20 | 青木真也  [ SHINYA AOKI ] チャンネル | ev_cho5 | 0件 | https://www.youtube.com/watch?v=59_yHe7Fs-k | m_yt_shinyaaoki |
+| 2026-07-20 | 川尻達也のじりラジオ | ev_cho5 | 7件 | https://www.youtube.com/watch?v=Br3bX-aSXr4 | m_yt_42cc778a |
+| 2026-08-14 | 元谷友貴 | ev_cho5 | 0件 | https://www.youtube.com/watch?v=Edo2TQH1lNk | m_yt_7487b80a |
+| 2026-08-18 | 青木真也  [ SHINYA AOKI ] チャンネル | ev_cho5 | 0件 | https://www.youtube.com/watch?v=G3MZ-W2ZrA8 | m_yt_shinyaaoki |
+| 2026-08-07 | Yutaka Saito | ev_cho5 | 3件 | https://www.youtube.com/watch?v=KSWvZngFMpM | m_yt_yutakasaito |
+| 2026-07-26 | 久保優太ちゃんねる | ev_cho5 | 5件 | https://www.youtube.com/watch?v=KlomSwbI6Wg | m_yt_69bc9bd4 |
+| 2026-07-23 | BRAVE GYM OFFICIAL ヘラクレスチャンネル | ev_cho5 | 2件 | https://www.youtube.com/watch?v=NzkpqgQI1oE | m_yt_bravegymofficial |
+| 2026-08-18 | 石渡伸太郎 Shintaro Ishiwatari | ev_cho5 | 1件 | https://www.youtube.com/watch?v=P2cIDyiHfyg | m_yt_shintaroishiwatari |
+| 2026-07-22 | Kanehara Masanori no kinchanTV | ev_cho5 | 2件 | https://www.youtube.com/watch?v=Pgy1lbH_bzg | m_yt_kaneharamasanorinoki |
+| 2026-07-23 | Kanehara Masanori no kinchanTV | ev_cho5 | 2件 | https://www.youtube.com/watch?v=d0Og5w7HwTI | m_yt_kaneharamasanorinoki |
+| 2026-08-15 | 扇久保博正 おぎちゃんねる。Ogichannel | ev_cho5 | 1件 | https://www.youtube.com/watch?v=iVitGZl5dKY | m_yt_ogichannel |
+| 2026-07-21 | 前田日明チャンネル | ev_cho5 | 0件 | https://www.youtube.com/watch?v=nWhCRPfBtqk | m_yt_336fd122 |
+| 2026-07-21 | 石渡伸太郎 Shintaro Ishiwatari | ev_cho5 | 5件 | https://www.youtube.com/watch?v=oyAX9IYgG4U | m_yt_shintaroishiwatari |
+| 2026-07-20 | 手塚裕之 HIROYUKI TETSUKA 野生獣チャンネル | ev_cho5 | 1件 | https://www.youtube.com/watch?v=uw2SnT7kPzA | m_yt_hiroyukitetsuka |
+| 2026-07-30 | 怪物くんチャンネル ''KAIBUTSUKUN" | ev_cho5 | 6件 | https://www.youtube.com/watch?v=wStY5p0i8B8 | m_yt_kaibutsukun |
+| 2026-07-22 | ストラッサー起一 [ストチャンネル] | ev_cho5 | 7件 | https://www.youtube.com/watch?v=z6fUXffdKtU | m_yt_b91a384d |

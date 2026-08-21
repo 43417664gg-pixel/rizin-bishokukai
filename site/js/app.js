@@ -18,11 +18,17 @@
     if (method === "DEC") return "DEC";
     return technique || null;  // KO/一本で技を指定していなければ決まり手なし＝的中止まり
   };
-  window.scoreFight = function (pred, fight) {
+  // scope: "event"＝その大会の的中率／"career"＝通算。event_only の試合は event でだけ数える。
+  window.scoreFight = function (pred, fight, opts) {
+    const scope = (opts && opts.scope) || "event";
     if (fight.cancelled) {  // 中止・延期は集計対象外（勝者を外しても不成立にならない）
       return { counted: false, winnerHit: false, pitari: false };
     }
     if (fight.no_score) {  // 体重超過など＝試合はやるが予想対象外（採点しない）
+      return { counted: false, winnerHit: false, pitari: false };
+    }
+    // キックルール等＝MMAではないので通算の的中率は汚さない。大会内の勝敗率にだけ入れる（Gaku確定）。
+    if (fight.event_only && scope === "career") {
       return { counted: false, winnerHit: false, pitari: false };
     }
     if (!fight.winner_id || !fight.result_method) return null; // 結果未確定
@@ -44,15 +50,17 @@
   };
 
   // メンバー×確定試合からランキング行を作る
-  window.computeLeaderboard = function (members, fights, predictions) {
+  window.computeLeaderboard = function (members, fights, predictions, opts) {
+    const scope = (opts && opts.scope) || "event";
     const fightById = Object.fromEntries(fights.map(f => [f.id, f]));
     const rows = members.map(m => {
       const row = { member: m, answered: 0, decided: 0, hits: 0, pitari: 0 };
       for (const p of predictions.filter(p => p.member_id === m.id)) {
         const f = fightById[p.fight_id];
         if (!f || f.cancelled || f.no_score) continue;  // 中止・体重超過（予想対象外）はカウントしない
+        if (f.event_only && scope === "career") continue;  // キック等は通算に入れない
         row.answered += 1;
-        const s = window.scoreFight(p, f);
+        const s = window.scoreFight(p, f, { scope });
         if (!s || !s.counted) continue;
         row.decided += 1;
         if (s.winnerHit) row.hits += 1;

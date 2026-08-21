@@ -2092,7 +2092,7 @@ window.DEMO_SEED = {
   ],
 
   fights: [
-    { id: "cho5_09", event_id: "ev_cho5", order_no: 0, segment: "main", title_label: "RIZIN オープンフィンガーグローブ キックボクシングルール", weight_class: "71.0kg", rounds: 3, fighter1_id: "f_baynoa", fighter2_id: "f_usami_mason", image_url: "assets/cho5/fight_09.jpg", no_score: true, no_score_note: "キックボクシングルール（3分3R）。MMAではないため予想対象外" },
+    { id: "cho5_09", event_id: "ev_cho5", order_no: 0, segment: "main", title_label: "RIZIN オープンフィンガーグローブ キックボクシングルール", weight_class: "71.0kg", rounds: 3, fighter1_id: "f_baynoa", fighter2_id: "f_usami_mason", image_url: "assets/cho5/fight_09.jpg", event_only: true, event_only_note: "キックボクシングルール（3分3R）。予想は任意。この大会の的中率には入るが、通算には入らない" },
     { id: "lm16_03", event_id: "ev_lm16", order_no: 3, segment: "main", weight_class: "71.0kg", rounds: 3, fighter1_id: "f_horie", fighter2_id: "f_usami_patrick", image_url: "assets/lm16/fight_01.jpg" },
     { id: "lm16_02", event_id: "ev_lm16", order_no: 2, segment: "main", weight_class: "66.0kg", rounds: 3, fighter1_id: "f_kolesnik", fighter2_id: "f_matsushima", image_url: "assets/lm16/fight_02.jpg" },
     { id: "lm16_01", event_id: "ev_lm16", order_no: 1, segment: "main", weight_class: "61.0kg", rounds: 3, fighter1_id: "f_ashizawa", fighter2_id: "f_inoue_seiya", image_url: "assets/lm16/fight_03.jpg" },

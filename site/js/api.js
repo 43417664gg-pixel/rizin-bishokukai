@@ -313,6 +313,7 @@
           result_round: f.result_round ?? null, result_technique: f.result_technique ?? null,
           cancelled: f.cancelled ?? false, cancel_note: f.cancel_note ?? null,
           no_score: f.no_score ?? false, no_score_note: f.no_score_note ?? null,
+          event_only: f.event_only ?? false, event_only_note: f.event_only_note ?? null,
           gallery: f.gallery ?? null,
         })));
         return out;
