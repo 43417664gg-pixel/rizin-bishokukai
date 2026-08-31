@@ -325,6 +325,81 @@
     };
   }
 
-  window.DB = IS_DEMO ? demoDB : makeSupaDB();
+  // ---------- 退避モード（Supabaseに到達できない時） ----------
+  // 2026-08-31：Supabaseプロジェクトのホスト名がDNSごと消え（無料枠の自動停止と見られる）、
+  // 読み取りが全部失敗してページが真っ黒になった。仲間には「サイトが死んだ」としか見えない。
+  // 正本は demo-data.js に丸ごとあるので、**読み取りだけはシードで代替**して大会・カード・名鑑を出す。
+  // 書き込み（予想の登録）は絶対に代替しない——localStorageに入れて「保存できた」と誤解させる方が有害。
+  function seedSnapshot() {
+    return JSON.parse(JSON.stringify(window.DEMO_SEED || { members: [], fighters: [], events: [], fights: [] }));
+  }
+  function makeFallbackDB(reason) {
+    const offline = async () => { throw new Error("いまサーバーに接続できないため、予想の登録・変更はできません"); };
+    return {
+      isDemo: false, offline: true,
+      async listMembers() { return seedSnapshot().members || []; },
+      async listFighters() { return seedSnapshot().fighters || []; },
+      async listEvents() {
+        return (seedSnapshot().events || []).sort((a, b) => (b.event_date || "").localeCompare(a.event_date || ""));
+      },
+      async getEvent(id) { return (seedSnapshot().events || []).find(e => e.id === id) || null; },
+      async listFights(eventId) {
+        const all = seedSnapshot().fights || [];
+        return eventId ? all.filter(f => f.event_id === eventId) : all;
+      },
+      async listPredictions() { return []; },   // 予想はSupabaseにしか無い。捏造しない＝空で返す
+      async listSupports() { return []; },
+      upsertPrediction: offline, deletePrediction: offline, upsertMember: offline,
+      upsertSupport: offline, deleteSupport: offline,
+      upsertFighter: offline, upsertFight: offline,
+      async syncSeed() { throw new Error("接続できないため同期できません"); },
+      async resetDemo() {},
+    };
+  }
+
+  // Supabaseモードでも、実際に到達できるかを起動時に1回だけ確かめる。
+  // 落ちていたら退避モードへ差し替え、画面上部に理由を出す（黙って空にしない）。
+  function installOfflineBanner() {
+    const put = () => {
+      if (document.getElementById("offline-banner")) return;
+      const d = document.createElement("div");
+      d.id = "offline-banner";
+      d.style.cssText = "position:sticky;top:0;z-index:9999;background:#7a1520;color:#ffd9dd;" +
+        "padding:10px 14px;font-size:13px;line-height:1.5;border-bottom:2px solid #c9a84a;text-align:center";
+      d.innerHTML = "⚠️ <b>いまサーバーに接続できません。</b>対戦カードと選手名鑑は表示していますが、" +
+        "<b>みんなの予想・ランキングは出せず、予想の登録もできません。</b>復旧までお待ちください。";
+      document.body.prepend(d);
+    };
+    if (document.body) put(); else document.addEventListener("DOMContentLoaded", put);
+  }
+
+  if (IS_DEMO) {
+    window.DB = demoDB;
+  } else {
+    const supa = makeSupaDB();
+    const fb = makeFallbackDB("supabase unreachable");
+    // 読み取りは「Supabaseを試し、落ちたらシードで返す」。起動直後に叩かれても競合しない。
+    const READS = ["listMembers", "listFighters", "listEvents", "getEvent", "listFights",
+                   "listPredictions", "listSupports"];
+    const db = Object.create(supa);
+    for (const name of READS) {
+      if (typeof supa[name] !== "function") continue;
+      db[name] = async function (...args) {
+        try {
+          return await supa[name].apply(supa, args);
+        } catch (e) {
+          if (!window.DB_OFFLINE) {
+            window.DB_OFFLINE = true;
+            window.DB_OFFLINE_REASON = String((e && e.message) || e);
+            installOfflineBanner();
+            console.warn("[api] Supabaseに到達できないため退避モードで表示します:", e);
+          }
+          if (typeof fb[name] !== "function") throw e;
+          return await fb[name].apply(fb, args);
+        }
+      };
+    }
+    window.DB = db;
+  }
   window.IS_DEMO = IS_DEMO;
 })();
