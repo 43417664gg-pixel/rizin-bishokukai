@@ -76,3 +76,14 @@
 | 2026-07-20 | 手塚裕之 HIROYUKI TETSUKA 野生獣チャンネル | ev_cho5 | 1件 | https://www.youtube.com/watch?v=uw2SnT7kPzA | m_yt_hiroyukitetsuka |
 | 2026-07-30 | 怪物くんチャンネル ''KAIBUTSUKUN" | ev_cho5 | 6件 | https://www.youtube.com/watch?v=wStY5p0i8B8 | m_yt_kaibutsukun |
 | 2026-07-22 | ストラッサー起一 [ストチャンネル] | ev_cho5 | 7件 | https://www.youtube.com/watch?v=z6fUXffdKtU | m_yt_b91a384d |
+| 2026-08-17 | RIZIN公式「超RIZIN.5 超緊急追加カード発表&国民超予想SP」 | ev_cho5 | 6件 | https://www.youtube.com/live/Zgo-nVipTEo | m_yt_joy / m_yt_onigoe_ryo / m_yt_zakoshisyou / m_yt_tutorial_fukuda |
+
+> ※上記の内訳（Gakuが番組内の著名人発言を拾い出し、蘭が機械照合して投入・2026-08-31／出典はGaku確定）
+> - JOY：cho5_06 平本蓮（判定）／cho5_08 シェイドゥラエフ（判定）
+> - 鬼ごえトマホーク良ちゃん：cho5_06 平本蓮／cho5_08 シェイドゥラエフ（2R バックチョーク→`rnc`）
+> - ハリウッドザコシショウ：cho5_07 青木真也
+> - チュートリアル福田：cho5_07 朝倉未来（2R パウンドアウト→`gnp`）
+> - 前田日明：cho5_07 朝倉未来 ＝**本人チャンネル(nWhCRPfBtqk)からの取り込み分と一致**したため再投入せず
+>
+> ※自動字幕では著名人の氏名を特定できず（前回この番組を「100人アンケートだけ」と判断して見送った）。
+> **人が見れば取れるものを、機械が取れないからと落としていた**という取りこぼしの実例。
