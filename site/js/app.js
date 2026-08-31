@@ -249,6 +249,23 @@
   window.fighterMap = (fighters) => Object.fromEntries(fighters.map(f => [f.id, f]));
 
   // 未選択ならプレイヤー選択（index）へ戻す
+  // ページの読み込みが例外で止まると #main が空のままになり、利用者には「真っ黒な画面」
+  // としか見えない（2026-08-31のSupabase消失で実際に起きた）。落ちたことを必ず画面に出す。
+  function showFatal(err) {
+    const main = document.getElementById("main");
+    if (!main || main.innerHTML.trim()) return;   // 既に描けているなら触らない
+    const msg = String((err && (err.message || err.reason?.message || err.reason)) || err || "不明なエラー");
+    main.innerHTML =
+      '<div style="margin:24px auto;max-width:640px;background:#1a1016;border:1px solid #7a1520;' +
+      'border-radius:12px;padding:18px 20px;color:#ffd9dd;line-height:1.7">' +
+      '<div style="font-weight:800;font-size:15px;margin-bottom:6px">⚠️ ページを表示できませんでした</div>' +
+      '<div style="font-size:13px;color:#e8c9cd">読み込み中にエラーが起きました。時間をおいて再読み込みしてください。</div>' +
+      '<div style="margin-top:10px;font-size:11px;color:#a98b90;word-break:break-all">' + esc(msg) + '</div>' +
+      '</div>';
+  }
+  window.addEventListener("unhandledrejection", (e) => { console.error("[fatal]", e.reason); showFatal(e); });
+  window.addEventListener("error", (e) => { console.error("[fatal]", e.error || e.message); showFatal(e.error || e.message); });
+
   window.requireMember = function () {
     if (!getMemberId()) { location.href = "index.html"; return false; }
     return true;
