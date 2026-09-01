@@ -99,3 +99,46 @@
 > - **平本蓮 vs ダウトベックは登録せず**。2人とも分析のみで勝者を明言していない
 >   （「打ち合いを制するのは平本」は打撃戦の話で、直後に「問題はその後」と続く）
 > - どちらも断定ではなく傾き。同じ水準の発言を他の予想者でも採用しているため揃えた
+| 2026-08-22 | Yusuke Yachi | ev_cho5 | 0件 | https://www.youtube.com/watch?v=--w5iETHqQw | m_yt_yusukeyachi |
+| 2026-08-22 | ヌルの格闘技ラジオ | ev_cho5 | 8件 | https://www.youtube.com/watch?v=0zT9BdHXAUw | m_yt_e1ff8ceb |
+| 2026-08-26 | クリケンchannel | ev_cho5 | 1件 | https://www.youtube.com/watch?v=1Rw3rcAWLzA | m_yt_channel |
+| 2026-08-24 | S.W.G格闘技 | ev_cho5 | 2件 | https://www.youtube.com/watch?v=1h8UmO4MXO8 | m_yt_swg |
+| 2025-12-03 | 扇久保博正 おぎちゃんねる。Ogichannel | ev_cho5 | 1件 | https://www.youtube.com/watch?v=49sjkQtbFYc | m_yt_ogichannel |
+| 2025-11-10 | ジョビンのMMA塾 | ev_cho5 | 1件 | https://www.youtube.com/watch?v=67nzNr5t5zE | m_yt_mma |
+| 2026-09-01 | 中島太一チャンネル | ev_cho5 | 4件 | https://www.youtube.com/watch?v=CYyfSs16RXI | m_yt_225d3213 |
+| 2026-08-22 | 扇久保博正 おぎちゃんねる。Ogichannel | ev_cho5 | 1件 | https://www.youtube.com/watch?v=F3f2YyHV1po | m_yt_ogichannel |
+| 2026-08-20 | 扇久保博正 おぎちゃんねる。Ogichannel | ev_cho5 | 1件 | https://www.youtube.com/watch?v=I9e7KVJhrvA | m_yt_ogichannel |
+| 2026-08-25 | クリケンchannel | ev_cho5 | 1件 | https://www.youtube.com/watch?v=Ilva3j5rS0M | m_yt_channel |
+| 2026-07-30 | 青木真也  [ SHINYA AOKI ] チャンネル | ev_cho5 | 3件 | https://www.youtube.com/watch?v=M9NZTS2HbCA | m_yt_shinyaaoki |
+| 2025-08-01 | ジョビンのMMA塾 | ev_cho5 | 1件 | https://www.youtube.com/watch?v=O4L0qSEhzko | m_yt_mma |
+| 2026-08-19 | Yura Rosa | ev_cho5 | 6件 | https://www.youtube.com/watch?v=QYWvHGX7JTk | m_yt_yurarosa |
+| 2026-08-30 | ぽんひろ働く社会人の趣味部屋 | ev_cho5 | 1件 | https://www.youtube.com/watch?v=S9CwoTB1wXM | m_yt_760fb8a9 |
+| 2025-11-26 | 扇久保博正 おぎちゃんねる。Ogichannel | ev_cho5 | 1件 | https://www.youtube.com/watch?v=SU5uRG7pFEw | m_yt_ogichannel |
+| 2026-08-28 | 骨法・格闘技Ch-9D9 | ev_cho5 | 1件 | https://www.youtube.com/watch?v=UYbVNPncFKo | m_yt_ch9d9 |
+| 2026-07-25 | 青木真也  [ SHINYA AOKI ] チャンネル | ev_cho5 | 1件 | https://www.youtube.com/watch?v=ZDmT9bCP5tk | m_yt_shinyaaoki |
+| 2026-08-24 | さくらラジオ | ev_cho5 | 5件 | https://www.youtube.com/watch?v=g3kK7rSnCuw | m_yt_f9adaa31 |
+| 2026-08-30 | 扇久保博正 おぎちゃんねる。Ogichannel | ev_cho5 | 1件 | https://www.youtube.com/watch?v=z_d_q9KFrM4 | m_yt_ogichannel |
+
+| 2026-07-25 | 青木真也  [ SHINYA AOKI ] チャンネル | ev_cho5 | 1件 | https://www.youtube.com/watch?v=ZDmT9bCP5tk | m_yt_shinyaaoki |
+| 2026-07-30 | 青木真也  [ SHINYA AOKI ] チャンネル | ev_cho5 | 3件 | https://www.youtube.com/watch?v=M9NZTS2HbCA | m_yt_shinyaaoki |
+| 2026-08-19 | Yura Rosa | ev_cho5 | 6件 | https://www.youtube.com/watch?v=QYWvHGX7JTk | m_yt_yurarosa |
+| 2026-08-20 | 扇久保博正 おぎちゃんねる。Ogichannel | ev_cho5 | 1件 | https://www.youtube.com/watch?v=I9e7KVJhrvA | m_yt_ogichannel |
+| 2026-08-22 | ヌルの格闘技ラジオ | ev_cho5 | 8件 | https://www.youtube.com/watch?v=0zT9BdHXAUw | m_yt_e1ff8ceb |
+| 2026-08-22 | 扇久保博正 おぎちゃんねる。Ogichannel | ev_cho5 | 1件 | https://www.youtube.com/watch?v=F3f2YyHV1po | m_yt_ogichannel |
+| 2026-08-24 | 秋元強真（S.W.G格闘技のインタビュー） | ev_cho5 | 2件 | https://www.youtube.com/watch?v=1h8UmO4MXO8 | m_yt_swg |
+| 2026-08-24 | さくらラジオ | ev_cho5 | 5件 | https://www.youtube.com/watch?v=g3kK7rSnCuw | m_yt_f9adaa31 |
+| 2026-08-25 | クリケン | ev_cho5 | 1件 | https://www.youtube.com/watch?v=Ilva3j5rS0M | m_yt_channel |
+| 2026-08-26 | クリケン | ev_cho5 | 1件 | https://www.youtube.com/watch?v=1Rw3rcAWLzA | m_yt_channel |
+| 2026-08-28 | 骨法・格闘技Ch | ev_cho5 | 1件 | https://www.youtube.com/watch?v=UYbVNPncFKo | m_yt_ch9d9 |
+| 2026-08-30 | ぽんひろ | ev_cho5 | 1件 | https://www.youtube.com/watch?v=S9CwoTB1wXM | m_yt_760fb8a9 |
+| 2026-08-30 | 扇久保博正 おぎちゃんねる。Ogichannel | ev_cho5 | 1件 | https://www.youtube.com/watch?v=z_d_q9KFrM4 | m_yt_ogichannel |
+| 2026-09-01 | 中島太一 | ev_cho5 | 4件 | https://www.youtube.com/watch?v=CYyfSs16RXI | m_yt_225d3213 |
+
+> ※2026-08-31 の一括取り込み（20本を処理し14本を採用）の注記
+> - **カード発表前（2026-07-20より前）の動画4本を除外**：扇久保(49sjkQtbFYc・2025-12-03／SU5uRG7pFEw・2025-11-26)、
+>   ジョビンのMMA塾(67nzNr5t5zE・2025-11-10／O4L0qSEhzko・2025-08-01)。
+>   **選手名だけで超RIZIN.5の試合に誤照合していた**（斎藤裕 vs YA-MAN 等は過去にも組まれている）。
+>   → 以後、取り込みは**投稿日 ≥ カード発表日**で足切りする
+> - **S.W.G格闘技(1h8UmO4MXO8)は秋元強真本人のインタビュー**。「どっちが勝てると思いますか?」「AJマッキーです」と
+>   本人が答えているので、チャンネルではなく**既存メンバーの秋元強真へ付け替えた**
+> - 既存の予想とぶつかる（同じ人・同じ試合で勝者が違う）ものは**0件**。既存は一切上書きしていない
