@@ -7,25 +7,67 @@
 <title>RIZIN美食会予想</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260902165525">
+<link rel="stylesheet" href="css/style.css?v=20260902165726">
 </head>
 <body>
 <div id="app-header"></div>
 <div class="wrap" id="main"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/config.js?v=20260902165525"></script>
-<script src="js/techniques.js?v=20260902165525"></script>
-<script src="js/demo-data.js?v=20260902165525"></script>
-<script src="js/api.js?v=20260902165525"></script>
-<script src="js/app.js?v=20260902165525"></script>
+<script src="js/config.js?v=20260902165726"></script>
+<script src="js/techniques.js?v=20260902165726"></script>
+<script src="js/demo-data.js?v=20260902165726"></script>
+<script src="js/api.js?v=20260902165726"></script>
+<script src="js/app.js?v=20260902165726"></script>
 <script>
+// Xから来た人に「いま何をやっているか」を最初に見せる。
+// 監査（2026-08-31）で、入口に大会情報がゼロのまま登録を求めていて離脱する形だったため追加。
+async function nextEventTeaser() {
+  try {
+    const events = await DB.listEvents();
+    const up = events.filter(e => e.status !== "finished")
+      .sort((a, b) => (a.event_date || "").localeCompare(b.event_date || ""))[0];
+    if (!up) return "";
+    const [fights, fighters] = await Promise.all([DB.listFights(up.id), DB.listFighters()]);
+    const live = fights.filter(f => !f.cancelled);
+    if (!live.length) return "";
+    const FM = fighterMap(fighters);
+    const preds = await DB.listPredictions({ fightIds: live.map(f => f.id) });
+    const people = new Set(preds.map(p => p.member_id)).size;
+    // メイン（order_noが最大）の割れ具合を看板にする＝民意の可視化がこのサイトの売り
+    const main = live.slice().sort((a, b) => b.order_no - a.order_no)[0];
+    const mp = preds.filter(p => p.fight_id === main.id);
+    const c1 = mp.filter(p => p.winner_id === main.fighter1_id).length;
+    const c2 = mp.filter(p => p.winner_id === main.fighter2_id).length;
+    const tot = c1 + c2;
+    const p1 = tot ? Math.round(c1 / tot * 100) : 50, p2 = tot ? 100 - p1 : 50;
+    const days = daysToEvent(up);
+    return `
+      <a class="tz-card" href="event.html?id=${up.id}">
+        <div class="tz-top">
+          <span class="tz-live">● 予想受付中</span>
+          <span class="tz-date">${fmtDate(up.event_date)}${days != null && days >= 0 ? `　あと${days}日` : ""}</span>
+        </div>
+        <div class="tz-ev">${esc(up.name)}</div>
+        ${tot ? `
+        <div class="tz-vs">
+          <span class="r">${esc(FM[main.fighter1_id]?.name || "")}</span>
+          <span class="b">${esc(FM[main.fighter2_id]?.name || "")}</span>
+        </div>
+        <div class="tz-bar"><i style="width:${p1}%"></i><b style="width:${p2}%"></b></div>
+        <div class="tz-pct"><span class="r">${p1}%</span><span class="b">${p2}%</span></div>` : ""}
+        <div class="tz-foot">${people ? `${people}人が予想済み` : "まだ誰も予想していない"}　${live.length}試合　▶ カードを見る</div>
+      </a>`;
+  } catch (e) { return ""; }
+}
+
 async function renderPlayerSelect() {
-  const members = await DB.listMembers();
+  const [members, teaser] = await Promise.all([DB.listMembers(), nextEventTeaser()]);
   // 美食会コア（3人）だけ既存タイルで復帰可。インフルエンサーは予想の出典であって"なりすまし入口"にしない。
   const FRIEND_IDS = ["m_hame", "m_nuki", "m_maruyama"];
   const friends = members.filter(m => FRIEND_IDS.includes(m.id));
   document.getElementById("main").innerHTML = `
+    ${teaser}
     <div class="ps-hero">
       <div class="en-label">JOIN FREE</div>
       <h1 class="page-title">予想を始めよう</h1>

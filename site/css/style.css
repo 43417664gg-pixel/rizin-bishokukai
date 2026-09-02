@@ -875,3 +875,32 @@ tr.top .lb-rate { color: var(--gold-hot); }
 .x-share .x-logo { font-size:15px; font-weight:900; line-height:1; }
 /* スクショ用のURL表記。カード内に必ず出す */
 .share-url { font-family:Oswald,sans-serif; letter-spacing:.02em; color:#c9a84a; font-size:11px; font-weight:700; }
+
+/* ランキング：スクショで一望できる密度に（2026-08-31） */
+.rk-scope { font-size:12px; color:#9a9aa2; margin:-4px 0 10px; }
+.rk-scope .share-url { display:block; margin-top:3px; }
+.rk-share { margin:14px 0 10px; text-align:center; }
+.lb-table td, .lb-table th { padding-top:9px !important; padding-bottom:9px !important; }
+.lb-table .lb-name { font-size:15px !important; }
+.lb-table .lb-rate { font-size:22px !important; }
+@media (max-width:480px){
+  .lb-table td, .lb-table th { padding-top:7px !important; padding-bottom:7px !important; }
+  .lb-table .lb-name { font-size:14px !important; }
+}
+
+/* 入口の大会ティーザー（2026-08-31）：登録を求める前に価値を見せる */
+.tz-card { display:block; max-width:460px; margin:6px auto 18px; padding:14px 16px 12px; text-decoration:none;
+  background:linear-gradient(135deg,#1a1013,#0d0d0f); border:1px solid #3a2228; border-left:4px solid #e60012;
+  border-radius:12px; color:#eee; }
+.tz-card:hover { border-color:#7a1520; }
+.tz-top { display:flex; justify-content:space-between; align-items:center; font-size:11px; }
+.tz-live { color:#ff5a67; font-weight:900; }
+.tz-date { color:#9a9aa2; }
+.tz-ev { font-weight:900; font-size:18px; margin:4px 0 10px; line-height:1.25; }
+.tz-vs { display:flex; justify-content:space-between; font-size:13px; font-weight:900; gap:10px; }
+.tz-vs .r { color:#ff5a67; } .tz-vs .b { color:#5aa0ff; text-align:right; }
+.tz-bar { display:flex; height:9px; border-radius:5px; overflow:hidden; margin:5px 0 3px; background:#222; }
+.tz-bar i { background:#e60012; } .tz-bar b { background:#2e78ff; }
+.tz-pct { display:flex; justify-content:space-between; font-family:Oswald,sans-serif; font-size:13px; font-weight:700; }
+.tz-pct .r { color:#ff5a67; } .tz-pct .b { color:#5aa0ff; }
+.tz-foot { margin-top:9px; font-size:11px; color:#c9a84a; font-weight:700; }
