@@ -904,3 +904,13 @@ tr.top .lb-rate { color: var(--gold-hot); }
 .tz-pct { display:flex; justify-content:space-between; font-family:Oswald,sans-serif; font-size:13px; font-weight:700; }
 .tz-pct .r { color:#ff5a67; } .tz-pct .b { color:#5aa0ff; }
 .tz-foot { margin-top:9px; font-size:11px; color:#c9a84a; font-weight:700; }
+
+/* ALL PICKS を折りたたみに（2026-08-31）：スマホで横スクロールの表が最初に来るのを防ぐ */
+.mx-details { margin:22px 0 8px; border:1px solid #26262c; border-radius:10px; background:#101014; }
+.mx-summary { cursor:pointer; padding:13px 14px; font-weight:900; font-size:14px; color:#c9a84a;
+  list-style:none; display:flex; align-items:center; gap:10px; }
+.mx-summary::-webkit-details-marker { display:none; }
+.mx-summary::before { content:"▶"; font-size:10px; color:#8a8a92; transition:transform .15s; }
+.mx-details[open] .mx-summary::before { transform:rotate(90deg); }
+.mx-count { margin-left:auto; font-size:11px; color:#8a8a92; font-weight:700; }
+.mx-details #matrix-section { padding:0 8px 10px; }

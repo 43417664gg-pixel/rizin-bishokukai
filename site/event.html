@@ -7,7 +7,7 @@
 <title>大会予想｜RIZIN美食会予想</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260902165726">
+<link rel="stylesheet" href="css/style.css?v=20260902165831">
 </head>
 <body>
 <div id="app-header"></div>
@@ -16,11 +16,11 @@
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/config.js?v=20260902165726"></script>
-<script src="js/techniques.js?v=20260902165726"></script>
-<script src="js/demo-data.js?v=20260902165726"></script>
-<script src="js/api.js?v=20260902165726"></script>
-<script src="js/app.js?v=20260902165726"></script>
+<script src="js/config.js?v=20260902165831"></script>
+<script src="js/techniques.js?v=20260902165831"></script>
+<script src="js/demo-data.js?v=20260902165831"></script>
+<script src="js/api.js?v=20260902165831"></script>
+<script src="js/app.js?v=20260902165831"></script>
 <script>
 let EV, PHASE, FIGHTS, FMAP, MEMBERS, myPreds = {}, allPreds = [], ALL_SUPPORTS = [];
 let drafts = {};              // 決定前の編集中の選択（ローカルのみ）
@@ -542,11 +542,17 @@ function render() {
     <h1 class="page-title">${esc(EV.name)}</h1>
     <p class="page-sub">${fmtDate(EV.event_date)}　${subText}</p>
     ${PHASE === "finished" ? eventSummary() : ""}
-    <div id="matrix-section">${PHASE !== "before_open" ? allPicksMatrix() : ""}</div>
     ${main.length ? `<div class="section-label">MAIN CARD</div>` : ""}
     ${main.map(card).join("")}
     ${op.length ? `<div class="section-label">OPENING FIGHTS</div>` : ""}
-    ${op.map(card).join("")}`;
+    ${op.map(card).join("")}
+    <!-- ALL PICKSは横に長く、スマホでは横スクロールが要る。自分が予想する導線を先に
+         置き、一覧は下へ回して既定で畳む（広い画面だけ最初から開く）。2026-08-31の監査より -->
+    <details id="matrix-details" class="mx-details" ${window.innerWidth >= 900 ? "open" : ""}>
+      <summary class="mx-summary">ALL PICKS　全員の予想を一覧で見る<span class="mx-count">${
+        new Set(allPreds.map(p => p.member_id)).size}人</span></summary>
+      <div id="matrix-section">${PHASE !== "before_open" ? allPicksMatrix() : ""}</div>
+    </details>`;
   // 締切ありの受付中のみカウントダウンをスティッキー表示（締切なし大会は非表示）
   const sc = document.getElementById("sticky-cd");
   if (PHASE === "open" && !openBook) {
