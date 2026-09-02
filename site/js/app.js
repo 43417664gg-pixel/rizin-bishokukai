@@ -108,6 +108,7 @@
 
   // ---------- 共通ヘッダー ----------
   window.renderHeader = async function (active) {
+    if (!window._claimed) { window._claimed = true; window.claimMyMember(); }
     const el = document.getElementById("app-header");
     if (!el) return;
     let memberName = "";
@@ -282,6 +283,22 @@
   }
   window.addEventListener("unhandledrejection", (e) => { console.error("[fatal]", e.reason); showFatal(e); });
   window.addEventListener("error", (e) => { console.error("[fatal]", e.error || e.message); showFatal(e.error || e.message); });
+
+  // 端末に残っているメンバーを、持ち主が空なら自分のものとして主張する。
+  // 仲間3人（ハメ太郎・抜き太郎・丸山探偵事務所）は、次にサイトを開いた時点で
+  // 自動的に紐づく＝本人の操作は不要。失敗しても黙って続行する（体験を止めない）。
+  window.claimMyMember = async function () {
+    try {
+      const mid = getMemberId();
+      if (!mid || !window.DB || typeof DB.claimMember !== "function") return;
+      const uid = await window.AUTH_READY;
+      if (!uid) return;
+      const me = (await DB.listMembers()).find(m => m.id === mid);
+      if (!me || me.owner_uid || me.is_curated) return;
+      await DB.claimMember(mid, uid);
+      console.info("[auth] メンバーを引き継ぎました:", me.name);
+    } catch (e) { /* 列が未追加／権限なし等。公開前の移行期は無視してよい */ }
+  };
 
   window.requireMember = function () {
     if (!getMemberId()) { location.href = "index.html"; return false; }

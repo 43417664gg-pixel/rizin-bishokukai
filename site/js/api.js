@@ -192,6 +192,23 @@
   function makeSupaDB() {
     const client = window.supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY);
     const q = async (p) => { const { data, error } = await p; if (error) throw error; return data; };
+
+    // ---------- 匿名サインイン（一般公開の前提） ----------
+    // 端末ごとに見えないIDを1つ持たせる。名前もメールも要らず、利用者の体験は変わらない。
+    // これがあって初めて「この予想は誰のものか」をDBが判定でき、
+    // 他人の予想を書き換えられる穴（2026-08-31の監査）を塞げる。
+    // ダッシュボードで匿名サインインが未有効なら失敗するが、その場合も従来どおり動く。
+    window.AUTH_READY = (async () => {
+      if (!cfg.ENABLE_ANON_AUTH) return null;   // SQLを流すまでOFF（上のconfig参照）
+      try {
+        const { data } = await client.auth.getSession();
+        if (data && data.session && data.session.user) return data.session.user.id;
+        const r = await client.auth.signInAnonymously();
+        if (r.error) { console.warn("[auth] 匿名サインイン未有効/失敗:", r.error.message); return null; }
+        return r.data && r.data.user ? r.data.user.id : null;
+      } catch (e) { console.warn("[auth]", e); return null; }
+    })();
+
     return {
       isDemo: false,
       client,
@@ -320,7 +337,26 @@
       },
       async upsertFighter(f) { const d = await q(client.from("fighters").upsert(f).select()); return d[0].id; },
       async upsertFight(f) { const d = await q(client.from("fights").upsert(f).select()); return d[0].id; },
-      async upsertMember(m) { const d = await q(client.from("members").upsert(m).select()); return d[0].id; },
+      async upsertMember(m) {
+        // 新規メンバーには持ち主（匿名UID）を付ける。列がまだ無い環境では付けずに続行。
+        const uid = await window.AUTH_READY;
+        let payload = uid ? { ...m, owner_uid: uid } : m;
+        try {
+          const d = await q(client.from("members").upsert(payload).select());
+          return d[0].id;
+        } catch (e) {
+          if (uid && /owner_uid/.test(String(e.message || e))) {
+            const d = await q(client.from("members").upsert(m).select());
+            return d[0].id;
+          }
+          throw e;
+        }
+      },
+      // 既存メンバー（仲間3人など）を、持ち主が空のときだけ自分のものとして主張する。
+      // is_curated（運営が入れたインフルエンサー枠）は対象外。
+      async claimMember(id, uid) {
+        return q(client.from("members").update({ owner_uid: uid }).eq("id", id).is("owner_uid", null));
+      },
       async resetDemo() {},
     };
   }
