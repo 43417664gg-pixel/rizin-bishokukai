@@ -866,3 +866,12 @@ tr.top .lb-rate { color: var(--gold-hot); }
 .gal-label { display: block; font-size: 10px; color: var(--muted); margin-top: 3px; text-align: center; }
 
 .photo-credit { font-size: 10px; color: var(--muted); text-align: right; padding: 3px 6px 0; }
+
+/* Xシェアボタン（2026-08-31） */
+.x-share { background:#000; color:#fff; border:1px solid #3a3a44; border-radius:999px;
+  padding:9px 18px; font-size:13px; font-weight:700; cursor:pointer; display:inline-flex;
+  align-items:center; gap:7px; }
+.x-share:hover { background:#16161c; border-color:#55555f; }
+.x-share .x-logo { font-size:15px; font-weight:900; line-height:1; }
+/* スクショ用のURL表記。カード内に必ず出す */
+.share-url { font-family:Oswald,sans-serif; letter-spacing:.02em; color:#c9a84a; font-size:11px; font-weight:700; }

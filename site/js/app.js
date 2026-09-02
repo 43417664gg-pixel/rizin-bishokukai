@@ -2,6 +2,23 @@
 (function () {
   const MEMBER_KEY = "rizin_portal_member";
 
+  // ---------- 公開・シェア ----------
+  // スクショが拡散しても辿り着けるよう、カード内に必ずURLを出す（2026-08-31の監査で
+  // 「全ページにURLが無く、流入経路がゼロ」だったのを潰すための共通定数）。
+  window.SITE_URL = "43417664gg-pixel.github.io/rizin-bishokukai";
+  window.SITE_URL_FULL = "https://43417664gg-pixel.github.io/rizin-bishokukai/";
+
+  // Xへの投稿はWeb Intent（無料・API不要）。画像は添付できないのでスクショ前提。
+  window.shareOnX = function (text, url) {
+    const u = "https://twitter.com/intent/tweet?text=" +
+      encodeURIComponent(text) + "&url=" + encodeURIComponent(url || window.SITE_URL_FULL);
+    window.open(u, "_blank", "noopener");
+  };
+  window.shareButton = function (text, url, label) {
+    return `<button class="x-share" onclick='shareOnX(${JSON.stringify(text)},${JSON.stringify(url || "")})'>
+      <span class="x-logo">𝕏</span> ${label || "ポストする"}</button>`;
+  };
+
   // ---------- メンバーセッション ----------
   window.getMemberId = () => localStorage.getItem(MEMBER_KEY);
   window.setMemberId = (id) => localStorage.setItem(MEMBER_KEY, id);
