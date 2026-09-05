@@ -237,3 +237,31 @@ BRAVE GYM ヘラクレスチャンネル(2)／骨法・格闘技Ch(1)／ぽん�
 > - ジョビン → cho5_07 **朝倉未来**「実力的には青木真也と思うけど…**僕は結局朝倉未来じゃないかな**」。
 >   理由＝青木がエモーショナルになりすぎていて「ピークが入場」になっている
 > - **同じ動画で2人が逆**。1本で割れが1組取れた形
+| 2026-08-28 | Yusuke Yachi | ev_cho5 | 4件 | https://www.youtube.com/watch?v=35e2dDzU1YY | m_yt_yusukeyachi |
+| 2026-09-05 | 扇久保博正 おぎちゃんねる。Ogichannel | ev_cho5 | 2件 | https://www.youtube.com/watch?v=3E4p-wQ__sc | m_yt_ogichannel |
+| 2026-05-25 | 久保優太ちゃんねる | ev_cho5 | 0件 | https://www.youtube.com/watch?v=9ZH7eskOAwA | m_yt_69bc9bd4 |
+| 2026-09-03 | 伊澤星花SEIKA IZAWAと時々COROさん | ev_cho5 | 2件 | https://www.youtube.com/watch?v=ELIx2eca_70 | m_yt_seikaizawacoro |
+| 2026-08-28 | 秋元強真　Kyoma Akimoto | ev_cho5 | 7件 | https://www.youtube.com/watch?v=lYMzJ4flPSo | m_yt_kyomaakimoto |
+| 2026-09-05 | ストラッサー起一 [ストチャンネル] | ev_cho5 | 8件 | https://www.youtube.com/watch?v=rKUFr3XHaDY | m_yt_b91a384d |
+| 2026-09-05 | Kyoji Horiguchi | ev_cho5 | 1件 | https://www.youtube.com/watch?v=t6u5j3cksC8 | m_yt_kyojihoriguchi |
+| 2026-09-05 | Kleber Koikeクレベル コイケ | ev_cho5 | 6件 | https://www.youtube.com/watch?v=8ENV_sGaILc | m_yt_kleberkoike |
+| 2026-08-28 | 矢地祐介 | ev_cho5 | 4件 | https://www.youtube.com/watch?v=35e2dDzU1YY | m_yt_yusukeyachi |
+| 2026-08-28 | 秋元強真 | ev_cho5 | 6件 | https://www.youtube.com/watch?v=lYMzJ4flPSo | m_yt_kyomaakimoto |
+| 2026-09-03 | 伊澤星花SEIKA IZAWAと時々COROさん | ev_cho5 | 2件 | https://www.youtube.com/watch?v=ELIx2eca_70 | m_yt_seikaizawacoro |
+| 2026-09-05 | 扇久保博正 おぎちゃんねる。Ogichannel | ev_cho5 | 2件 | https://www.youtube.com/watch?v=3E4p-wQ__sc | m_yt_ogichannel |
+| 2026-09-05 | ストラッサー起一 [ストチャンネル]（予想の組み直し） | ev_cho5 | 8件 | https://www.youtube.com/watch?v=rKUFr3XHaDY | m_yt_b91a384d |
+| 2026-09-05 | 堀口恭司 Kyoji Horiguchi | ev_cho5 | 1件 | https://www.youtube.com/watch?v=t6u5j3cksC8 | m_yt_kyojihoriguchi |
+| 2026-09-05 | Kleber Koikeクレベル コイケ | ev_cho5 | 2件 | https://www.youtube.com/watch?v=8ENV_sGaILc | m_yt_kleber |
+
+> ※2026-09-05 直前ラッシュの取り込み。新規メンバー＝矢地祐介・堀口恭司・クレベル・コイケ（いずれも選手本人）。
+> - **ストラッサー起一は9/5に予想を組み直した**が、結論は7/22と全て同じだった（cho5_07・cho5_09が追加されただけ）。
+>   抽出の安定性を示す良い例
+> - 久保優太の動画(9ZH7eskOAwA)は**2026-05-25＝カード発表前**のため除外
+> - 堀口恭司の「腕十字」は辞書に無いと弾かれたので `armbar` へ手当て
+>
+> ★**クレベルの動画は1人ではなく「磯部さん」との2人対談だった**（2026-09-05に発見）。
+> 自動抽出は2人の発言を全部クレベル名義で6件拾っていたが、実物は
+> 「クレベルさん。AJマッキーが3ラウンド判定」「**磯部さんは**AJマッキー3ラウンド1本」と役割が分かれている。
+> **明示的にクレベルへ帰属できた2件だけ採用**（cho5_08 マッキー判定／cho5_07 朝倉未来2R）。
+> 残り4件（cho5_03/04/05/09）は誰の発言か切り分けられず不採用。
+> → チャンネル名＝個人名でも、**中身が対談なら必ず疑う**。
