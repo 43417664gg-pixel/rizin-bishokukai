@@ -265,3 +265,21 @@ BRAVE GYM ヘラクレスチャンネル(2)／骨法・格闘技Ch(1)／ぽん�
 > **明示的にクレベルへ帰属できた2件だけ採用**（cho5_08 マッキー判定／cho5_07 朝倉未来2R）。
 > 残り4件（cho5_03/04/05/09）は誰の発言か切り分けられず不採用。
 > → チャンネル名＝個人名でも、**中身が対談なら必ず疑う**。
+| 2026-08-27 | 石渡伸太郎 Shintaro Ishiwatari | ev_cho5 | 1件 | https://www.youtube.com/watch?v=2RHF_pQLOeU | m_yt_shintaroishiwatari |
+| 2026-08-28 | MMA言語化挑戦中 Voyage GI | ev_cho5 | 1件 | https://www.youtube.com/watch?v=GrG9AQkLdHM | m_yt_mmavoyagegi |
+| 2026-09-06 | 石渡伸太郎 Shintaro Ishiwatari | ev_cho5 | 7件 | https://www.youtube.com/watch?v=PA0ipzh1rOI | m_yt_shintaroishiwatari |
+| 2026-09-02 | MMA言語化挑戦中 Voyage GI | ev_cho5 | 0件 | https://www.youtube.com/watch?v=We4PaaJgoWs | m_yt_mmavoyagegi |
+| 2026-09-02 | 伊澤星花SEIKA IZAWAと時々COROさん | ev_cho5 | 4件 | https://www.youtube.com/watch?v=iJGAn8p6nD8 | m_yt_seikaizawacoro |
+| 2026-09-05 | リオン武 | ev_cho5 | 1件 | https://www.youtube.com/watch?v=xtqSGcMrOHE | m_yt_ebbadc8c |
+| 2026-08-27 | 石渡伸太郎 Shintaro Ishiwatari | ev_cho5 | 1件 | https://www.youtube.com/watch?v=2RHF_pQLOeU | m_yt_shintaroishiwatari |
+| 2026-08-28 | MMA言語化挑戦中 Voyage GI | ev_cho5 | 1件 | https://www.youtube.com/watch?v=GrG9AQkLdHM | m_yt_mmavoyagegi |
+| 2026-09-02 | 伊澤星花SEIKA IZAWAと時々COROさん（Part1） | ev_cho5 | 4件 | https://www.youtube.com/watch?v=iJGAn8p6nD8 | m_yt_seikaizawacoro |
+| 2026-09-05 | リオン武 | ev_cho5 | 1件 | https://www.youtube.com/watch?v=xtqSGcMrOHE | m_yt_rionn_takeshi |
+| 2026-09-06 | 石渡伸太郎 超RIZIN.5直前SP（全カード） | ev_cho5 | 7件 | https://www.youtube.com/watch?v=PA0ipzh1rOI | m_yt_shintaroishiwatari |
+
+> ※2026-09-06 の直前ラッシュ第2弾。新規メンバー＝リオン武（元RIZIN選手）。
+> - **石渡伸太郎は8/27（メインのみ）と9/6（直前SP・全カード）の2本**。新しい9/6を優先したが、
+>   重複した試合は**すべて同じ結論**だった（cho5_08 シェイドゥラエフ）
+> - 既存との食い違いは**0件**
+> - 手順の事故：URLを `printf` で並べたら zsh が `?` をワイルドカードと解釈して失敗した。
+>   **URLリストは必ずヒアドキュメント（クォート）で書く**
