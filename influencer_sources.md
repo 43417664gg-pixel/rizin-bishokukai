@@ -358,7 +358,7 @@ BRAVE GYM ヘラクレスチャンネル(2)／骨法・格闘技Ch(1)／ぽん�
 | 2026-09-07 | MMA言語化挑戦中 Voyage GI | ev_cho5 | 4件 | https://www.youtube.com/watch?v=FFa16YBGiJ4 | m_yt_mmavoyagegi |
 | 2026-05-20 | ストラッサー起一 [ストチャンネル] | ev_cho5 | 0件 | https://www.youtube.com/watch?v=vubx3fX5CHg | m_yt_b91a384d |
 | 2026-09-07 | MMA言語化挑戦中 Voyage GI（Part 2・全試合） | ev_cho5 | 4件 | https://www.youtube.com/watch?v=FFa16YBGiJ4 | m_yt_mmavoyagegi |
-| 2026-09-06 | 中村拓己チャンネル【大沢ケンジ】超RIZIN.5を徹底分析 | ev_cho5 | 3件 | https://www.youtube.com/watch?v=WphPF0nIk5M | m_yt_osawa_kenji / m_yt_nakamura_takumi |
+| 2026-09-06 | 中村拓己チャンネル【大沢ケンジ】超RIZIN.5を徹底分析 | ev_cho5 | 2件 | https://www.youtube.com/watch?v=WphPF0nIk5M | m_yt_osawa_kenji |
 
 > ★**取りこぼし4本を発見（2026-09-09・大会前日）**。原因は取り込みが
 > 「キーワード検索で動画を探す」やり方だったこと。**登録済みチャンネルの新作を構造的に取りこぼす**。
@@ -370,4 +370,5 @@ BRAVE GYM ヘラクレスチャンネル(2)／骨法・格闘技Ch(1)／ぽん�
 >   **直前に予想を変える人がいる＝既存値との差分確認は必須**
 > - 大沢ケンジ（新規）：cho5_06 平本蓮／cho5_05 斎藤裕。**メインと朝倉vs青木は断定しておらず不採用**
 >   （朝倉vs青木は「5年前の青木なら絶対勝ってた。でも年齢もあるし…どうなのかな」で終わっている）
-> - 中村拓己（新規・格闘技解説/ライター）：cho5_06 平本蓮（「僕も平本君です」）
+> - ~~中村拓己（新規・格闘技解説/ライター）~~ → **Gaku判断で不採用・削除（2026-09-09）**。
+>   チャンネル主（聞き手）であって予想者としては載せない。**同じ動画のゲスト＝大沢ケンジは採用**
