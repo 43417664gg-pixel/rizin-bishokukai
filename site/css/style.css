@@ -906,13 +906,15 @@ tr.top .lb-rate { color: var(--gold-hot); }
 .tz-foot { margin-top:9px; font-size:11px; color:#c9a84a; font-weight:700; }
 
 /* ALL PICKS を折りたたみに（2026-08-31）：スマホで横スクロールの表が最初に来るのを防ぐ */
-.mx-details { margin:22px 0 8px; border:1px solid #26262c; border-radius:10px; background:#101014; }
-.mx-summary { cursor:pointer; padding:13px 14px; font-weight:900; font-size:14px; color:#c9a84a;
-  list-style:none; display:flex; align-items:center; gap:10px; }
+.mx-details { margin:14px 0 18px; border:1px solid #3a3320; border-radius:10px; background:#101014; }
+.mx-summary { cursor:pointer; padding:15px 16px; font-weight:900; font-size:15px; color:#0d0d0f;
+  list-style:none; display:flex; align-items:center; gap:10px;
+  background:linear-gradient(90deg,#c9a84a,#e0c877); border-radius:8px; }
+.mx-summary:hover { filter:brightness(1.06); }
 .mx-summary::-webkit-details-marker { display:none; }
-.mx-summary::before { content:"▶"; font-size:10px; color:#8a8a92; transition:transform .15s; }
+.mx-summary::before { content:"▶"; font-size:11px; color:#0d0d0f; transition:transform .15s; }
 .mx-details[open] .mx-summary::before { transform:rotate(90deg); }
-.mx-count { margin-left:auto; font-size:11px; color:#8a8a92; font-weight:700; }
+.mx-count { margin-left:auto; font-size:12px; color:#3a2f10; font-weight:900; }
 .mx-details #matrix-section { padding:0 8px 10px; }
 
 /* 復帰口（2026-09-09）：端末を変えると身元が消える設計なので、
