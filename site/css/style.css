@@ -914,3 +914,11 @@ tr.top .lb-rate { color: var(--gold-hot); }
 .mx-details[open] .mx-summary::before { transform:rotate(90deg); }
 .mx-count { margin-left:auto; font-size:11px; color:#8a8a92; font-weight:700; }
 .mx-details #matrix-section { padding:0 8px 10px; }
+
+/* 復帰口（2026-09-09）：端末を変えると身元が消える設計なので、
+   『前に参加した人』を折りたたまず最初に見える位置へ出す。
+   丸山さんがログインできなかった実例への対処。 */
+.back-box { max-width:460px; margin:0 auto 20px; padding:14px 16px 12px;
+  background:#12121a; border:1px solid #2f2f3a; border-left:4px solid #c9a84a; border-radius:12px; }
+.back-ttl { font-weight:900; font-size:14px; color:#c9a84a; margin-bottom:10px; }
+.back-note { font-size:11px; color:#8a8a92; margin:10px 0 0; line-height:1.5; }
