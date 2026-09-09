@@ -332,3 +332,13 @@ BRAVE GYM ヘラクレスチャンネル(2)／骨法・格闘技Ch(1)／ぽん�
 
 **試合順が公式で変更**（冨澤vsドンマイ川端の中止による繰り上がり）。demo-data.js の order_no を合わせた：
 サトシvs野村 第4→**第5**／斎藤vsYA-MAN 第5→**第4**／RENAvsクジュティナ 第1→**第2**／ベイノア戦 →**第1**
+| 2026-09-06 | Kanehara Masanori no kinchanTV | ev_cho5 | 2件 | https://www.youtube.com/watch?v=fGZFIgBSJ3g | m_yt_kaneharamasanorinoki |
+| 2026-09-08 | Shoei | ev_cho5 | 8件 | https://www.youtube.com/watch?v=foeYhFpqJeg | m_yt_shoei |
+| 2026-09-07 | ジョビンチャンネル | ev_cho5 | 8件 | https://www.youtube.com/watch?v=hCTW74wVyYQ | m_yt_922c02ef |
+| 2026-09-06 | 金原正徳の金ちゃんTV | ev_cho5 | 2件 | https://www.youtube.com/watch?v=fGZFIgBSJ3g | m_yt_kaneharamasanorinoki |
+| 2026-09-07 | ジョビンチャンネル（全カード予想） | ev_cho5 | 8件 | https://www.youtube.com/watch?v=hCTW74wVyYQ | m_yt_922c02ef |
+| 2026-09-08 | ショウエイ Shoei（全カード予想） | ev_cho5 | 8件 | https://www.youtube.com/watch?v=foeYhFpqJeg | m_yt_shoei |
+
+> ※大会前日（09-09）の最終取り込み。新規メンバー＝ショウエイ（選手本人）。
+> ジョビンが9/7に全カードを出しており、それまでの部分的な予想と**食い違いゼロ**で埋まった。
+> 既存との変更は全体で0件。
