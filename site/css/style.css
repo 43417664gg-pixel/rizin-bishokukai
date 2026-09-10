@@ -938,6 +938,9 @@ tr.top .lb-rate { color: var(--gold-hot); }
 #apology-modal .ap-ttl { font-weight:900; font-size:16px; color:#c9a84a; line-height:1.45; margin:2px 30px 12px 0; }
 #apology-modal .ap-body { font-size:13.5px; line-height:1.85; color:#ddd; }
 #apology-modal .ap-body b { color:#fff; }
-#apology-modal .ap-ok { width:100%; box-sizing:border-box; margin-top:18px; padding:12px; border:none; border-radius:8px;
+#apology-modal .ap-never { display:flex; align-items:center; gap:9px; margin-top:18px;
+  font-size:12.5px; color:#9a9aa2; cursor:pointer; user-select:none; }
+#apology-modal .ap-never input { width:17px; height:17px; accent-color:#c9a84a; cursor:pointer; flex:none; }
+#apology-modal .ap-ok { width:100%; box-sizing:border-box; margin-top:12px; padding:12px; border:none; border-radius:8px;
   background:#2a2a33; color:#eee; font-size:14px; font-weight:700; cursor:pointer; }
 #apology-modal .ap-ok:hover { background:#35353f; }

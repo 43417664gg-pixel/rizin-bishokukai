@@ -305,40 +305,23 @@
   // システム不具合で予想の登録・変更ができない時間帯が生じたため、
   // 該当メンバーに一度だけお詫びを表示する。✕で閉じられ、閉じたら二度と出ない。
   const NOTICE_ID = "cho5_apology_2026_09_10";
-  const NOTICES = {
-    m_maruyama: {
-      title: "予想を入れられず、本当に申し訳ありませんでした",
-      body: "超RIZIN.5の予想受付で、こちらのシステム不具合により" +
-            "<b>丸山探偵事務所さんだけ最後まで登録できない状態</b>が続いてしまいました。" +
-            "原因はサイト側の設定ミスで、丸山さんの操作には何の問題もありません。" +
-            "楽しみにしていただいていたのに、参加の機会そのものを奪ってしまいました。" +
-            "心からお詫びいたします。<br><br>" +
-            "これまでの予想（9件）はすべて残っています。" +
-            "端末をまたいでも引き継げる仕組みに作り直しますので、次の大会からは必ず入れる状態にしてお迎えします。"
-    },
-    m_hame: {
-      title: "予想の変更ができずご迷惑をおかけしました",
-      body: "超RIZIN.5の受付期間中、こちらのシステム不具合により" +
-            "<b>予想の登録・変更ができない時間帯</b>が発生しました。" +
-            "原因はサイト側の設定ミスです。ご迷惑をおかけして申し訳ありませんでした。<br><br>" +
-            "入力済みの予想は失われていません。同じことが起きないよう作り直します。"
-    },
-    m_nuki: {
-      title: "予想の変更ができずご迷惑をおかけしました",
-      body: "超RIZIN.5の受付期間中、こちらのシステム不具合により" +
-            "<b>予想の登録・変更ができない時間帯</b>が発生しました。" +
-            "原因はサイト側の設定ミスです。ご迷惑をおかけして申し訳ありませんでした。<br><br>" +
-            "入力済みの予想は失われていません。同じことが起きないよう作り直します。"
-    },
+  const NOTICE_TARGETS = ["m_maruyama", "m_hame", "m_nuki"];   // 美食会メンバー3人
+  const NOTICE = {
+    title: "予想の登録・変更ができず、申し訳ありませんでした",
+    body: "超RIZIN.5の予想受付期間中、こちらのシステム不具合により" +
+          "<b>予想の登録や変更ができない状態</b>が発生しました。" +
+          "原因はすべてサイト側の設定ミスで、みなさんの操作には何の問題もありません。" +
+          "楽しみにしていただいていたのに、参加の機会を損なってしまい心からお詫びいたします。<br><br>" +
+          "これまでに入力いただいた予想は、すべてそのまま残っています。" +
+          "端末をまたいでも引き継げる仕組みに作り直しますので、" +
+          "次の大会からは確実に入れる状態にしてお迎えします。"
   };
   window.showNoticeIfAny = function () {
     try {
       const mid = getMemberId();
-      if (!mid) return;
-      const n = NOTICES[mid];
-      if (!n) return;
+      if (!mid || NOTICE_TARGETS.indexOf(mid) < 0) return;
       const key = NOTICE_ID + ":" + mid;
-      if (localStorage.getItem(key)) return;          // 一度閉じたら出さない
+      if (localStorage.getItem(key)) return;          // 「今後表示しない」を選んだ人には出さない
       if (document.getElementById("apology-modal")) return;
       const w = document.createElement("div");
       w.id = "apology-modal";
@@ -346,12 +329,19 @@
         '<div class="ap-back"></div>' +
         '<div class="ap-box" role="dialog" aria-modal="true">' +
           '<button class="ap-x" aria-label="閉じる">✕</button>' +
-          '<div class="ap-ttl">' + n.title + '</div>' +
-          '<div class="ap-body">' + n.body + '</div>' +
+          '<div class="ap-ttl">' + NOTICE.title + '</div>' +
+          '<div class="ap-body">' + NOTICE.body + '</div>' +
+          '<label class="ap-never"><input type="checkbox" id="ap-never-cb">今後このお知らせを表示しない</label>' +
           '<button class="ap-ok">閉じる</button>' +
         '</div>';
       document.body.appendChild(w);
-      const close = () => { try { localStorage.setItem(key, "1"); } catch (e) {} w.remove(); };
+      const close = () => {
+        try {
+          const cb = document.getElementById("ap-never-cb");
+          if (cb && cb.checked) localStorage.setItem(key, "1");   // 選んだ時だけ二度と出さない
+        } catch (e) {}
+        w.remove();
+      };
       w.querySelector(".ap-x").onclick = close;
       w.querySelector(".ap-ok").onclick = close;
       w.querySelector(".ap-back").onclick = close;
