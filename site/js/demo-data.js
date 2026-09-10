@@ -2067,7 +2067,7 @@ window.DEMO_SEED = {
       event_date: "2026-09-10",
       poster_url: "assets/cho5/poster.jpg",
       no_deadline: false,
-      lock_at: "2026-09-10T15:00:00+09:00",  // ★例外（2026-09-10）：丸山探偵事務所が私のRLS不具合で
+      lock_at: "2026-09-10T16:00:00+09:00",  // ★例外（2026-09-10）：丸山探偵事務所が私のRLS不具合で
       // 締切前に登録できなかったため、Gaku判断で当日15:00（開始1時間前）まで延長。自動で閉じる。
       official_url: "https://jp.rizinff.com/_ct/17834937",
       status: "upcoming",
