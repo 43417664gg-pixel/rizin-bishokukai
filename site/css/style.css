@@ -926,17 +926,18 @@ tr.top .lb-rate { color: var(--gold-hot); }
 .back-note { font-size:11px; color:#8a8a92; margin:10px 0 0; line-height:1.5; }
 
 /* お詫びのお知らせ（2026-09-10） */
-#apology-modal { position:fixed; inset:0; z-index:10000; display:flex; align-items:center; justify-content:center; padding:18px; }
+#apology-modal { position:fixed; inset:0; z-index:10000; display:flex; align-items:center; justify-content:center; padding:16px; box-sizing:border-box; }
 #apology-modal .ap-back { position:absolute; inset:0; background:rgba(0,0,0,.72); }
-#apology-modal .ap-box { position:relative; max-width:420px; width:100%; background:#14141a;
-  border:1px solid #3a3320; border-top:4px solid #c9a84a; border-radius:14px; padding:22px 20px 18px;
-  box-shadow:0 18px 50px rgba(0,0,0,.6); }
+#apology-modal .ap-box { position:relative; max-width:420px; width:100%; box-sizing:border-box; background:#14141a;
+  border:1px solid #3a3320; border-top:4px solid #c9a84a; border-radius:14px; padding:22px 18px 18px;
+  box-shadow:0 18px 50px rgba(0,0,0,.6); max-height:82vh; overflow-y:auto;
+  overflow-wrap:anywhere; }
 #apology-modal .ap-x { position:absolute; top:8px; right:10px; background:none; border:none;
   color:#8a8a92; font-size:19px; cursor:pointer; line-height:1; padding:6px; }
 #apology-modal .ap-x:hover { color:#eee; }
 #apology-modal .ap-ttl { font-weight:900; font-size:16px; color:#c9a84a; line-height:1.45; margin:2px 30px 12px 0; }
 #apology-modal .ap-body { font-size:13.5px; line-height:1.85; color:#ddd; }
 #apology-modal .ap-body b { color:#fff; }
-#apology-modal .ap-ok { width:100%; margin-top:18px; padding:12px; border:none; border-radius:8px;
+#apology-modal .ap-ok { width:100%; box-sizing:border-box; margin-top:18px; padding:12px; border:none; border-radius:8px;
   background:#2a2a33; color:#eee; font-size:14px; font-weight:700; cursor:pointer; }
 #apology-modal .ap-ok:hover { background:#35353f; }
