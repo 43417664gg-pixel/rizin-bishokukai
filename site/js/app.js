@@ -84,11 +84,21 @@
         if (s.pitari) row.pitari += 1;
       }
       row.rate = row.decided ? row.hits / row.decided : null;
+      // ポイント制（Gaku確定・2026-09-11）：的中1点／ピタリはさらに+2点＝合計3点。
+      // 的中率だけで並べると「2試合で2的中＝100%」が「8試合で6的中＝75%」より上に来てしまい、
+      // 予想数の少ない人が上位に居座る（小標本バイアス）。予想した数だけ得点機会がある形にして解消する。
+      row.points = row.hits + row.pitari * 2;
       return row;
     });
-    rows.sort((a, b) => (b.rate ?? -1) - (a.rate ?? -1) || b.pitari - a.pitari || b.decided - a.decided);
+    rows.sort((a, b) =>
+      b.points - a.points ||
+      b.pitari - a.pitari ||
+      (b.rate ?? -1) - (a.rate ?? -1) ||
+      b.decided - a.decided);
     return rows;
   };
+  // 的中率を「参考値」として小さく扱う基準。確定した予想がこれ未満なら母数が薄い。
+  window.RATE_MIN = 4;
 
   // ---------- 称号ラダー（的中率でティアが上がる。MMA/pick'em業界の定石） ----------
   // 結果が出た予想が一定数（MIN）溜まって初めて称号がつく。それまではルーキー。

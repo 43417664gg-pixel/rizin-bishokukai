@@ -944,3 +944,8 @@ tr.top .lb-rate { color: var(--gold-hot); }
 #apology-modal .ap-ok { width:100%; box-sizing:border-box; margin-top:12px; padding:12px; border:none; border-radius:8px;
   background:#2a2a33; color:#eee; font-size:14px; font-weight:700; cursor:pointer; }
 #apology-modal .ap-ok:hover { background:#35353f; }
+
+/* ポイント制ランキング（2026-09-11） */
+.lb-pt { font-family:Oswald,sans-serif; font-size:26px; font-weight:700; color:#c9a84a; line-height:1; }
+.lb-table .lb-rate.thin { color:#6a6a72 !important; font-size:17px !important; }
+@media (max-width:480px){ .lb-pt { font-size:22px; } }

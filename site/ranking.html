@@ -7,18 +7,18 @@
 <title>ランキング｜RIZIN美食会予想</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260910231409">
+<link rel="stylesheet" href="css/style.css?v=20260911001620">
 </head>
 <body>
 <div id="app-header"></div>
 <div class="wrap" id="main"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/config.js?v=20260910231409"></script>
-<script src="js/techniques.js?v=20260910231409"></script>
-<script src="js/demo-data.js?v=20260910231409"></script>
-<script src="js/api.js?v=20260910231409"></script>
-<script src="js/app.js?v=20260910231409"></script>
+<script src="js/config.js?v=20260911001620"></script>
+<script src="js/techniques.js?v=20260911001620"></script>
+<script src="js/demo-data.js?v=20260911001620"></script>
+<script src="js/api.js?v=20260911001620"></script>
+<script src="js/app.js?v=20260911001620"></script>
 <script>
 let EVENTS, MEMBERS, ALL_FIGHTS, ALL_PREDS, FMAP = {};
 let checked = new Set();   // 集計対象の大会ID
@@ -67,7 +67,7 @@ function render() {
   document.getElementById("main").innerHTML = `
     <div class="en-label">RANKING</div>
     <h1 class="page-title">ランキング</h1>
-    <p class="page-sub">的中率で称号を上げろ。ルーキーから絶対王者まで。</p>
+    <p class="page-sub">ポイントで競う。当てるほど、読み切るほど積み上がる。</p>
     <!-- スクショ単体で意味が通るよう、集計対象の大会をここに出す（2026-08-31の監査より） -->
     <p class="rk-scope">集計対象：${
       checked.size === EVENTS.length ? "全大会（通算）"
@@ -75,15 +75,15 @@ function render() {
     }　<span class="share-url">${esc(window.SITE_URL)}</span></p>
 
     <table class="lb-table">
-      <tr><th></th><th>名前</th><th>称号</th><th>的中率</th><th>ピタリ</th></tr>
+      <tr><th></th><th>名前</th><th>ポイント</th><th>的中率</th><th>ピタリ</th></tr>
       ${rows.map((r, i) => { const t = tierOf(r); return `
         <tr class="${i === 0 && r.rate !== null ? "top" : ""}">
           <td class="lb-rank">${r.rate === null ? "—" : i + 1}</td>
           <td><div class="lb-name">${esc(r.member.name)}</div>
               <div class="lb-sub">予想 ${r.answered}試合</div></td>
-          <td><span style="font-weight:900;color:${t.color};white-space:nowrap;font-size:13px">${t.icon} ${t.name}</span></td>
-          <td><span class="lb-rate">${fmtRate(r.rate)}</span>
-              <div class="lb-sub">${r.hits}/${r.decided}</div></td>
+          <td><span class="lb-pt">${r.points}</span><div class="lb-sub">点</div></td>
+          <td><span class="lb-rate${r.decided < window.RATE_MIN ? " thin" : ""}">${fmtRate(r.rate)}</span>
+              <div class="lb-sub">${r.hits}/${r.decided}${r.decided && r.decided < window.RATE_MIN ? "・参考" : ""}</div></td>
           <td class="lb-num">${r.pitari
             ? `<span class="pit-cell" tabindex="0" onclick="this.classList.toggle('open')">
                  <span class="pit-btn">${r.pitari}</span>
@@ -118,7 +118,9 @@ function render() {
         (checked.size === 1 ? EVENTS.filter(e=>checked.has(e.id))[0].name + "の" : "") +
         "的中率ランキング" + (rows[0] && rows[0].rate !== null ? `　1位 ${rows[0].member.name}（${Math.round(rows[0].rate*100)}%）` : "") +
         " #RIZIN美食会予想", location.href, "ランキングをポスト")}</div>
-      <b>的中</b>＝勝者を当てる（ランキングの本体）。<b>ピタリ</b>＝決まり手＋ラウンドまで一致（判定は「判定」を当てればピタリ）。<br>
+      <b>ポイント</b>＝ランキングの本体。<b>的中</b>（勝者を当てる）で<b>1点</b>、
+      <b>ピタリ</b>（決まり手＋ラウンドまで一致・判定は「判定」を当てればピタリ）ならさらに<b>+2点＝合計3点</b>。<br>
+      予想した試合が多いほど得点の機会がある。的中率は参考値で、確定4試合未満は薄く表示。<br>
       勝者を外したらその先は不成立。予想しなかった試合はノーカウント。ドロー・無効試合は除外。</p>`;
 }
 
