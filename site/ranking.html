@@ -7,18 +7,18 @@
 <title>ランキング｜RIZIN美食会予想</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260911001620">
+<link rel="stylesheet" href="css/style.css?v=20260911090136">
 </head>
 <body>
 <div id="app-header"></div>
 <div class="wrap" id="main"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/config.js?v=20260911001620"></script>
-<script src="js/techniques.js?v=20260911001620"></script>
-<script src="js/demo-data.js?v=20260911001620"></script>
-<script src="js/api.js?v=20260911001620"></script>
-<script src="js/app.js?v=20260911001620"></script>
+<script src="js/config.js?v=20260911090136"></script>
+<script src="js/techniques.js?v=20260911090136"></script>
+<script src="js/demo-data.js?v=20260911090136"></script>
+<script src="js/api.js?v=20260911090136"></script>
+<script src="js/app.js?v=20260911090136"></script>
 <script>
 let EVENTS, MEMBERS, ALL_FIGHTS, ALL_PREDS, FMAP = {};
 let checked = new Set();   // 集計対象の大会ID
@@ -50,7 +50,10 @@ function render() {
   // 大会が1つだけ選ばれていれば「その大会の的中率」＝event、複数なら通算＝career。
   // event_only（キック等）は career では数えない（Gaku確定・2026-08-21）。
   const scope = checked.size === 1 ? "event" : "career";
-  const rows = computeLeaderboard(MEMBERS, fights, preds, { scope });
+  const allRows = computeLeaderboard(MEMBERS, fights, preds, { scope });
+  // 通算は確定8試合以上でランクイン。未満は下に「ランク外」として出す（除外はしない）。
+  const rows = allRows.filter(r => window.isRanked(r, scope));
+  const unranked = allRows.filter(r => !window.isRanked(r, scope) && r.answered > 0);
   // ピタリの内訳（どの試合で・誰を・何で当てたか）をメンバー別に用意
   const fById = Object.fromEntries(fights.map(f => [f.id, f]));
   window.PITARI = {};
@@ -114,6 +117,12 @@ function render() {
         </div>`).join("")}
     </div>
     <p class="ladder-note">※ 結果の出た予想が <b>${window.TIER_MIN_DECIDED}試合</b> 溜まると称号がつく。<br>
+      ${unranked.length ? `
+      <div class="rk-unranked">
+        <div class="rk-un-ttl">ランク外（通算${window.CAREER_MIN}試合からランクイン）</div>
+        ${unranked.map(r => `<div class="rk-un-row"><span>${esc(r.member.name)}</span>
+          <span class="rk-un-n">${r.points}点・確定${r.decided}試合<b>（あと${window.CAREER_MIN - r.decided}）</b></span></div>`).join("")}
+      </div>` : ""}
       <div class="rk-share">${window.shareButton(
         (checked.size === 1 ? EVENTS.filter(e=>checked.has(e.id))[0].name + "の" : "") +
         "的中率ランキング" + (rows[0] && rows[0].rate !== null ? `　1位 ${rows[0].member.name}（${Math.round(rows[0].rate*100)}%）` : "") +
@@ -121,6 +130,7 @@ function render() {
       <b>ポイント</b>＝ランキングの本体。<b>的中</b>（勝者を当てる）で<b>1点</b>、
       <b>ピタリ</b>（決まり手＋ラウンドまで一致・判定は「判定」を当てればピタリ）ならさらに<b>+2点＝合計3点</b>。<br>
       予想した試合が多いほど得点の機会がある。的中率は参考値で、確定4試合未満は薄く表示。<br>
+      <b>通算ランキングは確定8試合から</b>。1大会だけの参加者は「ランク外」に表示される。<br>
       勝者を外したらその先は不成立。予想しなかった試合はノーカウント。ドロー・無効試合は除外。</p>`;
 }
 

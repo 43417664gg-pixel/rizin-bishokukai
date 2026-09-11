@@ -99,6 +99,12 @@
   };
   // 的中率を「参考値」として小さく扱う基準。確定した予想がこれ未満なら母数が薄い。
   window.RATE_MIN = 4;
+  // 通算ランキングにランクインする最低確定数（Gaku確定・2026-09-11）。
+  // 1大会だけ少数当てた人が通算上位に居座るのを防ぐ。単一大会の表示では適用しない。
+  window.CAREER_MIN = 8;
+  window.isRanked = function (row, scope) {
+    return scope !== "career" || row.decided >= window.CAREER_MIN;
+  };
 
   // ---------- 称号ラダー（的中率でティアが上がる。MMA/pick'em業界の定石） ----------
   // 結果が出た予想が一定数（MIN）溜まって初めて称号がつく。それまではルーキー。

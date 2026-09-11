@@ -949,3 +949,11 @@ tr.top .lb-rate { color: var(--gold-hot); }
 .lb-pt { font-family:Oswald,sans-serif; font-size:26px; font-weight:700; color:#c9a84a; line-height:1; }
 .lb-table .lb-rate.thin { color:#6a6a72 !important; font-size:17px !important; }
 @media (max-width:480px){ .lb-pt { font-size:22px; } }
+
+/* ランク外（通算8試合未満） */
+.rk-unranked { margin:16px 0 4px; padding:12px 14px; background:#101014; border:1px solid #26262c; border-radius:10px; }
+.rk-un-ttl { font-size:12px; color:#8a8a92; font-weight:700; margin-bottom:8px; }
+.rk-un-row { display:flex; justify-content:space-between; gap:10px; padding:5px 0; font-size:13px; color:#b9b9c2; border-bottom:1px solid #1a1a20; }
+.rk-un-row:last-child { border-bottom:none; }
+.rk-un-n { color:#6a6a72; font-size:11.5px; white-space:nowrap; }
+.rk-un-n b { color:#c9a84a; font-weight:700; }
