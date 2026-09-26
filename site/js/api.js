@@ -409,6 +409,28 @@
     if (document.body) put(); else document.addEventListener("DOMContentLoaded", put);
   }
 
+  // サーバーが落ちている時、fetchは「失敗」ではなく「いつまでも返らない」ことがある
+  // （2026-09-26：Supabaseの無料枠停止でDNSごと消え、listEvents()が45秒経っても解決せず
+  //   画面が真っ白のままだった）。拒否を待つ設計では退避モードに入れない。必ず時間で切る。
+  const READ_TIMEOUT_MS = 6000;
+  const WRITE_TIMEOUT_MS = 12000;
+  function withTimeout(p, ms, label) {
+    return new Promise((resolve, reject) => {
+      const t = setTimeout(() => reject(new Error(label + "がタイムアウトしました（" + ms + "ms）")), ms);
+      Promise.resolve(p).then(
+        (v) => { clearTimeout(t); resolve(v); },
+        (e) => { clearTimeout(t); reject(e); }
+      );
+    });
+  }
+  function goOffline(e) {
+    if (window.DB_OFFLINE) return;
+    window.DB_OFFLINE = true;
+    window.DB_OFFLINE_REASON = String((e && e.message) || e);
+    installOfflineBanner();
+    console.warn("[api] Supabaseに到達できないため退避モードで表示します:", e);
+  }
+
   if (IS_DEMO) {
     window.DB = demoDB;
   } else {
@@ -417,22 +439,30 @@
     // 読み取りは「Supabaseを試し、落ちたらシードで返す」。起動直後に叩かれても競合しない。
     const READS = ["listMembers", "listFighters", "listEvents", "getEvent", "listFights",
                    "listPredictions", "listSupports"];
+    const WRITES = ["upsertPrediction", "deletePrediction", "upsertMember", "claimMember",
+                    "upsertSupport", "deleteSupport", "upsertFighter", "upsertFight", "upsertEvent"];
     const db = Object.create(supa);
     for (const name of READS) {
       if (typeof supa[name] !== "function") continue;
       db[name] = async function (...args) {
+        // 一度落ちたと分かったら、以降は待たずにシードで返す（1画面で何本も叩くため）
+        if (window.DB_OFFLINE && typeof fb[name] === "function") return fb[name].apply(fb, args);
         try {
-          return await supa[name].apply(supa, args);
+          return await withTimeout(supa[name].apply(supa, args), READ_TIMEOUT_MS, name);
         } catch (e) {
-          if (!window.DB_OFFLINE) {
-            window.DB_OFFLINE = true;
-            window.DB_OFFLINE_REASON = String((e && e.message) || e);
-            installOfflineBanner();
-            console.warn("[api] Supabaseに到達できないため退避モードで表示します:", e);
-          }
+          goOffline(e);
           if (typeof fb[name] !== "function") throw e;
           return await fb[name].apply(fb, args);
         }
+      };
+    }
+    for (const name of WRITES) {
+      if (typeof supa[name] !== "function") continue;
+      db[name] = async function (...args) {
+        if (window.DB_OFFLINE) throw new Error("いまサーバーに接続できないため、予想の登録・変更はできません");
+        try {
+          return await withTimeout(supa[name].apply(supa, args), WRITE_TIMEOUT_MS, name);
+        } catch (e) { goOffline(e); throw e; }
       };
     }
     window.DB = db;
