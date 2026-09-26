@@ -1,0 +1,55 @@
+# Supabaseの無料枠は「しばらくアクセスが無い」と勝手に一時停止し、
+# ホスト名がDNSごと消える（2026-08-31／2026-09-26に発生。予想もランキングも出なくなる）。
+# 毎日1回だけ読み取りを投げて、止められないようにする。
+#
+# 設計の要点：
+#  - 接続先とキーは site/js/config.js から読む（正本を二重に持たない）。
+#    使うのは publishable key で、もともとブラウザに配っている公開キー。秘密情報は置かない。
+#  - 落ちていたら**わざと失敗させる**。GitHubがスケジュール失敗をオーナーにメールするので、
+#    仲間から「サイト死んでる」と言われる前にこちらが気づける。
+name: Supabase keepalive
+
+on:
+  schedule:
+    - cron: "17 21 * * *"   # 毎日 06:17 JST（UTC 21:17）
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 接続先を config.js から読む
+        id: cfg
+        run: |
+          URL=$(grep -o 'SUPABASE_URL: *"[^"]*"' site/js/config.js | sed 's/.*"\(.*\)"/\1/')
+          KEY=$(grep -o 'SUPABASE_ANON_KEY: *"[^"]*"' site/js/config.js | sed 's/.*"\(.*\)"/\1/')
+          if [ -z "$URL" ] || [ -z "$KEY" ]; then
+            echo "::error::config.js から SUPABASE_URL / SUPABASE_ANON_KEY を読めなかった"
+            exit 1
+          fi
+          echo "url=$URL" >> "$GITHUB_OUTPUT"
+          echo "::add-mask::$KEY"
+          echo "key=$KEY" >> "$GITHUB_OUTPUT"
+
+      - name: 読み取りを1回投げる（これがアクセス実績になる）
+        run: |
+          set -o pipefail
+          for i in 1 2 3; do
+            CODE=$(curl -s -o /tmp/body.txt -w '%{http_code}' --max-time 30 \
+              -H "apikey: ${{ steps.cfg.outputs.key }}" \
+              -H "Authorization: Bearer ${{ steps.cfg.outputs.key }}" \
+              "${{ steps.cfg.outputs.url }}/rest/v1/events?select=id&limit=1") || CODE=000
+            echo "試行 $i: HTTP $CODE"
+            if [ "$CODE" = "200" ]; then
+              echo "✅ Supabaseは生きている（$(cat /tmp/body.txt | head -c 120)）"
+              exit 0
+            fi
+            sleep 20
+          done
+          echo "::error::Supabaseに到達できない（HTTP $CODE）。無料枠の一時停止が疑われる。ダッシュボードで Restore project を押すこと。"
+          exit 1
