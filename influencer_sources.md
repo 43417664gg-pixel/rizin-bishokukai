@@ -460,3 +460,42 @@ MMA Gambling Podcast／2ch5chまとめ系 ＝ いずれも**一般の解説・�
 ### 要Gaku判断
 - **ライアン・カファロ**（https://www.youtube.com/watch?v=4DVsl1np5KI ・09-29「自分のも予想してみた」）＝
   **LM16に出場する選手本人**。基準表では「選手本人＝載せる」だが、自分の試合を自分で予想する扱いは未定。保留中
+| 2026-10-02 | 川尻達也のじりラジオ | ev_lm16 | 0件 | https://www.youtube.com/watch?v=MMAfV96plC4 | m_yt_kawajiri |
+| 2026-10-02 | ジョビンチャンネル | ev_lm16 | 1件 | https://www.youtube.com/watch?v=j0FxI_4hcgA | m_yt_922c02ef |
+| 2026-10-01 | 鶴屋怜格闘チャンネル | ev_lm16 | 3件 | https://www.youtube.com/watch?v=teeeqGTnotU | m_yt_tsuruya |
+| 2026-10-01 | ジョビンチャンネル | ev_lm16 | 9件 | https://www.youtube.com/watch?v=v0WE--F1nsI | m_yt_922c02ef |
+| 2026-10-02 | おぎの日常【扇久保博正】 | ev_lm16 | 2件 | https://www.youtube.com/watch?v=xqezLP6xkqg | m_yt_926204c0 |
+| 2026-10-02 | 川尻達也のじりラジオ | ev_lm16 | 0件 | https://www.youtube.com/watch?v=MMAfV96plC4 | m_yt_kawajiri |
+| 2026-10-02 | ジョビンチャンネル | ev_lm16 | 1件 | https://www.youtube.com/watch?v=j0FxI_4hcgA | m_yt_922c02ef |
+| 2026-10-01 | 鶴屋怜格闘チャンネル | ev_lm16 | 3件 | https://www.youtube.com/watch?v=teeeqGTnotU | m_yt_tsuruya |
+| 2026-10-01 | ジョビンチャンネル | ev_lm16 | 9件 | https://www.youtube.com/watch?v=v0WE--F1nsI | m_yt_922c02ef |
+| 2026-10-02 | おぎの日常【扇久保博正】 | ev_lm16 | 2件 | https://www.youtube.com/watch?v=xqezLP6xkqg | m_yt_ogichannel |
+
+## LANDMARK 16 当日の最終スイープ（2026-10-03 12:50・開始1時間前）
+前日（10/2）の計量を受けた分を追加。**14件／3人**を投入し、LM16は合計 **92件／14人**。
+
+| 日付 | 予想者 | 件数 | 動画 |
+|---|---|---|---|
+| 10-01 | ジョビン（単独の全試合予想） | 8 | https://www.youtube.com/watch?v=v0WE--F1nsI |
+| 10-01 | 鶴屋怜 | 3 | https://www.youtube.com/watch?v=teeeqGTnotU |
+| 10-02 | 扇久保博正（おぎの日常・計量後） | 2 | https://www.youtube.com/watch?v=xqezLP6xkqg |
+| 10-02 | ジョビン（計量を受けた回） | 1 | https://www.youtube.com/watch?v=j0FxI_4hcgA |
+
+- **ジョビンはメインの予想を変えた**：10/1の単独予想では**宇佐美**、計量超過を受けた10/2の回で**堀江**。
+  投稿日の新しい方を採る設計どおり堀江で確定（§3.5「同一人物が予想を変えていないか」の実例が再び出た）
+- **扇久保はサブチャンネル「おぎの日常」**でも喋る。別チャンネル扱いで新規メンバー化されかけたので
+  `member_map.json` に本人へ寄せる行を追加した
+- じりラジオの計量回（MMAfV96plC4）は予想の言明が無く0件
+
+### 計量で動いた3試合（採点に直結・demo-data.js へ反映済み）
+| 試合 | 変更 | 扱い |
+|---|---|---|
+| 第6 マック・パパリイ vs 赤沢幸典 | 赤沢が膝負傷でドクターストップ | **中止**（`cancelled`）。※公式カードでは相手がアルブリー・ンジャイから赤沢へ変わっていた＝こちらの取りこぼし |
+| 第2 ヤマニハ vs 山本聖悟 | 山本が100g超過・イエロー1枚減点1のノーコンテストルール | **採点対象外**（`no_score`） |
+| OP第1 KAKERU vs 歩叶 | キックボクシングルール65kg契約＋KAKERUが950g超過 | **採点対象外**（`no_score`） |
+| 第10 堀江圭功 vs 宇佐美正パトリック | 両陣営協議で契約体重 71.0→**72.65kg**、**通常ルールで実施** | **採点はそのまま**（★Gaku確認待ち） |
+
+> **★Gaku判断が要る**：ポータル方針は「体重超過が絡む試合は一律 `no_score`」。
+> 今回の第10試合は、公式が**契約体重を変更したうえで通常ルール＝公式記録**としており、
+> 減点もノーコンテスト条件も付いていない。よって**通常採点のまま**にした。
+> 12人中11人が堀江を予想しているメインなので、`no_score` にすると全員の的中が消える。これでよいか。
