@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#08080b">
+<title>戦績｜RIZIN美食会予想</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=20261019224115">
+<style>
+/* 予想者の「通算成績カード」。過去大会まで遡って採点した結果を、1スクショでXに貼れる形にする。
+   上半分＝カード（スクショ範囲）、下＝大会ごとの明細（検証用。出典の動画へ飛べる）。 */
+body { padding-bottom: 40px; }
+.cr-wrap { max-width: 440px; margin: 0 auto; padding: 10px 10px 0; }
+.cr-card { position:relative; overflow:hidden; border-radius:16px; border:1px solid #2a2a33;
+  background:
+    radial-gradient(120% 55% at 100% 0%, rgba(230,0,18,.22), transparent 55%),
+    radial-gradient(100% 60% at 0% 100%, rgba(212,175,55,.10), transparent 60%),
+    linear-gradient(180deg,#121217,#0a0a0d);
+  box-shadow:0 10px 40px rgba(0,0,0,.6); }
+.cr-card::before { content:""; position:absolute; inset:0; pointer-events:none;
+  background: repeating-linear-gradient(115deg, transparent 0 22px, rgba(255,255,255,.018) 22px 23px); }
+.cr-top { position:relative; display:flex; justify-content:space-between; align-items:center; padding:10px 14px 0; }
+.cr-brand { font-family:var(--display); font-size:13px; letter-spacing:.06em; color:var(--red-hot); }
+.cr-brand span { color:var(--gold); margin-left:3px; font-family:"Noto Sans JP"; font-weight:900; font-size:11px; letter-spacing:.08em; }
+.cr-tag { font-family:var(--display); font-size:12px; letter-spacing:.14em; color:#8a8a96; }
+.cr-hero { position:relative; display:flex; align-items:center; gap:12px; padding:12px 14px 4px; }
+.cr-ava { width:50px; height:50px; border-radius:50%; flex:none; display:flex; align-items:center; justify-content:center;
+  font-weight:900; font-size:22px; color:#0a0a0d; box-shadow:0 0 0 3px rgba(255,255,255,.08); }
+.cr-name { font-weight:900; font-size:26px; line-height:1.1; }
+.cr-span { font-size:11px; color:var(--muted); margin-top:3px; }
+.cr-big { position:relative; display:flex; align-items:center; gap:14px; padding:10px 14px 6px; }
+.cr-ring { position:relative; width:118px; height:118px; flex:none; }
+.cr-ring svg { width:100%; height:100%; transform:rotate(-90deg); }
+.cr-ring .val { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+.cr-ring b { font-family:var(--num); font-weight:700; font-size:34px; line-height:1; color:var(--gold-hot); }
+.cr-ring b small { font-size:16px; }
+.cr-ring .lb { font-size:10px; color:var(--muted); margin-top:3px; }
+.cr-stats { flex:1; display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+.cr-stat { background:rgba(255,255,255,.035); border:1px solid rgba(255,255,255,.06); border-radius:9px; padding:6px 8px; }
+.cr-stat b { display:block; font-family:var(--num); font-size:19px; line-height:1.1; }
+.cr-stat span { font-size:9.5px; color:var(--muted); }
+.cr-stat.g b { color:var(--gold-hot); } .cr-stat.ok b { color:#47d16c; }
+.cr-sec { position:relative; padding:8px 14px 2px; font-size:10px; font-weight:700; letter-spacing:.12em; color:#8a8a96; }
+.cr-meth { position:relative; display:grid; grid-template-columns:repeat(3,1fr); gap:6px; padding:2px 14px 4px; }
+.cr-m { border-radius:9px; padding:7px 8px 6px; background:#14141a; border:1px solid #24242c; }
+.cr-m .k { font-size:10px; color:var(--muted); }
+.cr-m .v { font-family:var(--num); font-size:18px; font-weight:700; line-height:1.15; }
+.cr-m .bar { height:4px; background:#24242c; border-radius:3px; margin-top:4px; overflow:hidden; }
+.cr-m .bar i { display:block; height:100%; background:linear-gradient(90deg,var(--red-hot),var(--gold-hot)); }
+.cr-m .n { font-size:9px; color:#6f6f7a; margin-top:3px; }
+.cr-spark { position:relative; display:flex; align-items:flex-end; gap:3px; height:58px; padding:0 14px; }
+.cr-spark { justify-content:center; }
+.cr-spark i { flex:1; max-width:26px; border-radius:2px 2px 0 0; background:linear-gradient(180deg,#f0cd5a,#b8902a); min-height:3px; opacity:.9; }
+.cr-spark i.lo { background:linear-gradient(180deg,#ff5a67,#8a1a24); }
+.cr-axis { position:relative; display:flex; justify-content:space-between; padding:3px 14px 0; font-family:var(--num); font-size:9px; color:#6f6f7a; }
+.cr-dots { position:relative; display:flex; flex-wrap:wrap; gap:4px; padding:4px 14px 2px; }
+.cr-dots i { width:14px; height:14px; border-radius:50%; font-style:normal; font-size:8px; font-weight:900; display:flex; align-items:center; justify-content:center; }
+.cr-dots i.h { background:#1f8a3e; color:#fff; } .cr-dots i.m { background:#2a1013; color:#ff6b75; border:1px solid #6a1d25; }
+.cr-dots i.p { background:linear-gradient(135deg,#f0cd5a,#b8902a); color:#141009; }
+.cr-best { position:relative; margin:8px 14px 0; display:flex; gap:6px; }
+.cr-best div { flex:1; font-size:10px; color:var(--muted); background:rgba(255,255,255,.035); border:1px solid rgba(255,255,255,.06); border-radius:8px; padding:6px 8px; line-height:1.35; }
+.cr-best b { display:block; color:var(--text); font-size:11.5px; }
+.cr-src { position:relative; margin:8px 12px 0; padding:7px 10px; border-radius:8px; background:rgba(255,255,255,.035);
+  border:1px solid rgba(255,255,255,.06); font-size:9.5px; color:#a4a4b0; line-height:1.5; }
+.cr-src b { color:#d8d8e0; }
+.cr-foot { position:relative; display:flex; justify-content:space-between; align-items:center; padding:8px 14px 10px; font-size:9.5px; color:#6f6f7a; }
+.cr-foot .site { font-family:var(--num); font-size:11px; color:var(--gold); }
+.cr-actions { max-width:440px; margin:12px auto 0; padding:0 10px; display:flex; gap:8px; justify-content:center; flex-wrap:wrap; }
+.cr-actions button, .cr-actions a { background:#1a1a20; color:#eee; border:1px solid #33333a; border-radius:8px; padding:9px 14px; font-size:12.5px; cursor:pointer; }
+.cr-hint { max-width:440px; margin:8px auto 0; text-align:center; font-size:10.5px; color:#6a6a72; }
+/* 明細（スクショ範囲外） */
+.cr-detail { max-width:440px; margin:22px auto 0; padding:0 10px; }
+.cr-detail h2 { font-size:13px; color:#c9c9d2; margin:0 0 8px; letter-spacing:.06em; }
+.cr-ev { background:#101015; border:1px solid #23232b; border-radius:10px; margin-bottom:8px; overflow:hidden; }
+.cr-ev summary { list-style:none; cursor:pointer; display:flex; align-items:center; gap:8px; padding:9px 11px; font-size:12.5px; }
+.cr-ev summary::-webkit-details-marker { display:none; }
+.cr-ev summary .d { font-family:var(--num); font-size:11px; color:#7a7a86; width:68px; flex:none; }
+.cr-ev summary .t { flex:1; min-width:0; font-weight:700; }
+.cr-ev summary .live { white-space:nowrap; }
+.cr-ev summary .r { font-family:var(--num); font-weight:700; color:var(--gold-hot); }
+.cr-ev summary .live { font-size:9px; color:#47d16c; border:1px solid #1f5d31; border-radius:4px; padding:0 4px; margin-left:4px; }
+.cr-pk { display:flex; gap:8px; align-items:center; padding:6px 11px; border-top:1px solid #1c1c22; font-size:11.5px; }
+.cr-pk .mk { width:20px; text-align:center; font-weight:900; } .cr-pk .mk.h { color:#47d16c; } .cr-pk .mk.m { color:#ff6b75; }
+.cr-pk .b { flex:1; min-width:0; } .cr-pk .b span { display:block; color:#7f7f8a; font-size:10px; }
+.cr-pk .how { color:var(--gold-hot); font-size:10.5px; flex:none; text-align:right; }
+.cr-vids { padding:6px 11px 9px; border-top:1px solid #1c1c22; font-size:10px; color:#7f7f8a; }
+.cr-vids a { color:#8fb8ff; margin-right:8px; }
+.cr-note { font-size:10.5px; color:#7a7a86; line-height:1.6; margin-top:10px; }
+.cr-empty { padding:30px; text-align:center; color:#8a8a92; }
+</style>
+</head>
+<body>
+<div class="cr-wrap"><div class="cr-card" id="card"><div class="cr-empty">読み込み中…</div></div></div>
+<div class="cr-actions" id="acts"></div>
+<p class="cr-hint">この画面をそのままスクショすると、Xで1枚に収まります。</p>
+<div class="cr-detail" id="detail"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/config.js?v=20261019224115"></script>
+<script src="js/techniques.js?v=20261019224115"></script>
+<script src="js/demo-data.js?v=20261019224115"></script>
+<script src="js/api.js?v=20261019224115"></script>
+<script src="js/app.js?v=20261019224115"></script>
+<script>
+// 戦績は「的中（勝者を当てたか）」だけで見せる。シンプル優先（Gaku・2026-10-20）。
+// 勝ち方（KO/一本/判定）の一致はデータには持っているが、ピタリの定義が決まるまで表に出さない。
+const M2 = { KO: "KO", SUB: "一本", DEC: "判定", "一本": "一本", "判定": "判定" };
+const ini = (name) => esc((name || "?").trim().slice(0, 1));
+const pct = (a, b) => b ? Math.round(a / b * 100) : null;
+function ring(v) {
+  const r = 50, c = 2 * Math.PI * r;
+  return `<svg viewBox="0 0 118 118"><circle cx="59" cy="59" r="${r}" fill="none" stroke="#24242c" stroke-width="9"/>
+    ${v > 0 ? `<circle cx="59" cy="59" r="${r}" fill="none" stroke="url(#crg)" stroke-width="9" stroke-linecap="round" stroke-dasharray="${(c * v).toFixed(1)} ${c.toFixed(1)}"/>` : ""}
+    <defs><linearGradient id="crg" x1="0" x2="1"><stop offset="0" stop-color="#ff2436"/><stop offset="1" stop-color="#f0cd5a"/></linearGradient></defs></svg>`;
+}
+
+// サイト稼働後の大会（Supabase）を、遡りデータと同じ形に揃える
+async function livePicks(memId) {
+  const [events, fighters] = await Promise.all([DB.listEvents(), DB.listFighters()]);
+  const FMAP = fighterMap(fighters);
+  const out = [];
+  for (const ev of events) {
+    if (ev.status !== "finished") continue;
+    const fights = await DB.listFights(ev.id);
+    const preds = await DB.listPredictions({ fightIds: fights.map(f => f.id), memberId: memId });
+    for (const p of preds) {
+      const f = fights.find(x => x.id === p.fight_id);
+      const s = f && window.scoreFight(p, f, { scope: "career" });
+      if (!s || !s.counted) continue;
+      out.push({ event: ev.name, event_id: ev.id, date: ev.event_date, live: true,
+        f1: FMAP[f.fighter1_id]?.name, f2: FMAP[f.fighter2_id]?.name, pick: FMAP[p.winner_id]?.name,
+        pick_method: M2[p.method] || "不明", winner: FMAP[f.winner_id]?.name, method: f.result_method,
+        hit: !!s.winnerHit, how: !!s.winnerHit && M2[p.method] === M2[f.result_method] });
+    }
+  }
+  return out;
+}
+
+async function load() {
+  const id = qp("id");
+  const card = document.getElementById("card");
+  // 遡りデータ（data/career/<id>.json）は一部の予想者だけ。無ければサイト掲載分だけで出す。
+  let C = null;
+  try { const r = await fetch(`data/career/${encodeURIComponent(id)}.json?v=20261020`); C = r.ok ? await r.json() : null; } catch (e) { C = null; }
+  const members = await DB.listMembers();
+  const me = members.find(m => m.id === id);
+  if (!me && !C) { card.innerHTML = "<div class='cr-empty'>見つかりませんでした。</div>"; return; }
+  C = C || { name: me.name, color: me.color, picks: [], event_videos: {} };
+  if (me) { C.name = me.name; C.color = me.color || C.color; }
+  let live = [];
+  try { live = await livePicks(id); } catch (e) { live = []; }
+  const liveEv = new Set(live.map(x => x.event_id));
+  // サイトに載っている大会は本番データを優先（遡り分と二重に数えない）
+  const retro = C.picks.filter(x => !(x.portal_event && liveEv.has(x.portal_event)));
+  const all = [...retro, ...live].sort((a, b) => (a.date + String(a.no || 0)).localeCompare(b.date + String(b.no || 0)));
+  if (!all.length) { card.innerHTML = `<div class='cr-empty'>${esc(C.name)}の結果が出た予想はまだありません。</div>`; return; }
+  const n = all.length, hit = all.filter(x => x.hit).length, how = all.filter(x => x.how).length;
+  const evs = [];
+  for (const x of all) {
+    let e = evs.find(y => y.event === x.event);
+    if (!e) evs.push(e = { event: x.event, event_id: x.event_id, date: x.date, live: !!x.live, picks: [] });
+    e.picks.push(x);
+  }
+  const rated = evs.filter(e => e.picks.length >= 5);   // 3試合中3的中のような小標本はベスト扱いしない
+  const spark = evs.map(e => { const r = e.picks.filter(x => x.hit).length / e.picks.length;
+    return `<i class="${r < .5 ? "lo" : ""}" style="height:${Math.max(6, Math.round(r * 100))}%" title="${esc(e.event)}"></i>`; }).join("");
+  const best = rated.slice().sort((a, b) => b.picks.filter(x => x.hit).length / b.picks.length - a.picks.filter(x => x.hit).length / a.picks.length)[0];
+  // 最長連続的中
+  let run = 0, maxRun = 0; for (const x of all) { run = x.hit ? run + 1 : 0; maxRun = Math.max(maxRun, run); }
+  const last = all.slice(-20).map(x => `<i class="${x.hit ? "h" : "m"}">${x.hit ? "○" : "✕"}</i>`).join("");
+  const y0 = (evs[0]?.date || "").slice(0, 4), y1 = (evs[evs.length - 1]?.date || "").slice(0, 4);
+  const best1 = best ? `${best.event}<br>${best.picks.filter(x => x.hit).length}/${best.picks.length} 的中` : "—";
+
+  card.innerHTML = `
+    <div class="cr-top"><span class="cr-brand">RIZIN<span>美食会予想</span></span><span class="cr-tag">CAREER</span></div>
+    <div class="cr-hero">
+      <span class="cr-ava" style="background:${esc(C.color || "#00cec9")}">${ini(C.name)}</span>
+      <div><div class="cr-name">${esc(C.name)}</div>
+        <div class="cr-span">${y0}–${y1}・${evs.length}大会・${n}試合を採点</div></div>
+    </div>
+    <div class="cr-big">
+      <div class="cr-ring">${ring(hit / n)}<div class="val"><b>${pct(hit, n)}<small>%</small></b><span class="lb">通算的中率</span></div></div>
+      <div class="cr-stats">
+        <div class="cr-stat ok"><b>${hit}<small style="font-size:11px;color:#7a7a86">/${n}</small></b><span>的中</span></div>
+        <div class="cr-stat g"><b>${maxRun}</b><span>最長連続的中</span></div>
+        <div class="cr-stat"><b>${evs.length}</b><span>大会</span></div>
+        <div class="cr-stat"><b>${best ? Math.round(best.picks.filter(x => x.hit).length / best.picks.length * 100) + "%" : "—"}</b><span>ベスト大会</span></div>
+      </div>
+    </div>
+    <div class="cr-sec">大会ごとの的中率</div>
+    <div class="cr-spark">${spark}</div>
+    <div class="cr-axis"><span>${esc((evs[0]?.date || "").slice(0, 7).replace("-", "."))}</span><span>${esc((evs[evs.length - 1]?.date || "").slice(0, 7).replace("-", "."))}</span></div>
+    <div class="cr-sec">直近${Math.min(20, n)}試合</div>
+    <div class="cr-dots">${last}</div>
+    <div class="cr-best"><div>ベスト大会<b>${best1}</b></div></div>
+    ${C.channel
+      ? `<div class="cr-src">出典：<b>${esc(C.channel)}</b>（YouTube）の公開予想動画${C.videos}本から本人の発言のみ抽出。結果は日本語版Wikipediaの大会記事と照合。メンバー限定配信・複数人出演回は除外。</div>`
+      : /^m_yt_/.test(id) ? `<div class="cr-src">出典：本人の公開予想動画（大会ごとの予想カードに動画URLを記載）</div>` : ""}
+    <div class="cr-foot"><span class="site">${esc(window.SITE_URL)}</span><span>#RIZIN美食会予想</span></div>`;
+
+  const share = `${C.name}の通算予想成績：的中率${pct(hit, n)}%（${n}試合・${evs.length}大会） #RIZIN美食会予想`;
+  document.getElementById("acts").innerHTML = window.shareButton(share, location.href, "この成績カードをポスト") +
+    ` <a href="ranking.html">ランキングへ</a>`;
+
+  // 明細
+  const vids = C.event_videos || {};
+  document.getElementById("detail").innerHTML = `<h2>大会ごとの明細</h2>` + evs.slice().reverse().map(e => {
+    const h = e.picks.filter(x => x.hit).length;
+    const rows = e.picks.map(x => `<div class="cr-pk"><span class="mk ${x.hit ? "h" : "m"}">${x.hit ? "○" : "✕"}</span>
+      <div class="b">${esc(x.pick)}<span>${esc(x.f1)} vs ${esc(x.f2)}${!x.hit && x.winner ? `／勝者 ${esc(x.winner)}` : ""}</span></div>
+      <span class="how">${esc(x.pick_method !== "不明" ? x.pick_method : "")}</span></div>`).join("");
+    const vs = e.live
+      ? `<a href="picks.html?event=${esc(e.event_id)}&member=${esc(id)}">この大会の予想カード</a>`
+      : (vids[e.event] || []).map((u, i) => `<a href="${esc(u)}" target="_blank" rel="noopener">動画${i + 1}</a>`).join("");
+    return `<details class="cr-ev"><summary><span class="d">${esc(e.date)}</span><span class="t">${esc(e.event)}${e.live && C.channel ? `<span class="live">サイト</span>` : ""}</span><span class="r">${h}/${e.picks.length}</span></summary>
+      ${rows}${vs ? `<div class="cr-vids">${e.live ? "" : "出典："}${vs}</div>` : ""}</details>`;
+  }).join("") + `<p class="cr-note">※ 同じ試合を複数の動画で予想している場合は、投稿日が新しい方を採用。ドロー・無効試合・キック等のMMA以外は採点外。
+    「サイト」印の大会は当サイト掲載の予想（技名ピタリの採点はランキング側の基準）。</p>`;
+}
+load();
+</script>
+</body>
+</html>

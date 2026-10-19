@@ -8,6 +8,45 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20261019224115">
+<style>
+/* ランキングを1枚のカードにする（2026-10-20）：スクショ単体でXに貼れるよう、
+   ブランド・集計対象・サイトURLをカードの中に入れる。名前をタップ→その人の戦績へ。 */
+.rk-card { position:relative; overflow:hidden; margin:6px 0 4px; border-radius:16px; border:1px solid #2a2a33;
+  background:
+    radial-gradient(120% 50% at 100% 0%, rgba(230,0,18,.20), transparent 55%),
+    radial-gradient(90% 50% at 0% 100%, rgba(212,175,55,.08), transparent 60%),
+    linear-gradient(180deg,#121217,#0a0a0d);
+  box-shadow:0 10px 40px rgba(0,0,0,.55); }
+.rk-card::before { content:""; position:absolute; inset:0; pointer-events:none;
+  background: repeating-linear-gradient(115deg, transparent 0 22px, rgba(255,255,255,.018) 22px 23px); }
+.rk-top { position:relative; display:flex; justify-content:space-between; align-items:center; padding:10px 14px 0; }
+.rk-brand { font-family:var(--display); font-size:13px; letter-spacing:.06em; color:var(--red-hot); }
+.rk-brand span { color:var(--gold); margin-left:3px; font-family:"Noto Sans JP"; font-weight:900; font-size:11px; letter-spacing:.08em; }
+.rk-tag { font-family:var(--display); font-size:12px; letter-spacing:.14em; color:#8a8a96; }
+.rk-ttl { position:relative; padding:0 14px; font-family:var(--display); font-size:22px; line-height:1.15; }
+.rk-card .rk-scope { position:relative; padding:2px 14px 6px; margin:0; font-size:11px; }
+.rk-card .lb-table { position:relative; }
+.rk-card .lb-table th { padding-left:6px; padding-right:10px; }
+.rk-card .lb-table td:first-child, .rk-card .lb-table th:first-child { padding-left:12px; }
+.rk-card .lb-table td:last-child, .rk-card .lb-table th:last-child { padding-right:12px; }
+.rk-card .lb-table tr:last-child td { border-bottom:none; }
+/* 11人並んでもスマホ1画面（812px）に収まる行の高さに詰める */
+.rk-card .lb-table td { padding-top:5px !important; padding-bottom:5px !important; }
+.rk-card .lb-table th { padding-top:4px !important; padding-bottom:4px !important; font-size:10px; }
+.rk-card .lb-rank { font-size:18px; width:30px; }
+.rk-card .lb-pt { font-size:20px; }
+.rk-card .lb-table .lb-rate { font-size:19px !important; }
+.rk-card .lb-table .lb-rate.thin { font-size:15px !important; }
+.rk-card .lb-sub { font-size:9.5px; line-height:1.3; }
+.rk-card .lb-table .lb-name { font-size:14px !important; line-height:1.3; }
+.rk-card .pit-btn { transform:scale(.85); }
+a.lb-name { display:inline-block; border-bottom:1px dashed rgba(255,255,255,.25); }
+a.lb-name:active { color:var(--gold-hot); }
+.rk-foot { position:relative; display:flex; justify-content:space-between; align-items:center; padding:8px 14px 10px;
+  border-top:1px solid rgba(255,255,255,.06); font-size:9.5px; color:#6f6f7a; white-space:nowrap; gap:8px; }
+.rk-foot .site { font-family:var(--num); font-size:11px; color:var(--gold); }
+.rk-tap { font-size:11px; color:#6a6a72; text-align:center; margin:6px 0 0; }
+</style>
 </head>
 <body>
 <div id="app-header"></div>
@@ -68,33 +107,33 @@ function render() {
   }
   const allOn = checked.size === EVENTS.length;
   document.getElementById("main").innerHTML = `
-    <div class="en-label">RANKING</div>
-    <h1 class="page-title">ランキング</h1>
-    <p class="page-sub">ポイントで競う。当てるほど、読み切るほど積み上がる。</p>
-    <!-- スクショ単体で意味が通るよう、集計対象の大会をここに出す（2026-08-31の監査より） -->
-    <p class="rk-scope">集計対象：${
-      checked.size === EVENTS.length ? "全大会（通算）"
-        : EVENTS.filter(e => checked.has(e.id)).map(e => esc(e.name)).join("・") || "なし"
-    }　<span class="share-url">${esc(window.SITE_URL)}</span></p>
-
-    <table class="lb-table">
-      <tr><th></th><th>名前</th><th>ポイント</th><th>的中率</th><th>ピタリ</th></tr>
-      ${rows.map((r, i) => { const t = tierOf(r); return `
-        <tr class="${i === 0 && r.rate !== null ? "top" : ""}">
-          <td class="lb-rank">${r.rate === null ? "—" : i + 1}</td>
-          <td><div class="lb-name">${esc(r.member.name)}</div>
-              <div class="lb-sub">予想 ${r.answered}試合</div></td>
-          <td><span class="lb-pt">${r.points}</span><div class="lb-sub">点</div></td>
-          <td><span class="lb-rate${r.decided < window.RATE_MIN ? " thin" : ""}">${fmtRate(r.rate)}</span>
-              <div class="lb-sub">${r.hits}/${r.decided}${r.decided && r.decided < window.RATE_MIN ? "・参考" : ""}</div></td>
-          <td class="lb-num">${r.pitari
-            ? `<span class="pit-cell" tabindex="0" onclick="this.classList.toggle('open')">
-                 <span class="pit-btn">${r.pitari}</span>
-                 <span class="pit-pop"><b class="pit-head">🎯 ${esc(r.member.name)} のピタリ</b>${(window.PITARI[r.member.id] || []).map(s => `<span class="pit-row">${s}</span>`).join("")}</span>
-               </span>`
-            : `<span class="pit-zero">0</span>`}</td>
-        </tr>`; }).join("")}
-    </table>
+    <div class="rk-card">
+      <div class="rk-top"><span class="rk-brand">RIZIN<span>美食会予想</span></span><span class="rk-tag">RANKING</span></div>
+      <div class="rk-ttl">${checked.size === 1 ? esc(EVENTS.find(e => checked.has(e.id)).name) : "予想ランキング"}</div>
+      <p class="rk-scope">${checked.size === EVENTS.length ? "全大会（通算）"
+          : checked.size === 1 ? `${esc(fmtDate(EVENTS.find(e => checked.has(e.id)).event_date))}・この大会の成績`
+          : EVENTS.filter(e => checked.has(e.id)).map(e => esc(e.name)).join("・") || "なし"}　<span style="color:#6f6f7a">的中1点・ピタリ+2点</span></p>
+      <table class="lb-table">
+        <tr><th></th><th>名前</th><th>ポイント</th><th>的中率</th><th>ピタリ</th></tr>
+        ${rows.map((r, i) => `
+          <tr class="${i === 0 && r.rate !== null ? "top" : ""}">
+            <td class="lb-rank">${r.rate === null ? "—" : i + 1}</td>
+            <td><a class="lb-name" href="predictor.html?id=${esc(r.member.id)}">${esc(r.member.name)}</a>
+                <div class="lb-sub">予想 ${r.answered}試合</div></td>
+            <td><span class="lb-pt">${r.points}</span><div class="lb-sub">点</div></td>
+            <td><span class="lb-rate${r.decided < window.RATE_MIN ? " thin" : ""}">${fmtRate(r.rate)}</span>
+                <div class="lb-sub">${r.hits}/${r.decided}${r.decided && r.decided < window.RATE_MIN ? "・参考" : ""}</div></td>
+            <td class="lb-num">${r.pitari
+              ? `<span class="pit-cell" tabindex="0" onclick="this.classList.toggle('open')">
+                   <span class="pit-btn">${r.pitari}</span>
+                   <span class="pit-pop"><b class="pit-head">🎯 ${esc(r.member.name)} のピタリ</b>${(window.PITARI[r.member.id] || []).map(s => `<span class="pit-row">${s}</span>`).join("")}</span>
+                 </span>`
+              : `<span class="pit-zero">0</span>`}</td>
+          </tr>`).join("")}
+      </table>
+      <div class="rk-foot"><span class="site">${esc(window.SITE_URL)}</span><span>#RIZIN美食会予想</span></div>
+    </div>
+    <p class="rk-tap">名前をタップすると、その人の戦績が見られます。</p>
 
     <div class="section-label">集計する大会</div>
     <div class="ev-checks">
