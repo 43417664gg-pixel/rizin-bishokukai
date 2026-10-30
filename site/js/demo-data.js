@@ -2302,6 +2302,7 @@ window.DEMO_SEED = {
       nickname: "地獄のエンジェル",
       former_belt: "元RIZINバンタム級王者（第7代）",
       weight_class_fixed: "バンタム級",
+      backbone: "空手（黒帯）・ブラジリアン柔術（青帯）",
       birth_date: "1997-06-14",
       team: "Kill Cliff FC",
       origin: "日本 愛知県",
