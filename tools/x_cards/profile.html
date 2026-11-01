@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<!-- Xアカウントのアイコン（?mode=icon 400x400）とヘッダー（?mode=header 1500x500）。render_profile.sh で撮る。
+     ヘッダーは左下にアイコンが重なり、スマホでは上下が切れるので、文字は中央〜右の帯に寄せる。 -->
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Noto+Sans+JP:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root { --red:#e60012; --gold:#c9a84a; --ink:#f4f4f6; --mute:#9a9aa2; --bg:#0b0b0e; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html, body { background:var(--bg); color:var(--ink); font-family:"Noto Sans JP",sans-serif; overflow:hidden; }
+
+  .ic { width:400px; height:400px; display:flex; flex-direction:column; align-items:center; justify-content:center;
+        background:radial-gradient(260px 260px at 50% 50%, #1d1216 0%, var(--bg) 75%); }
+  .ic .s { font-size:58px; font-weight:900; letter-spacing:.12em; margin-bottom:-6px; }
+  .ic .b { font-size:136px; font-weight:900; line-height:1.05; color:var(--gold); }
+  .ic .bar { width:150px; height:8px; background:var(--red); margin-top:14px; }
+
+  .hd { position:relative; width:1500px; height:500px; overflow:hidden;
+        background:radial-gradient(900px 420px at 62% 50%, #1d1216 0%, var(--bg) 72%); border-bottom:10px solid var(--red); }
+  .hd .in { position:absolute; left:470px; right:90px; top:0; bottom:0; display:flex; flex-direction:column; justify-content:center; }
+  .hd .b { font-size:118px; font-weight:900; line-height:1; }
+  .hd .b span { color:var(--gold); }
+  .hd .t { margin-top:20px; font-size:40px; font-weight:900; }
+  .hd .c { margin-top:16px; display:flex; gap:14px; }
+  .hd .c span { font-size:24px; font-weight:700; border:2px solid var(--gold); color:var(--gold); padding:4px 16px; border-radius:999px; }
+  .hd .g { position:absolute; right:-30px; top:-40px; font-family:Anton; font-size:300px; color:#ffffff08; letter-spacing:.02em; }
+</style>
+</head>
+<body>
+<div id="p"></div>
+<script>
+const mode = new URLSearchParams(location.search).get("mode");
+document.getElementById("p").innerHTML = mode === "header"
+  ? `<div class="hd"><div class="g">PREDICT</div><div class="in">
+       <div class="b">予想<span>番付</span></div>
+       <div class="t">格闘技の勝敗予想。誰がいちばん当てるのか。</div>
+       <div class="c"><span>無料</span><span>賭けなし</span><span>広告なし</span><span>YouTuber・選手の的中率</span></div></div></div>`
+  : `<div class="ic"><div class="s">予想</div><div class="b">番付</div><div class="bar"></div></div>`;
+document.title = "ready";
+</script>
+</body>
+</html>
