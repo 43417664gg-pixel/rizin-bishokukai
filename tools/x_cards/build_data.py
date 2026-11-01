@@ -21,13 +21,33 @@ def rest(path):
 members = {m["id"]: m for m in rest("members?select=id,name,is_curated")}
 preds = rest(f"predictions?select=member_id,fight_id,winner_id,method&fight_id=like.{prefix}*")
 
+# 通算的中率は predictor.html（戦績ページ）と同じ数え方にする：遡り分＋サイト稼働後の確定試合。
+# サイトに載っている大会は本番データを優先し、遡り分と二重に数えない。採点条件は app.js の scoreFight(scope=career)。
+events = {e["id"]: e for e in rest("events?select=id,status") if e["status"] == "finished"}
+fights = {f["id"]: f for f in rest("fights?select=id,event_id,winner_id,result_method,cancelled,no_score")
+          if f["event_id"] in events}
+# event_only（キック等）はDBの列ではなく demo-data.js 側にあり、api.js が読み込み時に重ねている
+seed = open(os.path.join(SITE, "js", "demo-data.js"), encoding="utf-8").read()
+event_only = set(re.findall(r'\{ id: "([a-z0-9_]+)"[^\n]*event_only: true', seed))
+def counted(f):
+    return not (f.get("cancelled") or f.get("no_score") or f["id"] in event_only) and f.get("winner_id") \
+        and f.get("result_method") and f["result_method"] not in ("DRAW", "NC")
+live = {}
+career = [json.load(open(f, encoding="utf-8")) for f in sorted(glob.glob(os.path.join(SITE, "data", "career", "*.json")))]
+ids = ",".join(d["member_id"] for d in career)
+for p in rest(f"predictions?select=member_id,fight_id,winner_id&member_id=in.({ids})"):
+    f = fights.get(p["fight_id"])
+    if f and counted(f):
+        live.setdefault(p["member_id"], []).append((f["event_id"], p["winner_id"] == f["winner_id"]))
+
 rates = {}
-for f in glob.glob(os.path.join(SITE, "data", "career", "*.json")):
-    d = json.load(open(f, encoding="utf-8"))
-    ps = [p for p in d["picks"] if p.get("hit") is not None]
-    if ps:
-        rates[d["member_id"]] = {"id": d["member_id"], "name": d["name"], "n": len(ps),
-                                 "rate": round(100 * sum(p["hit"] for p in ps) / len(ps), 1)}
+for d in career:
+    lv = live.get(d["member_id"], [])
+    live_ev = {ev for ev, _ in lv}
+    hits = [bool(p.get("hit")) for p in d["picks"] if not (p.get("portal_event") in live_ev)] + [h for _, h in lv]
+    if hits:
+        rates[d["member_id"]] = {"id": d["member_id"], "name": d["name"], "n": len(hits),
+                                 "rate": round(100 * sum(hits) / len(hits), 1)}
 
 picks = {}
 for p in preds:
