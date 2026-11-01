@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex">
 <meta name="theme-color" content="#08080b">
-<title>戦績｜RIZIN美食会予想</title>
+<title>戦績｜予想番付</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20261019224115">
@@ -175,7 +175,7 @@ async function load() {
   const best1 = best ? `${best.event}<br>${best.picks.filter(x => x.hit).length}/${best.picks.length} 的中` : "—";
 
   card.innerHTML = `
-    <div class="cr-top"><span class="cr-brand">RIZIN<span>美食会予想</span></span><span class="cr-tag">CAREER</span></div>
+    <div class="cr-top"><span class="cr-brand">予想<span>番付</span></span><span class="cr-tag">CAREER</span></div>
     <div class="cr-hero">
       <span class="cr-ava" style="background:${esc(C.color || "#00cec9")}">${ini(C.name)}</span>
       <div><div class="cr-name">${esc(C.name)}</div>
@@ -199,9 +199,9 @@ async function load() {
     ${C.channel
       ? `<div class="cr-src">出典：<b>${esc(C.channel)}</b>（YouTube）の公開予想動画${C.videos}本から本人の発言のみ抽出。結果は日本語版Wikipediaの大会記事と照合。メンバー限定配信・複数人出演回は除外。</div>`
       : /^m_yt_/.test(id) ? `<div class="cr-src">出典：本人の公開予想動画（大会ごとの予想カードに動画URLを記載）</div>` : ""}
-    <div class="cr-foot"><span class="site">${esc(window.SITE_URL)}</span><span>#RIZIN美食会予想</span></div>`;
+    <div class="cr-foot"><span class="site">${esc(window.SITE_URL)}</span><span>#予想番付</span></div>`;
 
-  const share = `${C.name}の通算予想成績：的中率${pct(hit, n)}%（${n}試合・${evs.length}大会） #RIZIN美食会予想`;
+  const share = `${C.name}の通算予想成績：的中率${pct(hit, n)}%（${n}試合・${evs.length}大会） #予想番付`;
   document.getElementById("acts").innerHTML = window.shareButton(share, location.href, "この成績カードをポスト") +
     ` <a href="ranking.html">ランキングへ</a>`;
 

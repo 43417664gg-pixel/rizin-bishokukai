@@ -4,21 +4,21 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex">
-<title>選手名鑑｜RIZIN美食会予想</title>
+<title>選手名鑑｜予想番付</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261030230028">
+<link rel="stylesheet" href="css/style.css?v=20261101105659">
 </head>
 <body>
 <div id="app-header"></div>
 <div class="wrap" id="main"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/config.js?v=20261030230028"></script>
-<script src="js/techniques.js?v=20261030230028"></script>
-<script src="js/demo-data.js?v=20261030230028"></script>
-<script src="js/api.js?v=20261030230028"></script>
-<script src="js/app.js?v=20261030230028"></script>
+<script src="js/config.js?v=20261101105659"></script>
+<script src="js/techniques.js?v=20261101105659"></script>
+<script src="js/demo-data.js?v=20261101105659"></script>
+<script src="js/api.js?v=20261101105659"></script>
+<script src="js/app.js?v=20261101105659"></script>
 <script>
 // このポータルで扱った試合から選手ごとの戦績を組み立てる（サイト内完結STATS）
 function buildStats(fighterId, fights) {
@@ -367,7 +367,7 @@ function renderDetail(fighter, fighters, fights, events) {
     ${upcoming.length ? `<div class="section-label">NEXT FIGHT</div>${historyHtml(upcoming, false)}` : ""}
     ${careerHistoryHtml(fighter)}
     ${actionGalleryHtml(fighter, fights, EMAP)}
-    ${s.fights.length ? `<div class="section-label">美食会アーカイブ</div>${historyHtml(s.fights, true)}` : ""}
+    ${s.fights.length ? `<div class="section-label">予想アーカイブ</div>${historyHtml(s.fights, true)}` : ""}
     ${fighter.rizin_url ? `<p class="page-sub" style="margin-top:16px"><a href="${esc(fighter.rizin_url)}" target="_blank" rel="noopener" style="text-decoration:underline">RIZIN公式の関連記事 ↗</a></p>` : ""}
     <p style="margin-top:20px"><a href="fighter.html" style="color:var(--muted);font-size:13px;text-decoration:underline">← 選手名鑑に戻る</a></p>`;
 }

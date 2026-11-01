@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex">
-<title>予想カード｜RIZIN美食会予想</title>
+<title>予想カード｜予想番付</title>
 <meta name="theme-color" content="#08080b">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261030230028">
+<link rel="stylesheet" href="css/style.css?v=20261101105659">
 <style>
 /* SNSで一枚歩きする「予想カード」。2026-10-19 作り直し：
    スマホで1スクショ＝そのままXに貼れる、を唯一の目的にする。
@@ -88,11 +88,11 @@ body { padding-bottom: 24px; }
 <p class="pk-hint">この画面をそのままスクショすると、Xで1枚に収まります。</p>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/config.js?v=20261030230028"></script>
-<script src="js/techniques.js?v=20261030230028"></script>
-<script src="js/demo-data.js?v=20261030230028"></script>
-<script src="js/api.js?v=20261030230028"></script>
-<script src="js/app.js?v=20261030230028"></script>
+<script src="js/config.js?v=20261101105659"></script>
+<script src="js/techniques.js?v=20261101105659"></script>
+<script src="js/demo-data.js?v=20261101105659"></script>
+<script src="js/api.js?v=20261101105659"></script>
+<script src="js/app.js?v=20261101105659"></script>
 <script>
 // 決着の表示ラベル（結果側）。fights.result_method は KO / SUB / DEC / DRAW / NC。
 const RES_LABEL = { KO: "KO", SUB: "一本", DEC: "判定", DRAW: "ドロー", NC: "無効" };
@@ -184,10 +184,10 @@ async function load() {
     ? `<div class="pk-src">出典：<b>${chans.map(esc).join("／")}</b>（YouTube${src.length > 1 ? `・${src.length}本` : ""}）<br>
         <span class="u">${src.slice(0, 2).map(x => `${esc(x.date.slice(5).replace("-", "/"))} ${esc(short(x.url))}`).join("　")}${src.length > 2 ? "　ほか" : ""}</span></div>`
     : "";
-  const sub = src.length ? "YouTube予想（本人発言から抽出）" : "美食会メンバー";
+  const sub = src.length ? "YouTube予想（本人発言から抽出）" : "サイトで予想";
 
   card.innerHTML = `
-    <div class="pk-top"><span class="pk-brand">RIZIN<span>美食会予想</span></span><span class="pk-date">${esc(fmtDate(ev.event_date))}</span></div>
+    <div class="pk-top"><span class="pk-brand">予想<span>番付</span></span><span class="pk-date">${esc(fmtDate(ev.event_date))}</span></div>
     <div class="pk-ev">${esc(ev.name)}</div>
     <div class="pk-hero">
       <span class="pk-ava" style="background:${esc(me.color || "#e60012")}">${ini(me.name)}</span>
@@ -198,9 +198,9 @@ async function load() {
     <div class="pk-bar"></div>
     <div class="pk-list">${rows.join("")}${noneRow}</div>
     ${srcBox}
-    <div class="pk-foot"><span class="site">${esc(window.SITE_URL)}</span><span>#RIZIN美食会予想</span></div>`;
+    <div class="pk-foot"><span class="site">${esc(window.SITE_URL)}</span><span>#予想番付</span></div>`;
 
-  const share = `${me.name}の${ev.name}予想${decided ? `（的中率${Math.round(rate * 100)}%）` : ""} #RIZIN美食会予想`;
+  const share = `${me.name}の${ev.name}予想${decided ? `（的中率${Math.round(rate * 100)}%）` : ""} #予想番付`;
   document.getElementById("acts").innerHTML =
     window.shareButton(share, location.href, "この予想カードをポスト") +
     ` <a href="event.html?id=${esc(evId)}">大会ページへ</a>` +

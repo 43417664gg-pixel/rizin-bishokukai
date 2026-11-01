@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex">
-<title>ランキング｜RIZIN美食会予想</title>
+<title>ランキング｜予想番付</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261030230028">
+<link rel="stylesheet" href="css/style.css?v=20261101105659">
 <style>
 /* ランキングを1枚のカードにする（2026-10-20）：スクショ単体でXに貼れるよう、
    ブランド・集計対象・サイトURLをカードの中に入れる。名前をタップ→その人の戦績へ。 */
@@ -53,11 +53,11 @@ a.lb-name:active { color:var(--gold-hot); }
 <div class="wrap" id="main"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/config.js?v=20261030230028"></script>
-<script src="js/techniques.js?v=20261030230028"></script>
-<script src="js/demo-data.js?v=20261030230028"></script>
-<script src="js/api.js?v=20261030230028"></script>
-<script src="js/app.js?v=20261030230028"></script>
+<script src="js/config.js?v=20261101105659"></script>
+<script src="js/techniques.js?v=20261101105659"></script>
+<script src="js/demo-data.js?v=20261101105659"></script>
+<script src="js/api.js?v=20261101105659"></script>
+<script src="js/app.js?v=20261101105659"></script>
 <script>
 let EVENTS, MEMBERS, ALL_FIGHTS, ALL_PREDS, FMAP = {};
 let checked = new Set();   // 集計対象の大会ID
@@ -108,7 +108,7 @@ function render() {
   const allOn = checked.size === EVENTS.length;
   document.getElementById("main").innerHTML = `
     <div class="rk-card">
-      <div class="rk-top"><span class="rk-brand">RIZIN<span>美食会予想</span></span><span class="rk-tag">RANKING</span></div>
+      <div class="rk-top"><span class="rk-brand">予想<span>番付</span></span><span class="rk-tag">RANKING</span></div>
       <div class="rk-ttl">${checked.size === 1 ? esc(EVENTS.find(e => checked.has(e.id)).name) : "予想ランキング"}</div>
       <p class="rk-scope">${checked.size === EVENTS.length ? "全大会（通算）"
           : checked.size === 1 ? `${esc(fmtDate(EVENTS.find(e => checked.has(e.id)).event_date))}・この大会の成績`
@@ -131,7 +131,7 @@ function render() {
               : `<span class="pit-zero">0</span>`}</td>
           </tr>`).join("")}
       </table>
-      <div class="rk-foot"><span class="site">${esc(window.SITE_URL)}</span><span>#RIZIN美食会予想</span></div>
+      <div class="rk-foot"><span class="site">${esc(window.SITE_URL)}</span><span>#予想番付</span></div>
     </div>
     <p class="rk-tap">名前をタップすると、その人の戦績が見られます。</p>
 
@@ -165,7 +165,7 @@ function render() {
       <div class="rk-share">${window.shareButton(
         (checked.size === 1 ? EVENTS.filter(e=>checked.has(e.id))[0].name + "の" : "") +
         "的中率ランキング" + (rows[0] && rows[0].rate !== null ? `　1位 ${rows[0].member.name}（${Math.round(rows[0].rate*100)}%）` : "") +
-        " #RIZIN美食会予想", location.href, "ランキングをポスト")}</div>
+        " #予想番付", location.href, "ランキングをポスト")}</div>
       <b>ポイント</b>＝ランキングの本体。<b>的中</b>（勝者を当てる）で<b>1点</b>、
       <b>ピタリ</b>（決まり手＋ラウンドまで一致・判定は「判定」を当てればピタリ）ならさらに<b>+2点＝合計3点</b>。<br>
       予想した試合が多いほど得点の機会がある。的中率は参考値で、確定4試合未満は薄く表示。<br>
