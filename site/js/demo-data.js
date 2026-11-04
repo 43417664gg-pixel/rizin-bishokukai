@@ -224,6 +224,7 @@ window.DEMO_SEED = {
     {
       id: "f_shinozuka",
       name: "篠塚辰樹",
+      nickname: "THE PROBLEM BOY",
       birth_date: "1998-05-07",
       backbone: "キックボクシング・ボクシング",
       team: "MASTER BRIDGE / 剛毅會",
