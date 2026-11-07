@@ -7,7 +7,7 @@
 <title>大会予想｜予想番付</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261107191410">
+<link rel="stylesheet" href="css/style.css?v=20261107191742">
 </head>
 <body>
 <div id="app-header"></div>
@@ -16,11 +16,11 @@
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261107191410"></script>
-<script src="js/techniques.js?v=20261107191410"></script>
-<script src="js/demo-data.js?v=20261107191410"></script>
-<script src="js/api.js?v=20261107191410"></script>
-<script src="js/app.js?v=20261107191410"></script>
+<script src="js/config.js?v=20261107191742"></script>
+<script src="js/techniques.js?v=20261107191742"></script>
+<script src="js/demo-data.js?v=20261107191742"></script>
+<script src="js/api.js?v=20261107191742"></script>
+<script src="js/app.js?v=20261107191742"></script>
 <script>
 let EV, PHASE, FIGHTS, FMAP, MEMBERS, myPreds = {}, allPreds = [], ALL_SUPPORTS = [];
 let drafts = {};              // 決定前の編集中の選択（ローカルのみ）
@@ -132,7 +132,8 @@ function streakText(h) {
 }
 // 細かい文字で読ませず形で見せる（Gaku指示11/7「シンプルな中に視認性を。ビジュアルで誘導」）：
 // 勝敗数は大きな数字／勝ち方は3つの枠で一番多いものを光らせる／直近5戦は色の四角で並べる
-function statsSide(x, cls) {
+// 左右の段（異名・戦績・勝ち方・直近・前戦）は subgrid で高さをそろえる。片側にデータが無くても空の段を置いて行数を合わせる
+function statsSide(x, cls, withNick) {
   const h = recentOf(x);
   const num = (n, u, c) => `<span class="st-n ${c}"><b>${n}</b>${u}</span>`;
   const rec = x?.rec_w != null
@@ -143,27 +144,31 @@ function statsSide(x, cls) {
   if (x?.rec_ko != null) {
     const ws = [["KO", x.rec_ko], ["一本", x.rec_sub ?? 0], ["判定", x.rec_dec ?? 0]];
     const top = Math.max(...ws.map(w => w[1]));
-    way = `<div class="st-way">${ws.map(([l, n]) => `<span class="${n === 0 ? "zero" : n === top ? "top" : ""}"><b>${n}</b>${l}</span>`).join("")}</div>`;
+    way = ws.map(([l, n]) => `<span class="${n === 0 ? "zero" : n === top ? "top" : ""}"><b>${n}</b>${l}</span>`).join("");
   }
   const st = streakText(h);
   return `<div class="st-side ${cls}">
+    ${withNick ? `<div class="st-nick">${x?.nickname ? `“${esc(x.nickname)}”` : ""}</div>` : ""}
     <div class="st-recn">${rec}</div>
-    ${way}
-    ${h.length ? `<div class="st-k">直近${Math.min(5, h.length)}戦${st ? `<span class="st-streak ${h[0].r === "W" ? "w" : "l"}">${st}</span>` : ""}</div>
-    <div class="st-form">${h.slice(0, 5).map(r => resMark(r.r)).join("")}</div>` : ""}
+    <div class="st-way">${way}</div>
+    <div class="st-k">${h.length ? `直近${Math.min(5, h.length)}戦${st ? `<span class="st-streak ${h[0].r === "W" ? "w" : "l"}">${st}</span>` : ""}` : ""}</div>
+    <div class="st-form">${h.slice(0, 5).map(r => resMark(r.r)).join("")}</div>
     <div class="st-k">前戦</div>
     ${h[0] ? histRow(h[0]) : `<div class="st-row"><span class="st-how">データなし</span></div>`}
   </div>`;
 }
 function statsBlock(f) {
   const f1 = FMAP[f.fighter1_id], f2 = FMAP[f.fighter2_id];
-  const more = Math.max(recentOf(f1).length, recentOf(f2).length) > 1;
-  const list = (x, cls) => `<div class="st-side ${cls}">${recentOf(x).slice(0, 5).map(histRow).join("")}</div>`;
+  const withNick = !!(f1?.nickname || f2?.nickname);
+  const n = Math.min(5, Math.max(recentOf(f1).length, recentOf(f2).length));
+  const list = (x, cls) => { const rows = recentOf(x).slice(0, 5).map(histRow);
+    while (rows.length < n) rows.push("<div></div>");
+    return `<div class="st-side ${cls}">${rows.join("")}</div>`; };
   return `<div class="stats">
-    <div class="st-cols">${statsSide(f1, "c1")}${statsSide(f2, "c2")}</div>
-    ${more ? `<details class="st-more" ${statsOpen.has(f.id) ? "open" : ""} ontoggle="statsOpen[this.open ? 'add' : 'delete']('${f.id}')">
+    <div class="st-cols" style="--rows:${withNick ? 7 : 6}">${statsSide(f1, "c1", withNick)}${statsSide(f2, "c2", withNick)}</div>
+    ${n > 1 ? `<details class="st-more" ${statsOpen.has(f.id) ? "open" : ""} ontoggle="statsOpen[this.open ? 'add' : 'delete']('${f.id}')">
       <summary>直近5試合</summary>
-      <div class="st-cols">${list(f1, "c1")}${list(f2, "c2")}</div>
+      <div class="st-cols" style="--rows:${n}">${list(f1, "c1")}${list(f2, "c2")}</div>
     </details>` : ""}
   </div>`;
 }

@@ -978,8 +978,11 @@ tr.top .lb-rate { color: var(--gold-hot); }
 /* 予想カードのスタッツ（戦績・勝ち方・直近5戦・前戦／トグルで直近5試合・Gaku依頼2026-11-07）
    細かい文字ではなく形で見せる：大きな勝敗数／一番多い勝ち方が光る3枠／色の四角の○× */
 .stats { margin: 8px 14px 2px; border: 1px solid var(--line); background: var(--panel2); }
-.st-cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
-.st-side { padding: 10px 10px 10px; min-width: 0; }
+.st-cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: repeat(var(--rows, 6), auto); }
+/* 左右で段の高さをそろえる（片側だけ異名が2行・勝ち方が無い等でも下の段がずれない） */
+.st-side { padding: 10px 10px 10px; min-width: 0; display: grid; grid-row: span var(--rows, 6); grid-template-rows: subgrid; align-content: start; }
+.st-nick { font-size: 12px; font-weight: 700; color: var(--gold-hot); line-height: 1.35; margin-bottom: 6px;
+  word-break: keep-all; overflow-wrap: anywhere; }   /* カタカナ語の途中で切らず「・」で折る */
 .st-side.c1 { border-left: 3px solid var(--red); }
 .st-side.c2 { border-right: 3px solid var(--blue); border-left: 1px solid var(--line); text-align: right; }
 .st-recn { display: flex; flex-wrap: wrap; gap: 2px 6px; align-items: baseline; }
@@ -989,14 +992,15 @@ tr.top .lb-rate { color: var(--gold-hot); }
 .st-n.w b { color: #fff; }
 .st-n.l b { color: #c9707a; }
 .st-n.d b { color: var(--muted); font-size: 16px; margin-left: 2px; }   /* 分・NC は脇役＝小さく（4つ並んでも1行に収める） */
-.st-way { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; margin-top: 9px; }
+.st-way { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; margin-top: 9px; align-self: start; }
+.st-way:empty { margin-top: 0; }
 .st-way span { border: 1px solid var(--line); border-radius: 4px; text-align: center; padding: 3px 0 3px;
   font-size: 10px; font-weight: 700; color: var(--muted); line-height: 1.15; }
 .st-way span b { display: block; font-family: var(--num); font-size: 19px; color: #d8d8de; }
 .st-way span.top { border-color: var(--gold); background: rgba(201, 168, 74, .16); color: var(--gold-hot); }
 .st-way span.top b { color: #fff; }
 .st-way span.zero { opacity: .35; }
-.st-form { display: flex; gap: 3px; align-items: center; margin-top: 4px; }
+.st-form { display: flex; gap: 3px; align-items: center; margin-top: 4px; min-height: 0; }
 .st-side.c2 .st-form { flex-direction: row-reverse; }
 .st-streak { font-size: 11px; font-weight: 900; margin: 0 5px; padding: 1px 6px; border-radius: 3px; letter-spacing: 0; }
 .st-streak.w { color: #7fe0a0; background: rgba(40, 160, 90, .18); }
