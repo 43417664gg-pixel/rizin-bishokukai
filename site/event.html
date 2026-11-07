@@ -7,7 +7,7 @@
 <title>大会予想｜予想番付</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261108015727">
+<link rel="stylesheet" href="css/style.css?v=20261108021056">
 </head>
 <body>
 <div id="app-header"></div>
@@ -15,16 +15,16 @@
 <div class="wrap" id="main"></div>
 <div class="toast" id="toast"></div>
 <div class="wiz" id="wiz" hidden role="dialog" aria-modal="true" aria-label="勝敗予想"></div>
-<div class="pg-spot" id="pg-spot" hidden></div><div class="pick-guide" id="pick-guide" aria-hidden="true"><span class="pg-t"><b class="pg-w">予想を入れる</b><span class="pg-chv"><i></i><i></i></span></span></div>
+<div class="pg-spot" id="pg-spot" hidden></div><div class="pick-guide" id="pick-guide" aria-hidden="true"><span class="pg-t">予想を入れる</span><span class="pg-a"><i class="pg-arw"></i></span></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261108015727"></script>
-<script src="js/techniques.js?v=20261108015727"></script>
-<script src="js/demo-data.js?v=20261108015727"></script>
-<script src="js/api.js?v=20261108015727"></script>
-<script src="js/app.js?v=20261108015727"></script>
-<script src="js/glyph_fit.js?v=20261108015727"></script>
-<script src="js/bishoku_summary.js?v=20261108015727"></script>
+<script src="js/config.js?v=20261108021056"></script>
+<script src="js/techniques.js?v=20261108021056"></script>
+<script src="js/demo-data.js?v=20261108021056"></script>
+<script src="js/api.js?v=20261108021056"></script>
+<script src="js/app.js?v=20261108021056"></script>
+<script src="js/glyph_fit.js?v=20261108021056"></script>
+<script src="js/bishoku_summary.js?v=20261108021056"></script>
 <script>
 let EV, PHASE, FIGHTS, FMAP, MEMBERS, myPreds = {}, allPreds = [], ALL_SUPPORTS = [];
 
@@ -109,9 +109,19 @@ function fightLabel(f) {
     ? `<span class="fl-t title-label">${esc(f.title_label)}</span>${wc && !f.title_label.includes(wc) ? `<span class="fl-t">${esc(wc)}</span>` : ""}`
     : wc ? `<span class="fl-t">${esc(wc)}</span>` : "";
   return `<span class="fno">${f.segment === "opening" ? "OP " : ""}第<b>${f.order_no}</b>試合</span>${t}
-    ${f.weight_class && f.weight_class !== wc && !f.title_label?.includes(wc) ? `<span class="fl-kg">${esc(f.weight_class)}</span>` : ""}
-    ${f.no_score ? `<span class="ns-badge">⚠️ ${esc(f.no_score_note || "体重超過")}｜予想対象外</span>` : ""}
-    ${f.event_only ? `<span class="ns-badge">${esc(f.event_only_note || "MMA以外のルール")}｜予想は任意・通算対象外</span>` : ""}`;
+    ${f.weight_class && f.weight_class !== wc && !f.title_label?.includes(wc) ? `<span class="fl-kg">${esc(f.weight_class)}</span>` : ""}`;
+}
+// 体重超過・MMA以外の注意書き。読ませたいので写真には重ねず、写真の下に段で出す
+const fightWarn = (f) => `${f.no_score ? `<span class="ns-badge">⚠️ ${esc(f.no_score_note || "体重超過")}｜予想対象外</span>` : ""}
+    ${f.event_only ? `<span class="ns-badge">${esc(f.event_only_note || "MMA以外のルール")}｜予想は任意・通算対象外</span>` : ""}`.trim();
+// カードの頭。試合番号と階級はカード写真の左上に重ねる（Gaku 11/8「この位置じゃなくてカード写真の左上じゃない？」）。
+// 写真の無い試合は今まで通り段で出す
+function cardHead(f) {
+  const warn = fightWarn(f);
+  return f.image_url
+    ? `<div class="banner"><img src="${esc(f.image_url)}" alt="" loading="lazy"><div class="fight-label on-photo">${fightLabel(f)}</div></div>
+      ${voteBar(f)}${warn ? `<div class="fight-label">${warn}</div>` : ""}`
+    : `${voteBar(f)}<div class="fight-label">${fightLabel(f)}${warn}</div>`;
 }
 
 // 選手名から名鑑へ飛ぶリンク行。「名鑑」の語は出さず、何が起きるかを言う（Gaku 11/7「『名鑑』は『福田龍彌をもっと詳しく』みたいに」）。
@@ -207,9 +217,7 @@ function predictCard(f) {
   };
   return `
     <div class="fight-card${p.winner_id ? " confirmed" : ""}" id="fc_${f.id}">
-      ${f.image_url ? `<div class="banner"><img src="${esc(f.image_url)}" alt="" loading="lazy"></div>` : ""}
-      ${voteBar(f)}
-      <div class="fight-label">${fightLabel(f)}</div>
+      ${cardHead(f)}
       ${statsBlock(f)}
       ${profileLinks(f)}
       <div class="pick-zone">
@@ -229,9 +237,7 @@ function previewCard(f) {
   const f1 = FMAP[f.fighter1_id], f2 = FMAP[f.fighter2_id];
   return `
     <div class="fight-card" id="fc_${f.id}">
-      ${f.image_url ? `<div class="banner"><img src="${esc(f.image_url)}" alt="" loading="lazy"></div>` : ""}
-      ${voteBar(f)}
-      <div class="fight-label">${fightLabel(f)}</div>
+      ${cardHead(f)}
       ${statsBlock(f)}
       ${profileLinks(f)}
       <div class="pick-zone">
@@ -255,9 +261,7 @@ function cancelledCard(f) {
   return `
     <div class="fight-card cancelled" id="fc_${f.id}">
       <div class="cancel-stamp">CANCELLED</div>
-      ${f.image_url ? `<div class="banner"><img src="${esc(f.image_url)}" alt="" loading="lazy"></div>` : ""}
-      ${voteBar(f)}
-      <div class="fight-label">${fightLabel(f)}</div>
+      ${cardHead(f)}
       <div class="vs-row">
         ${cornerBox(f, 1, { cls: "disabled" })}
         <span class="vs-mark">VS</span>
@@ -331,9 +335,7 @@ function resultCard(f) {
   }
   return `
     <div class="fight-card" id="fc_${f.id}">
-      ${f.image_url ? `<div class="banner"><img src="${esc(f.image_url)}" alt="" loading="lazy"></div>` : ""}
-      ${voteBar(f)}
-      <div class="fight-label">${fightLabel(f)}</div>
+      ${cardHead(f)}
       ${statsBlock(f)}
       ${profileLinks(f)}
       <div class="pick-zone">
@@ -402,15 +404,13 @@ function voteBar(f) {
   const picks = allPreds.filter(p => p.fight_id === f.id);
   const n = picks.length;
   if (!n) return "";
-  const f1 = FMAP[f.fighter1_id], f2 = FMAP[f.fighter2_id];
+  // バーの下に「神龍誠 60%｜40% トニー・ララミー」と名前と割合を並べていたが、バーの中の数字と左右（赤＝写真の左・青＝右）で読めるので外した
+  // （Gaku 11/8「ここいらなくね？」）
   const n1 = picks.filter(p => p.winner_id === f.fighter1_id).length;
   const p1 = Math.round(n1 / n * 100), p2 = 100 - p1;
   return `
     <div class="votebar" style="margin:8px 0 4px">
       <div class="vb">${p1 ? `<i class="r" style="flex:${p1}">${p1 >= 12 ? p1 + "%" : ""}</i>` : ""}${p2 ? `<i class="b" style="flex:${p2}">${p2 >= 12 ? p2 + "%" : ""}</i>` : ""}</div>
-      <div style="display:flex;justify-content:space-between;font-size:11px;color:#888;margin-top:3px">
-        <span>${fnm(f1?.name)} ${p1}%</span><span>${p2}% ${fnm(f2?.name)}</span>
-      </div>
     </div>`;
 }
 
@@ -610,7 +610,7 @@ function updateGuide() {
   arriveGuide(g, z);
 }
 // 照らす（Gaku 11/8「他が暗くなってボタンだけがハイライト」「流れるように繋がってる」）。浮く札がそのまま光になって飛んでいく：
-// 照明の穴は浮く札の位置・大きさから始まり、周りが暗くなりながら、行き過ぎて戻る動きで「どっちが勝つ？」と2人の札を囲む大きさまで飛ぶ。
+// 照明の穴は浮く札（赤青2枚ぶん）の位置・大きさから始まり、周りが暗くなりながら、行き過ぎて戻る動きで「どっちが勝つ？」と2人の札を囲む大きさまで飛ぶ。
 // 飛ぶ間もスクロールに付いていく（行き先を毎こま測り直す）。着いたら2人の札が交互に光る。3.4秒か画面に触れたら明かりが戻る
 // （照明は指を通すので、そのまま札を押せる）
 function arriveGuide(g, z) {
@@ -618,7 +618,7 @@ function arriveGuide(g, z) {
   const put = q => Object.assign(spot.style, { left: q.l + "px", top: q.t + "px", width: q.w + "px", height: q.h + "px" });
   const to = () => { const a = head.getBoundingClientRect(), b = row.getBoundingClientRect(), l = Math.min(a.left, b.left);
     return { l: l - pad, t: a.top - pad, w: Math.max(a.right, b.right) - l + pad * 2, h: b.bottom - a.top + pad * 2 }; };
-  const s = g.querySelector(".pg-t").getBoundingClientRect(), from = { l: s.left, t: s.top, w: s.width, h: s.height };
+  const s = g.getBoundingClientRect(), from = { l: s.left, t: s.top, w: s.width, h: s.height };
   const T = matchMedia("(prefers-reduced-motion: reduce)").matches ? 1 : 620, t0 = performance.now();
   const back = k => 1 + 2.7 * (k - 1) ** 3 + 1.7 * (k - 1) ** 2;   // 1割ほど行き過ぎて戻る（デフォルメ）
   put(from);
@@ -693,7 +693,7 @@ function drawWiz(pop) {
   const bar = `<span class="ep-bar wiz-bar">${L.map((x, k) =>
     `<i class="${wizSaved(x) ? "on" : ""}${k === WIZ.i ? " cur" : ""}" onclick="wizGo(${k})"></i>`).join("")}</span>`;
   const head = (h) => `<div class="wiz-top"><button type="button" class="wiz-x" onclick="closeWiz()" aria-label="閉じる">×</button>${bar}</div>
-    <div class="wiz-q"><div class="fight-label">${fightLabel(f)}</div>${WIZ.step === "win" || WIZ.step === "ok" ? "" : wizWho(f, p.winner_id)}<h2 class="wiz-h">${h}</h2></div>`;
+    <div class="wiz-q"><div class="fight-label">${fightLabel(f)}${fightWarn(f)}</div>${WIZ.step === "win" || WIZ.step === "ok" ? "" : wizWho(f, p.winner_id)}<h2 class="wiz-h">${h}</h2></div>`;
   const back = `<button type="button" onclick="wizBack()" ${WIZ.i === 0 && !WIZ.trail.length ? "disabled" : ""}>‹ 戻る</button>`;
   const nav = (right) => `<div class="wiz-nav">${back}${right}</div>`;
   const skip = `<button type="button" onclick="wizSkip()">入れない ›</button>`;
