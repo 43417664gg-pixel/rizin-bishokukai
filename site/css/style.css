@@ -1155,17 +1155,22 @@ span.mav.sq { border-radius: 12%; }   /* 抜き太郎だけ正方形（Gaku指�
 /* 応援：見出し文字（「応援」「📣」）を出さず、メガホンの形とコーナー色だけで伝える（Gaku 11/7「応援も無駄な文字」）。
    赤は左から・青は右から伸びる斜めの札。押した側はコーナー色で塗る。数は Oswald */
 .support-row { display: flex; gap: 6px; margin: 12px 14px 4px; }
-.sup-btn { --sl: 10px; flex: 1; min-width: 0; display: flex; align-items: center; gap: 6px; height: 40px; padding: 0 14px 0 10px;
+.sup-btn { --sl: 10px; flex: 1; min-width: 0; display: flex; align-items: center; gap: 6px; min-height: 40px; padding: 5px 14px 5px 10px;
   border: 0; cursor: pointer; color: #b9b9c6; font: 700 12.5px/1.2 "Noto Sans JP", sans-serif; text-align: left; }
 .sup-btn.c1 { background: linear-gradient(90deg, rgba(230, 0, 18, .22), rgba(230, 0, 18, .04) 75%);
   clip-path: polygon(0 0, 100% 0, calc(100% - var(--sl)) 100%, 0 100%); }
-.sup-btn.c2 { flex-direction: row-reverse; padding: 0 10px 0 14px; text-align: right;
+.sup-btn.c2 { flex-direction: row-reverse; padding: 5px 10px 5px 14px; text-align: right;
   background: linear-gradient(270deg, rgba(30, 111, 217, .24), rgba(30, 111, 217, .04) 75%);
   clip-path: polygon(var(--sl) 0, 100% 0, 100% 100%, 0 100%); }
 .sup-btn.long { font-size: 11px; }
 .sup-btn .mega { flex: none; width: 16px; height: 16px; fill: currentColor; opacity: .75; }
 .sup-btn.c2 .mega { transform: scaleX(-1); }
-.sup-nm { flex: 1; min-width: 0; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.sup-t { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.sup-t small { font: 700 9.5px/1 "Noto Sans JP", sans-serif; letter-spacing: .2em; margin-bottom: 3px; }
+.sup-btn.c1 .sup-t small { color: #ff8a93; }
+.sup-btn.c2 .sup-t { align-items: flex-end; }
+.sup-btn.c2 .sup-t small { color: #8ab8ff; }
+.sup-nm { min-width: 0; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
 .sup-n { flex: none; font: 700 17px/1 var(--num); color: var(--text); }
 .sup-btn.sel { color: #fff; }
 .sup-btn.sel .mega { opacity: 1; }
