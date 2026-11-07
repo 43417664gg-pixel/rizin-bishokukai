@@ -7,7 +7,7 @@
 <title>大会予想｜予想番付</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261107181153">
+<link rel="stylesheet" href="css/style.css?v=20261107182524">
 </head>
 <body>
 <div id="app-header"></div>
@@ -16,11 +16,11 @@
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261107181153"></script>
-<script src="js/techniques.js?v=20261107181153"></script>
-<script src="js/demo-data.js?v=20261107181153"></script>
-<script src="js/api.js?v=20261107181153"></script>
-<script src="js/app.js?v=20261107181153"></script>
+<script src="js/config.js?v=20261107182524"></script>
+<script src="js/techniques.js?v=20261107182524"></script>
+<script src="js/demo-data.js?v=20261107182524"></script>
+<script src="js/api.js?v=20261107182524"></script>
+<script src="js/app.js?v=20261107182524"></script>
 <script>
 let EV, PHASE, FIGHTS, FMAP, MEMBERS, myPreds = {}, allPreds = [], ALL_SUPPORTS = [];
 let drafts = {};              // 決定前の編集中の選択（ローカルのみ）
@@ -89,6 +89,11 @@ async function toggleSupport(fightId, fighterId) {
     else await DB.upsertSupport({ member_id: mid, fight_id: fightId, fighter_id: fighterId });
     ALL_SUPPORTS = await DB.listSupports({ fightIds: FIGHTS.map(f => f.id) });
     replaceCard(fightId);
+    // 「みんなの予想」と全員の予想一覧にも応援が出るので貼り直す
+    const op = document.getElementById("op_" + fightId);
+    if (op) op.outerHTML = othersBlock(FIGHTS.find(x => x.id === fightId));
+    const box = document.getElementById("matrix-section");
+    if (box) box.innerHTML = allPicksMatrix();
     toast("📣 応援を更新した");
   } catch (e) { toast("応援テーブルが未作成かも（要SQL）"); }
 }
@@ -385,20 +390,32 @@ function picksRows(f) {
     .map(p => ({ p, m: MEMBERS.find(m => m.id === p.member_id), s: decided ? scoreFight(p, f) : null }))
     // 3人を最上部に固定 → その中/外で見せ場順（あらます>ピタリ>的中）
     .sort((a, b) => friendRank(a.p.member_id) - friendRank(b.p.member_id) || predRank(b.s) - predRank(a.s));
-  if (!preds.length) return `<div class="pred-row"><span class="pdetail">まだ予想なし</span></div>`;
+  // 応援📣も各行に出す（予想とは別軸）。応援だけして予想していない人も行を出す
+  const sups = ALL_SUPPORTS.filter(s => s.fight_id === f.id);
+  const supTag = (mid) => {
+    const sup = sups.find(s => s.member_id === mid);
+    return sup ? `<span class="psup ${sup.fighter_id === f.fighter1_id ? "r" : "b"}">📣 ${esc(FMAP[sup.fighter_id]?.name)}</span>` : "";
+  };
+  const cheerOnly = sups.filter(s => !preds.some(x => x.p.member_id === s.member_id))
+    .map(s => MEMBERS.find(m => m.id === s.member_id)).filter(Boolean)
+    .sort((a, b) => friendRank(a.id) - friendRank(b.id));
+  if (!preds.length && !cheerOnly.length) return `<div class="pred-row"><span class="pdetail">まだ予想なし</span></div>`;
   return preds.map(({ p, m, s }) => {
     const kim = p.method === "DEC" ? "判定" : (p.technique ? TECH_LABEL[p.technique] : null);
     const detail = [FMAP[p.winner_id]?.name, kim, (p.method !== "DEC" && p.round) ? `${p.round}R` : null].filter(Boolean).join("・");
-    if (!s || !s.counted) return `<div class="pred-row"><span class="pwho">${avatarHTML(m, "pava")}${esc(m?.name)}</span><span class="pdetail">${esc(detail)}</span></div>`;
+    if (!s || !s.counted) return `<div class="pred-row"><span class="pwho">${avatarHTML(m, "pava")}${esc(m?.name)}</span><span class="pdetail">${esc(detail)}</span>${supTag(p.member_id)}</div>`;
     const tier = s.pitari ? `<span class="ptier pitari">ピタリ!</span>`
       : s.winnerHit ? `<span class="ptier">的中</span>` : "";
     return `<div class="pred-row ${s.winnerHit ? "hit" : "miss"}">
       <span class="hitmark">${s.winnerHit ? "○" : "×"}</span>
       <span class="pwho">${avatarHTML(m, "pava")}${esc(m?.name)}</span>
       <span class="pdetail">${esc(detail)}</span>
+      ${supTag(p.member_id)}
       ${tier}
     </div>`;
-  }).join("");
+  }).join("") + cheerOnly.map(m =>
+    `<div class="pred-row"><span class="pwho">${avatarHTML(m, "pava")}${esc(m.name)}</span><span class="pdetail">予想なし</span>${supTag(m.id)}</div>`
+  ).join("");
 }
 
 // その試合で「全員の勝者予想が揃っているか」を判定する。

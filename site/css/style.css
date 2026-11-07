@@ -972,3 +972,5 @@ tr.top .lb-rate { color: var(--gold-hot); }
 }
 .pava { width: 18px; height: 18px; font-size: 10px; margin-right: 6px; }
 .pred-row .pwho { display: inline-flex; align-items: center; }
+.pred-row .psup { font-size: 11px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 45%; }
+.pred-row .psup.r { color: #ff5a67; } .pred-row .psup.b { color: #5aa0ff; }
