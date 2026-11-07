@@ -68,14 +68,14 @@ const CSS = `
   .ic.tri::after, .ci.tri::after { --b:calc(4px * var(--u) + 1px); inset:calc(var(--b) * 1.506) calc(var(--b) * 1.292) calc(var(--b) * 1.078);
         background:radial-gradient(circle at 44% 62%, color-mix(in srgb, var(--c) 58%, #fff) 0%, var(--c) 46%, color-mix(in srgb, var(--c) 52%, #000) 100%); }
   /* 頭文字は字の実際の形で真ん中に、大きさを揃えて（Gaku 11/8「丸とか中心じゃない」「文字で大きさが異なりすぎ」・style.css の span.mav と同じ比率）。
-     --gs/--gx/--gy は app.js の fitGlyph が1字ずつ測って入れる。三角は重心に置き、丸・四角と同じ大きさに見える50%（「ハだけ小さい？」） */
+     --gs/--gx/--gy は app.js の fitGlyph が1字ずつ測って入れる。三角は中心から高さの7%下（重心では「ハの位置が下すぎる」）、丸・四角と同じ大きさに見える50%（「ハだけ小さい？」） */
   .ic > i, .ci > i { --k:calc(var(--ic) * .53); font-style:normal; display:inline-block; line-height:1; font-size:calc(var(--k) * var(--gs, 1.14));
         transform:translate(calc(var(--gx, 0) * 1em), calc(var(--gy, 0) * 1em)); }
   .ci > i { --k:calc(var(--ci) * .53); }
   .ic.sq > i { --k:calc(var(--ic) * .56); }
   .ci.sq > i { --k:calc(var(--ci) * .56); }
-  .ic.tri > i { --k:calc(var(--ic) * .5); position:relative; top:calc(var(--ic) * .15); }
-  .ci.tri > i { --k:calc(var(--ci) * .5); position:relative; top:calc(var(--ci) * .15); }
+  .ic.tri > i { --k:calc(var(--ic) * .5); position:relative; top:calc(var(--ic) * .07); }
+  .ci.tri > i { --k:calc(var(--ci) * .5); position:relative; top:calc(var(--ci) * .07); }
   .ic.lt, .ci.lt { color:#1a1408; text-shadow:none; }   /* 金など明るい塗り＝白い字が沈むので黒字 */
   /* 縁の色＝寮の差し色（ハメ＝金・抜き＝銀・丸山＝黒・Gaku指定11/7）。正本は demo-data.js の members[].trim。
      字は寮の色にしない＝白（明るい塗りだけ黒）。「色は背景であって、中の文字は視認性優先」（Gaku 11/7） */
