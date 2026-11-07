@@ -50,16 +50,11 @@ img { max-width: 100%; display: block; }
   max-width: 720px; margin: 0 auto; padding: 11px 14px;
   display: flex; align-items: center; gap: 8px;
 }
-/* ロゴは赤い札に白の極太（Gaku 11/7「予想番付・大会/ランキング/選手のところもちゃっちい」） */
-/* 字の上下は「字の形」で揃える（Gaku 11/8「ロゴも上下文字位置確認して」）：Noto Sans JP は行の箱が字の形より下に深く、
-   箱で中央にすると字が 0.056em（15pxで0.8px）下がる。上の余白を削って下へ回す＝札の高さは変えない（ロゴ 7/6 だと字の上 7.7・下 6.1） */
-.brand {
-  flex: none; padding: 6.2px 11px 6.8px 10px; white-space: nowrap;
-  font: 900 15px/1 "Noto Sans JP", sans-serif; letter-spacing: .1em; color: #fff;
-  background: linear-gradient(180deg, var(--red-hot), var(--red));
-  clip-path: polygon(7px 0, 100% 0, calc(100% - 7px) 100%, 0 100%);
-  box-shadow: 0 0 18px rgba(230, 0, 18, .35);
-}
+/* ロゴ＝Gaku の描いたロゴ画像（11/8「予想番付のロゴ変わってないじゃん」・予想/付＝白・番＝赤に斬り線）。
+   原本は Projects/RIZIN/logo/yosou_banzuke_logo_original.png（透過PNG）。ここでは余白を切った 360px 幅を高さで縮めて置く。
+   赤い札は敷かない＝番の赤が札に溶けるため。高さ19px＝幅83px：375px幅でナビの「選手」が右上の名前の札に重ならない上限（22px だと 13px はみ出した） */
+.brand { flex: none; display: block; line-height: 0; }
+.brand img { display: block; height: 19px; width: auto; }
 .header-inner nav { display: flex; gap: 0; flex: 1; min-width: 0; }
 .nav-link {
   position: relative; padding: 8.6px 7px 10.4px; white-space: nowrap;   /* 字の形の中心をロゴの字と同じ高さに（9/10 だと 0.4px 下） */

@@ -147,7 +147,7 @@
       `<a href="${href}" class="nav-link${active === key ? " active" : ""}">${label}</a>`;
     el.innerHTML = `
       <div class="header-inner">
-        <a class="brand" href="index.html">予想番付</a>
+        <a class="brand" href="index.html"><img src="assets/logo/yosou_banzuke.png" alt="予想番付" width="360" height="82"></a>
         <nav>
           ${link("index.html", "大会", "home")}
           ${link("ranking.html", "ランキング", "ranking")}
