@@ -7,7 +7,7 @@
 <title>ランキング｜予想番付</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261107202133">
+<link rel="stylesheet" href="css/style.css?v=20261107203059">
 <style>
 /* ランキングを1枚のカードにする（2026-10-20）：スクショ単体でXに貼れるよう、
    ブランド・集計対象・サイトURLをカードの中に入れる。名前をタップ→その人の戦績へ。 */
@@ -69,11 +69,11 @@ a.lb-name:active { color:var(--gold-hot); }
 <div class="wrap" id="main"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261107202133"></script>
-<script src="js/techniques.js?v=20261107202133"></script>
-<script src="js/demo-data.js?v=20261107202133"></script>
-<script src="js/api.js?v=20261107202133"></script>
-<script src="js/app.js?v=20261107202133"></script>
+<script src="js/config.js?v=20261107203059"></script>
+<script src="js/techniques.js?v=20261107203059"></script>
+<script src="js/demo-data.js?v=20261107203059"></script>
+<script src="js/api.js?v=20261107203059"></script>
+<script src="js/app.js?v=20261107203059"></script>
 <script>
 let EVENTS, MEMBERS, ALL_FIGHTS, ALL_PREDS, FMAP = {};
 let checked = new Set();   // 集計対象の大会ID
@@ -154,16 +154,6 @@ function render() {
         </label>`).join("")}
     </div>
 
-    <div class="section-label">称号ラダー</div>
-    <div style="display:flex;flex-direction:column;gap:6px;margin:8px 0 4px">
-      ${TIERS.map(t => `
-        <div style="display:flex;align-items:center;gap:10px;padding:9px 12px;background:#131318;border-left:3px solid ${t.color};border-radius:6px">
-          <span style="font-size:20px">${t.icon}</span>
-          <b style="color:${t.color};min-width:96px;font-size:14px">${t.name}</b>
-          <span style="font-size:12px;color:#9a9aa2">${t.min > 0 ? `的中率 ${Math.round(t.min * 100)}% 以上` : "それ未満／記録が溜まるまで"}</span>
-        </div>`).join("")}
-    </div>
-    <p class="ladder-note">※ 結果の出た予想が <b>${window.TIER_MIN_DECIDED}試合</b> 溜まると称号がつく。<br>
       ${unranked.length ? `
       <div class="rk-unranked">
         <div class="rk-un-ttl">ランク外（通算${window.CAREER_MIN}試合からランクイン）</div>
@@ -177,7 +167,7 @@ function render() {
       <b>勝者を当てた数</b>で並べる。同じ数なら的中率が高い方が上。<br>
       <b>ピタリ</b>（決まり手＋ラウンドまで一致・判定は「判定」で一致）は上の「🎯 ピタリ」タブで。<br>
       通算は結果の出た予想8試合からランクイン（美食会の3人はいつでも掲載）。<br>
-      予想しなかった試合・中止・体重超過・ドロー・無効試合は数えない。</p>`;
+      予想しなかった試合・中止・体重超過・ドロー・無効試合は数えない。`;
 }
 
 // 同じ成績は同じ順位（1,1,3…）

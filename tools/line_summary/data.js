@@ -13,7 +13,7 @@ window.LDATA = {
   },
   {
    "id": "m_maruyama",
-   "name": "丸山探偵事務所",
+   "name": "丸山先生",
    "color": "#d4af37"
   }
  ],
@@ -656,5 +656,5 @@ window.LDATA = {
    }
   }
  },
- "built_at": "11/7 20:13"
+ "built_at": "11/7 20:30"
 };

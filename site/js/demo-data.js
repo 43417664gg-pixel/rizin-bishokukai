@@ -5,7 +5,7 @@ window.DEMO_SEED = {
   members: [
     { id: "m_hame", name: "ハメ太郎", color: "#e60012" },
     { id: "m_nuki", name: "抜き太郎", color: "#1e6fd9" },
-    { id: "m_maruyama", name: "丸山探偵事務所", color: "#d4af37" },
+    { id: "m_maruyama", name: "丸山先生", color: "#d4af37" },
   ],
 
   fighters: [

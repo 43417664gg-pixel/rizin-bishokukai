@@ -986,6 +986,7 @@ tr.top .lb-rate { color: var(--gold-hot); }
 .st-head { display: flex; align-items: baseline; gap: 6px; min-width: 0; margin-bottom: 8px; }
 .st-side.c2 .st-head { flex-direction: row-reverse; }
 .st-name { flex: 0 1 auto; min-width: 0; font-size: 15px; font-weight: 900; line-height: 1.3; overflow-wrap: anywhere; }
+.st-age { flex: none; font-size: 11px; font-weight: 700; color: var(--muted); white-space: nowrap; }   /* 年齢は名前の横に小さく（Gaku指示11/7） */
 .st-nick { flex: 1 1 0; min-width: 0; font-size: 11px; font-weight: 700; color: var(--muted); line-height: 1.35;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 /* 勝ち方のバー：左右で必ず同じ置き方にする（片側だけ折り返すと高さがずれた・Gaku指摘11/7）。
@@ -1033,8 +1034,9 @@ tr.top .lb-rate { color: var(--gold-hot); }
 .sb-lab .zero { opacity: .4; }
 @media (max-width: 480px) {   /* スマホでは3つを1行に収める */
   .st-side { padding-left: 8px; padding-right: 8px; }
-  .st-head { flex-wrap: wrap; row-gap: 0; }   /* 半分の幅に名前と異名は並びきらない＝異名は名前の下に1行（途中で折らず…で切る） */
-  .st-nick { flex: 1 0 100%; }
+  .st-head { flex-wrap: wrap; row-gap: 0; }   /* 半分の幅に並びきらない＝1行目に名前、2行目に「年齢 “異名”」（異名は途中で折らず…で切る） */
+  .st-name { flex: 1 0 100%; }
+  .st-nick { flex: 1 1 0; }
   .sb-lab { gap: 2px 0; font-size: 9px; }   /* 間隔は space-between に任せる（375pxで3つが1行に入る） */
   .sb-lab b { font-size: 12px; margin-left: 2px; }
   .sb-lab span::before { width: 5px; height: 5px; margin-right: 2px; }
