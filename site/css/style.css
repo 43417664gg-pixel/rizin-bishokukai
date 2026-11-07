@@ -322,9 +322,16 @@ img { max-width: 100%; display: block; }
 .fight-label .fno { flex: none; font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: .04em; white-space: nowrap; }
 .fight-label .fno b { font: 700 28px/1 var(--num); color: #f4f1ea; margin: 0 2px; letter-spacing: 0; }
 .fight-label .fl-t { white-space: nowrap; }
-/* 題（タイトルマッチ）は金の字。ベタ塗りでなく上が明るく下が沈む金属の金（Gaku 11/8「文字ベタじゃなくて、金字とかにする？」） */
-.fight-label .title-label { background: linear-gradient(180deg, #fbe7a3 8%, #e8c158 46%, #b5862b 54%, #e4bf62 92%);
-  -webkit-background-clip: text; background-clip: text; color: transparent; }
+/* 題（タイトルマッチ）は金の字。ベタ塗りでなく上が明るく下が沈む金属の金（Gaku 11/8「文字ベタじゃなくて、金字とかにする？」）。
+   その上を光の筋がときどき横切る（「光っているような特別感」）＝2枚目の背景だけを動かす */
+.fight-label .title-label {
+  background: linear-gradient(105deg, transparent 40%, rgba(255, 250, 225, .95) 50%, transparent 60%) 250% 0 / 220% 100% no-repeat,
+              linear-gradient(180deg, #fbe7a3 8%, #e8c158 46%, #b5862b 54%, #e4bf62 92%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  animation: goldShine 4.8s ease-in-out 1s infinite;
+}
+@keyframes goldShine { 0%, 55% { background-position: 250% 0, 0 0; } 100% { background-position: -150% 0, 0 0; } }   /* 220%幅の背景は位置%が逆向き＝250%→-150%で左から右へ */
+@media (prefers-reduced-motion: reduce) { .fight-unit.title::before, .fight-unit.title > .aura, .fight-label .title-label { animation: none; } }
 /* 階級の直後に（61.0kg）＝離さない（Gaku 11/8）。小さく「級」に寄せて添える（「小さめで級の字に近づけて。添える感じ」）：
    全角括弧の左の空き（半角分）を palt で詰める */
 .fight-label .fl-kg { font-size: 11px; font-weight: 700; color: var(--muted); letter-spacing: .02em; font-feature-settings: "palt"; margin-left: 1px; }
@@ -857,14 +864,54 @@ tr.top .lb-rate { color: var(--gold-hot); }
 .fight-unit > .fight-card { margin-bottom: 0; }
 .fight-unit > .fight-card:has(+ .ob-picks) { clip-path: none; border-bottom: 0; }
 .fight-unit > .ob-picks { margin: 0; }
-/* タイトルマッチは1試合のかたまり全体（カード＋みんなの予想）をほんのり金の細い縁で囲む（Gaku 11/8「ほんのり金で囲もう。そのエリア全体を」）。
-   中の地は塗らない＝予想のアイコンがくすまない。縁を切り欠きの角まで沿わせるため、かたまり自体を1px大きい金の札にして中の札を載せる
-   （角の切り欠きは中の札＋0.6px＝斜めの縁も1pxの太さになる）。中の札の縁は消す。一致／割れの左の帯は下の規則が後から描くので残る */
-.fight-unit.title { --cut: 10.6px; padding: 1px;
-  background: linear-gradient(160deg, rgba(240, 205, 90, .8), rgba(212, 175, 55, .32) 45%, rgba(212, 175, 55, .6));
-  clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%); }
+/* タイトルマッチは1試合のかたまり全体（カード＋みんなの予想）を金で囲む（Gaku 11/8「ほんのり金で囲もう。そのエリア全体を」
+   →「光っているようなオーラが出ているような特別感。ただの線囲みだとつまんない。金の煙に覆われてるような」）。3枚重ね：
+   ::before＝外の金の煙。縁のまわりに濃淡のある金の靄をぼかして置き、ゆっくり揺らす。横は画面の余白（14px）の内側に収める＝横スクロールを生まない
+   ::after ＝金の細い縁。かたまりより1px大きい金の札を後ろに敷き、はみ出た1pxが縁に見える（切り欠きは中の札＋0.6px＝斜めも1pxの太さ）
+   .aura   ＝カードの縁にかかる靄（screen で重ねる＝暗い所だけ金に光る）。上の題の段と四辺の際だけ・真ん中は塗らない＝予想のアイコンがくすまない */
+.fight-unit.title { --cut: 10.6px; position: relative; isolation: isolate; }
 .fight-unit.title:not(:has(> .ob-picks)) { --cut: 12.6px; }
 .fight-unit.title > :where(.fight-card, .ob-picks) { border-color: transparent; }
+.fight-unit.title::after {
+  content: ""; position: absolute; inset: -1px; z-index: -1; pointer-events: none;
+  background: linear-gradient(160deg, #ffe48a, rgba(212, 175, 55, .6) 40%, #f0cd5a);
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%);
+}
+.fight-unit.title::before {
+  content: ""; position: absolute; inset: -34px -12px; z-index: -2; pointer-events: none;
+  background:
+    radial-gradient(170px 44px at 16% 26px, rgba(255, 236, 170, 1), transparent 72%),
+    radial-gradient(210px 38px at 62% 24px, rgba(232, 193, 88, .8), transparent 72%),
+    radial-gradient(120px 40px at 94% 30px, rgba(255, 240, 180, 1), transparent 72%),
+    radial-gradient(22px 220px at 8px 16%, rgba(246, 210, 100, .8), transparent 72%),
+    radial-gradient(20px 300px at 7px 52%, rgba(212, 175, 55, .6), transparent 72%),
+    radial-gradient(22px 200px at 9px 84%, rgba(240, 205, 90, .7), transparent 72%),
+    radial-gradient(22px 260px at calc(100% - 8px) 30%, rgba(240, 205, 90, .75), transparent 72%),
+    radial-gradient(20px 240px at calc(100% - 7px) 68%, rgba(212, 175, 55, .6), transparent 72%),
+    radial-gradient(180px 40px at 30% calc(100% - 28px), rgba(246, 210, 100, .85), transparent 72%),
+    radial-gradient(140px 36px at 80% calc(100% - 30px), rgba(212, 175, 55, .7), transparent 72%),
+    linear-gradient(rgba(240, 205, 90, .5), rgba(240, 205, 90, .5)) center / calc(100% - 6px) calc(100% - 52px) no-repeat;   /* 光の芯＝カードの外へ8〜9pxの帯。ぼかすと四辺を包む後光になる */
+  filter: blur(9px); will-change: transform, opacity;
+  animation: goldSmoke 5s ease-in-out infinite alternate;
+}
+@keyframes goldSmoke {
+  0%   { opacity: .6; transform: translateY(4px); }
+  50%  { opacity: 1; }
+  100% { opacity: .75; transform: translateY(-6px); }
+}
+.fight-unit.title > .aura {
+  position: absolute; inset: 0; z-index: 3; pointer-events: none; mix-blend-mode: screen;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--cut) + .6px), calc(100% - var(--cut) + .6px) 100%, 0 100%);
+  background:
+    radial-gradient(150px 40px at 14% 0, rgba(255, 220, 120, .42), transparent 75%),
+    radial-gradient(170px 34px at 72% 0, rgba(240, 200, 90, .32), transparent 75%),
+    linear-gradient(180deg, rgba(212, 175, 55, .2), transparent 64px),
+    linear-gradient(90deg, rgba(240, 205, 90, .2), transparent 14px),
+    linear-gradient(270deg, rgba(240, 205, 90, .2), transparent 14px),
+    linear-gradient(0deg, rgba(212, 175, 55, .18), transparent 36px);
+  animation: goldBreath 5s ease-in-out infinite alternate;
+}
+@keyframes goldBreath { 0% { opacity: .55; } 100% { opacity: 1; } }
 
 /* ===== 予想の一致／割れ を瞬間で視認 ===== */
 /* 併記ブロック：一致は金の左帯、割れは赤の左帯 */
