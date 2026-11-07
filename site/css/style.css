@@ -1056,13 +1056,14 @@ span.mav.tri::after { inset: 2.26px 1.94px 1.62px;
 /* 頭文字は枠の真ん中に、大きく（Gaku 11/8「位置は真ん中に。サイズは枠いっぱいに読みやすさ重視で」→「ギリギリは言い過ぎた」
    →「やっぱ位置がズレてる。丸とか中心じゃない」「それぞれの文字で大きさが異なりすぎ」）。
    字の箱ではなく字の実際の形で揃える：app.js の fitGlyph が1字ずつ測った --gs（1÷外形の長辺）と --gx/--gy（外形の中心のずれ）を使い、
-   外形の長辺が丸は枠の53%・正方形は56%・三角は39%になる大きさで、外形の中心を枠の中心に置く。大きさは枠の幅に比例（cqw）＝18pxでも50pxでも同じ比率。
-   三角は字を重心（枠の中心から高さの15%下）に置き、狭い頭にかからない大きさにする */
+   外形の長辺が丸は枠の53%・正方形は56%・三角は50%になる大きさで、外形の中心を枠の中心に置く。大きさは枠の幅に比例（cqw）＝18pxでも50pxでも同じ比率。
+   三角は字を重心（枠の中心から高さの15%下）に置く。39%では「ハだけ小さい？」（Gaku 11/8）＝丸・四角と並べて同じ大きさに見える50%へ。
+   ハは字の形自体が上すぼまりなので、狭い頭にかからない */
 span.mav { container-type: size; }
 span.mav > i { --k: 53cqw; font-style: normal; display: inline-block; line-height: 1; font-size: calc(var(--k) * var(--gs, 1.14));
   transform: translate(calc(var(--gx, 0) * 1em), calc(var(--gy, 0) * 1em)); }
 span.mav.sq > i { --k: 56cqw; }
-span.mav.tri > i { --k: 39cqw; position: relative; top: 15cqh; }
+span.mav.tri > i { --k: 50cqw; position: relative; top: 15cqh; }
 .lb-who { display: inline-flex; align-items: center; gap: 8px; }
 .lb-ava, .pava {
   width: 22px; height: 22px; border-radius: 50%; flex: none;
