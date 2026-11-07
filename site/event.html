@@ -7,7 +7,7 @@
 <title>大会予想｜予想番付</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261107192337">
+<link rel="stylesheet" href="css/style.css?v=20261107193313">
 </head>
 <body>
 <div id="app-header"></div>
@@ -16,11 +16,11 @@
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261107192337"></script>
-<script src="js/techniques.js?v=20261107192337"></script>
-<script src="js/demo-data.js?v=20261107192337"></script>
-<script src="js/api.js?v=20261107192337"></script>
-<script src="js/app.js?v=20261107192337"></script>
+<script src="js/config.js?v=20261107193313"></script>
+<script src="js/techniques.js?v=20261107193313"></script>
+<script src="js/demo-data.js?v=20261107193313"></script>
+<script src="js/api.js?v=20261107193313"></script>
+<script src="js/app.js?v=20261107193313"></script>
 <script>
 let EV, PHASE, FIGHTS, FMAP, MEMBERS, myPreds = {}, allPreds = [], ALL_SUPPORTS = [];
 let drafts = {};              // 決定前の編集中の選択（ローカルのみ）
@@ -117,7 +117,7 @@ function profileLinks(f) {
     </div>`;
 }
 
-// その場で判断できるように：戦績・勝ち方・前戦（○×）。トグルで直近5試合（Gaku依頼11/7）
+// その場で判断できるように：戦績・勝ち方の割合・前戦（○×）。トグルで直近5試合（Gaku依頼11/7）
 // 開閉はカードを描き直しても保つ（選手をタップするたびに閉じないように）
 const statsOpen = new Set();
 const RMARK = { W: ["○", "w"], L: ["×", "l"], D: ["△", "d"], NC: ["NC", "d"] };
@@ -125,39 +125,42 @@ const recentOf = (x) => [...(x?.history || [])].sort((a, b) => String(b.d).local
 const resMark = (r) => { const [s, c] = RMARK[r] || ["?", "d"]; return `<span class="rm ${c}">${s}</span>`; };
 const histRow = (r) => `<div class="st-row">${resMark(r.r)}<span class="st-body"><span class="st-opp">${esc(r.opp)}</span>
   <span class="st-how">${esc([r.how, r.d].filter(Boolean).join("・"))}</span></span></div>`;
-// 細かい文字で読ませず形で見せる（Gaku指示11/7「シンプルな中に視認性を。ビジュアルで誘導」）：
-// 勝敗数は大きな数字／勝ち方は3つの枠で一番多いものを縁取る。色は使わない・直近の○×並びと連勝表示は置かない（Gaku指示11/7「色多い・情報は少なく」）
-// 左右の段（異名・戦績・勝ち方・前戦）は subgrid で高さをそろえる。片側にデータが無くても空の段を置いて行数を合わせる
-function statsSide(x, cls, withNick) {
+// 細かい文字で読ませず形で見せる（Gaku指示11/7「シンプルな中に視認性を。ビジュアルで誘導」「色多い・情報は少なく」）：
+// 勝敗数は大きな数字／勝ち方は戦績の横の空きに1本のバー（KO・一本・判定の割合）。色は使わず白〜灰の濃淡だけ
+// 予想の入力は下の「勝敗予想」に分けたので、ここで選手名も持つ（判断材料はここだけで読める）
+// 左右の段（名前・戦績・前戦）は subgrid で高さをそろえる。片側にデータが無くても空の段を置いて行数を合わせる
+function wayBar(x) {
+  if (x?.rec_ko == null || !x.rec_w) return "";
+  const ws = [["KO", x.rec_ko, "sb-k"], ["一本", x.rec_sub ?? 0, "sb-s"], ["判定", x.rec_dec ?? 0, "sb-d"]];
+  // 母数は勝ち数（反則勝ち等の「その他」はバーの空きとして残る）。内訳の合計が勝ち数を超える古いデータでもはみ出さない
+  const base = Math.max(x.rec_w, ws.reduce((a, w) => a + w[1], 0));
+  return `<div class="st-bar">
+    <div class="sb-track">${ws.map(([, n, c]) => n ? `<i class="${c}" style="width:${(n / base * 100).toFixed(1)}%"></i>` : "").join("")}</div>
+    <div class="sb-lab">${ws.map(([l, n, c]) => `<span class="${c}${n ? "" : " zero"}">${l}<b>${Math.round(n / base * 100)}</b>%</span>`).join("")}</div>
+  </div>`;
+}
+function statsSide(x, cls) {
   const h = recentOf(x);
   const num = (n, u, c) => `<span class="st-n ${c}"><b>${n}</b>${u}</span>`;
   const rec = x?.rec_w != null
     ? num(x.rec_w, "勝", "w") + num(x.rec_l ?? 0, "敗", "l")
       + (x.rec_d || x.rec_nc ? `<span class="st-n d">${x.rec_d ? `<b>${x.rec_d}</b>分` : ""}${x.rec_nc ? `<b>${x.rec_nc}</b>NC` : ""}</span>` : "")
     : `<span class="st-n d">戦績なし</span>`;
-  let way = "";
-  if (x?.rec_ko != null) {
-    const ws = [["KO", x.rec_ko], ["一本", x.rec_sub ?? 0], ["判定", x.rec_dec ?? 0]];
-    const top = Math.max(...ws.map(w => w[1]));
-    way = ws.map(([l, n]) => `<span class="${n === 0 ? "zero" : n === top ? "top" : ""}"><b>${n}</b>${l}</span>`).join("");
-  }
   return `<div class="st-side ${cls}">
-    ${withNick ? `<div class="st-nick">${x?.nickname ? `“${esc(x.nickname)}”` : ""}</div>` : ""}
-    <div class="st-recn">${rec}</div>
-    <div class="st-way">${way}</div>
+    <div class="st-head"><span class="st-name">${esc(x?.name || "")}</span>${x?.nickname ? `<span class="st-nick">“${esc(x.nickname)}”</span>` : ""}</div>
+    <div class="st-top"><div class="st-recn">${rec}</div>${wayBar(x)}</div>
     <div class="st-k">前戦</div>
     ${h[0] ? histRow(h[0]) : `<div class="st-row"><span class="st-how">データなし</span></div>`}
   </div>`;
 }
 function statsBlock(f) {
   const f1 = FMAP[f.fighter1_id], f2 = FMAP[f.fighter2_id];
-  const withNick = !!(f1?.nickname || f2?.nickname);
   const n = Math.min(5, Math.max(recentOf(f1).length, recentOf(f2).length));
   const list = (x, cls) => { const rows = recentOf(x).slice(0, 5).map(histRow);
     while (rows.length < n) rows.push("<div></div>");
     return `<div class="st-side ${cls}">${rows.join("")}</div>`; };
   return `<div class="stats">
-    <div class="st-cols" style="--rows:${withNick ? 5 : 4}">${statsSide(f1, "c1", withNick)}${statsSide(f2, "c2", withNick)}</div>
+    <div class="st-cols" style="--rows:4">${statsSide(f1, "c1")}${statsSide(f2, "c2")}</div>
     ${n > 1 ? `<details class="st-more" ${statsOpen.has(f.id) ? "open" : ""} ontoggle="statsOpen[this.open ? 'add' : 'delete']('${f.id}')">
       <summary>直近5試合</summary>
       <div class="st-cols" style="--rows:${n}">${list(f1, "c1")}${list(f2, "c2")}</div>
@@ -200,6 +203,10 @@ function predictCard(f) {
       ${f.image_url ? `<div class="banner"><img src="${esc(f.image_url)}" alt="" loading="lazy"></div>` : ""}
       ${voteBar(f)}
       <div class="fight-label">${fightLabel(f)}</div>
+      ${statsBlock(f)}
+      ${profileLinks(f)}
+      <div class="pick-zone">
+      <div class="pz-head">勝敗予想</div>
       <div class="vs-row">
         <button class="corner-btn c1 ${p.winner_id === f.fighter1_id ? "sel" : ""}"
           onclick="setDraft('${f.id}','winner_id','${f.fighter1_id}')"><small>RED</small>${esc(f1?.name)}</button>
@@ -208,13 +215,12 @@ function predictCard(f) {
           onclick="setDraft('${f.id}','winner_id','${f.fighter2_id}')"><small>BLUE</small>${esc(f2?.name)}</button>
       </div>
       <div class="win-hint">${p.winner_id ? "あとは「決定」を押すだけ。" : "勝つと思う方をタップするだけでOK。"}<b>ランキングは勝敗だけ</b>で決まります</div>
-      ${statsBlock(f)}
-      ${profileLinks(f)}
-      ${supportRow(f)}
       ${kimSelect}${roundChips}
       <div class="confirm-bar">
         <button class="btn decide" ${p.winner_id ? "" : "disabled"} onclick="confirmPred('${f.id}')">この予想で決定</button>
         ${saved ? `<button class="btn ghost" onclick="cancelEdit('${f.id}')">キャンセル</button>` : ""}
+      </div>
+      ${supportRow(f)}
       </div>
     </div>`;
 }
@@ -230,14 +236,15 @@ function confirmedCard(f, p) {
       ${f.image_url ? `<div class="banner"><img src="${esc(f.image_url)}" alt="" loading="lazy"></div>` : ""}
       ${voteBar(f)}
       <div class="fight-label">${fightLabel(f)}</div>
+      ${statsBlock(f)}
+      ${profileLinks(f)}
+      <div class="pick-zone">
+      <div class="pz-head">勝敗予想</div>
       <div class="vs-row">
         <div class="corner-btn c1 ${p.winner_id === f.fighter1_id ? "sel" : ""}"><small>RED</small>${esc(f1?.name)}</div>
         <span class="vs-mark">VS</span>
         <div class="corner-btn c2 ${p.winner_id === f.fighter2_id ? "sel" : ""}"><small>BLUE</small>${esc(f2?.name)}</div>
       </div>
-      ${statsBlock(f)}
-      ${profileLinks(f)}
-      ${supportRow(f)}
       <div class="my-pick">
         <span class="mp-check">✓</span>
         <span class="mp-body"><b>${esc(FMAP[p.winner_id]?.name)}</b>${detail ? `　${esc(detail)}` : ""}
@@ -246,6 +253,8 @@ function confirmedCard(f, p) {
       <div class="confirm-bar">
         <button class="btn ghost" onclick="startEdit('${f.id}')">編集</button>
         <button class="clear-btn" onclick="clearPred('${f.id}')">予想を取り消す</button>
+      </div>
+      ${supportRow(f)}
       </div>
     </div>`;
 }
@@ -258,15 +267,18 @@ function previewCard(f) {
       ${f.image_url ? `<div class="banner"><img src="${esc(f.image_url)}" alt="" loading="lazy"></div>` : ""}
       ${voteBar(f)}
       <div class="fight-label">${fightLabel(f)}</div>
+      ${statsBlock(f)}
+      ${profileLinks(f)}
+      <div class="pick-zone">
+      <div class="pz-head">勝敗予想</div>
       <div class="vs-row">
         <div class="corner-btn c1 disabled"><small>RED</small>${esc(f1?.name)}</div>
         <span class="vs-mark">VS</span>
         <div class="corner-btn c2 disabled"><small>BLUE</small>${esc(f2?.name)}</div>
       </div>
-      ${statsBlock(f)}
-      ${profileLinks(f)}
-      ${supportRow(f)}
       <div class="fight-foot"><span class="save-note">計量終了後に予想開始</span></div>
+      ${supportRow(f)}
+      </div>
     </div>`;
 }
 
