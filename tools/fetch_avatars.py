@@ -10,6 +10,7 @@ YouTube API もキーも使わない。結果は site/assets/predictors/<member_
 ★チャンネルの持ち主＝予想者 のときだけ載せる★
 ゲスト出演（RIZIN公式番組の平本蓮、中村拓己チャンネルの大沢ケンジ等）にチャンネルのロゴを付けると、
 別人のロゴがその人の顔になる。台帳に動画が無い人（番組のパネリスト等）も取らない＝頭文字のまま。
+ただし番組出演で取り込んだ人でも、本人のチャンネルを Gaku が指定したら OWN_CHANNEL から取る。
 """
 import io, json, os, re, sys, time, urllib.parse, urllib.request
 from PIL import Image
@@ -24,6 +25,10 @@ UA = {"User-Agent": "Mozilla/5.0", "Accept-Language": "ja"}
 GUESTS = {"m_yt_hiramotoren", "m_yt_osawa_kenji"}
 # 1人が複数チャンネルを持つときは本チャンネルを使う（切り抜き・サブは避ける）
 SUB_CHANNEL = re.compile(r"切り抜き|日常")
+# 番組出演で取り込んだ人の本人チャンネル（台帳の動画は番組側のチャンネルなので使えない）
+OWN_CHANNEL = {
+    "m_yt_inoue_yusaku": "https://www.youtube.com/channel/UCHoOFVQAhK-QyoXgf0iaZIg",  # マッスルグリル（Gaku 2026-11-08「彼のYOUTUBEそれでいいよ」）
+}
 SIZE = 176
 
 
@@ -52,25 +57,29 @@ def main():
         if os.path.exists(path):
             os.remove(path)
 
-    for mid, events in sorted(src.items()):
+    for mid in sorted(set(src) | set(OWN_CHANNEL)):
         if mid not in live or mid in GUESTS or (mid in manifest and not force):
             continue
-        vids = [v for lst in events.values() for v in lst]
-        main_ch = [v for v in vids if not SUB_CHANNEL.search(v["channel"])] or vids
-        video = max(main_ch, key=lambda v: v["date"])["url"]
         try:
-            o = json.loads(get("https://www.youtube.com/oembed?format=json&url=" + urllib.parse.quote(video)))
-            page = get(o["author_url"]).decode("utf-8", "ignore")
+            if mid in OWN_CHANNEL:
+                ch_url = OWN_CHANNEL[mid]; ch_name = "（指定チャンネル）"
+            else:
+                vids = [v for lst in src[mid].values() for v in lst]
+                main_ch = [v for v in vids if not SUB_CHANNEL.search(v["channel"])] or vids
+                video = max(main_ch, key=lambda v: v["date"])["url"]
+                o = json.loads(get("https://www.youtube.com/oembed?format=json&url=" + urllib.parse.quote(video)))
+                ch_url, ch_name = o["author_url"], o["author_name"]
+            page = get(ch_url).decode("utf-8", "ignore")
             m = re.search(r'<meta property="og:image" content="([^"]+)"', page)
             if not m:
-                print(f"!! {mid}: ロゴが見つからない（{o['author_url']}）")
+                print(f"!! {mid}: ロゴが見つからない（{ch_url}）")
                 continue
             img = Image.open(io.BytesIO(get(m.group(1)))).convert("RGB")
             img.thumbnail((SIZE, SIZE))
             path = f"assets/predictors/{mid}.jpg"
             img.save(os.path.join(ROOT, "site", path), quality=88)
             manifest[mid] = path
-            print(f"OK {mid}  {o['author_name']}")
+            print(f"OK {mid}  {ch_name}")
         except Exception as e:
             print(f"!! {mid}: {e}")
         time.sleep(0.5)
