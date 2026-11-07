@@ -102,7 +102,11 @@
   // 通算ランキングにランクインする最低確定数（Gaku確定・2026-09-11）。
   // 1大会だけ少数当てた人が通算上位に居座るのを防ぐ。単一大会の表示では適用しない。
   window.CAREER_MIN = 8;
+  // 美食会の3人は母数に関わらず通算でもランクインさせる（Gaku指示・2026-11-07「丸山先生も入れてあげて」）。
+  // 基準は外部の予想者が少数的中で居座るのを防ぐためのもので、仲間をはじくためのものではない。
+  window.ALWAYS_RANKED = ["m_hame", "m_nuki", "m_maruyama"];
   window.isRanked = function (row, scope) {
+    if (row.answered > 0 && row.member && window.ALWAYS_RANKED.includes(row.member.id)) return true;
     return scope !== "career" || row.decided >= window.CAREER_MIN;
   };
 
