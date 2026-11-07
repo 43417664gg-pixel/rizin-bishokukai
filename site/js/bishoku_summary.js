@@ -51,7 +51,7 @@ const CSS = `
   .pk { display:flex; flex-direction:column; align-items:center; }
   /* 白い縁の外にもう1本黒い縁＝シール。どの大会の絵の上でも輪郭が切れる */
   .ic { width:var(--ic); height:var(--ic); border-radius:50%; display:flex; align-items:center; justify-content:center; flex:none;
-        font-size:calc(var(--ic) * .48); font-weight:900; color:#fff; border:calc(4px * var(--u) + 1px) solid var(--t, #f4f1ea);
+        font-size:calc(var(--ic) * .6); font-weight:900; color:#fff; border:calc(4px * var(--u) + 1px) solid var(--t, #f4f1ea);
         box-shadow:0 0 0 calc(3px * var(--u) + 1px) #08080a, 0 3px 12px rgba(0,0,0,.75); text-shadow:0 1px 3px rgba(0,0,0,.5); }
   /* 塗りは原色ベタではなく、左上に光・縁に影の球（Gaku 11/7「丸アイコンの色もデザイン寄せて」）。赤・青・金の系統は見分けの目印なので残す */
   .ic, .ci { background:radial-gradient(circle at 32% 26%, color-mix(in srgb, var(--c) 58%, #fff) 0%, var(--c) 46%, color-mix(in srgb, var(--c) 52%, #000) 100%); }
@@ -67,7 +67,8 @@ const CSS = `
   /* 縁の太さ b を辺で揃える＝内側の三角を重心に向けて縮める（上 1.506b・左右 1.292b・下 1.078b） */
   .ic.tri::after, .ci.tri::after { --b:calc(4px * var(--u) + 1px); inset:calc(var(--b) * 1.506) calc(var(--b) * 1.292) calc(var(--b) * 1.078);
         background:radial-gradient(circle at 44% 62%, color-mix(in srgb, var(--c) 58%, #fff) 0%, var(--c) 46%, color-mix(in srgb, var(--c) 52%, #000) 100%); }
-  .tri > i { font-style:normal; font-size:.86em; position:relative; top:.2em; }
+  /* 頭文字は大きく真ん中に（Gaku 11/8・style.css の span.mav と同じ比率）。三角は重心に置き、狭い頭にかからない大きさ */
+  .tri > i { font-style:normal; font-size:.74em; position:relative; top:.2em; }
   .ic.lt, .ci.lt { color:#1a1408; text-shadow:none; }   /* 金など明るい塗り＝白い字が沈むので黒字 */
   /* 縁の色＝寮の差し色（ハメ＝金・抜き＝銀・丸山＝黒・Gaku指定11/7）。正本は demo-data.js の members[].trim。
      字は寮の色にしない＝白（明るい塗りだけ黒）。「色は背景であって、中の文字は視認性優先」（Gaku 11/7） */
@@ -80,7 +81,7 @@ const CSS = `
   .cheer.l { left:calc(12px * var(--u)); }
   .cheer.r { right:calc(20px * var(--u)); flex-direction:row-reverse; }
   .ci { position:relative; width:var(--ci); height:var(--ci); border-radius:50%; display:flex; align-items:center; justify-content:center;
-        font-size:calc(var(--ci) * .46); font-weight:900; color:#fff; border:calc(4px * var(--u) + 1px) dashed var(--t, #fff);
+        font-size:calc(var(--ci) * .56); font-weight:900; color:#fff; border:calc(4px * var(--u) + 1px) dashed var(--t, #fff);
         box-shadow:0 0 0 calc(2px * var(--u) + 1px) #08080a, 0 2px 10px rgba(0,0,0,.7); }
   /* 金地に📣だと沈んで読めなかった＝白地の「📣応援」札を丸の下端に掛ける */
   .ci .mg { position:absolute; left:50%; bottom:calc(-14px * var(--u) - 4px); transform:translateX(-50%); white-space:nowrap;

@@ -181,7 +181,7 @@
     const ini = String(m?.name || "?").trim().slice(0, 1);
     const c = /^#[0-9a-f]{6}$/i.test(m?.color || "") ? m.color : "#555555";
     const t = memberSeed(m?.id).trim, shp = { square: " sq", triangle: " tri" }[memberSeed(m?.id).shape] || "";
-    return `<span class="${cls} mav${isLightColor(c) ? " lt" : ""}${t ? " trim" : ""}${shp}" style="--c:${c}${t ? `;--t:${t}` : ""}">${shp === " tri" ? `<i>${esc(ini)}</i>` : esc(ini)}</span>`;
+    return `<span class="${cls} mav${isLightColor(c) ? " lt" : ""}${t ? " trim" : ""}${shp}" style="--c:${c}${t ? `;--t:${t}` : ""}"><i>${esc(ini)}</i></span>`;
   };
   // 縁と字の色（美食会3人＝寮の配色：ハメ＝深紅×金・抜き＝深緑×銀・丸山＝黄×黒）と形（抜き太郎＝正方形・Gaku指定11/7／ハメ太郎＝三角形・11/8）。
   // 正本は demo-data.js の members[].trim / shape

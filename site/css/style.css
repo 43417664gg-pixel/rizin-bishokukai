@@ -1053,7 +1053,13 @@ span.mav.tri::before, span.mav.tri::after { content: ""; position: absolute; z-i
 span.mav.tri::before { inset: 0; background: var(--t, var(--c)); }
 span.mav.tri::after { inset: 2.26px 1.94px 1.62px;
   background: radial-gradient(circle at 44% 62%, color-mix(in srgb, var(--c) 58%, #fff) 0%, var(--c) 46%, color-mix(in srgb, var(--c) 52%, #000) 100%); }
-span.mav.tri > i { font-style: normal; font-size: .86em; position: relative; top: .2em; }
+/* 頭文字は枠の真ん中に、大きく（Gaku 11/8「位置は真ん中に。サイズは枠いっぱいに読みやすさ重視で」→「ギリギリは言い過ぎた」）。
+   字の大きさは枠の幅に比例（cqw）＝18pxでも50pxでも同じ比率。和字は行の中で少し下に座るので .04em 持ち上げて真ん中に。
+   三角は字を重心（枠の上から約6割）に置き、狭い頭にかからない大きさにする */
+span.mav { container-type: size; }
+span.mav > i { font-style: normal; font-size: 60cqw; line-height: 1; position: relative; top: -.04em; }
+span.mav.sq > i { font-size: 64cqw; }
+span.mav.tri > i { font-size: 44cqw; top: 8cqh; }
 .lb-who { display: inline-flex; align-items: center; gap: 8px; }
 .lb-ava, .pava {
   width: 22px; height: 22px; border-radius: 50%; flex: none;
@@ -1237,24 +1243,53 @@ span.mav.tri > i { font-style: normal; font-size: .86em; position: relative; top
 
 /* ---------- 予想の画面（event.html の openWiz・Gaku 11/7「ボタンで押して階層を作る」「脳死で質問に答えれば」） ---------- */
 /* 上の大きな入口札（顔を透かした「予想を入れる / WHO WINS?」）は撤去（Gaku 11/8「これがそもそもいらない」）。入口は下の浮く札と各カードの札 */
-/* 浮いて追いかけてくる「予想を入れる」（Gaku 11/8）：赤→青の地と光の筋。トーストが出ている間はその上へ逃げる */
+/* 浮いて追いかけてくる「予想を入れる ↓」（Gaku 11/8）。ロゴの斬り札と同じ斜めの札を2枚に斬った形＝赤い札に字・青い札に下向きの矢印。
+   字は Noto Sans JP の900（--display の Anton は和字を持たず、細い既定の太さに落ちてチープだった＝Gaku「字がチープ」）。
+   影は札の形に沿わせる（drop-shadow）。トーストが出ている間はその上へ逃げる */
 .pick-guide { position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom)); z-index: 90;
-  display: flex; align-items: center; gap: 10px; height: 50px; padding: 0 24px 0 28px; border: 0; overflow: hidden; cursor: pointer;
-  color: #fff; clip-path: polygon(12px 0, 100% 0, calc(100% - 12px) 100%, 0 100%);
-  background: linear-gradient(90deg, #c4000f, #6e0710 46%, #0f2348 58%, #1e6fd9);
-  opacity: 0; pointer-events: none; transform: translate(-50%, 14px); transition: opacity .25s, transform .25s; }
+  display: flex; align-items: stretch; gap: 3px; height: 54px; padding: 0; border: 0; background: none; cursor: pointer; color: #fff;
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, .7)) drop-shadow(0 0 18px rgba(230, 0, 18, .28));
+  width: 248px; opacity: 0; pointer-events: none; transform: translate(-50%, 14px); transition: opacity .25s, transform .25s, width .35s cubic-bezier(.2, .8, .2, 1), gap .35s; }
 .pick-guide.show { opacity: 1; pointer-events: auto; transform: translate(-50%, 0); }
+.pick-guide:active .pg-t, .pick-guide:active .pg-a { filter: brightness(.88); }
 .toast.show ~ .pick-guide.show { transform: translate(-50%, -54px); }
 body.wiz-open .pick-guide { display: none; }
-.pick-guide::after { content: ""; position: absolute; inset: 0; pointer-events: none; border-top: 1px solid rgba(255, 255, 255, .24);
-  background: linear-gradient(105deg, transparent 40%, rgba(255, 255, 255, .22) 50%, transparent 60%) -100% 0 / 60% 100% no-repeat;
+.pg-t, .pg-a { position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center;
+  clip-path: polygon(14px 0, 100% 0, calc(100% - 14px) 100%, 0 100%); }
+.pg-t { flex: 1; padding: 0 24px 0 30px; background: linear-gradient(180deg, #ff2a3c, #d4000f 52%, #9e000b);
+  font: 900 20px/1 "Noto Sans JP", sans-serif; letter-spacing: .1em; white-space: nowrap; text-shadow: 0 1px 2px rgba(0, 0, 0, .35); }
+.pg-a { width: 56px; flex: none; background: linear-gradient(180deg, #4a93ff, #1e6fd9 52%, #10418d); transition: width .35s cubic-bezier(.2, .8, .2, 1); }
+/* 光の筋が赤い札を横切る */
+.pg-t::after { content: ""; position: absolute; inset: 0; pointer-events: none; border-top: 1px solid rgba(255, 255, 255, .35);
+  background: linear-gradient(105deg, transparent 40%, rgba(255, 255, 255, .28) 50%, transparent 60%) -100% 0 / 60% 100% no-repeat;
   animation: wc-shine 3.2s ease-in-out infinite; }
+.pg-a::after { content: ""; position: absolute; inset: 0; pointer-events: none; border-top: 1px solid rgba(255, 255, 255, .3); }
 @keyframes wc-shine { 0%, 55% { background-position: -100% 0; } 100% { background-position: 220% 0; } }
-.pg-t { position: relative; font-family: var(--display); font-size: 19px; letter-spacing: .06em; white-space: nowrap; text-shadow: 0 2px 8px rgba(0, 0, 0, .6); }
 /* 矢印は下向き＝「この下にある、スクロールして」（Gaku 11/8「矢印右になってるけど、下にスクロールしてを伝えたい」）。下へ小さく弾む */
-.pg-arw { position: relative; width: 11px; height: 11px; margin: -6px 2px 0 2px; border: solid #fff; border-width: 0 3px 3px 0;
+.pg-arw { width: 12px; height: 12px; margin-top: -7px; border: solid #fff; border-width: 0 3.5px 3.5px 0;
   transform: rotate(45deg); animation: pg-nudge 1.6s ease-in-out infinite; }
 @keyframes pg-nudge { 0%, 60%, 100% { transform: translateY(0) rotate(45deg); } 80% { transform: translateY(5px) rotate(45deg); } }
+/* 2人の札に着いたら形と字が変わる（Gaku 11/8「ボタン押す箇所まできたら、ボタンの形と中の文字も変化」「ここを押せば勝敗書き込めるよーってわかるように」）：
+   横に伸びて赤｜青に割れた1枚の札になり、青い矢印の札は畳まれる。真ん中の黒い札に「勝つ方をタップ」、左右の上向き矢印がそれぞれ赤と青の札を指す。
+   2.6秒見せたら消える＝一度きり（「ボタンまで一度誘導し切ったら（押さなくてもいい）消える」）。消える時はゆっくり */
+.pg-y { display: none; }
+.pick-guide.at { width: min(calc(100vw - 28px), 420px); gap: 0; transition: opacity .6s, transform .6s, width .35s cubic-bezier(.2, .8, .2, 1), gap .35s; }
+.pick-guide.at .pg-a { width: 0; }
+.pick-guide.at .pg-x { display: none; }
+.pick-guide.at .pg-t { padding: 0; background: linear-gradient(180deg, rgba(255, 255, 255, .16), transparent 48%, rgba(0, 0, 0, .24)),
+  linear-gradient(105deg, #e60012 0 50%, #1e6fd9 50%); }
+.pick-guide.at .pg-y { display: grid; grid-template-columns: 1fr auto 1fr; place-items: center; width: 100%; height: 100%; animation: pg-pop .3s ease-out; }
+.pg-y b { display: flex; align-items: center; height: 100%; padding: 0 20px; background: #0b0b0f; font-size: 18px; letter-spacing: .06em;
+  clip-path: polygon(12px 0, 100% 0, calc(100% - 12px) 100%, 0 100%); }
+.pg-up { width: 13px; height: 13px; margin-top: 8px; border: solid #fff; border-width: 4px 0 0 4px; transform: rotate(45deg);
+  animation: pg-lift .8s ease-in-out infinite; }
+.pg-up:last-child { animation-delay: .4s; }
+@keyframes pg-pop { from { opacity: 0; transform: scale(.92); } }
+@keyframes pg-lift { 0%, 100% { transform: translateY(0) rotate(45deg); } 50% { transform: translateY(-6px) rotate(45deg); } }
+/* 呼ばれた2人の札は赤・青の順に交互に光る（矢印の弾みと同じ .8秒の拍） */
+.vs-row.beckon .corner-btn { animation: pz-beckon .8s ease-in-out 4; }
+.vs-row.beckon .corner-btn.c2 { animation-delay: .4s; }
+@keyframes pz-beckon { 0%, 100% { filter: none; transform: none; } 40% { filter: brightness(1.7); transform: scale(1.035); } }
 
 /* 画面いっぱいの1試合 */
 body.wiz-open { overflow: hidden; }
