@@ -7,18 +7,18 @@
 <title>予想番付｜格闘技の勝敗予想</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261107153759">
+<link rel="stylesheet" href="css/style.css?v=20261107154111">
 </head>
 <body>
 <div id="app-header"></div>
 <div class="wrap" id="main"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261107153759"></script>
-<script src="js/techniques.js?v=20261107153759"></script>
-<script src="js/demo-data.js?v=20261107153759"></script>
-<script src="js/api.js?v=20261107153759"></script>
-<script src="js/app.js?v=20261107153759"></script>
+<script src="js/config.js?v=20261107154111"></script>
+<script src="js/techniques.js?v=20261107154111"></script>
+<script src="js/demo-data.js?v=20261107154111"></script>
+<script src="js/api.js?v=20261107154111"></script>
+<script src="js/app.js?v=20261107154111"></script>
 <script>
 // Xから来た人に「いま何をやっているか」を最初に見せる。
 // 監査（2026-08-31）で、入口に大会情報がゼロのまま登録を求めていて離脱する形だったため追加。
@@ -99,9 +99,9 @@ async function renderPlayerSelect() {
       <p style="font-size:11px;color:#8a8a92;margin:8px 0 0">※記録はこの端末に保存。別端末で引き継ぎたい人は後からアカウント連携（近日）。</p>
     </div>
     <div class="rules-box">
-      <b>ルールは二段：</b>勝者を当てて<b class="gold">的中</b>、
-      決まり手＋ラウンドまで揃えば<b class="gold">ピタリ</b>。
-      勝者を外したらパー。予想しない試合はノーカウント。
+      <b class="gold">ランキングは勝敗だけ。</b>勝つと思う方を選ぶだけでOK。<br>
+      決まり手・ラウンドまで当てれば<b class="gold">🎯ピタリ</b>（おまけ・ランキングには関係なし）。
+      予想しない試合はノーカウント。
     </div>`;
 }
 

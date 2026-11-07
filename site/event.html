@@ -7,7 +7,7 @@
 <title>大会予想｜予想番付</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261107153759">
+<link rel="stylesheet" href="css/style.css?v=20261107154111">
 </head>
 <body>
 <div id="app-header"></div>
@@ -16,11 +16,11 @@
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261107153759"></script>
-<script src="js/techniques.js?v=20261107153759"></script>
-<script src="js/demo-data.js?v=20261107153759"></script>
-<script src="js/api.js?v=20261107153759"></script>
-<script src="js/app.js?v=20261107153759"></script>
+<script src="js/config.js?v=20261107154111"></script>
+<script src="js/techniques.js?v=20261107154111"></script>
+<script src="js/demo-data.js?v=20261107154111"></script>
+<script src="js/api.js?v=20261107154111"></script>
+<script src="js/app.js?v=20261107154111"></script>
 <script>
 let EV, PHASE, FIGHTS, FMAP, MEMBERS, myPreds = {}, allPreds = [], ALL_SUPPORTS = [];
 let drafts = {};              // 決定前の編集中の選択（ローカルのみ）
@@ -122,9 +122,9 @@ function predictCard(f) {
   const curKim = p.method === "DEC" ? "DEC" : (p.technique || "");
   const kimSelect = p.winner_id ? `
     <div class="chips">
-      <span class="clabel">決まり手 — 当てれば“ピタリ”（任意）</span>
+      <span class="clabel">おまけ：決まり手 — 当てれば🎯ピタリ（任意・ランキングには関係なし）</span>
       <select class="tech-select" onchange="setKimarite('${f.id}',this.value)">
-        <option value="">— 狙わない（的中のみ）—</option>
+        <option value="">— 選ばない（勝敗だけ）—</option>
         <option value="DEC" ${curKim === "DEC" ? "selected" : ""}>判定</option>
         <optgroup label="KO/TKO">
           ${techsFor("KO").map(t => `<option value="${t.id}" ${curKim === t.id ? "selected" : ""}>${t.label}</option>`).join("")}
@@ -137,7 +137,7 @@ function predictCard(f) {
   // KO/一本を選んだ時だけラウンド選択（ピタリ＝決まり手＋ラウンド）。判定はラウンド無し。
   const roundChips = (p.winner_id && p.method && p.method !== "DEC") ? `
     <div class="chips">
-      <span class="clabel">ラウンド — 決まり手とラウンド両方一致で“ピタリ”</span>
+      <span class="clabel">おまけ：ラウンド — 決まり手と両方一致で🎯ピタリ</span>
       ${Array.from({ length: f.rounds || 3 }, (_, i) => i + 1).map(r =>
         `<button class="chip ${Number(p.round) === r ? "sel" : ""}" onclick="setDraft('${f.id}','round',${r})">${r}R</button>`).join("")}
     </div>` : "";
@@ -153,6 +153,7 @@ function predictCard(f) {
         <button class="corner-btn c2 ${p.winner_id === f.fighter2_id ? "sel" : ""}"
           onclick="setDraft('${f.id}','winner_id','${f.fighter2_id}')"><small>BLUE</small>${esc(f2?.name)}</button>
       </div>
+      <div class="win-hint">${p.winner_id ? "あとは「決定」を押すだけ。" : "勝つと思う方をタップするだけでOK。"}<b>ランキングは勝敗だけ</b>で決まります</div>
       ${profileLinks(f)}
       ${supportRow(f)}
       ${kimSelect}${roundChips}
@@ -168,7 +169,7 @@ function confirmedCard(f, p) {
   const f1 = FMAP[f.fighter1_id], f2 = FMAP[f.fighter2_id];
   const kim = p.method === "DEC" ? "判定" : (p.technique ? TECH_LABEL[p.technique] : null);
   const detail = [kim, (p.method !== "DEC" && p.round) ? `${p.round}R` : null].filter(Boolean).join("・");
-  const tier = kim ? "ピタリ狙い" : "的中狙い";
+  const tier = kim ? "🎯ピタリも狙い中" : "勝敗で勝負";
   return `
     <div class="fight-card confirmed" id="fc_${f.id}">
       ${f.image_url ? `<div class="banner"><img src="${esc(f.image_url)}" alt="" loading="lazy"></div>` : ""}

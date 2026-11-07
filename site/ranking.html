@@ -7,7 +7,7 @@
 <title>ランキング｜予想番付</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261107153759">
+<link rel="stylesheet" href="css/style.css?v=20261107154111">
 <style>
 /* ランキングを1枚のカードにする（2026-10-20）：スクショ単体でXに貼れるよう、
    ブランド・集計対象・サイトURLをカードの中に入れる。名前をタップ→その人の戦績へ。 */
@@ -52,6 +52,9 @@ tr.top .lb-hit { color:var(--gold-hot); }
 .rk-mode button { flex:1; padding:9px 0; border-radius:8px; border:1px solid #2a2a33; background:#121217;
   color:#9a9aa2; font-weight:900; font-size:14px; cursor:pointer; }
 .rk-mode button.on { border-color:var(--gold); color:var(--gold-hot); background:#17150d; }
+.rk-rule { position:relative; margin:0 14px 6px; padding:7px 10px; border-radius:8px; background:rgba(212,175,55,.08);
+  border:1px solid rgba(212,175,55,.25); font-size:12.5px; line-height:1.5; color:#e6dcc0; }
+.rk-rule b { color:var(--gold-hot); }
 .rk-empty { padding:18px 14px; text-align:center; color:var(--muted); font-size:13px; }
 a.lb-name { display:inline-block; border-bottom:1px dashed rgba(255,255,255,.25); }
 a.lb-name:active { color:var(--gold-hot); }
@@ -66,11 +69,11 @@ a.lb-name:active { color:var(--gold-hot); }
 <div class="wrap" id="main"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261107153759"></script>
-<script src="js/techniques.js?v=20261107153759"></script>
-<script src="js/demo-data.js?v=20261107153759"></script>
-<script src="js/api.js?v=20261107153759"></script>
-<script src="js/app.js?v=20261107153759"></script>
+<script src="js/config.js?v=20261107154111"></script>
+<script src="js/techniques.js?v=20261107154111"></script>
+<script src="js/demo-data.js?v=20261107154111"></script>
+<script src="js/api.js?v=20261107154111"></script>
+<script src="js/app.js?v=20261107154111"></script>
 <script>
 let EVENTS, MEMBERS, ALL_FIGHTS, ALL_PREDS, FMAP = {};
 let checked = new Set();   // 集計対象の大会ID
@@ -132,7 +135,9 @@ function render() {
       <p class="rk-scope">${checked.size === EVENTS.length ? "全大会（通算）"
           : checked.size === 1 ? `${esc(fmtDate(EVENTS.find(e => checked.has(e.id)).event_date))}・この大会の成績`
           : EVENTS.filter(e => checked.has(e.id)).map(e => esc(e.name)).join("・") || "なし"}</p>
-      ${MODE === "win" ? winTable(rows) : pitariTable(allRows)}
+      ${MODE === "win"
+        ? `<div class="rk-rule">勝ったほうを当てた数で順位が決まる。<b>決まり手・ラウンドは関係なし</b></div>${winTable(rows)}`
+        : `<div class="rk-rule">勝者＋決まり手＋ラウンドまで当てた数（おまけ）。<b>本番の順位は「勝敗」タブ</b></div>${pitariTable(allRows)}`}
       <div class="rk-foot"><span class="site">${esc(window.SITE_URL)}</span><span>#予想番付</span></div>
     </div>
     <p class="rk-tap">名前をタップすると、その人の戦績が見られます。</p>
