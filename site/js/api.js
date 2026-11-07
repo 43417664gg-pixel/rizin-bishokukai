@@ -484,11 +484,22 @@
     }
     // 書き込みは退避中でも本物のSupabaseへ試す（成功すれば本当に保存されている＝誤解は生まない）。
     // 失敗はそのままエラーで返す。一過性の失敗で退避に落とすのは読み取り側だけ。
+    // 一過性の失敗（トークン更新直後の401「JWT issued at future」＝PGRST303、タイムアウト、通信断）は
+    // 2秒おいて1回だけ再試行する。upsert/delete は何度送っても結果が同じなので二重登録にはならない。
+    const isTransient = (e) => /JWT|PGRST30|401|タイムアウト|Failed to fetch|NetworkError|network/i
+      .test(String((e && (e.code + " " + e.message)) || e));
     for (const name of WRITES) {
       if (typeof supa[name] !== "function") continue;
       db[name] = async function (...args) {
         try {
-          return await withTimeout(supa[name].apply(supa, args), WRITE_TIMEOUT_MS, name);
+          try {
+            return await withTimeout(supa[name].apply(supa, args), WRITE_TIMEOUT_MS, name);
+          } catch (e1) {
+            if (!isTransient(e1)) throw e1;
+            console.warn("[api] " + name + " 一過性の失敗・再試行します:", e1);
+            await sleep(2000);
+            return await withTimeout(supa[name].apply(supa, args), WRITE_TIMEOUT_MS, name);
+          }
         } catch (e) {
           if (window.DB_OFFLINE) throw new Error("いまサーバーに接続できないため、予想の登録・変更はできません");
           throw e;
