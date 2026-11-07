@@ -3008,7 +3008,6 @@ window.DEMO_SEED = {
     {
       id: "f_hamada",
       name: "濱田巧",
-      nickname: "暁の特攻隊長",
       belt: "キング・オブ・パンクラス フライ級王者",
       birth_date: "1994-12-08",
       backbone: "キックボクシング",

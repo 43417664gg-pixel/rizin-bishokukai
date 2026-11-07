@@ -7,7 +7,7 @@
 <title>大会予想｜予想番付</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261108024449">
+<link rel="stylesheet" href="css/style.css?v=20261108025516">
 </head>
 <body>
 <div id="app-header"></div>
@@ -18,13 +18,13 @@
 <div class="pg-spot" id="pg-spot" hidden></div><div class="pick-guide" id="pick-guide" aria-hidden="true"><span class="pg-t"></span><span class="pg-a"></span><span class="pg-x">予想を入れる<i class="pg-arw"></i></span></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261108024449"></script>
-<script src="js/techniques.js?v=20261108024449"></script>
-<script src="js/demo-data.js?v=20261108024449"></script>
-<script src="js/api.js?v=20261108024449"></script>
-<script src="js/app.js?v=20261108024449"></script>
-<script src="js/glyph_fit.js?v=20261108024449"></script>
-<script src="js/bishoku_summary.js?v=20261108024449"></script>
+<script src="js/config.js?v=20261108025516"></script>
+<script src="js/techniques.js?v=20261108025516"></script>
+<script src="js/demo-data.js?v=20261108025516"></script>
+<script src="js/api.js?v=20261108025516"></script>
+<script src="js/app.js?v=20261108025516"></script>
+<script src="js/glyph_fit.js?v=20261108025516"></script>
+<script src="js/bishoku_summary.js?v=20261108025516"></script>
 <script>
 let EV, PHASE, FIGHTS, FMAP, MEMBERS, myPreds = {}, allPreds = [], ALL_SUPPORTS = [];
 
@@ -161,24 +161,25 @@ function wayBar(x) {
     <div class="sb-lab">${ws.map(([l, n, c]) => `<span class="${c}${n ? "" : " zero"}">${l}<b>${n}</b></span>`).join("")}</div>
   </div>`;
 }
-// 名前の段＝異名と年齢だけ。閉じている間に見えるのはここだけ。
-// 選手名は出さない（Gaku 11/8「異名だけでいいかも。名前は書かなくていいや。カードに書いてある」＝真上の写真と下の札に名前がある）
+// 名前の段＝異名だけ。閉じている間に見えるのはここだけ。
+// 選手名は出さない（Gaku 11/8「異名だけでいいかも。名前は書かなくていいや。カードに書いてある」＝真上の写真と下の札に名前がある）。
+// 年齢は STATS の戦績の横の空きへ（「年齢はSTATSの空きスペースに入れよう。そこは異名だけ」）
 function statsHead(x, cls) {
-  const age = ageText(x?.birth_date).replace(/（.*$/, "");   // 「31歳」だけ（生年月日は名鑑で）
   return `<div class="st-side ${cls}">
-    <div class="st-head">${age ? `<span class="st-age">${age}</span>` : ""}${x?.nickname ? `<span class="st-nick" title="${esc(x.nickname)}">“${esc(x.nickname)}”</span>` : ""}</div>
+    <div class="st-head">${x?.nickname ? `<span class="st-nick" title="${esc(x.nickname)}">“${esc(x.nickname)}”</span>` : ""}</div>
   </div>`;
 }
 function statsSide(x, cls) {
   const h = recentOf(x);
+  const age = ageText(x?.birth_date).match(/^(\d+)歳/)?.[1];   // 数字だけ（生年月日は名鑑で）
   const num = (n, u, c) => `<span class="st-n ${c}"><b>${n}</b>${u}</span>`;
   const rec = x?.rec_w != null
-    ? num(x.rec_w, "勝", "w") + num(x.rec_l ?? 0, "敗", "l")
+    ? num(x.rec_w, "勝", "w") + num(x.rec_l ?? 0, "敗", "l") + `<i class="st-br"></i>`   // 分・NC は改行して2行目（脇役）
       + (x.rec_d || x.rec_nc ? `<span class="st-n d">${x.rec_d ? `<b>${x.rec_d}</b>分` : ""}${x.rec_nc ? `<b>${x.rec_nc}</b>NC` : ""}</span>` : "")
-    : `<span class="st-n d">戦績なし</span>`;
+    : `<span class="st-n d st-none">戦績なし</span>`;
   return `<div class="st-side ${cls}">
     <div class="st-gap g1"></div>
-    <div class="st-recn">${rec}</div>
+    <div class="st-recn">${rec}${age ? `<span class="st-n st-agen"><b>${age}</b>歳</span>` : ""}</div>
     ${wayBar(x) || `<div class="st-bar"></div>`}
     <div class="st-gap g2"></div>
     ${h[0] ? histRow(h[0]) : `<div class="st-row"><span class="st-how">データなし</span></div>`}
@@ -192,7 +193,9 @@ function statsBlock(f) {
     return `<div class="st-side ${cls}">${rows.join("")}</div>`; };
   // 閉じている間は名前の段だけ＝その真下に「どっちが勝つ？」が来る（Gaku 11/8「すぐ下というのは物理的にね、視覚的にではなく。
   // スタッツの部分がごっそりないのよ一見。その箇所を通ると情報が見れる」）。STATS・前戦・直近5試合は .st-fold の中で高さ0から開く
-  return `<div class="stats${POPPED.has(f.id) ? " pop now" : ""}" data-f="${f.id}">
+  // 2人とも異名が無ければ名前の段は出さない（空の帯になる）。閉じている間は枠も消す
+  const nonick = !f1?.nickname && !f2?.nickname;
+  return `<div class="stats${nonick ? " nonick" : ""}${POPPED.has(f.id) ? " pop now" : ""}" data-f="${f.id}">
     <div class="st-cols st-names" style="--rows:1">${statsHead(f1, "c1")}${statsHead(f2, "c2")}</div>
     <div class="st-fold"><div>
       <div class="st-cols st-main" style="--rows:5">${statsSide(f1, "c1")}${statsSide(f2, "c2")}
@@ -534,6 +537,15 @@ function fitNicks() {
     while (el.scrollWidth > el.clientWidth + 1 && fs > min) { fs -= 0.5; el.style.fontSize = fs + "px"; }
     return el.scrollWidth <= el.clientWidth + 1;
   };
+  // 年齢は戦績と同じ1行目の、真ん中の仕切り寄りの空きに置く。片側でも入りきらず次の行へ落ちたら、左右とも2行目へ（.age2）＝左右の高さを揃える
+  document.querySelectorAll(".st-main").forEach(m => {
+    m.classList.remove("age2");
+    const off = [...m.querySelectorAll(".st-recn")].some(rc => {
+      const a = rc.querySelector(".st-agen"), w = rc.querySelector(".st-n.w");
+      return a && w && a.offsetTop >= w.offsetTop + w.offsetHeight - 2;
+    });
+    if (off) m.classList.add("age2");
+  });
   document.querySelectorAll(".st-names").forEach(row => {
     const nicks = [...row.querySelectorAll(".st-nick")];
     nicks.forEach(k => { k.classList.remove("wrap"); if (!shrink(k, 10)) k.classList.add("wrap"); });
@@ -576,7 +588,8 @@ function updateGuide() {
 }
 // 照らす（Gaku 11/8「他が暗くなってボタンだけがハイライト」「流れるように繋がってる」）。浮く札がそのまま光になって飛んでいく：
 // 照明の穴は浮く札（赤青2枚ぶん）の位置・大きさから始まり、周りが暗くなりながら、行き過ぎて戻る動きで「どっちが勝つ？」と2人の札を囲む大きさまで飛ぶ。
-// 飛ぶ間もスクロールに付いていく（行き先を毎こま測り直す）。着いたら2人の札が交互に光る。3.4秒か画面に触れたら明かりが戻る
+// 飛ぶ間もスクロールに付いていく（行き先を毎こま測り直す）。着いたら2人の札が交互に光る。2秒（着いてから1.4秒）か画面に触れたら明かりが戻る
+// （前は3.4秒＝着いてから2.8秒。Gaku 11/8「2.6秒続くの長い。半分でいい」）
 // （照明は指を通すので、そのまま札を押せる）
 function arriveGuide(g, z) {
   const spot = document.getElementById("pg-spot"), row = z.querySelector(".vs-row"), head = z.querySelector(".pz-head") || row, pad = 10;
@@ -605,7 +618,7 @@ function arriveGuide(g, z) {
     spot.classList.add("off");
     setTimeout(() => { live = false; spot.hidden = true; g.classList.remove("show"); row.classList.remove("beckon"); }, 600);
   };
-  setTimeout(end, 3400);
+  setTimeout(end, 2000);
   addEventListener("pointerdown", end, { once: true });
 }
 let GUIDE_RAF = 0;
@@ -782,6 +795,8 @@ const refitNicks = () => { clearTimeout(NICK_T); NICK_T = setTimeout(() => { fit
 new MutationObserver(refitNicks).observe(document.getElementById("main"), { childList: true, subtree: true });
 addEventListener("resize", refitNicks);
 document.fonts?.ready.then(refitNicks);
+// 数字の字（Oswald）はカードを描いた後に読み込まれることがあり、ready はその前に済んでいる＝読み込みのたびに合わせ直す（年齢が1行目に入るかは字幅で変わる）
+document.fonts?.addEventListener?.("loadingdone", refitNicks);
 
 load();
 </script>
