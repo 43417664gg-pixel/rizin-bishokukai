@@ -7,7 +7,7 @@
 <title>ランキング｜予想番付</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261107235315">
+<link rel="stylesheet" href="css/style.css?v=20261107235902">
 <style>
 /* ランキングを1枚のカードにする（2026-10-20）：スクショ単体でXに貼れるよう、
    ブランド・集計対象・サイトURLをカードの中に入れる。名前をタップ→その人の戦績へ。 */
@@ -19,12 +19,12 @@
   box-shadow:0 10px 40px rgba(0,0,0,.55); }
 .rk-card::before { content:""; position:absolute; inset:0; pointer-events:none;
   background: repeating-linear-gradient(115deg, transparent 0 22px, rgba(255,255,255,.018) 22px 23px); }
-.rk-top { position:relative; display:flex; justify-content:space-between; align-items:center; padding:10px 14px 0; }
-.rk-brand { font-family:var(--display); font-size:13px; letter-spacing:.06em; color:var(--red-hot); }
-.rk-brand span { color:var(--gold); margin-left:3px; font-family:"Noto Sans JP"; font-weight:900; font-size:11px; letter-spacing:.08em; }
-.rk-tag { font-family:var(--display); font-size:12px; letter-spacing:.14em; color:#8a8a96; }
-.rk-ttl { position:relative; padding:0 14px; font-family:var(--display); font-size:22px; line-height:1.15; }
-.rk-card .rk-scope { position:relative; padding:2px 14px 6px; margin:0; font-size:11px; }
+/* 頭は「題」と「集計範囲」の2つだけ（Gaku 11/7「ここもごちゃついてんな」：上のロゴ・英字 RANKING・金の枠の説明が重なっていた）。
+   題は節の見出しと同じ型（赤い斜めの印→極太）。ロゴは下の帯に1回だけ（スクショで回っても名前が残る） */
+.rk-head { position:relative; padding:18px 14px 10px; }
+.rk-ttl { display:flex; align-items:center; gap:10px; font:900 24px/1.15 var(--display); font-synthesis:none; letter-spacing:.02em; color:var(--text); }
+.rk-ttl::before { content:""; flex:none; width:8px; height:24px; background:var(--red); transform:skewX(-18deg); }
+.rk-card .rk-scope { margin:0; padding:6px 0 0 18px; font:700 12px/1.45 "Noto Sans JP", sans-serif; letter-spacing:.06em; color:#9d9daa; }
 .rk-card .lb-table { position:relative; }
 .rk-card .lb-table th { padding-left:6px; padding-right:10px; }
 .rk-card .lb-table td:first-child, .rk-card .lb-table th:first-child { padding-left:12px; }
@@ -52,15 +52,17 @@ tr.top .lb-hit { color:var(--gold-hot); }
 .rk-mode button { flex:1; padding:9px 0; border-radius:8px; border:1px solid #2a2a33; background:#121217;
   color:#9a9aa2; font-weight:900; font-size:14px; cursor:pointer; }
 .rk-mode button.on { border-color:var(--gold); color:var(--gold-hot); background:#17150d; }
-.rk-rule { position:relative; margin:0 14px 6px; padding:7px 10px; border-radius:8px; background:rgba(212,175,55,.08);
-  border:1px solid rgba(212,175,55,.25); font-size:12.5px; line-height:1.5; color:#e6dcc0; }
-.rk-rule b { color:var(--gold-hot); }
+/* 順位の決まり方は表の後に1行だけ（説明は最後に1行・黄色で面を塗らない） */
+.rk-rule { position:relative; margin:0; padding:10px 14px 8px; font:700 11px/1.5 "Noto Sans JP", sans-serif; letter-spacing:.04em; color:var(--muted); }
 .rk-empty { padding:18px 14px; text-align:center; color:var(--muted); font-size:13px; }
 a.lb-name { display:inline-block; border-bottom:1px dashed rgba(255,255,255,.25); }
+.rk-card .lb-table .lb-name.long { font-size:12px !important; }
 a.lb-name:active { color:var(--gold-hot); }
-.rk-foot { position:relative; display:flex; justify-content:space-between; align-items:center; padding:8px 14px 10px;
-  border-top:1px solid rgba(255,255,255,.06); font-size:9.5px; color:#6f6f7a; white-space:nowrap; gap:8px; }
-.rk-foot .site { font-family:var(--num); font-size:11px; color:var(--gold); }
+.rk-foot { position:relative; display:flex; justify-content:space-between; align-items:center; padding:10px 14px 12px;
+  border-top:1px solid rgba(255,255,255,.06); white-space:nowrap; gap:8px; }
+.rk-logo { padding:5px 9px 4px 8px; font:900 12px/1 "Noto Sans JP", sans-serif; letter-spacing:.1em; color:#fff;
+  background:linear-gradient(180deg, var(--red-hot), var(--red)); clip-path:polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%); }
+.rk-foot .site { min-width:0; overflow:hidden; text-overflow:ellipsis; font:500 11px/1 var(--num); letter-spacing:.02em; color:#7a7a86; }
 .rk-tap { font-size:11px; color:#6a6a72; text-align:center; margin:6px 0 0; }
 </style>
 </head>
@@ -69,11 +71,11 @@ a.lb-name:active { color:var(--gold-hot); }
 <div class="wrap" id="main"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261107235315"></script>
-<script src="js/techniques.js?v=20261107235315"></script>
-<script src="js/demo-data.js?v=20261107235315"></script>
-<script src="js/api.js?v=20261107235315"></script>
-<script src="js/app.js?v=20261107235315"></script>
+<script src="js/config.js?v=20261107235902"></script>
+<script src="js/techniques.js?v=20261107235902"></script>
+<script src="js/demo-data.js?v=20261107235902"></script>
+<script src="js/api.js?v=20261107235902"></script>
+<script src="js/app.js?v=20261107235902"></script>
 <script>
 let EVENTS, MEMBERS, ALL_FIGHTS, ALL_PREDS, FMAP = {};
 let checked = new Set();   // 集計対象の大会ID（＋PAST）
@@ -172,15 +174,16 @@ function render() {
       <button class="${MODE === "pitari" ? "on" : ""}" onclick="setMode('pitari')">🎯 ピタリ</button>
     </div>
     <div class="rk-card">
-      <div class="rk-top"><span class="rk-brand">予想<span>番付</span></span><span class="rk-tag">${MODE === "win" ? "RANKING" : "PITARI"}</span></div>
-      <div class="rk-ttl">${single ? esc(single.name) : MODE === "win" ? "勝敗予想ランキング" : "ピタリランキング"}</div>
-      <p class="rk-scope">${allOn ? "全大会（通算）"
+      <div class="rk-head">
+        <div class="rk-ttl">${single ? esc(single.name) : MODE === "win" ? "勝敗予想ランキング" : "ピタリランキング"}</div>
+        <p class="rk-scope">${allOn ? "全大会・通算"
           : single ? `${esc(fmtDate(single.event_date))}・この大会の成績`
           : [...evOn.map(e => esc(e.name)), ...(checked.has(PAST) ? ["サイト開設前の動画"] : [])].join("・") || "なし"}</p>
+      </div>
       ${MODE === "win"
-        ? `<div class="rk-rule">${single ? "勝ったほうを当てた数" : "勝ったほうを当てた割合（的中率）"}で順位が決まる。<b>決まり手・ラウンドは関係なし</b></div>${winTable(rows)}`
-        : `<div class="rk-rule">勝者＋決まり手＋ラウンドまで当てた数（おまけ）。<b>本番の順位は「勝敗」タブ</b></div>${pitariTable(allRows)}`}
-      <div class="rk-foot"><span class="site">${esc(window.SITE_URL)}</span><span>#予想番付</span></div>
+        ? `${winTable(rows)}<p class="rk-rule">勝敗の的中${single ? "数" : "率"}で順位。決まり手・ラウンドは関係なし</p>`
+        : `${pitariTable(allRows)}<p class="rk-rule">勝ち方・ラウンドまで当てた数。順位には関係なし</p>`}
+      <div class="rk-foot"><span class="rk-logo">予想番付</span><span class="site">${esc(window.SITE_URL)}</span></div>
     </div>
     <p class="rk-tap">名前をタップすると、その人の戦績が見られます。</p>
 
@@ -249,11 +252,11 @@ function winTable(rows) {
   const rl = rateLabels(rows);
   return `
       <table class="lb-table">
-        <tr><th></th><th>名前</th><th>的中</th><th>的中率</th></tr>
+        <tr><th></th><th></th><th>的中</th><th>的中率</th></tr>
         ${rows.map((r, i) => `
           <tr class="${r.rate !== null && rankOf(rows, i, same) === 1 ? "top" : ""}">
             <td class="lb-rank">${r.rate === null ? "—" : rankOf(rows, i, same)}</td>
-            <td><span class="lb-who">${avatarHTML(r.member, "lb-ava")}<a class="lb-name" href="predictor.html?id=${esc(r.member.id)}">${esc(r.member.name)}</a></span></td>
+            <td><span class="lb-who">${avatarHTML(r.member, "lb-ava")}<a class="lb-name${String(r.member.name).length >= 9 ? " long" : ""}" href="predictor.html?id=${esc(r.member.id)}">${esc(r.member.name)}</a></span></td>
             <td><span class="lb-hit">${r.hits}</span><span class="lb-of">/${r.decided}</span></td>
             <td><span class="lb-rate${r.decided < window.RATE_MIN ? " thin" : ""}">${rl[i]}</span></td>
           </tr>`).join("")}
@@ -268,11 +271,11 @@ function pitariTable(allRows) {
   const same = (a, b) => a.pitari === b.pitari;
   return `
       <table class="lb-table">
-        <tr><th></th><th>名前</th><th>ピタリ</th></tr>
+        <tr><th></th><th></th><th>ピタリ</th></tr>
         ${rows.map((r, i) => `
           <tr class="${rankOf(rows, i, same) === 1 ? "top" : ""}">
             <td class="lb-rank">${rankOf(rows, i, same)}</td>
-            <td><span class="lb-who">${avatarHTML(r.member, "lb-ava")}<a class="lb-name" href="predictor.html?id=${esc(r.member.id)}">${esc(r.member.name)}</a></span></td>
+            <td><span class="lb-who">${avatarHTML(r.member, "lb-ava")}<a class="lb-name${String(r.member.name).length >= 9 ? " long" : ""}" href="predictor.html?id=${esc(r.member.id)}">${esc(r.member.name)}</a></span></td>
             <td><span class="pit-cell" tabindex="0" onclick="this.classList.toggle('open')">
                   <span class="pit-btn">${r.pitari}</span>
                   <span class="pit-pop"><b class="pit-head">🎯 ${esc(r.member.name)} のピタリ</b>${(window.PITARI[r.member.id] || []).map(s => `<span class="pit-row">${s}</span>`).join("")}</span>
