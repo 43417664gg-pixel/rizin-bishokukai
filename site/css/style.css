@@ -383,16 +383,11 @@ button.corner-btn:active { transform: scale(.98); }
   background: rgba(212, 175, 55, .1);
   box-shadow: inset 0 0 12px rgba(212, 175, 55, .12);
 }
-.tech-select {
-  width: 100%; background: var(--panel2); color: var(--text); border: 1px solid var(--line);
-  border-radius: 0; padding: 9px 10px; font-size: 14px;
-}
 .fight-foot {
   display: flex; justify-content: space-between; align-items: center;
   padding: 8px 16px 14px; font-size: 11px; color: var(--muted);
 }
 .save-note.saved { color: var(--ok); }
-.clear-btn { background: none; border: none; color: var(--muted); font-size: 11px; text-decoration: underline; }
 
 /* 決定・編集 */
 .confirm-bar {
@@ -1044,6 +1039,7 @@ span.mav.sq { border-radius: 12%; }   /* 抜き太郎だけ正方形（Gaku指�
 }
 .pava { width: 18px; height: 18px; font-size: 10px; margin-right: 6px; }
 .pred-row .pwho { display: inline-flex; align-items: center; }
+.pred-row .psup .mega { width: 12px; height: 12px; fill: currentColor; vertical-align: -2px; margin-right: 3px; }
 .pred-row .psup { font-size: 11px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 45%; }
 .pred-row .psup.r { color: #ff5a67; } .pred-row .psup.b { color: #5aa0ff; }
 
@@ -1156,20 +1152,37 @@ span.mav.sq { border-radius: 12%; }   /* 抜き太郎だけ正方形（Gaku指�
 .pz-head::before, .ob-head::before { content: ""; flex: none; width: 6px; height: 17px; background: var(--red); transform: skewX(-18deg); }
 .ob-n { margin-left: auto; font: 700 18px/1 var(--num); color: var(--text); letter-spacing: .02em; }
 .ob-n small { font: 700 11px/1 "Noto Sans JP", sans-serif; color: var(--muted); margin-left: 2px; }
-.pick-zone .support-row { margin: 10px 14px 6px !important; padding-top: 10px; border-top: 1px dashed var(--line); }
+/* 応援：見出し文字（「応援」「📣」）を出さず、メガホンの形とコーナー色だけで伝える（Gaku 11/7「応援も無駄な文字」）。
+   赤は左から・青は右から伸びる斜めの札。押した側はコーナー色で塗る。数は Oswald */
+.support-row { display: flex; gap: 6px; margin: 12px 14px 4px; }
+.sup-btn { --sl: 10px; flex: 1; min-width: 0; display: flex; align-items: center; gap: 6px; height: 40px; padding: 0 14px 0 10px;
+  border: 0; cursor: pointer; color: #b9b9c6; font: 700 12.5px/1.2 "Noto Sans JP", sans-serif; text-align: left; }
+.sup-btn.c1 { background: linear-gradient(90deg, rgba(230, 0, 18, .22), rgba(230, 0, 18, .04) 75%);
+  clip-path: polygon(0 0, 100% 0, calc(100% - var(--sl)) 100%, 0 100%); }
+.sup-btn.c2 { flex-direction: row-reverse; padding: 0 10px 0 14px; text-align: right;
+  background: linear-gradient(270deg, rgba(30, 111, 217, .24), rgba(30, 111, 217, .04) 75%);
+  clip-path: polygon(var(--sl) 0, 100% 0, 100% 100%, 0 100%); }
+.sup-btn.long { font-size: 11px; }
+.sup-btn .mega { flex: none; width: 16px; height: 16px; fill: currentColor; opacity: .75; }
+.sup-btn.c2 .mega { transform: scaleX(-1); }
+.sup-nm { flex: 1; min-width: 0; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.sup-n { flex: none; font: 700 17px/1 var(--num); color: var(--text); }
+.sup-btn.sel { color: #fff; }
+.sup-btn.sel .mega { opacity: 1; }
+.sup-btn.c1.sel { background: linear-gradient(90deg, #e60012, #9c0010); }
+.sup-btn.c2.sel { background: linear-gradient(270deg, #3d8bff, #1e6fd9); }
+.sup-btn:active { transform: scale(.97); }
+/* 選んだ勝者の札の中に、決まり手の中身を小さく（一本・RNC・2R）。直すのは札を押して開く予想の画面で */
+.cb-note { display: block; margin-top: 4px; font: 700 11px/1.3 "Noto Sans JP", sans-serif; font-style: normal; color: var(--gold-hot); letter-spacing: .04em; }
+/* 予想の画面の1問目：保存済みの試合だけ「予想を取り消す」を静かに置く */
+.wiz-clear { align-self: center; margin-top: 10px; padding: 8px 14px; background: none; border: 0; color: var(--muted);
+  font: 700 12px/1 "Noto Sans JP", sans-serif; letter-spacing: .06em; cursor: pointer; }
+.wiz-clear:active { color: var(--text); }
 
 /* 美食会3人の予想まとめ（中身は Shadow DOM・幅に合わせて縮小。高さは JS が入れる） */
 .bsum { margin: 4px 0 18px; overflow: hidden; border: 1px solid var(--line); background: #0b0b0e; }
 /* 選手名（app.js の fnm）：仮名・漢字の途中では折らず「・」の後ろでだけ折る。1語が欄より長い時だけ anywhere が割る */
 .fnm { word-break: keep-all; overflow-wrap: anywhere; }
-/* 予想の入力：タップで即保存（決定ボタンなし・11/7）。保存済みは「✓ 〇〇 の勝ちで決定」と、押し直せば変更できる旨 */
-/* 決定後は字が散らないよう、左揃えの1列に寄せる（Gaku指摘11/7「文字が分散してて気が散る」）：
-   ✓ 名前の勝ちで決定 ……… 取り消す ／ 🎯 ピタリ狙い 右ストレート・2R ／ 決まり手・ラウンド ／ 説明1行 */
-.pt-grid { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 8px 12px; align-items: center; margin: 12px 16px 0; }
-.pt-k { font-size: 11px; color: var(--muted); letter-spacing: .05em; }
-.pt-v { display: flex; gap: 8px; min-width: 0; }
-.pt-foot { display: flex; justify-content: flex-end; margin: 8px 16px 0; }
-.pt-foot .clear-btn { padding: 0; }
 
 /* 得票率のバー。色分けは「赤コーナーか青コーナーか」を伝えるため（Gaku 11/7「赤青がチープ。全体の空気に合わせて」）。
    原色のベタ塗りをやめ、外側を暗く・ぶつかる中央を明るく。境目は斜めに切る（ファイトカードの鋭角トーン） */
