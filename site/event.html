@@ -7,7 +7,7 @@
 <title>大会予想｜予想番付</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261108034521">
+<link rel="stylesheet" href="css/style.css?v=20261108034853">
 </head>
 <body>
 <div id="app-header"></div>
@@ -18,13 +18,13 @@
 <div class="pg-spot" id="pg-spot" hidden></div><div class="pick-guide" id="pick-guide" aria-hidden="true"><span class="pg-t"></span><span class="pg-a"></span><span class="pg-x">予想を入れる<i class="pg-arw"></i></span></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261108034521"></script>
-<script src="js/techniques.js?v=20261108034521"></script>
-<script src="js/demo-data.js?v=20261108034521"></script>
-<script src="js/api.js?v=20261108034521"></script>
-<script src="js/app.js?v=20261108034521"></script>
-<script src="js/glyph_fit.js?v=20261108034521"></script>
-<script src="js/bishoku_summary.js?v=20261108034521"></script>
+<script src="js/config.js?v=20261108034853"></script>
+<script src="js/techniques.js?v=20261108034853"></script>
+<script src="js/demo-data.js?v=20261108034853"></script>
+<script src="js/api.js?v=20261108034853"></script>
+<script src="js/app.js?v=20261108034853"></script>
+<script src="js/glyph_fit.js?v=20261108034853"></script>
+<script src="js/bishoku_summary.js?v=20261108034853"></script>
 <script>
 let EV, PHASE, FIGHTS, FMAP, MEMBERS, myPreds = {}, allPreds = [], ALL_SUPPORTS = [];
 
@@ -100,6 +100,26 @@ async function toggleSupport(fightId, fighterId) {
     toast("応援を更新 ✓");
   } catch (e) { toast("応援テーブルが未作成かも（要SQL）"); }
 }
+
+// タイトルマッチの右上に上から掛かるベルト（Gaku 11/8「上からライジンベルトがかかってるみたいにしてほしい」）。
+// 上の9pxはカードの縁の向こうへ回り込む折り返し・黒い革に金のステッチ・金のプレートに赤い石・プレートの下にも革が垂れて先が尖る。公式ベルトの意匠はなぞらない（描き起こし）
+const TITLE_BELT = `<span class="t-belt" aria-hidden="true"><svg viewBox="0 0 34 56" width="34" height="56">
+  <defs>
+    <linearGradient id="tbS" x1="0" x2="1"><stop offset="0" stop-color="#050506"/><stop offset=".5" stop-color="#2a2a30"/><stop offset="1" stop-color="#050506"/></linearGradient>
+    <linearGradient id="tbF" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a3a42"/><stop offset=".35" stop-color="#121215"/><stop offset="1" stop-color="#000"/></linearGradient>
+    <linearGradient id="tbG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff3c4"/><stop offset=".42" stop-color="#e8c158"/><stop offset=".55" stop-color="#9c6d22"/><stop offset="1" stop-color="#f0cd5a"/></linearGradient>
+    <radialGradient id="tbR" cx=".38" cy=".32" r=".75"><stop offset="0" stop-color="#ff6a74"/><stop offset=".45" stop-color="#e60012"/><stop offset="1" stop-color="#6e0008"/></radialGradient>
+  </defs>
+  <path d="M8 9V3.5Q8 0 11.5 0H22.5Q26 0 26 3.5V9Z" fill="url(#tbF)"/>
+  <rect x="8" y="8.5" width="18" height="17" fill="url(#tbS)"/>
+  <path d="M8 41H26V51.5L17 56L8 51.5Z" fill="url(#tbS)"/>
+  <path d="M10.2 10V24M23.8 10V24M10.2 42V50.5M23.8 42V50.5" stroke="#c9a84a" stroke-width=".7" stroke-dasharray="1.6 1.4"/>
+  <path d="M6 22H28L33 27V38L28 43H6L1 38V27Z" fill="url(#tbG)" stroke="#6f4c14" stroke-width=".8"/>
+  <path d="M7.5 24H26.5L30.5 28V37L26.5 41H7.5L3.5 37V28Z" fill="none" stroke="#fff3c4" stroke-opacity=".7" stroke-width=".6"/>
+  <ellipse cx="17" cy="32.5" rx="7.5" ry="5.6" fill="url(#tbR)" stroke="#7a5518" stroke-width=".8"/>
+  <ellipse cx="14.8" cy="30.6" rx="2.4" ry="1.2" fill="#fff" opacity=".55"/>
+  <g fill="#fff3c4"><circle cx="5" cy="27.5" r=".9"/><circle cx="29" cy="27.5" r=".9"/><circle cx="5" cy="37.5" r=".9"/><circle cx="29" cy="37.5" r=".9"/></g>
+</svg></span>`;
 
 // 試合の見出し：1行（Gaku 11/7「2段になってる・文字ダサい」）。大きい番号 → 題（あれば赤）／階級（体重）
 // 体重は階級の直後に括弧でくっつける（Gaku 11/8「バンタム級（61.0kg）くっつけて欲しい。はなさず」。前は右端に離していた）
@@ -459,9 +479,9 @@ function render() {
   // （Gaku方針：みんなの予想は常時公開）。締切後・結果発表後は resultCard が
   // 既に全員のピックを内包しているので、二重にしないため predictCard のときだけ足す。
   // 中止・延期の試合は専用カード（大きくCANCELLED・予想は見れる）に差し替える。
-  // タイトルマッチは金の煙をまとう（.aura＝カードの縁にかかる靄・外側の煙と縁は CSS の ::before/::after）
+  // タイトルマッチは金の煙をまとい、右上にベルトが掛かる（.aura＝カードの縁にかかる靄・外側の煙と縁は CSS の ::before/::after・.t-belt＝ベルト）
   const card = (f) => `<section class="fight-unit${f.title_label ? " title" : ""}">${f.cancelled ? cancelledCard(f)
-    : base === predictCard ? base(f) + othersBlock(f) : base(f)}${f.title_label ? `<i class="aura" aria-hidden="true"></i>` : ""}</section>`;
+    : base === predictCard ? base(f) + othersBlock(f) : base(f)}${f.title_label ? `<i class="aura" aria-hidden="true"></i>${TITLE_BELT}` : ""}</section>`;
   const openBook = isOpenBook(EV);
   document.getElementById("main").innerHTML = `
     <div class="title-row"><h1 class="page-title">${esc(evParts(EV.name)[0])}${evParts(EV.name)[1] ? `<small class="ev-sub">${esc(evParts(EV.name)[1])}</small>` : ""}</h1>${dateBlock(EV.event_date)}</div>
