@@ -828,6 +828,12 @@ tr.top .lb-rate { color: var(--gold-hot); }
   clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
 }
 .ob-head { margin-bottom: 10px; }
+/* 1試合＝1かたまり。カードとみんなの予想は継ぎ目なく1枚に見せ、かたまり同士は大きく空ける
+   （Gaku 11/7「カードとカードの間に余白がないから脳がどこまでが意味の区切りなのか理解しにくい」） */
+.fight-unit { margin-bottom: 56px; }
+.fight-unit > .fight-card { margin-bottom: 0; }
+.fight-unit > .fight-card:has(+ .ob-picks) { clip-path: none; border-bottom: 0; }
+.fight-unit > .ob-picks { margin: 0; }
 
 /* ===== 予想の一致／割れ を瞬間で視認 ===== */
 /* 併記ブロック：一致は金の左帯、割れは赤の左帯 */
@@ -1018,8 +1024,6 @@ tr.top .lb-rate { color: var(--gold-hot); }
 .rk-un-n b { color:#c9a84a; font-weight:700; }
 
 /* 2026-11-07 心理ハードルを下げる：予想カードごとに「勝敗だけでいい」を明記 */
-.win-hint { padding: 6px 16px 2px; text-align: center; font-size: 12.5px; line-height: 1.5; color: #c9c9d2; }
-.win-hint b { color: var(--gold-hot); }
 
 /* 予想者のアイコン：外部予想者はチャンネルロゴ、それ以外は頭文字の丸（app.js の avatarHTML） */
 .ava-img { object-fit: cover; background: #fff; padding: 0; }
@@ -1166,7 +1170,7 @@ span.mav.sq { border-radius: 12%; }   /* 抜き太郎だけ正方形（Gaku指�
 .sup-btn .mega { flex: none; width: 16px; height: 16px; fill: currentColor; opacity: .75; }
 .sup-btn.c2 .mega { transform: scaleX(-1); }
 .sup-t { flex: 1; min-width: 0; display: flex; flex-direction: column; }
-.sup-t small { font: 700 9.5px/1 "Noto Sans JP", sans-serif; letter-spacing: .2em; margin-bottom: 3px; }
+.sup-t small { font: 700 9.5px/1.2 "Noto Sans JP", sans-serif; letter-spacing: .08em; margin-bottom: 2px; white-space: nowrap; }
 .sup-btn.c1 .sup-t small { color: #ff8a93; }
 .sup-btn.c2 .sup-t { align-items: flex-end; }
 .sup-btn.c2 .sup-t small { color: #8ab8ff; }
@@ -1237,6 +1241,8 @@ body.wiz-open { overflow: hidden; }
 .wiz-stage { --grow: 1; flex: 1; min-height: 0; max-width: 720px; width: 100%; margin: 0 auto; padding: 12px 12px 8px; }
 .wiz-stage .corner-btn { --sl: 34px; height: 100%; font-size: 22px; padding-bottom: 22px; }
 .wiz-stage .corner-btn small { font-size: 11.5px; }
+/* 説明は最後に1行（どう勝つ？の画面だけ：順位は勝敗だけ＝ここからは任意） */
+.wiz-foot { flex: none; max-width: 720px; width: 100%; margin: 12px auto 0; text-align: center; font: 700 11.5px/1.5 "Noto Sans JP", sans-serif; color: var(--muted); letter-spacing: .04em; }
 .wiz-nav { flex: none; display: flex; justify-content: space-between; gap: 10px; max-width: 720px; width: 100%; margin: 0 auto;
   padding: 6px 14px calc(14px + env(safe-area-inset-bottom)); }
 .wiz-nav button { flex: 1; height: 46px; border: 1px solid var(--line); background: var(--panel); color: var(--text);

@@ -7,7 +7,7 @@
 <title>大会予想｜予想番付</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261107234905">
+<link rel="stylesheet" href="css/style.css?v=20261107235315">
 </head>
 <body>
 <div id="app-header"></div>
@@ -17,12 +17,12 @@
 <div class="wiz" id="wiz" hidden role="dialog" aria-modal="true" aria-label="勝敗予想"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261107234905"></script>
-<script src="js/techniques.js?v=20261107234905"></script>
-<script src="js/demo-data.js?v=20261107234905"></script>
-<script src="js/api.js?v=20261107234905"></script>
-<script src="js/app.js?v=20261107234905"></script>
-<script src="js/bishoku_summary.js?v=20261107234905"></script>
+<script src="js/config.js?v=20261107235315"></script>
+<script src="js/techniques.js?v=20261107235315"></script>
+<script src="js/demo-data.js?v=20261107235315"></script>
+<script src="js/api.js?v=20261107235315"></script>
+<script src="js/app.js?v=20261107235315"></script>
+<script src="js/bishoku_summary.js?v=20261107235315"></script>
 <script>
 let EV, PHASE, FIGHTS, FMAP, MEMBERS, myPreds = {}, allPreds = [], ALL_SUPPORTS = [];
 
@@ -68,7 +68,8 @@ async function load() {
 // 📣応援：予想とは別に「どっちを応援するか」。締切に関係なくいつでも。
 // 応援の印（絵文字をやめて線画のメガホン。Gaku 11/7「応援も無駄な文字」＝見出しの段は出さず形で伝える）。
 // ただし選ぶ前は何のボタンか分からない（Gaku 11/7「選択するときに応援という文字がないとなんのことだかわからない」）
-// → まだ応援していない時だけ、名前の上に小さく「応援する」（札の RED/BLUE と同じ置き方）。押した後は色で伝わるので消す
+// → まだ応援していない時だけ、名前の上に小さく「予想と別に応援」（札の RED/BLUE と同じ置き方）。押した後は色で伝わるので消す。
+//   勝つと思う方（予想）と勝ってほしい方（応援）は別もの・応援だけでもいい（Gaku 11/7「勝敗関係なく…応援だけでもOK」）
 const MEGA = `<svg class="mega" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9.5v5h3.2l1.5 5.2h2.6L9 14.5l10 4.5v-14l-10 4.5z"/><path d="M20.4 9.4a2.8 2.8 0 0 1 0 5.2z"/></svg>`;
 function supportRow(f) {
   const mid = getMemberId();
@@ -78,7 +79,7 @@ function supportRow(f) {
     const n = cnt(fid), name = FMAP[fid]?.name;
     // 8字以上の名前は字を一段小さくして1行に収める（トニー・ララミー）。それ以上長い名前だけ「・」で折る
     return `<button type="button" class="sup-btn c${side}${mine?.fighter_id === fid ? " sel" : ""}${(name || "").length >= 8 ? " long" : ""}" onclick="toggleSupport('${f.id}','${fid}')"
-      aria-label="${esc(name)}を応援">${MEGA}<span class="sup-t">${mine ? "" : `<small>応援する</small>`}<span class="sup-nm">${fnm(name)}</span></span>${n ? `<b class="sup-n">${n}</b>` : ""}</button>`;
+      aria-label="${esc(name)}を応援">${MEGA}<span class="sup-t">${mine ? "" : `<small>予想と別に応援</small>`}<span class="sup-nm">${fnm(name)}</span></span>${n ? `<b class="sup-n">${n}</b>` : ""}</button>`;
   };
   return `<div class="support-row">${btn(f.fighter1_id, 1)}${btn(f.fighter2_id, 2)}</div>`;
 }
@@ -207,13 +208,12 @@ function predictCard(f) {
       ${statsBlock(f)}
       ${profileLinks(f)}
       <div class="pick-zone">
-      <div class="pz-head">勝敗予想</div>
+      <div class="pz-head">どっちが勝つ？</div>
       <div class="vs-row${p.winner_id ? " has-sel" : ""}">
         ${corner(1)}
         <span class="vs-mark">VS</span>
         ${corner(2)}
       </div>
-      ${p.winner_id ? "" : `<div class="win-hint">勝つと思う方をタップ！<br>ランキングは<b>勝敗予想だけ</b>で決まります。</div>`}
       ${supportRow(f)}
       </div>
     </div>`;
@@ -443,8 +443,8 @@ function render() {
   // （Gaku方針：みんなの予想は常時公開）。締切後・結果発表後は resultCard が
   // 既に全員のピックを内包しているので、二重にしないため predictCard のときだけ足す。
   // 中止・延期の試合は専用カード（大きくCANCELLED・予想は見れる）に差し替える。
-  const card = (f) => f.cancelled ? cancelledCard(f)
-    : base === predictCard ? base(f) + othersBlock(f) : base(f);
+  const card = (f) => `<section class="fight-unit">${f.cancelled ? cancelledCard(f)
+    : base === predictCard ? base(f) + othersBlock(f) : base(f)}</section>`;
   const openBook = isOpenBook(EV);
   document.getElementById("main").innerHTML = `
     <div class="title-row"><h1 class="page-title">${esc(EV.name)}</h1>${dateBlock(EV.event_date)}</div>
@@ -650,7 +650,8 @@ function drawWiz(pop) {
       nav(`<button type="button" onclick="wizNext()">${last ? "閉じる" : wizSaved(f) ? "次へ ›" : "飛ばす ›"}</button>`);
   } else if (WIZ.step === "how") {
     w.innerHTML = head("どう勝つ？") +
-      `<div class="wiz-opts">${METHODS.map(x => opt(p.method === x.id, `wizHow('${x.id}')`, x.label)).join("")}</div>` + nav(skip);
+      `<div class="wiz-opts">${METHODS.map(x => opt(p.method === x.id, `wizHow('${x.id}')`, x.label)).join("")}</div>` +
+      `<div class="wiz-foot">ランキングは勝敗だけで決まる。ここからは入れなくてもOK</div>` + nav(skip);
   } else if (WIZ.step === "tech") {
     w.innerHTML = head("決まり手は？") +
       `<div class="wiz-opts grid">${techsFor(p.method).map(t => opt(p.technique === t.id, `wizTech('${t.id}')`, fnm(t.label).replace("（", "<wbr>（"))).join("")}</div>` + nav(skip);
