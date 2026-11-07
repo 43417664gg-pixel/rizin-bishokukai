@@ -295,6 +295,12 @@
     tick();
     el._cd = setInterval(tick, 1000);
   };
+  // 日付は「11.8」を大きく、年と曜日を小さく上に（大会タブのカードと大会ページの見出しで共用）
+  window.dateBlock = (d) => {
+    if (!d) return "";
+    const dt = new Date(d + "T00:00:00");
+    return `<div class="edate"><small>${dt.getFullYear()} ${["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"][dt.getDay()]}</small><b>${dt.getMonth() + 1}.${dt.getDate()}</b></div>`;
+  };
   // 予想した数＝試合数ぶんの目盛り。入れた分だけ赤く埋まる。全部入れたら「✓ 予想」（大会タブと大会ページの帯で共用）
   window.progBlock = (n, total) => !total ? "" : `
           <div class="eprog${n >= total ? " full" : ""}">

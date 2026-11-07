@@ -7,18 +7,18 @@
 <title>予想番付｜格闘技の勝敗予想</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261107230238">
+<link rel="stylesheet" href="css/style.css?v=20261107230854">
 </head>
 <body>
 <div id="app-header"></div>
 <div class="wrap" id="main"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261107230238"></script>
-<script src="js/techniques.js?v=20261107230238"></script>
-<script src="js/demo-data.js?v=20261107230238"></script>
-<script src="js/api.js?v=20261107230238"></script>
-<script src="js/app.js?v=20261107230238"></script>
+<script src="js/config.js?v=20261107230854"></script>
+<script src="js/techniques.js?v=20261107230854"></script>
+<script src="js/demo-data.js?v=20261107230854"></script>
+<script src="js/api.js?v=20261107230854"></script>
+<script src="js/app.js?v=20261107230854"></script>
 <script>
 // Xから来た人に「いま何をやっているか」を最初に見せる。
 // 監査（2026-08-31）で、入口に大会情報がゼロのまま登録を求めていて離脱する形だったため追加。
@@ -155,11 +155,6 @@ async function renderHome() {
 
   // 大会カードの名前の段（Gaku 11/7「ここも手抜き」）：日付・何試合入れたかを文で並べず、数字と形で見せる。
   // 日付＝右端に大きく「11.8」＋小さく年と曜日（ポスターと同じ英字）。受付中のタグは下の残り時間が言うので出さない
-  const dateBlock = (d) => {
-    if (!d) return "";
-    const dt = new Date(d + "T00:00:00");
-    return `<div class="edate"><small>${dt.getFullYear()} ${["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"][dt.getDay()]}</small><b>${dt.getMonth() + 1}.${dt.getDate()}</b></div>`;
-  };
   // 大会名は「主題＋副題」に割る（「超RIZIN.6｜師走の尾張名古屋下剋上祭り」「RIZIN LANDMARK 16｜in NAGASAKI」）。
   // 1本のまま大きくすると「尾張名古／屋」のように語の途中で折れるため。副題は小さく下の段へ
   const nameBlock = (name, tag) => {
