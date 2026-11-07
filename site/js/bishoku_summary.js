@@ -50,9 +50,11 @@ const CSS = `
   .pk { display:flex; flex-direction:column; align-items:center; }
   /* 白い縁の外にもう1本黒い縁＝シール。どの大会の絵の上でも輪郭が切れる */
   .ic { width:var(--ic); height:var(--ic); border-radius:50%; display:flex; align-items:center; justify-content:center; flex:none;
-        font-size:calc(var(--ic) * .48); font-weight:900; color:#fff; border:calc(5px * var(--u) + 1px) solid #fff;
+        font-size:calc(var(--ic) * .48); font-weight:900; color:#fff; border:calc(4px * var(--u) + 1px) solid #f4f1ea;
         box-shadow:0 0 0 calc(3px * var(--u) + 1px) #08080a, 0 3px 12px rgba(0,0,0,.75); text-shadow:0 1px 3px rgba(0,0,0,.5); }
-  .ic.lt, .ci.lt { color:#141414; text-shadow:none; }   /* 金など明るい塗り＝白い字が沈むので黒字 */
+  /* 塗りは原色ベタではなく、左上に光・縁に影の球（Gaku 11/7「丸アイコンの色もデザイン寄せて」）。赤・青・金の系統は見分けの目印なので残す */
+  .ic, .ci { background:radial-gradient(circle at 32% 26%, color-mix(in srgb, var(--c) 58%, #fff) 0%, var(--c) 46%, color-mix(in srgb, var(--c) 52%, #000) 100%); }
+  .ic.lt, .ci.lt { color:#1a1408; text-shadow:none; }   /* 金など明るい塗り＝白い字が沈むので黒字 */
   /* 背景がその人の色に近い／明るい場所だけ、黒い後光を足す（build_data.py が大会ごとにバナーを測る） */
   .ic.pop, .ci.pop { box-shadow:0 0 0 calc(3px * var(--u) + 2px) #08080a, 0 0 calc(20px * var(--u) + 6px) calc(8px * var(--u) + 3px) rgba(0,0,0,.8); }
   .pk .mt { margin-top:calc(3px * var(--u)); font-size:calc(23px * var(--u)); font-weight:900; color:var(--gold); white-space:nowrap; }
@@ -101,7 +103,7 @@ const light = c => { const [r, g, b] = [1, 3, 5].map(i => parseInt(c.slice(i, i 
   .map(v => v <= .04045 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4); return .2126 * r + .7152 * g + .0722 * b > .4; };
 // 沈む＝その場所の画素の12%以上がその人の色に近い（ΔE<30）か、場所が明るい（L≥62）
 const sinks = (f, zone, m) => { const z = D.zones?.[f.id]?.[zone]; return !!z && (z.L >= 62 || (z.sim[m.id] || 0) >= .12); };
-const icon = (m, f, zone) => `<span class="ic${light(m.color) ? " lt" : ""}${f && sinks(f, zone, m) ? " pop" : ""}" style="background:${esc(m.color)}">${ini(m)}</span>`;
+const icon = (m, f, zone) => `<span class="ic${light(m.color) ? " lt" : ""}${f && sinks(f, zone, m) ? " pop" : ""}" style="--c:${esc(m.color)}">${ini(m)}</span>`;
 // 絵の彩度が高い大会ほど下端の影を濃く（.3〜.65）
 const scrimOf = f => { const c = D.zones?.[f.id]?.chroma; return c == null ? .45 : Math.min(.65, Math.max(.3, .3 + (c - 15) / 60)).toFixed(2); };
 const predOf = (m, f) => D.preds.find(p => p.member_id === m.id && p.fight_id === f.id);
@@ -115,7 +117,7 @@ function fightCard(f) {
   }).join("");
   const cheer = fid => D.members.filter(m => supOf(m, f)?.fighter_id === fid)
     .map(m => { const z = fid === f.fighter1_id ? "tl" : "tr";
-      return `<span class="ci${light(m.color) ? " lt" : ""}${sinks(f, z, m) ? " pop" : ""}" style="background:${esc(m.color)}">${ini(m)}<span class="mg">📣応援</span></span>`; }).join("");
+      return `<span class="ci${light(m.color) ? " lt" : ""}${sinks(f, z, m) ? " pop" : ""}" style="--c:${esc(m.color)}">${ini(m)}<span class="mg">📣応援</span></span>`; }).join("");
   const yet = D.members.filter(m => !predOf(m, f));
   const winners = new Set(picks.map(x => x.p.winner_id));
   const badge = picks.length < 2 ? "" : winners.size === 1 ? `<span class="bd same">一致</span>` : `<span class="bd split">割れた</span>`;

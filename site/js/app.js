@@ -175,8 +175,13 @@
     const src = m && window.AVATARS[m.id];
     if (src) return `<img class="${cls} ava-img" src="${esc(src)}" alt="" loading="lazy">`;
     const ini = String(m?.name || "?").trim().slice(0, 1);
-    return `<span class="${cls}" style="background:${esc(m?.color || "#555")}">${esc(ini)}</span>`;
+    const c = /^#[0-9a-f]{6}$/i.test(m?.color || "") ? m.color : "#555555";
+    return `<span class="${cls} mav${isLightColor(c) ? " lt" : ""}" style="--c:${c}">${esc(ini)}</span>`;
   };
+  // 塗りが明るい（金など）なら黒字。相対輝度 > .4（bishoku_summary.js の light と同じ判定）
+  window.isLightColor = (c) => [1, 3, 5].map(i => parseInt(c.slice(i, i + 2), 16) / 255)
+    .map(v => v <= .04045 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4)
+    .reduce((s, v, i) => s + v * [.2126, .7152, .0722][i], 0) > .4;
   window.fmtDate = (d) => {
     if (!d) return "";
     const dt = new Date(d + (d.length === 10 ? "T00:00:00" : ""));

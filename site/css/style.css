@@ -964,6 +964,11 @@ tr.top .lb-rate { color: var(--gold-hot); }
 
 /* 予想者のアイコン：外部予想者はチャンネルロゴ、それ以外は頭文字の丸（app.js の avatarHTML） */
 .ava-img { object-fit: cover; background: #fff; padding: 0; }
+/* 頭文字の丸は原色のベタ塗りをやめ、左上に光・縁に影の球（Gaku 11/7「丸アイコンの色もデザイン寄せて」）。
+   赤・青・金の系統は誰の丸かを見分ける目印なので残す */
+span.mav { background: radial-gradient(circle at 32% 26%, color-mix(in srgb, var(--c) 58%, #fff) 0%, var(--c) 46%, color-mix(in srgb, var(--c) 52%, #000) 100%);
+  color: #fff; text-shadow: 0 1px 2px rgba(0, 0, 0, .45); }
+span.mav.lt { color: #1a1408; text-shadow: 0 1px 0 rgba(255, 255, 255, .3); }
 .lb-who { display: inline-flex; align-items: center; gap: 8px; }
 .lb-ava, .pava {
   width: 22px; height: 22px; border-radius: 50%; flex: none;
@@ -1049,7 +1054,7 @@ tr.top .lb-rate { color: var(--gold-hot); }
   .st-nick { grid-area: 2 / 1 / 3 / -1; }
   .st-side .st-head.age-n .st-name, .st-side .st-head.age-b .st-name { grid-area: 1 / 1 / 2 / -1; }
   .st-side .st-head.age-n .st-age { grid-area: 2 / 1; }
-  .st-side .st-head.age-n .st-nick { grid-area: 2 / 2; }
+  .st-side .st-head.age-n .st-nick { grid-area: 2 / 2; align-self: start; }   /* 年齢と並べても異名の上端は反対側と同じ高さ */
   .st-side .st-head.age-b .st-age { grid-area: 3 / 1 / 4 / -1; }
   .sb-lab { gap: 2px 0; font-size: 9px; }   /* 間隔は space-between に任せる（375pxで3つが1行に入る） */
   .sb-lab b { font-size: 12px; margin-left: 2px; }
