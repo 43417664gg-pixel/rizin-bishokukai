@@ -7,22 +7,22 @@
 <title>大会予想｜予想番付</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261107224127">
+<link rel="stylesheet" href="css/style.css?v=20261107225130">
 </head>
 <body>
 <div id="app-header"></div>
 <div id="sticky-cd"></div>
 <div class="wrap" id="main"></div>
 <div class="toast" id="toast"></div>
-<button type="button" class="pick-guide" id="pick-guide" onclick="goNextPick()"><span class="pg-in"><i class="pg-arrow">▼</i>予想を入れる<span class="pg-left">あと<b class="pg-n"></b>試合</span></span></button>
+<button type="button" class="pick-guide" id="pick-guide" onclick="goNextPick()"><span class="pg-in"><i class="pg-arrow">▼</i>予想を入れる</span></button>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261107224127"></script>
-<script src="js/techniques.js?v=20261107224127"></script>
-<script src="js/demo-data.js?v=20261107224127"></script>
-<script src="js/api.js?v=20261107224127"></script>
-<script src="js/app.js?v=20261107224127"></script>
-<script src="js/bishoku_summary.js?v=20261107224127"></script>
+<script src="js/config.js?v=20261107225130"></script>
+<script src="js/techniques.js?v=20261107225130"></script>
+<script src="js/demo-data.js?v=20261107225130"></script>
+<script src="js/api.js?v=20261107225130"></script>
+<script src="js/app.js?v=20261107225130"></script>
+<script src="js/bishoku_summary.js?v=20261107225130"></script>
 <script>
 let EV, PHASE, FIGHTS, FMAP, MEMBERS, myPreds = {}, allPreds = [], ALL_SUPPORTS = [];
 
@@ -356,6 +356,7 @@ function replaceCard(fightId) {
   tmp.innerHTML = (PHASE === "locked" || PHASE === "finished") ? resultCard(f)
     : PHASE === "before_open" ? previewCard(f) : predictCard(f);
   el.replaceWith(tmp.firstElementChild);
+  drawProg();
 }
 
 // ---------- 答え合わせUI（締切後） ----------
@@ -503,7 +504,6 @@ function render() {
   // 中止・延期の試合は専用カード（大きくCANCELLED・予想は見れる）に差し替える。
   const card = (f) => f.cancelled ? cancelledCard(f)
     : base === predictCard ? base(f) + othersBlock(f) : base(f);
-  const days = daysToEvent(EV);
   const openBook = isOpenBook(EV);
   document.getElementById("main").innerHTML = `
     <div class="title-row"><h1 class="page-title">${esc(EV.name)}</h1><span class="en-label">${PHASE === "finished" ? "RESULT" : "FIGHT CARD"}</span></div>
@@ -520,13 +520,11 @@ function render() {
   if (PHASE === "open" && !openBook) {
     sc.innerHTML = `
       <div class="countdown-bar sticky">
-        <div class="cd-left">
-          <span class="cd-label">予想締切まで</span>
-          <span class="cd-timer" id="cd_main">--:--:--</span>
-        </div>
-        ${days !== null && days >= 0 ? `<div class="cd-days"><b>${days === 0 ? "本日" : "あと" + days + "日"}</b><span>大会${days === 0 ? "開催" : "まで"}</span></div>` : ""}
+        <span class="cd-timer" id="cd_main" role="timer" aria-label="予想締切までの残り時間">--:--:--</span>
+        <div id="sticky-prog"></div>
       </div>`;
     startCountdown(document.getElementById("cd_main"), EV.lock_at, () => location.reload());
+    drawProg();
   } else sc.innerHTML = "";
   drawBishokuSummary();
 }
@@ -630,18 +628,26 @@ function fitNicks() {
     }
   });
 }
-// 予想ガイド（Gaku指示11/7「予想入れに来たのにどこかな？ってなっちゃう」）：画面の下に小さく浮かせて付いてくる。
-// 押すと、まだ予想していない試合の「勝敗予想」へ飛ぶ（今いる所より下の最初の1つ・下に無ければ上へ）。
-// まだ予想していない「勝敗予想」が画面に入っている間は引っ込む＝予想を入れたら、また次を指して出てくる
+// 予想ガイド（Gaku指示11/7「予想入れに来たのにどこかな？ってなっちゃう」）：開いた瞬間の迷子を無くすためだけのもの。
+// 押すと、まだ予想していない最初の試合の「勝敗予想」へ飛ぶ。勝敗予想の所まで一度来たら、もう出さない
+// （Gaku 11/7「予想の選択のところまで来たら無くしていい」）。残りの数は上の帯の目盛りで静かに知らせるだけ＝全部埋めさせようとはしない
+let GUIDE_REACHED = false;
 function guideTarget() {
-  if (PHASE !== "open") return null;
-  const zs = FIGHTS.filter(f => !f.cancelled && !f.event_only && !myPreds[f.id]?.winner_id)
-    .map(f => document.querySelector(`#fc_${f.id} .pick-zone`)).filter(Boolean)
-    .map(z => ({ z, r: z.getBoundingClientRect() }));
-  if (!zs.length) return null;
-  const vh = innerHeight;
-  if (zs.some(({ r }) => r.top < vh * 0.9 && r.bottom > vh * 0.1)) return { left: zs.length };
-  return { left: zs.length, ...(zs.find(({ r }) => r.top >= 0) || zs[zs.length - 1]) };
+  if (PHASE !== "open" || GUIDE_REACHED) return null;
+  if ([...document.querySelectorAll(".pick-zone")].some(z => { const r = z.getBoundingClientRect(); return r.height > 0 && r.top < innerHeight * 0.9 && r.bottom > 0; })) {
+    GUIDE_REACHED = true;
+    return null;
+  }
+  const f = FIGHTS.find(f => !f.cancelled && !f.event_only && !myPreds[f.id]?.winner_id);
+  const z = f && document.querySelector(`#fc_${f.id} .pick-zone`);
+  return z ? { z } : null;
+}
+// 上の帯の目盛り（大会タブの予想済みと同じ型）。予想のたびに描き直す
+function drawProg() {
+  const el = document.getElementById("sticky-prog");
+  if (!el) return;
+  const fs = FIGHTS.filter(f => !f.cancelled && !f.event_only);
+  el.innerHTML = progBlock(fs.filter(f => myPreds[f.id]?.winner_id).length, fs.length);
 }
 // 美食会予想まとめは写真に撮って回す前提（Gaku 11/7）＝ガイドがまとめに重なる間は引っ込む。
 // 開いた直後（まだ一度もスクロールしていない）だけは重なっても出す＝来た人に予想を入れる場所を知らせる
@@ -655,9 +661,6 @@ function overSummary(g) {
 function updateGuide() {
   const g = document.getElementById("pick-guide"), t = guideTarget();
   g.classList.toggle("show", !!t?.z && !overSummary(g));
-  if (!t?.z) return;
-  g.querySelector(".pg-arrow").textContent = t.r.top < 0 ? "▲" : "▼";
-  g.querySelector(".pg-n").textContent = t.left;
 }
 function goNextPick() {
   const z = guideTarget()?.z;
@@ -665,6 +668,8 @@ function goNextPick() {
   z.scrollIntoView({ behavior: "smooth", block: "center" });
   z.classList.remove("pz-flash"); void z.offsetWidth; z.classList.add("pz-flash");   // 着いた先を一瞬光らせる
 }
+new ResizeObserver(([e]) => document.documentElement.style.setProperty("--hdr-h", e.target.offsetHeight + "px"))
+  .observe(document.getElementById("app-header"));
 let GUIDE_RAF = 0;
 const refreshGuide = () => { if (!GUIDE_RAF) GUIDE_RAF = requestAnimationFrame(() => { GUIDE_RAF = 0; updateGuide(); }); };
 addEventListener("scroll", () => { GUIDE_SCROLLED = true; refreshGuide(); }, { passive: true });

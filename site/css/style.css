@@ -136,37 +136,38 @@ img { max-width: 100%; display: block; }
 /* ===== カウントダウン ===== */
 .countdown-bar {
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
-  flex-wrap: wrap;   /* 狭い画面で「あと○日」が見切れるのを防ぐ */
+  flex-wrap: wrap;
   background: linear-gradient(90deg, rgba(230, 0, 18, .14), rgba(230, 0, 18, .03) 65%), var(--panel);
   border-top: 1px solid rgba(230, 0, 18, .35);
   padding: 10px 14px;
 }
+/* 付いてくるのは外側の #sticky-cd（帯そのものを sticky にすると、帯と同じ高さの親の中でしか動けず付いてこなかった）。
+   top はヘッダーの実測の高さ（event.html が --hdr-h に入れる・画面幅で変わる） */
+#sticky-cd { position: sticky; top: var(--hdr-h, 57px); z-index: 40; }
 .countdown-bar.sticky {
-  position: sticky; top: 47px; z-index: 40;
   border: none; border-bottom: 1px solid rgba(230, 0, 18, .35);
   background: linear-gradient(90deg, rgba(56, 3, 8, .96), rgba(20, 8, 10, .96));
   backdrop-filter: blur(8px);
   max-width: 100%; margin: 0;
+  padding-inline: max(14px, calc((100% - 720px) / 2 + 14px));   /* 中身は本文（.wrap 720px）と同じ幅に揃える */
 }
-.countdown-bar.sticky .cd-inner { max-width: 720px; margin: 0 auto; }
-.cd-left { display: flex; align-items: baseline; gap: 10px; }
-.cd-label { font-size: 11px; color: var(--muted); letter-spacing: .08em; white-space: nowrap; }
-.cd-label::before {
-  content: "●"; color: var(--red-hot); margin-right: 5px; font-size: 8px;
-  animation: blink 1.6s infinite;
-}
-@keyframes blink { 50% { opacity: .25; } }
+/* 大会ページ上の帯：文言なしの数字＋予想の目盛り（大会タブと同じ型・Gaku 11/7「書かなくても時間が減ってればわかる」） */
 .cd-timer {
-  font-family: var(--num); font-weight: 700; font-size: 24px; letter-spacing: .06em;
-  color: var(--gold-hot); font-variant-numeric: tabular-nums; white-space: nowrap;
+  display: flex; align-items: baseline; font-family: var(--num); font-weight: 700; font-size: 24px; letter-spacing: .06em;
+  color: #f4f1ea; font-variant-numeric: tabular-nums; white-space: nowrap;
 }
-.cd-days { text-align: right; line-height: 1.2; white-space: nowrap; margin-left: auto; }
+.cd-timer::before { content: ""; flex: none; align-self: center; width: 6px; height: 6px; margin-right: 9px; border-radius: 50%;
+  background: var(--red-hot); box-shadow: 0 0 6px rgba(255, 36, 54, .6); animation: blink 1.6s infinite; }
+.cd-timer small { font-size: .55em; color: var(--muted); letter-spacing: 0; margin: 0 .35em 0 .08em; }
+@keyframes blink { 50% { opacity: .25; } }
+#sticky-prog { flex: 1; min-width: 0; max-width: 300px; }
+#sticky-prog .eprog { margin: 0; padding: 0; border: 0; gap: 8px; }
+#sticky-prog .ep-bar { gap: 2px; height: 8px; }
+#sticky-prog .ep-n b { font-size: 18px; }
 @media (max-width: 430px) {
   .cd-timer { font-size: 20px; letter-spacing: .03em; }
-  .countdown-bar { padding: 10px 12px; gap: 8px; }
+  .countdown-bar { padding-block: 10px; gap: 12px; }
 }
-.cd-days b { display: block; font-family: var(--num); font-size: 16px; color: var(--text); }
-.cd-days span { font-size: 10px; color: var(--muted); letter-spacing: .1em; }
 
 /* 大会タブの残り時間（index.html の bigCountdown・Gaku 11/7）：文言なし・数字と単位だけを枠いっぱいに。
    字の大きさは欄の幅（cqw）から決める＝日の欄が消えると残りが大きくなる */
@@ -731,8 +732,6 @@ tr.top .lb-rate { color: var(--gold-hot); }
 .toast.show ~ .pick-guide.show { transform: translate(-50%, -46px) skewX(-6deg); }
 .pg-in { display: flex; align-items: center; gap: 8px; padding: 10px 16px 10px 13px; transform: skewX(6deg); white-space: nowrap; }
 .pg-arrow { font-style: normal; font-size: 10px; color: var(--red-hot); }
-.pg-left { font-size: 11px; color: var(--muted); }
-.pg-left b { font-family: var(--num); font-size: 15px; color: var(--gold-hot); margin: 0 2px; }
 .pick-zone.pz-flash { animation: pz-flash 1.4s ease-out; }
 @keyframes pz-flash { 0%, 35% { box-shadow: inset 0 0 0 2px var(--gold-hot); } 100% { box-shadow: inset 0 0 0 2px transparent; } }
 
@@ -1075,8 +1074,8 @@ span.mav.sq { border-radius: 12%; }   /* 抜き太郎だけ正方形（Gaku指�
 .stats > .st-cols > .st-side > .st-row { grid-row: 5; }
 /* 意味のまとまりごとに、うっすら仕切る：人（名前・年齢・異名）／戦績（勝敗・勝ち方）／前戦（Gaku 11/7）。
    左右は同じ段（subgrid）なので、線の高さも左右で揃う */
-.stats > .st-cols > .st-side > .st-head { padding-bottom: 8px; border-bottom: 1px solid rgba(255, 255, 255, .07); }
-.stats > .st-cols > .st-side > .st-k { padding-top: 9px; border-top: 1px solid rgba(255, 255, 255, .07); }
+.stats > .st-cols > .st-side > .st-head { padding-bottom: 8px; border-bottom: 1px solid rgba(255, 255, 255, .13); }
+.stats > .st-cols > .st-side > .st-k { padding-top: 9px; border-top: 1px solid rgba(255, 255, 255, .13); }
 @container (min-width: 640px) {
   .stats > .st-cols > .st-side > .st-recn { grid-column: 1; }
   .stats > .st-cols > .st-side > .st-bar { grid-column: 2; grid-row: 2; align-self: start; margin-top: 6px; justify-self: end; }

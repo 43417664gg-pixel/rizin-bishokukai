@@ -289,12 +289,19 @@
       const h = String(Math.floor((ms % 86400000) / 3600000)).padStart(2, "0");
       const m = String(Math.floor((ms % 3600000) / 60000)).padStart(2, "0");
       const s = String(Math.floor((ms % 60000) / 1000)).padStart(2, "0");
-      el.textContent = (d > 0 ? `${d}日と ` : "") + `${h}:${m}:${s}`;
+      el.innerHTML = (d > 0 ? `${d}<small>日</small> ` : "") + `${h}:${m}:${s}`;
     }
     clearInterval(el._cd);
     tick();
     el._cd = setInterval(tick, 1000);
   };
+  // 予想した数＝試合数ぶんの目盛り。入れた分だけ赤く埋まる。全部入れたら「✓ 予想」（大会タブと大会ページの帯で共用）
+  window.progBlock = (n, total) => !total ? "" : `
+          <div class="eprog${n >= total ? " full" : ""}">
+            <span class="ep-k">予想</span>
+            <span class="ep-bar">${Array.from({ length: total }, (_, i) => `<i${i < n ? ` class="on"` : ""}></i>`).join("")}</span>
+            <span class="ep-n"><b>${Math.min(n, total)}</b>/${total}</span>
+          </div>`;
   // 出身地(origin)→国旗絵文字。部分一致で引く。ダゲスタン等はロシア国旗。
   const FLAGS = [
     ["日本", "🇯🇵"], ["韓国", "🇰🇷"], ["中国", "🇨🇳"], ["ブラジル", "🇧🇷"],
