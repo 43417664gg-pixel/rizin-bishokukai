@@ -85,6 +85,12 @@ img { max-width: 100%; display: block; }
   letter-spacing: .03em; margin: 2px 0 6px; text-transform: uppercase;
 }
 .page-sub { color: var(--muted); font-size: 12px; margin-bottom: 18px; }
+/* 見出しは1行（Gaku 11/7「2段で右の空白が多くてダサい」）：大きい日本語 → 赤い線で横幅を埋める → 右端に英字 */
+.title-row { display: flex; align-items: center; gap: 12px; margin: 22px 0 14px; }
+.title-row .page-title { flex: 0 1 auto; min-width: 0; margin: 0; font-size: 38px; line-height: 1.05; }
+.title-row::after { content: ""; order: 2; flex: 1 1 24px; min-width: 24px; height: 2px;
+  background: linear-gradient(90deg, rgba(230, 0, 18, .85), rgba(230, 0, 18, .12)); transform: skewX(-30deg); }
+.title-row .en-label { order: 3; flex: none; margin: 0; letter-spacing: .3em; margin-right: -.3em; white-space: nowrap; }
 .section-label {
   display: flex; align-items: center; gap: 10px;
   font-family: var(--num); font-weight: 700; font-size: 12px; letter-spacing: .3em;
@@ -161,6 +167,21 @@ img { max-width: 100%; display: block; }
 }
 .cd-days b { display: block; font-family: var(--num); font-size: 16px; color: var(--text); }
 .cd-days span { font-size: 10px; color: var(--muted); letter-spacing: .1em; }
+
+/* 大会タブの残り時間（index.html の bigCountdown・Gaku 11/7）：文言なし・数字と単位だけを枠いっぱいに。
+   字の大きさは欄の幅（cqw）から決める＝日の欄が消えると残りが大きくなる */
+.cd-big { container-type: inline-size; display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr);
+  padding: 12px 10px 10px; border-top: 1px solid rgba(230, 0, 18, .35);
+  background: linear-gradient(90deg, rgba(230, 0, 18, .16), rgba(230, 0, 18, .03) 70%), var(--panel); }
+.cdb { position: relative; display: flex; flex-direction: column; align-items: center; font-size: min(17cqw, 92px); }
+.cd-big.n3 .cdb { font-size: min(23cqw, 112px); }
+.cdb b { font-family: var(--num); font-weight: 700; font-size: 1em; line-height: .95; letter-spacing: .01em;
+  color: var(--gold-hot); font-variant-numeric: tabular-nums; text-shadow: 0 0 .35em rgba(240, 205, 90, .18); }
+.cdb + .cdb::before { content: ":"; position: absolute; left: 0; top: 0; transform: translate(-50%, -.06em);
+  font-family: var(--num); font-weight: 400; line-height: .95; color: rgba(255, 36, 54, .55); }
+.cdb.d + .cdb::before { content: none; }   /* 「2日 03:02:04」＝日と時間の間はコロンで繋がない */
+.cdb i { font-style: normal; font-size: 10.5px; color: var(--muted); letter-spacing: .25em; margin-top: 6px; }
+.cd-big.hot .cdb b { color: var(--red-hot); text-shadow: 0 0 .35em rgba(255, 36, 54, .3); }   /* 1時間を切ったら赤 */
 
 /* ===== 大会カード ===== */
 /* 大会ごとに1枚の独立したカードとして立たせる。
@@ -738,6 +759,7 @@ tr.top .lb-rate { color: var(--gold-hot); }
   .player-grid { grid-template-columns: repeat(3, 1fr); }
   .fighter-grid { grid-template-columns: repeat(3, 1fr); }
   .page-title { font-size: 36px; }
+  .title-row .page-title { font-size: 44px; }
   .fname-big { font-size: 54px; }
 }
 

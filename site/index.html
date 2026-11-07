@@ -7,18 +7,18 @@
 <title>予想番付｜格闘技の勝敗予想</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261107222933">
+<link rel="stylesheet" href="css/style.css?v=20261107223317">
 </head>
 <body>
 <div id="app-header"></div>
 <div class="wrap" id="main"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261107222933"></script>
-<script src="js/techniques.js?v=20261107222933"></script>
-<script src="js/demo-data.js?v=20261107222933"></script>
-<script src="js/api.js?v=20261107222933"></script>
-<script src="js/app.js?v=20261107222933"></script>
+<script src="js/config.js?v=20261107223317"></script>
+<script src="js/techniques.js?v=20261107223317"></script>
+<script src="js/demo-data.js?v=20261107223317"></script>
+<script src="js/api.js?v=20261107223317"></script>
+<script src="js/app.js?v=20261107223317"></script>
 <script>
 // Xから来た人に「いま何をやっているか」を最初に見せる。
 // 監査（2026-08-31）で、入口に大会情報がゼロのまま登録を求めていて離脱する形だったため追加。
@@ -81,8 +81,7 @@ async function renderPlayerSelect() {
       <p class="back-note">※記録は端末に保存されます。端末やブラウザを変えると名前の選び直しが要ります。</p>
     </div>` : ""}
     <div class="ps-hero">
-      <div class="en-label">JOIN FREE</div>
-      <h1 class="page-title">はじめての人はこちら</h1>
+      <div class="title-row"><h1 class="page-title">はじめての人はこちら</h1><span class="en-label">JOIN FREE</span></div>
       <p class="page-sub">名前を決めるだけ。登録不要で今すぐ予想＆応援できる。</p>
     </div>
     <div style="display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:2px auto 16px;max-width:460px">
@@ -168,13 +167,12 @@ async function renderHome() {
           </div>
         </div>`;
     }
-    const phase = eventPhase(ev), days = daysToEvent(ev), openBook = isOpenBook(ev);
+    const phase = eventPhase(ev), openBook = isOpenBook(ev);
     const tag = openBook ? `<span class="tag open">予想受付中・締切なし</span>` : `<span class="tag ${phase}">${PHASE_LABEL[phase]}</span>`;
+    // 残り時間は文言を置かず、枠いっぱいの数字だけで見せる（Gaku 11/7「予想締切まで」「大会まで」は長い・数字で伝わる）。
+    // 締切＝大会の開始時刻（11/7〜）なので、締切と大会までの2つは1つにまとまる
     const countdown = (phase === "open" && !openBook) ? `
-      <div class="countdown-bar">
-        <div class="cd-left"><span class="cd-label">予想締切まで</span><span class="cd-timer" data-target="${ev.lock_at}">--:--:--</span></div>
-        ${days !== null && days >= 0 ? `<div class="cd-days"><b>${days === 0 ? "本日" : "あと" + days + "日"}</b><span>大会${days === 0 ? "開催" : "まで"}</span></div>` : ""}
-      </div>` : "";
+      <div class="cd-big" data-target="${ev.lock_at}" role="timer" aria-label="予想締切までの残り時間"></div>` : "";
     return `
       <a class="event-card" href="event.html?id=${ev.id}">
         ${ev.poster_url ? `<div class="eposter" style="background-image:url('${esc(ev.poster_url)}')"><img src="${esc(ev.poster_url)}" alt=""></div>` : ""}
@@ -190,17 +188,29 @@ async function renderHome() {
   const liveCards = await Promise.all(live.map(fullCard));
   // 先頭の未来大会＝次大会。NEXTで匂わせる。
   const liveHtml = liveCards.map((html, i) =>
-    i === 0 ? `<div class="next-flag">🔥 NEXT EVENT ・ 次はこれ</div>${html}` : html).join("");
+    i === 0 ? `<div class="next-flag">🔥 NEXT</div>${html}` : html).join("");
   const pastHtml = (await Promise.all(pastFinished.map(fullCard))).join("");
 
   document.getElementById("main").innerHTML = `
-    <div class="en-label">EVENTS</div>
-    <h1 class="page-title">大会</h1>
+    <div class="title-row"><h1 class="page-title">大会</h1><span class="en-label">EVENTS</span></div>
     ${recentHtml ? `<div class="section-label">直近の結果</div>${recentHtml}` : ""}
     ${liveHtml}
     ${pastHtml ? `<div class="section-label">これまでの大会</div>${pastHtml}` : ""}`;
-  document.querySelectorAll(".cd-timer").forEach(el =>
-    startCountdown(el, el.dataset.target, () => location.reload()));
+  document.querySelectorAll(".cd-big").forEach(el => bigCountdown(el, () => location.reload()));
+}
+
+// 日・時間・分・秒を枠いっぱいの数字で。1日を切ったら日の欄が消えて残りの数字が大きくなり、1時間を切ったら赤くなる
+function bigCountdown(el, onExpire) {
+  const target = new Date(el.dataset.target), p = (n) => String(n).padStart(2, "0");
+  const tick = () => {
+    const ms = target - new Date();
+    if (ms <= 0) { clearInterval(el._cd); if (onExpire) onExpire(); return; }
+    const d = Math.floor(ms / 864e5), h = Math.floor(ms % 864e5 / 36e5), m = Math.floor(ms % 36e5 / 6e4), s = Math.floor(ms % 6e4 / 1e3);
+    const cells = [...(d ? [[d, "日"]] : []), [p(h), "時間"], [p(m), "分"], [p(s), "秒"]];
+    el.className = `cd-big n${cells.length}${ms < 36e5 ? " hot" : ""}`;
+    el.innerHTML = cells.map(([n, u]) => `<span class="cdb${u === "日" ? " d" : ""}"><b>${n}</b><i>${u}</i></span>`).join("");
+  };
+  clearInterval(el._cd); tick(); el._cd = setInterval(tick, 1000);
 }
 
 (async () => {
