@@ -38,6 +38,24 @@
   ],
   "ev_lm17": [
    {
+    "date": "2026-11-03",
+    "channel": "MMA言語化挑戦中 Voyage GI",
+    "url": "https://www.youtube.com/watch?v=cutx5nn7qFg",
+    "n": 7
+   },
+   {
+    "date": "2026-11-02",
+    "channel": "MMA言語化挑戦中 Voyage GI",
+    "url": "https://www.youtube.com/watch?v=3irExZUbts8",
+    "n": 5
+   },
+   {
+    "date": "2026-10-28",
+    "channel": "MMA言語化挑戦中 Voyage GI",
+    "url": "https://www.youtube.com/watch?v=RG-YRGzPzYU",
+    "n": 1
+   },
+   {
     "date": "2026-10-18",
     "channel": "MMA言語化挑戦中 Voyage GI",
     "url": "https://www.youtube.com/watch?v=bxr8ywM2CPE",
@@ -184,6 +202,24 @@
   ],
   "ev_lm17": [
    {
+    "date": "2026-11-03",
+    "channel": "扇久保博正 おぎちゃんねる。Ogichannel",
+    "url": "https://www.youtube.com/watch?v=_-6ATvtGKgo",
+    "n": 8
+   },
+   {
+    "date": "2026-10-31",
+    "channel": "扇久保博正 おぎちゃんねる。Ogichannel",
+    "url": "https://www.youtube.com/watch?v=MiapUdQlLzk",
+    "n": 1
+   },
+   {
+    "date": "2026-10-24",
+    "channel": "扇久保博正 おぎちゃんねる。Ogichannel",
+    "url": "https://www.youtube.com/watch?v=14shtC-CCP8",
+    "n": 1
+   },
+   {
     "date": "2026-10-18",
     "channel": "扇久保博正 おぎちゃんねる。Ogichannel",
     "url": "https://www.youtube.com/watch?v=Xbt4UPy8w5E",
@@ -287,6 +323,14 @@
     "url": "https://www.youtube.com/watch?v=WaBAIETvaEg",
     "n": 1
    }
+  ],
+  "ev_lm17": [
+   {
+    "date": "2026-11-06",
+    "channel": "ジョビンチャンネル",
+    "url": "https://www.youtube.com/watch?v=bV2Mq6IuZ5w",
+    "n": 12
+   }
   ]
  },
  "m_yt_kyomaakimoto": {
@@ -312,6 +356,14 @@
     "channel": "秋元強真　Kyoma Akimoto",
     "url": "https://www.youtube.com/watch?v=uU-QWzbPgCY",
     "n": 8
+   }
+  ],
+  "ev_lm17": [
+   {
+    "date": "2026-10-27",
+    "channel": "秋元強真　Kyoma Akimoto",
+    "url": "https://www.youtube.com/watch?v=ixKPI7iteqY",
+    "n": 10
    }
   ]
  },
@@ -424,6 +476,18 @@
   ],
   "ev_lm17": [
    {
+    "date": "2026-11-01",
+    "channel": "青木真也  [ SHINYA AOKI ] チャンネル",
+    "url": "https://www.youtube.com/watch?v=ZcJgaJUgqNU",
+    "n": 1
+   },
+   {
+    "date": "2026-10-31",
+    "channel": "青木真也  [ SHINYA AOKI ] チャンネル",
+    "url": "https://www.youtube.com/watch?v=5r9S4-gTKys",
+    "n": 1
+   },
+   {
     "date": "2026-10-14",
     "channel": "青木真也  [ SHINYA AOKI ] チャンネル",
     "url": "https://www.youtube.com/watch?v=6TC_eufwZ24",
@@ -489,6 +553,14 @@
     "url": "https://www.youtube.com/watch?v=QIdD7F5qmcc",
     "n": 1
    }
+  ],
+  "ev_lm17": [
+   {
+    "date": "2026-11-05",
+    "channel": "Kanehara Masanori no kinchanTV",
+    "url": "https://www.youtube.com/watch?v=IKX8U3-r-ek",
+    "n": 1
+   }
   ]
  },
  "m_yt_336fd122": {
@@ -535,6 +607,14 @@
     "url": "https://www.youtube.com/watch?v=z6fUXffdKtU",
     "n": 7
    }
+  ],
+  "ev_lm17": [
+   {
+    "date": "2026-11-02",
+    "channel": "ストラッサー起一 [ストチャンネル]",
+    "url": "https://www.youtube.com/watch?v=fzz3D73zsww",
+    "n": 11
+   }
   ]
  },
  "m_yt_hiramotoren": {
@@ -554,6 +634,14 @@
     "channel": "ヌルの格闘技ラジオ",
     "url": "https://www.youtube.com/watch?v=0zT9BdHXAUw",
     "n": 8
+   }
+  ],
+  "ev_lm17": [
+   {
+    "date": "2026-11-05",
+    "channel": "ヌルの格闘技ラジオ",
+    "url": "https://www.youtube.com/watch?v=Myf3BXwvSyE",
+    "n": 13
    }
   ]
  },
@@ -784,6 +872,16 @@
     "channel": "ライアン・カファロの謎外国人ちゃんねる Ryan Cafaro MMA",
     "url": "https://www.youtube.com/watch?v=4DVsl1np5KI",
     "n": 8
+   }
+  ]
+ },
+ "m_yt_sugiyamakohei": {
+  "ev_lm17": [
+   {
+    "date": "2026-11-03",
+    "channel": "杉山廣平の HEY! HEY! チャンネル",
+    "url": "https://www.youtube.com/watch?v=wtZwt7jkCL8",
+    "n": 4
    }
   ]
  }

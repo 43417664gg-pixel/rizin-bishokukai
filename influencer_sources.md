@@ -584,3 +584,17 @@ LM16に**出場する選手本人**が全8試合を予想した回（09-29）。
 
 | 2026-10-18 | MMA言語化挑戦中 Voyage GI | ev_lm17 | 1件 | https://www.youtube.com/watch?v=bxr8ywM2CPE | m_yt_mmavoyagegi |
 | 2026-10-14 | 石渡伸太郎 Shintaro Ishiwatari | ev_lm17 | 0件 | https://www.youtube.com/watch?v=tQAgJGGoulE | m_yt_shintaroishiwatari |
+| 2026-10-24 | 扇久保博正 おぎちゃんねる。Ogichannel | ev_lm17 | 1件 | https://www.youtube.com/watch?v=14shtC-CCP8 | m_yt_ogichannel |
+| 2026-11-02 | MMA言語化挑戦中 Voyage GI | ev_lm17 | 5件 | https://www.youtube.com/watch?v=3irExZUbts8 | m_yt_mmavoyagegi |
+| 2026-10-31 | 青木真也  [ SHINYA AOKI ] チャンネル | ev_lm17 | 1件 | https://www.youtube.com/watch?v=5r9S4-gTKys | m_yt_shinyaaoki |
+| 2026-11-05 | Kanehara Masanori no kinchanTV | ev_lm17 | 1件 | https://www.youtube.com/watch?v=IKX8U3-r-ek | m_yt_kaneharamasanorinoki |
+| 2026-10-31 | 扇久保博正 おぎちゃんねる。Ogichannel | ev_lm17 | 1件 | https://www.youtube.com/watch?v=MiapUdQlLzk | m_yt_ogichannel |
+| 2026-10-28 | MMA言語化挑戦中 Voyage GI | ev_lm17 | 1件 | https://www.youtube.com/watch?v=RG-YRGzPzYU | m_yt_mmavoyagegi |
+| 2026-11-01 | 青木真也  [ SHINYA AOKI ] チャンネル | ev_lm17 | 1件 | https://www.youtube.com/watch?v=ZcJgaJUgqNU | m_yt_shinyaaoki |
+| 2026-11-03 | 扇久保博正 おぎちゃんねる。Ogichannel | ev_lm17 | 8件 | https://www.youtube.com/watch?v=_-6ATvtGKgo | m_yt_ogichannel |
+| 2026-11-06 | ジョビンチャンネル | ev_lm17 | 12件 | https://www.youtube.com/watch?v=bV2Mq6IuZ5w | m_yt_922c02ef |
+| 2026-11-03 | MMA言語化挑戦中 Voyage GI | ev_lm17 | 7件 | https://www.youtube.com/watch?v=cutx5nn7qFg | m_yt_mmavoyagegi |
+| 2026-11-02 | ストラッサー起一 [ストチャンネル] | ev_lm17 | 11件 | https://www.youtube.com/watch?v=fzz3D73zsww | m_yt_b91a384d |
+| 2026-10-27 | 秋元強真　Kyoma Akimoto | ev_lm17 | 10件 | https://www.youtube.com/watch?v=ixKPI7iteqY | m_yt_kyomaakimoto |
+| 2026-11-03 | 杉山廣平の HEY! HEY! チャンネル | ev_lm17 | 4件 | https://www.youtube.com/watch?v=wtZwt7jkCL8 | m_yt_sugiyamakohei |
+| 2026-11-05 | ヌルの格闘技ラジオ | ev_lm17 | 13件 | https://www.youtube.com/watch?v=Myf3BXwvSyE | m_yt_e1ff8ceb |
