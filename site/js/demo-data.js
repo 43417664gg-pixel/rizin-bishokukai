@@ -3070,7 +3070,7 @@ window.DEMO_SEED = {
       event_date: "2026-07-18",
       no_deadline: true,
       lock_at: "2026-07-18T00:00:00+09:00",
-      poster_url: "assets/lm15/poster.jpg",
+      poster_url: "assets/lm15/poster.jpg",   // 第一弾ポスター＝榊原CEOのInstagram（https://www.instagram.com/p/DY-9r0jD0H7/・左右の黒帯を切ってB2比）。以前はKAKEHASHIのバナーだった
       official_url: "https://jp.rizinff.com/_ct/17841138",
       status: "finished",
     },
