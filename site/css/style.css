@@ -974,3 +974,30 @@ tr.top .lb-rate { color: var(--gold-hot); }
 .pred-row .pwho { display: inline-flex; align-items: center; }
 .pred-row .psup { font-size: 11px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 45%; }
 .pred-row .psup.r { color: #ff5a67; } .pred-row .psup.b { color: #5aa0ff; }
+
+/* 予想カードのスタッツ（戦績・勝ち方・前戦の○×・連勝／トグルで直近5試合・Gaku依頼2026-11-07） */
+.stats { margin: 8px 14px 2px; border: 1px solid var(--line); background: var(--panel2); }
+.st-cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.st-side { padding: 8px 10px 9px; min-width: 0; }
+.st-side.c1 { border-left: 3px solid var(--red); }
+.st-side.c2 { border-right: 3px solid var(--blue); border-left: 1px solid var(--line); text-align: right; }
+.st-rec { font-size: 15px; font-weight: 900; letter-spacing: .02em; }
+.st-brk { font-size: 11px; color: var(--muted); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.st-streak { display: inline-block; font-size: 10.5px; font-weight: 700; margin-top: 5px; padding: 1px 7px; border-radius: 3px; }
+.st-streak.w { color: #7fe0a0; background: rgba(40, 160, 90, .16); }
+.st-streak.l { color: #ff8a94; background: rgba(230, 0, 18, .13); }
+.st-k { font-size: 10px; color: var(--muted); margin-top: 7px; letter-spacing: .08em; }
+.st-row { display: flex; gap: 6px; align-items: flex-start; margin-top: 3px; min-width: 0; }
+.st-side.c2 .st-row { flex-direction: row-reverse; }
+.st-row + .st-row { margin-top: 7px; }
+.rm { flex: none; width: 1.3em; text-align: center; font-size: 13px; font-weight: 900; line-height: 1.35; }
+.rm.w { color: #4cd07d; } .rm.l { color: var(--red-hot); } .rm.d { color: var(--muted); font-size: 10px; }
+.st-body { min-width: 0; flex: 1; }
+.st-opp { display: block; font-size: 12.5px; font-weight: 700; line-height: 1.35; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.st-how { display: block; font-size: 10.5px; color: var(--muted); line-height: 1.4; }
+.st-more summary { list-style: none; cursor: pointer; text-align: center; font-size: 12px; font-weight: 700; color: var(--gold-hot);
+  padding: 7px; border-top: 1px solid var(--line); }
+.st-more summary::-webkit-details-marker { display: none; }
+.st-more summary::after { content: " ▼"; font-size: 9px; }
+.st-more[open] summary::after { content: " ▲"; }
+.st-more .st-cols { border-top: 1px solid var(--line); }

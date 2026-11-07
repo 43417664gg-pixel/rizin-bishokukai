@@ -7,7 +7,7 @@
 <title>大会予想｜予想番付</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261107182524">
+<link rel="stylesheet" href="css/style.css?v=20261107190413">
 </head>
 <body>
 <div id="app-header"></div>
@@ -16,11 +16,11 @@
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261107182524"></script>
-<script src="js/techniques.js?v=20261107182524"></script>
-<script src="js/demo-data.js?v=20261107182524"></script>
-<script src="js/api.js?v=20261107182524"></script>
-<script src="js/app.js?v=20261107182524"></script>
+<script src="js/config.js?v=20261107190413"></script>
+<script src="js/techniques.js?v=20261107190413"></script>
+<script src="js/demo-data.js?v=20261107190413"></script>
+<script src="js/api.js?v=20261107190413"></script>
+<script src="js/app.js?v=20261107190413"></script>
 <script>
 let EV, PHASE, FIGHTS, FMAP, MEMBERS, myPreds = {}, allPreds = [], ALL_SUPPORTS = [];
 let drafts = {};              // 決定前の編集中の選択（ローカルのみ）
@@ -117,6 +117,45 @@ function profileLinks(f) {
     </div>`;
 }
 
+// その場で判断できるように：戦績・勝ち方・前戦（○×）・連勝/連敗。トグルで直近5試合（Gaku依頼11/7）
+// 開閉はカードを描き直しても保つ（選手をタップするたびに閉じないように）
+const statsOpen = new Set();
+const RMARK = { W: ["○", "w"], L: ["×", "l"], D: ["△", "d"], NC: ["NC", "d"] };
+const recentOf = (x) => [...(x?.history || [])].sort((a, b) => String(b.d).localeCompare(String(a.d)));
+const resMark = (r) => { const [s, c] = RMARK[r] || ["?", "d"]; return `<span class="rm ${c}">${s}</span>`; };
+const histRow = (r) => `<div class="st-row">${resMark(r.r)}<span class="st-body"><span class="st-opp">${esc(r.opp)}</span>
+  <span class="st-how">${esc([r.how, r.d].filter(Boolean).join("・"))}</span></span></div>`;
+function streakText(h) {
+  if (!h.length || !["W", "L"].includes(h[0].r)) return "";
+  let n = 0; while (n < h.length && h[n].r === h[0].r) n++;
+  return n >= 2 ? `${n}${h[0].r === "W" ? "連勝" : "連敗"}中` : "";
+}
+function statsSide(x, cls) {
+  const h = recentOf(x);
+  const rec = x?.rec_w != null ? `${x.rec_w}勝${x.rec_l ?? 0}敗${x.rec_d ? `${x.rec_d}分` : ""}${x.rec_nc ? `${x.rec_nc}NC` : ""}` : "戦績なし";
+  const brk = x?.rec_ko != null ? `KO ${x.rec_ko}・一本 ${x.rec_sub ?? 0}・判定 ${x.rec_dec ?? 0}` : "";
+  const st = streakText(h);
+  return `<div class="st-side ${cls}">
+    <div class="st-rec">${rec}</div>
+    ${brk ? `<div class="st-brk">${brk}</div>` : ""}
+    ${st ? `<div class="st-streak ${h[0].r === "W" ? "w" : "l"}">${st}</div>` : ""}
+    <div class="st-k">前戦</div>
+    ${h[0] ? histRow(h[0]) : `<div class="st-row"><span class="st-how">データなし</span></div>`}
+  </div>`;
+}
+function statsBlock(f) {
+  const f1 = FMAP[f.fighter1_id], f2 = FMAP[f.fighter2_id];
+  const more = Math.max(recentOf(f1).length, recentOf(f2).length) > 1;
+  const list = (x, cls) => `<div class="st-side ${cls}">${recentOf(x).slice(0, 5).map(histRow).join("")}</div>`;
+  return `<div class="stats">
+    <div class="st-cols">${statsSide(f1, "c1")}${statsSide(f2, "c2")}</div>
+    ${more ? `<details class="st-more" ${statsOpen.has(f.id) ? "open" : ""} ontoggle="statsOpen[this.open ? 'add' : 'delete']('${f.id}')">
+      <summary>直近5試合</summary>
+      <div class="st-cols">${list(f1, "c1")}${list(f2, "c2")}</div>
+    </details>` : ""}
+  </div>`;
+}
+
 // ---------- 予想UI（受付中） ----------
 // 保存済み＆編集中でなければ「確定ビュー」、それ以外は「選択ビュー（決定ボタン付き）」
 function predictCard(f) {
@@ -160,6 +199,7 @@ function predictCard(f) {
           onclick="setDraft('${f.id}','winner_id','${f.fighter2_id}')"><small>BLUE</small>${esc(f2?.name)}</button>
       </div>
       <div class="win-hint">${p.winner_id ? "あとは「決定」を押すだけ。" : "勝つと思う方をタップするだけでOK。"}<b>ランキングは勝敗だけ</b>で決まります</div>
+      ${statsBlock(f)}
       ${profileLinks(f)}
       ${supportRow(f)}
       ${kimSelect}${roundChips}
@@ -186,6 +226,7 @@ function confirmedCard(f, p) {
         <span class="vs-mark">VS</span>
         <div class="corner-btn c2 ${p.winner_id === f.fighter2_id ? "sel" : ""}"><small>BLUE</small>${esc(f2?.name)}</div>
       </div>
+      ${statsBlock(f)}
       ${profileLinks(f)}
       ${supportRow(f)}
       <div class="my-pick">
@@ -213,6 +254,7 @@ function previewCard(f) {
         <span class="vs-mark">VS</span>
         <div class="corner-btn c2 disabled"><small>BLUE</small>${esc(f2?.name)}</div>
       </div>
+      ${statsBlock(f)}
       ${profileLinks(f)}
       ${supportRow(f)}
       <div class="fight-foot"><span class="save-note">計量終了後に予想開始</span></div>
