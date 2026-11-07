@@ -1,0 +1,397 @@
+{
+ "member_id": "m_yt_yusukeyachi",
+ "name": "矢地祐介",
+ "color": "#4682b4",
+ "channel": "Yusuke Yachi",
+ "generated": "2026-11-07",
+ "videos": 16,
+ "method": "公開動画の字幕→Haiku抽出→字幕原文照合＋独立判定→日本語版Wikipedia結果と採点",
+ "picks": [
+  {
+   "event": "RIZIN.25",
+   "date": "2020-11-21",
+   "no": 3,
+   "f1": "朴光哲",
+   "f2": "白川陸斗",
+   "pick": "朴光哲",
+   "pick_method": "判定",
+   "winner": "白川陸斗",
+   "method": "KO",
+   "hit": false,
+   "how": false
+  },
+  {
+   "event": "RIZIN.26",
+   "date": "2020-12-31",
+   "no": 15,
+   "f1": "朝倉海",
+   "f2": "堀口恭司",
+   "pick": "堀口恭司",
+   "pick_method": "不明",
+   "winner": "堀口恭司",
+   "method": "KO",
+   "hit": true,
+   "how": false
+  },
+  {
+   "event": "RIZIN.27",
+   "date": "2021-03-21",
+   "no": 13,
+   "f1": "ホベルト・サトシ・ソウザ",
+   "f2": "徳留一樹",
+   "pick": "徳留一樹",
+   "pick_method": "不明",
+   "winner": "ホベルト・サトシ・ソウザ",
+   "method": "SUB",
+   "hit": false,
+   "how": false
+  },
+  {
+   "event": "RIZIN LANDMARK vol.2",
+   "date": "2022-03-06",
+   "no": 5,
+   "f1": "鈴木千裕",
+   "f2": "平本蓮",
+   "pick": "鈴木千裕",
+   "pick_method": "判定",
+   "winner": "鈴木千裕",
+   "method": "DEC",
+   "hit": true,
+   "how": true
+  },
+  {
+   "event": "RIZIN.38",
+   "date": "2022-09-25",
+   "no": 1,
+   "f1": "大原樹理",
+   "f2": "ルイス・グスタボ",
+   "pick": "ルイス・グスタボ",
+   "pick_method": "KO",
+   "winner": "ルイス・グスタボ",
+   "method": "KO",
+   "hit": true,
+   "how": true
+  },
+  {
+   "event": "RIZIN.38",
+   "date": "2022-09-25",
+   "no": 4,
+   "f1": "扇久保博正",
+   "f2": "キム・スーチョル",
+   "pick": "扇久保博正",
+   "pick_method": "判定",
+   "winner": "キム・スーチョル",
+   "method": "DEC",
+   "hit": false,
+   "how": false
+  },
+  {
+   "event": "RIZIN.40",
+   "date": "2022-12-31",
+   "no": 11,
+   "f1": "武田光司",
+   "f2": "ガジ・ラバダノフ",
+   "pick": "武田光司",
+   "pick_method": "判定",
+   "winner": "ガジ・ラバダノフ",
+   "method": "DEC",
+   "hit": false,
+   "how": false
+  },
+  {
+   "event": "RIZIN.40",
+   "date": "2022-12-31",
+   "no": 12,
+   "f1": "キム・スーチョル",
+   "f2": "フアン・アーチュレッタ",
+   "pick": "キム・スーチョル",
+   "pick_method": "判定",
+   "winner": "フアン・アーチュレッタ",
+   "method": "DEC",
+   "hit": false,
+   "how": false
+  },
+  {
+   "event": "RIZIN.40",
+   "date": "2022-12-31",
+   "no": 15,
+   "f1": "ホベルト・サトシ・ソウザ",
+   "f2": "AJ・マッキー",
+   "pick": "ホベルト・サトシ・ソウザ",
+   "pick_method": "一本",
+   "winner": "AJ・マッキー",
+   "method": "DEC",
+   "hit": false,
+   "how": false
+  },
+  {
+   "event": "RIZIN LANDMARK 5",
+   "date": "2023-04-29",
+   "no": 7,
+   "f1": "倉本一真",
+   "f2": "太田忍",
+   "pick": "倉本一真",
+   "pick_method": "不明",
+   "winner": "太田忍",
+   "method": "KO",
+   "hit": false,
+   "how": false
+  },
+  {
+   "event": "RIZIN.42",
+   "date": "2023-05-06",
+   "no": 11,
+   "f1": "ホベルト・サトシ・ソウザ",
+   "f2": "スパイク・カーライル",
+   "pick": "ホベルト・サトシ・ソウザ",
+   "pick_method": "一本",
+   "winner": "ホベルト・サトシ・ソウザ",
+   "method": "DEC",
+   "hit": true,
+   "how": false
+  },
+  {
+   "event": "RIZIN.42",
+   "date": "2023-05-06",
+   "no": 13,
+   "f1": "朝倉海",
+   "f2": "元谷友貴",
+   "pick": "朝倉海",
+   "pick_method": "KO",
+   "winner": "朝倉海",
+   "method": "KO",
+   "hit": true,
+   "how": true
+  },
+  {
+   "event": "超RIZIN.2",
+   "date": "2023-07-30",
+   "no": 5,
+   "f1": "パトリッキー・ピットブル",
+   "f2": "ホベルト・サトシ・ソウザ",
+   "pick": "ホベルト・サトシ・ソウザ",
+   "pick_method": "一本",
+   "winner": "パトリッキー・ピットブル",
+   "method": "KO",
+   "hit": false,
+   "how": false
+  },
+  {
+   "event": "RIZIN.44",
+   "date": "2023-09-24",
+   "no": 8,
+   "f1": "スパイク・カーライル",
+   "f2": "堀江圭功",
+   "pick": "スパイク・カーライル",
+   "pick_method": "判定",
+   "winner": "堀江圭功",
+   "method": "DEC",
+   "hit": false,
+   "how": false
+  },
+  {
+   "event": "RIZIN.44",
+   "date": "2023-09-24",
+   "no": 10,
+   "f1": "クレベル・コイケ",
+   "f2": "金原正徳",
+   "pick": "金原正徳",
+   "pick_method": "判定",
+   "winner": "金原正徳",
+   "method": "DEC",
+   "hit": true,
+   "how": true
+  },
+  {
+   "event": "RIZIN.45",
+   "date": "2023-12-31",
+   "no": 9,
+   "f1": "太田忍",
+   "f2": "芦澤竜誠",
+   "pick": "太田忍",
+   "pick_method": "一本",
+   "winner": "太田忍",
+   "method": "KO",
+   "hit": true,
+   "how": false
+  },
+  {
+   "event": "RIZIN.45",
+   "date": "2023-12-31",
+   "no": 14,
+   "f1": "平本蓮",
+   "f2": "YA-MAN",
+   "pick": "YA-MAN",
+   "pick_method": "KO",
+   "winner": "平本蓮",
+   "method": "DEC",
+   "hit": false,
+   "how": false
+  },
+  {
+   "event": "RIZIN.47",
+   "date": "2024-06-09",
+   "no": 8,
+   "f1": "クレベル・コイケ",
+   "f2": "フアン・アーチュレッタ",
+   "pick": "クレベル・コイケ",
+   "pick_method": "一本",
+   "winner": "クレベル・コイケ",
+   "method": "SUB",
+   "hit": true,
+   "how": true
+  },
+  {
+   "event": "RIZIN.47",
+   "date": "2024-06-09",
+   "no": 9,
+   "f1": "堀口恭司",
+   "f2": "セルジオ・ペティス",
+   "pick": "堀口恭司",
+   "pick_method": "判定",
+   "winner": "堀口恭司",
+   "method": "DEC",
+   "hit": true,
+   "how": true
+  },
+  {
+   "event": "超RIZIN.3",
+   "date": "2024-07-28",
+   "no": 3,
+   "f1": "鈴木博昭",
+   "f2": "YA-MAN",
+   "pick": "鈴木博昭",
+   "pick_method": "判定",
+   "winner": "YA-MAN",
+   "method": "KO",
+   "hit": false,
+   "how": false
+  },
+  {
+   "event": "超RIZIN.3",
+   "date": "2024-07-28",
+   "no": 4,
+   "f1": "RENA",
+   "f2": "ケイト・ロータス",
+   "pick": "RENA",
+   "pick_method": "KO",
+   "winner": "RENA",
+   "method": "KO",
+   "hit": true,
+   "how": true
+  },
+  {
+   "event": "超RIZIN.3",
+   "date": "2024-07-28",
+   "no": 6,
+   "f1": "芦澤竜誠",
+   "f2": "皇治",
+   "pick": "芦澤竜誠",
+   "pick_method": "判定",
+   "winner": "芦澤竜誠",
+   "method": "DEC",
+   "hit": true,
+   "how": true
+  },
+  {
+   "event": "超RIZIN.3",
+   "date": "2024-07-28",
+   "no": 9,
+   "f1": "斎藤裕",
+   "f2": "久保優太",
+   "pick": "久保優太",
+   "pick_method": "判定",
+   "winner": "久保優太",
+   "method": "KO",
+   "hit": true,
+   "how": false
+  },
+  {
+   "event": "RIZIN LANDMARK 10",
+   "date": "2024-11-17",
+   "no": 7,
+   "f1": "キム・ギョンピョ",
+   "f2": "倉本大悟",
+   "pick": "キム・ギョンピョ",
+   "pick_method": "判定",
+   "winner": "キム・ギョンピョ",
+   "method": "KO",
+   "hit": true,
+   "how": false
+  },
+  {
+   "event": "RIZIN LANDMARK 10",
+   "date": "2024-11-17",
+   "no": 10,
+   "f1": "昇侍",
+   "f2": "芦澤竜誠",
+   "pick": "芦澤竜誠",
+   "pick_method": "判定",
+   "winner": "芦澤竜誠",
+   "method": "KO",
+   "hit": true,
+   "how": false
+  },
+  {
+   "event": "超RIZIN.4 真夏の喧嘩祭り",
+   "date": "2025-07-27",
+   "no": 13,
+   "f1": "金原正徳",
+   "f2": "YA-MAN",
+   "pick": "金原正徳",
+   "pick_method": "一本",
+   "winner": "YA-MAN",
+   "method": "KO",
+   "hit": false,
+   "how": false
+  }
+ ],
+ "event_videos": {
+  "RIZIN.25": [
+   "https://www.youtube.com/watch?v=vcqAeZUeGzg"
+  ],
+  "RIZIN.26": [
+   "https://www.youtube.com/watch?v=NwtVdq7ztJY"
+  ],
+  "RIZIN.27": [
+   "https://www.youtube.com/watch?v=oZK9FkwJX5g"
+  ],
+  "RIZIN LANDMARK vol.2": [
+   "https://www.youtube.com/watch?v=UZoEOAhFI1M"
+  ],
+  "RIZIN.38": [
+   "https://www.youtube.com/watch?v=RsEE0J17DL0"
+  ],
+  "RIZIN.40": [
+   "https://www.youtube.com/watch?v=PFj0uXDqSf0"
+  ],
+  "RIZIN LANDMARK 5": [
+   "https://www.youtube.com/watch?v=Hc76Zn8nC24"
+  ],
+  "RIZIN.42": [
+   "https://www.youtube.com/watch?v=dQ6KdYY-_NA"
+  ],
+  "超RIZIN.2": [
+   "https://www.youtube.com/watch?v=-AOf5mc3lsI"
+  ],
+  "RIZIN.44": [
+   "https://www.youtube.com/watch?v=amr9n_Tregw",
+   "https://www.youtube.com/watch?v=rV8Q-uLvoxw"
+  ],
+  "RIZIN.45": [
+   "https://www.youtube.com/watch?v=h5vb14uM6ic"
+  ],
+  "RIZIN.47": [
+   "https://www.youtube.com/watch?v=od4n2ODw4jo"
+  ],
+  "超RIZIN.3": [
+   "https://www.youtube.com/watch?v=jkRRzrtzS-s"
+  ],
+  "RIZIN LANDMARK 10": [
+   "https://www.youtube.com/watch?v=z7TDqtK6Fog"
+  ],
+  "超RIZIN.4 真夏の喧嘩祭り": [
+   "https://www.youtube.com/watch?v=4uZzIwmCpuc"
+  ]
+ }
+}

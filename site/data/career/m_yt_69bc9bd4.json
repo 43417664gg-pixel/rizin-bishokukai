@@ -1,0 +1,330 @@
+{
+ "member_id": "m_yt_69bc9bd4",
+ "name": "久保優太",
+ "color": "#bfef45",
+ "channel": "久保優太ちゃんねる",
+ "generated": "2026-11-07",
+ "videos": 13,
+ "method": "公開動画の字幕→Haiku抽出→字幕原文照合＋独立判定→日本語版Wikipedia結果と採点",
+ "picks": [
+  {
+   "event": "RIZIN.46",
+   "date": "2024-04-29",
+   "no": 10,
+   "f1": "鈴木千裕",
+   "f2": "金原正徳",
+   "pick": "金原正徳",
+   "pick_method": "不明",
+   "winner": "鈴木千裕",
+   "method": "KO",
+   "hit": false,
+   "how": false
+  },
+  {
+   "event": "RIZIN.48",
+   "date": "2024-09-29",
+   "no": 1,
+   "f1": "カルシャガ・ダウトベック",
+   "f2": "木下カラテ",
+   "pick": "カルシャガ・ダウトベック",
+   "pick_method": "不明",
+   "winner": "カルシャガ・ダウトベック",
+   "method": "KO",
+   "hit": true,
+   "how": false
+  },
+  {
+   "event": "RIZIN.48",
+   "date": "2024-09-29",
+   "no": 3,
+   "f1": "金太郎",
+   "f2": "秋元強真",
+   "pick": "秋元強真",
+   "pick_method": "KO",
+   "winner": "秋元強真",
+   "method": "KO",
+   "hit": true,
+   "how": true
+  },
+  {
+   "event": "RIZIN.48",
+   "date": "2024-09-29",
+   "no": 4,
+   "f1": "萩原京平",
+   "f2": "高木凌",
+   "pick": "高木凌",
+   "pick_method": "KO",
+   "winner": "高木凌",
+   "method": "SUB",
+   "hit": true,
+   "how": false
+  },
+  {
+   "event": "RIZIN.48",
+   "date": "2024-09-29",
+   "no": 7,
+   "f1": "伊澤星花",
+   "f2": "浅倉カンナ",
+   "pick": "伊澤星花",
+   "pick_method": "一本",
+   "winner": "伊澤星花",
+   "method": "DEC",
+   "hit": true,
+   "how": false
+  },
+  {
+   "event": "RIZIN.48",
+   "date": "2024-09-29",
+   "no": 8,
+   "f1": "フアン・アーチュレッタ",
+   "f2": "ラジャブアリ・シェイドゥラエフ",
+   "pick": "フアン・アーチュレッタ",
+   "pick_method": "不明",
+   "winner": "ラジャブアリ・シェイドゥラエフ",
+   "method": "SUB",
+   "hit": false,
+   "how": false
+  },
+  {
+   "event": "RIZIN.48",
+   "date": "2024-09-29",
+   "no": 10,
+   "f1": "井上直樹",
+   "f2": "キム・スーチョル",
+   "pick": "井上直樹",
+   "pick_method": "不明",
+   "winner": "井上直樹",
+   "method": "KO",
+   "hit": true,
+   "how": false
+  },
+  {
+   "event": "RIZIN.48",
+   "date": "2024-09-29",
+   "no": 11,
+   "f1": "ホベルト・サトシ・ソウザ",
+   "f2": "ルイス・グスタボ",
+   "pick": "ホベルト・サトシ・ソウザ",
+   "pick_method": "一本",
+   "winner": "ホベルト・サトシ・ソウザ",
+   "method": "KO",
+   "hit": true,
+   "how": false
+  },
+  {
+   "event": "RIZIN LANDMARK 10",
+   "date": "2024-11-17",
+   "no": 8,
+   "f1": "鈴木博昭",
+   "f2": "秋元強真",
+   "pick": "秋元強真",
+   "pick_method": "判定",
+   "winner": "秋元強真",
+   "method": "DEC",
+   "hit": true,
+   "how": true
+  },
+  {
+   "event": "RIZIN男祭り",
+   "date": "2025-05-04",
+   "no": 5,
+   "f1": "ヒロヤ",
+   "f2": "篠塚辰樹",
+   "pick": "ヒロヤ",
+   "pick_method": "判定",
+   "winner": "ヒロヤ",
+   "method": "KO",
+   "hit": true,
+   "how": false
+  },
+  {
+   "event": "RIZIN男祭り",
+   "date": "2025-05-04",
+   "no": 6,
+   "f1": "ダニー・サバテロ",
+   "f2": "太田忍",
+   "pick": "太田忍",
+   "pick_method": "判定",
+   "winner": "ダニー・サバテロ",
+   "method": "KO",
+   "hit": false,
+   "how": false
+  },
+  {
+   "event": "RIZIN.51",
+   "date": "2025-09-28",
+   "no": 3,
+   "f1": "冨澤大智",
+   "f2": "平本丈",
+   "pick": "冨澤大智",
+   "pick_method": "KO",
+   "winner": "冨澤大智",
+   "method": "DEC",
+   "hit": true,
+   "how": false
+  },
+  {
+   "event": "RIZIN.51",
+   "date": "2025-09-28",
+   "no": 10,
+   "f1": "伊藤裕樹",
+   "f2": "山本アーセン",
+   "pick": "伊藤裕樹",
+   "pick_method": "KO",
+   "winner": "山本アーセン",
+   "method": "DEC",
+   "hit": false,
+   "how": false
+  },
+  {
+   "event": "RIZIN.51",
+   "date": "2025-09-28",
+   "no": 11,
+   "f1": "元谷友貴",
+   "f2": "神龍誠",
+   "pick": "元谷友貴",
+   "pick_method": "判定",
+   "winner": "元谷友貴",
+   "method": "DEC",
+   "hit": true,
+   "how": true
+  },
+  {
+   "event": "RIZIN.51",
+   "date": "2025-09-28",
+   "no": 12,
+   "f1": "扇久保博正",
+   "f2": "アリベク・ガジャマトフ",
+   "pick": "扇久保博正",
+   "pick_method": "判定",
+   "winner": "扇久保博正",
+   "method": "DEC",
+   "hit": true,
+   "how": true
+  },
+  {
+   "event": "RIZIN.51",
+   "date": "2025-09-28",
+   "no": 14,
+   "f1": "ホベルト・サトシ・ソウザ",
+   "f2": "堀江圭功",
+   "pick": "ホベルト・サトシ・ソウザ",
+   "pick_method": "一本",
+   "winner": "ホベルト・サトシ・ソウザ",
+   "method": "SUB",
+   "hit": true,
+   "how": true
+  },
+  {
+   "event": "RIZIN LANDMARK 12",
+   "date": "2025-11-03",
+   "no": 4,
+   "f1": "鹿志村仁之介",
+   "f2": "安井飛馬",
+   "pick": "鹿志村仁之介",
+   "pick_method": "一本",
+   "winner": "鹿志村仁之介",
+   "method": "DEC",
+   "hit": true,
+   "how": false
+  },
+  {
+   "event": "RIZIN 師走の超強者祭り",
+   "date": "2025-12-31",
+   "no": 9,
+   "f1": "クレベル・コイケ",
+   "f2": "ヴガール・ケラモフ",
+   "pick": "クレベル・コイケ",
+   "pick_method": "判定",
+   "winner": "クレベル・コイケ",
+   "method": "DEC",
+   "hit": true,
+   "how": true
+  },
+  {
+   "event": "RIZIN 師走の超強者祭り",
+   "date": "2025-12-31",
+   "no": 11,
+   "f1": "ダニー・サバテロ",
+   "f2": "井上直樹",
+   "pick": "井上直樹",
+   "pick_method": "判定",
+   "winner": "ダニー・サバテロ",
+   "method": "DEC",
+   "hit": false,
+   "how": false
+  },
+  {
+   "event": "RIZIN 師走の超強者祭り",
+   "date": "2025-12-31",
+   "no": 12,
+   "f1": "ホベルト・サトシ・ソウザ",
+   "f2": "イルホム・ノジモフ",
+   "pick": "ホベルト・サトシ・ソウザ",
+   "pick_method": "一本",
+   "winner": "イルホム・ノジモフ",
+   "method": "KO",
+   "hit": false,
+   "how": false
+  },
+  {
+   "event": "RIZIN LANDMARK 15",
+   "date": "2026-07-18",
+   "no": 9,
+   "f1": "ヒロヤ",
+   "f2": "山本アーセン",
+   "pick": "ヒロヤ",
+   "pick_method": "判定",
+   "winner": "山本アーセン",
+   "method": "DEC",
+   "hit": false,
+   "how": false,
+   "portal_event": "ev_lm15"
+  },
+  {
+   "event": "RIZIN LANDMARK 15",
+   "date": "2026-07-18",
+   "no": 11,
+   "f1": "カルシャガ・ダウトベック",
+   "f2": "萩原京平",
+   "pick": "カルシャガ・ダウトベック",
+   "pick_method": "一本",
+   "winner": "カルシャガ・ダウトベック",
+   "method": "KO",
+   "hit": true,
+   "how": false,
+   "portal_event": "ev_lm15"
+  }
+ ],
+ "event_videos": {
+  "RIZIN.46": [
+   "https://www.youtube.com/watch?v=2ieZMCzWzxg"
+  ],
+  "RIZIN.48": [
+   "https://www.youtube.com/watch?v=LfpLzRyfUQk",
+   "https://www.youtube.com/watch?v=RFCBiULlNXs",
+   "https://www.youtube.com/watch?v=j_Lv6POXBYI"
+  ],
+  "RIZIN LANDMARK 10": [
+   "https://www.youtube.com/watch?v=o_n3qwuI5oc"
+  ],
+  "RIZIN男祭り": [
+   "https://www.youtube.com/watch?v=9epzbvmQvXA",
+   "https://www.youtube.com/watch?v=mvbKQMvWU4M"
+  ],
+  "RIZIN.51": [
+   "https://www.youtube.com/watch?v=Q1iLk07EmdM",
+   "https://www.youtube.com/watch?v=ZYQ-2Sixc28",
+   "https://www.youtube.com/watch?v=tpvamtwLEwo"
+  ],
+  "RIZIN LANDMARK 12": [
+   "https://www.youtube.com/watch?v=Y4qak0oAZQ8"
+  ],
+  "RIZIN 師走の超強者祭り": [
+   "https://www.youtube.com/watch?v=a0gC5HIIV3M"
+  ],
+  "RIZIN LANDMARK 15": [
+   "https://www.youtube.com/watch?v=93jrIre2IWA"
+  ]
+ }
+}
