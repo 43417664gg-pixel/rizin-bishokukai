@@ -7,7 +7,7 @@
 <title>大会予想｜予想番付</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261107221941">
+<link rel="stylesheet" href="css/style.css?v=20261107222933">
 </head>
 <body>
 <div id="app-header"></div>
@@ -17,12 +17,12 @@
 <button type="button" class="pick-guide" id="pick-guide" onclick="goNextPick()"><span class="pg-in"><i class="pg-arrow">▼</i>予想を入れる<span class="pg-left">あと<b class="pg-n"></b>試合</span></span></button>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261107221941"></script>
-<script src="js/techniques.js?v=20261107221941"></script>
-<script src="js/demo-data.js?v=20261107221941"></script>
-<script src="js/api.js?v=20261107221941"></script>
-<script src="js/app.js?v=20261107221941"></script>
-<script src="js/bishoku_summary.js?v=20261107221941"></script>
+<script src="js/config.js?v=20261107222933"></script>
+<script src="js/techniques.js?v=20261107222933"></script>
+<script src="js/demo-data.js?v=20261107222933"></script>
+<script src="js/api.js?v=20261107222933"></script>
+<script src="js/app.js?v=20261107222933"></script>
+<script src="js/bishoku_summary.js?v=20261107222933"></script>
 <script>
 let EV, PHASE, FIGHTS, FMAP, MEMBERS, myPreds = {}, allPreds = [], ALL_SUPPORTS = [];
 
@@ -184,18 +184,17 @@ function predictCard(f) {
   const corner = (fid, c, label) => `<button class="corner-btn ${c} ${p.winner_id === fid ? "sel" : ""}"
           onclick="pickWinner('${f.id}','${fid}')"><small>${label}</small>${fnm(FMAP[fid]?.name)}</button>`;
   // KO/一本を選んだ時だけラウンド（ピタリ＝決まり手＋ラウンド）。判定はラウンド無し
+  // 決定後の欄は字が散って気が散る（Gaku指摘11/7）＝左揃えの1列にまとめ、見出し「決まり手／ラウンド」＋説明は最後に1行だけ
   const roundChips = (p.method && p.method !== "DEC") ? `
-      <div class="chips">
-        <span class="clabel">ラウンド — 決まり手と両方一致で🎯ピタリ</span>
-        ${Array.from({ length: f.rounds || 3 }, (_, i) => i + 1).map(r =>
-          `<button class="chip ${Number(p.round) === r ? "sel" : ""}" onclick="setRound('${f.id}',${r})">${r}R</button>`).join("")}
-      </div>` : "";
+          <span class="pt-k">ラウンド</span>
+          <div class="pt-v">${Array.from({ length: f.rounds || 3 }, (_, i) => i + 1).map(r =>
+            `<button class="chip ${Number(p.round) === r ? "sel" : ""}" onclick="setRound('${f.id}',${r})">${r}R</button>`).join("")}</div>` : "";
   const pitari = p.winner_id ? `
       <details class="pitari" ${kim || pitariOpen.has(f.id) ? "open" : ""} ontoggle="pitariOpen[this.open ? 'add' : 'delete']('${f.id}')">
-        <summary>${kim ? `🎯 ピタリ狙い：${esc(detail)}` : "🎯 ピタリも狙う（決まり手・ラウンド）"}</summary>
-        <div class="chips">
-          <span class="clabel">決まり手 — 当てれば🎯ピタリ（ランキングには関係なし）</span>
-          <select class="tech-select" onchange="setKimarite('${f.id}',this.value)">
+        <summary>🎯 ${kim ? `ピタリ狙い<b>${esc(detail)}</b>` : "ピタリも狙う<small>決まり手・ラウンド</small>"}</summary>
+        <div class="pt-grid">
+          <span class="pt-k">決まり手</span>
+          <div class="pt-v"><select class="tech-select" onchange="setKimarite('${f.id}',this.value)">
             <option value="">— 選ばない（勝敗だけ）—</option>
             <option value="DEC" ${curKim === "DEC" ? "selected" : ""}>判定</option>
             <optgroup label="KO/TKO">
@@ -204,8 +203,9 @@ function predictCard(f) {
             <optgroup label="一本">
               ${techsFor("SUB").map(t => `<option value="${t.id}" ${curKim === t.id ? "selected" : ""}>${t.label}</option>`).join("")}
             </optgroup>
-          </select>
-        </div>${roundChips}
+          </select></div>${roundChips}
+        </div>
+        <p class="pt-note">当てれば🎯ピタリ。ランキングには関係しません</p>
       </details>` : "";
   return `
     <div class="fight-card${p.winner_id ? " confirmed" : ""}" id="fc_${f.id}">
@@ -222,10 +222,9 @@ function predictCard(f) {
         ${corner(f.fighter2_id, "c2", "BLUE")}
       </div>
       ${p.winner_id
-        ? `<div class="win-hint done"><span class="mp-check">✓</span><b>${fnm(FMAP[p.winner_id]?.name)}</b> の勝ちで決定<small>押し直せば変更できます</small></div>`
+        ? `<div class="win-hint done"><span class="mp-check">✓</span><span class="wh-t"><b>${fnm(FMAP[p.winner_id]?.name)}</b> の勝ちで決定<small>押し直せば変更できます</small></span><button class="clear-btn" onclick="clearPred('${f.id}')">取り消す</button></div>`
         : `<div class="win-hint">勝つと思う方をタップ！<br>ランキングは<b>勝敗予想だけ</b>で決まります。</div>`}
       ${pitari}
-      ${p.winner_id ? `<div class="pick-foot"><button class="clear-btn" onclick="clearPred('${f.id}')">予想を取り消す</button></div>` : ""}
       ${supportRow(f)}
       </div>
     </div>`;
@@ -645,9 +644,18 @@ function guideTarget() {
   if (zs.some(({ r }) => r.top < vh * 0.9 && r.bottom > vh * 0.1)) return { left: zs.length };
   return { left: zs.length, ...(zs.find(({ r }) => r.top >= 0) || zs[zs.length - 1]) };
 }
+// 美食会予想まとめは写真に撮って回す前提（Gaku 11/7）＝ガイドがまとめに重なる間は引っ込む。
+// 開いた直後（まだ一度もスクロールしていない）だけは重なっても出す＝来た人に予想を入れる場所を知らせる
+let GUIDE_SCROLLED = false;
+function overSummary(g) {
+  const b = document.getElementById("bsum");
+  if (!GUIDE_SCROLLED || !b) return false;
+  const r = b.getBoundingClientRect(), top = innerHeight - 20 - g.offsetHeight - 12;   // ガイドの上端より少し上から下
+  return r.height > 10 && r.bottom > top && r.top < innerHeight;
+}
 function updateGuide() {
   const g = document.getElementById("pick-guide"), t = guideTarget();
-  g.classList.toggle("show", !!t?.z);
+  g.classList.toggle("show", !!t?.z && !overSummary(g));
   if (!t?.z) return;
   g.querySelector(".pg-arrow").textContent = t.r.top < 0 ? "▲" : "▼";
   g.querySelector(".pg-n").textContent = t.left;
@@ -660,7 +668,7 @@ function goNextPick() {
 }
 let GUIDE_RAF = 0;
 const refreshGuide = () => { if (!GUIDE_RAF) GUIDE_RAF = requestAnimationFrame(() => { GUIDE_RAF = 0; updateGuide(); }); };
-addEventListener("scroll", refreshGuide, { passive: true });
+addEventListener("scroll", () => { GUIDE_SCROLLED = true; refreshGuide(); }, { passive: true });
 // カードは予想のたびに差し替わる（replaceCard）ので、描き直しを見張って合わせ直す
 let NICK_T = 0;
 const refitNicks = () => { clearTimeout(NICK_T); NICK_T = setTimeout(fitNicks, 30); };

@@ -983,7 +983,7 @@ tr.top .lb-rate { color: var(--gold-hot); }
 span.mav { background: radial-gradient(circle at 32% 26%, color-mix(in srgb, var(--c) 58%, #fff) 0%, var(--c) 46%, color-mix(in srgb, var(--c) 52%, #000) 100%);
   color: #fff; text-shadow: 0 1px 2px rgba(0, 0, 0, .45); }
 span.mav.lt { color: #1a1408; text-shadow: 0 1px 0 rgba(255, 255, 255, .3); }
-span.mav.trim { color: var(--t); box-shadow: inset 0 0 0 1.5px var(--t); }   /* 縁と字＝寮の差し色（金・銀・黒） */
+span.mav.trim { box-shadow: inset 0 0 0 1.5px var(--t); }   /* 縁＝寮の差し色（金・銀・黒）。字は読めること優先で白／明るい塗りだけ黒（Gaku 11/7「色は背景、中の文字は視認性優先」） */
 span.mav.lt.trim { text-shadow: none; }
 span.mav.sq { border-radius: 12%; }   /* 抜き太郎だけ正方形（Gaku指定11/7） */
 .lb-who { display: inline-flex; align-items: center; gap: 8px; }
@@ -1029,6 +1029,10 @@ span.mav.sq { border-radius: 12%; }   /* 抜き太郎だけ正方形（Gaku指�
 .stats > .st-cols > .st-side.c2 > .st-bar { justify-self: end; }
 .stats > .st-cols > .st-side > .st-k { grid-row: 4; }
 .stats > .st-cols > .st-side > .st-row { grid-row: 5; }
+/* 意味のまとまりごとに、うっすら仕切る：人（名前・年齢・異名）／戦績（勝敗・勝ち方）／前戦（Gaku 11/7）。
+   左右は同じ段（subgrid）なので、線の高さも左右で揃う */
+.stats > .st-cols > .st-side > .st-head { padding-bottom: 8px; border-bottom: 1px solid rgba(255, 255, 255, .07); }
+.stats > .st-cols > .st-side > .st-k { padding-top: 9px; border-top: 1px solid rgba(255, 255, 255, .07); }
 @container (min-width: 640px) {
   .stats > .st-cols > .st-side > .st-recn { grid-column: 1; }
   .stats > .st-cols > .st-side > .st-bar { grid-column: 2; grid-row: 2; align-self: start; margin-top: 6px; justify-self: end; }
@@ -1104,18 +1108,26 @@ span.mav.sq { border-radius: 12%; }   /* 抜き太郎だけ正方形（Gaku指�
 /* 選手名（app.js の fnm）：仮名・漢字の途中では折らず「・」の後ろでだけ折る。1語が欄より長い時だけ anywhere が割る */
 .fnm { word-break: keep-all; overflow-wrap: anywhere; }
 /* 予想の入力：タップで即保存（決定ボタンなし・11/7）。保存済みは「✓ 〇〇 の勝ちで決定」と、押し直せば変更できる旨 */
-.win-hint.done { color: var(--text); }
-.win-hint.done .mp-check { color: var(--ok); font-weight: 900; margin-right: 6px; }
+/* 決定後は字が散らないよう、左揃えの1列に寄せる（Gaku指摘11/7「文字が分散してて気が散る」）：
+   ✓ 名前の勝ちで決定 ……… 取り消す ／ 🎯 ピタリ狙い 右ストレート・2R ／ 決まり手・ラウンド ／ 説明1行 */
+.win-hint.done { display: flex; align-items: baseline; gap: 6px; margin: 10px 14px 0; padding: 0 2px; text-align: left; color: var(--text); }
+.win-hint.done .mp-check { flex: none; color: var(--ok); font-weight: 900; }
+.win-hint.done .wh-t { flex: 1; min-width: 0; }
 .win-hint.done b { color: var(--text); font-size: 14px; }
 .win-hint.done small { display: block; font-size: 10.5px; color: var(--muted); }
+.win-hint.done .clear-btn { flex: none; padding: 0; }
 /* ピタリ（任意）＝保存した後に開ける追加入力。選んだ時点で保存 */
-.pitari { margin: 8px 14px 0; border-top: 1px dashed var(--line); }
-.pitari > summary { list-style: none; cursor: pointer; padding: 10px 2px 4px; font-size: 12px; font-weight: 700; color: var(--gold-hot); }
+.pitari { margin: 10px 14px 0; border-top: 1px dashed var(--line); }
+.pitari > summary { list-style: none; cursor: pointer; display: flex; align-items: baseline; gap: 6px; padding: 10px 2px 6px; font-size: 12px; font-weight: 700; color: var(--gold-hot); }
+.pitari > summary b { color: var(--text); font-size: 13px; margin-left: 4px; }
+.pitari > summary small { color: var(--muted); font-size: 10.5px; font-weight: 400; }
 .pitari > summary::-webkit-details-marker { display: none; }
-.pitari > summary::after { content: "＋"; float: right; color: var(--muted); }
+.pitari > summary::after { content: "＋"; margin-left: auto; color: var(--muted); }
 .pitari[open] > summary::after { content: "−"; }
-.pitari .chips { padding: 6px 0; }
-.pick-foot { display: flex; justify-content: flex-end; padding: 6px 16px 0; }
+.pt-grid { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 8px 12px; align-items: center; padding: 2px 2px 0; }
+.pt-k { font-size: 11px; color: var(--muted); letter-spacing: .05em; }
+.pt-v { display: flex; gap: 8px; min-width: 0; }
+.pt-note { margin: 8px 2px 0; font-size: 10.5px; line-height: 1.5; color: var(--muted); }
 
 /* 得票率のバー。色分けは「赤コーナーか青コーナーか」を伝えるため（Gaku 11/7「赤青がチープ。全体の空気に合わせて」）。
    原色のベタ塗りをやめ、外側を暗く・ぶつかる中央を明るく。境目は斜めに切る（ファイトカードの鋭角トーン） */
