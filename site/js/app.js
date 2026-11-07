@@ -188,7 +188,7 @@
     const t = memberSeed(m?.id).trim, shp = { square: " sq", triangle: " tri" }[memberSeed(m?.id).shape] || "";
     return `<span class="${cls} mav${isLightColor(c) ? " lt" : ""}${t ? " trim" : ""}${shp}" style="--c:${c}${t ? `;--t:${t}` : ""}"><i>${esc(ini)}</i></span>`;
   };
-  // 縁と字の色（美食会3人＝寮の配色：ハメ＝深紅×金・抜き＝深緑×銀・丸山＝黄×黒）と形（抜き太郎＝正方形・Gaku指定11/7／ハメ太郎＝三角形・11/8）。
+  // 縁と字の色（美食会3人＝寮の配色：ハメ＝深紅×金・抜き＝深緑×銀・丸山＝琥珀×黄〔11/8「Eで丸アイコンのふきを他の文字同様何色かでふんわり囲もう」・塗りの黄は字が沈むので琥珀へ、黄は縁へ〕）と形（抜き太郎＝正方形・Gaku指定11/7／ハメ太郎＝三角形・11/8）。
   // 正本は demo-data.js の members[].trim / shape
   window.memberSeed = (id) => ((window.DEMO_SEED && window.DEMO_SEED.members) || []).find(x => x.id === id) || {};
   // 塗りが明るい（金など）なら黒字。相対輝度 > .4（bishoku_summary.js の light と同じ判定）

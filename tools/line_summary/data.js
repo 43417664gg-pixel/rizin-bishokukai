@@ -14,31 +14,10 @@ window.LDATA = {
   {
    "id": "m_maruyama",
    "name": "丸山先生",
-   "color": "#ecb939"
+   "color": "#b9831a"
   }
  ],
  "preds": [
-  {
-   "member_id": "m_hame",
-   "fight_id": "r55_02",
-   "winner_id": "f_mizoguchi",
-   "method": "KO",
-   "round": 1
-  },
-  {
-   "member_id": "m_hame",
-   "fight_id": "r55_03",
-   "winner_id": "f_kuramoto",
-   "method": "KO",
-   "round": 3
-  },
-  {
-   "member_id": "m_hame",
-   "fight_id": "r55_04",
-   "winner_id": "f_zumagaziev",
-   "method": "DEC",
-   "round": null
-  },
   {
    "member_id": "m_hame",
    "fight_id": "r55_05",
@@ -48,10 +27,24 @@ window.LDATA = {
   },
   {
    "member_id": "m_hame",
-   "fight_id": "r55_06",
-   "winner_id": "f_chiharu",
+   "fight_id": "r55_02",
+   "winner_id": "f_mizoguchi",
+   "method": "KO",
+   "round": 1
+  },
+  {
+   "member_id": "m_hame",
+   "fight_id": "r55_11",
+   "winner_id": "f_inoue_naoki",
    "method": "DEC",
    "round": null
+  },
+  {
+   "member_id": "m_hame",
+   "fight_id": "r55_08",
+   "winner_id": "f_ota",
+   "method": "KO",
+   "round": 2
   },
   {
    "member_id": "m_hame",
@@ -62,10 +55,17 @@ window.LDATA = {
   },
   {
    "member_id": "m_hame",
-   "fight_id": "r55_08",
-   "winner_id": "f_ota",
-   "method": "KO",
-   "round": 2
+   "fight_id": "r55_06",
+   "winner_id": "f_chiharu",
+   "method": "DEC",
+   "round": null
+  },
+  {
+   "member_id": "m_hame",
+   "fight_id": "r55_12",
+   "winner_id": "f_hamada",
+   "method": null,
+   "round": null
   },
   {
    "member_id": "m_hame",
@@ -83,22 +83,71 @@ window.LDATA = {
   },
   {
    "member_id": "m_hame",
-   "fight_id": "r55_11",
-   "winner_id": "f_inoue_naoki",
-   "method": "DEC",
-   "round": null
+   "fight_id": "r55_03",
+   "winner_id": "f_kuramoto",
+   "method": "KO",
+   "round": 3
   },
   {
-   "member_id": "m_hame",
-   "fight_id": "r55_12",
-   "winner_id": "f_hamada",
+   "member_id": "m_maruyama",
+   "fight_id": "r55_10",
+   "winner_id": "f_sinryu",
    "method": null,
    "round": null
   },
   {
    "member_id": "m_maruyama",
-   "fight_id": "r55_01",
-   "winner_id": "f_kimura_ruon",
+   "fight_id": "r55_11",
+   "winner_id": "f_inoue_naoki",
+   "method": null,
+   "round": null
+  },
+  {
+   "member_id": "m_maruyama",
+   "fight_id": "r55_09",
+   "winner_id": "f_fukuda",
+   "method": null,
+   "round": null
+  },
+  {
+   "member_id": "m_maruyama",
+   "fight_id": "r55_08",
+   "winner_id": "f_kashimura",
+   "method": null,
+   "round": null
+  },
+  {
+   "member_id": "m_maruyama",
+   "fight_id": "r55_07",
+   "winner_id": "f_aimoto",
+   "method": null,
+   "round": null
+  },
+  {
+   "member_id": "m_maruyama",
+   "fight_id": "r55_05",
+   "winner_id": "f_ushiku",
+   "method": null,
+   "round": null
+  },
+  {
+   "member_id": "m_maruyama",
+   "fight_id": "r55_04",
+   "winner_id": "f_zumagaziev",
+   "method": null,
+   "round": null
+  },
+  {
+   "member_id": "m_maruyama",
+   "fight_id": "r55_13",
+   "winner_id": "f_papalii",
+   "method": null,
+   "round": null
+  },
+  {
+   "member_id": "m_maruyama",
+   "fight_id": "r55_06",
+   "winner_id": "f_suzuki",
    "method": null,
    "round": null
   },
@@ -118,62 +167,6 @@ window.LDATA = {
   },
   {
    "member_id": "m_maruyama",
-   "fight_id": "r55_04",
-   "winner_id": "f_zumagaziev",
-   "method": null,
-   "round": null
-  },
-  {
-   "member_id": "m_maruyama",
-   "fight_id": "r55_05",
-   "winner_id": "f_ushiku",
-   "method": null,
-   "round": null
-  },
-  {
-   "member_id": "m_maruyama",
-   "fight_id": "r55_06",
-   "winner_id": "f_suzuki",
-   "method": null,
-   "round": null
-  },
-  {
-   "member_id": "m_maruyama",
-   "fight_id": "r55_07",
-   "winner_id": "f_aimoto",
-   "method": null,
-   "round": null
-  },
-  {
-   "member_id": "m_maruyama",
-   "fight_id": "r55_08",
-   "winner_id": "f_kashimura",
-   "method": null,
-   "round": null
-  },
-  {
-   "member_id": "m_maruyama",
-   "fight_id": "r55_09",
-   "winner_id": "f_fukuda",
-   "method": null,
-   "round": null
-  },
-  {
-   "member_id": "m_maruyama",
-   "fight_id": "r55_10",
-   "winner_id": "f_sinryu",
-   "method": null,
-   "round": null
-  },
-  {
-   "member_id": "m_maruyama",
-   "fight_id": "r55_11",
-   "winner_id": "f_inoue_naoki",
-   "method": null,
-   "round": null
-  },
-  {
-   "member_id": "m_maruyama",
    "fight_id": "r55_12",
    "winner_id": "f_sekihara",
    "method": null,
@@ -181,10 +174,87 @@ window.LDATA = {
   },
   {
    "member_id": "m_maruyama",
-   "fight_id": "r55_13",
-   "winner_id": "f_papalii",
+   "fight_id": "r55_01",
+   "winner_id": "f_kimura_ruon",
    "method": null,
    "round": null
+  },
+  {
+   "member_id": "m_hame",
+   "fight_id": "r55_04",
+   "winner_id": "f_zumagaziev",
+   "method": "DEC",
+   "round": null
+  },
+  {
+   "member_id": "m_nuki",
+   "fight_id": "r55_05",
+   "winner_id": "f_leekaiwen",
+   "method": "DEC",
+   "round": null
+  },
+  {
+   "member_id": "m_nuki",
+   "fight_id": "r55_10",
+   "winner_id": "f_sinryu",
+   "method": "SUB",
+   "round": 2
+  },
+  {
+   "member_id": "m_nuki",
+   "fight_id": "r55_11",
+   "winner_id": "f_tilenov",
+   "method": "KO",
+   "round": 3
+  },
+  {
+   "member_id": "m_nuki",
+   "fight_id": "r55_09",
+   "winner_id": "f_kimsuchol",
+   "method": "DEC",
+   "round": null
+  },
+  {
+   "member_id": "m_nuki",
+   "fight_id": "r55_08",
+   "winner_id": "f_ota",
+   "method": "DEC",
+   "round": null
+  },
+  {
+   "member_id": "m_nuki",
+   "fight_id": "r55_07",
+   "winner_id": "f_aimoto",
+   "method": "KO",
+   "round": 3
+  },
+  {
+   "member_id": "m_nuki",
+   "fight_id": "r55_06",
+   "winner_id": "f_chiharu",
+   "method": "KO",
+   "round": 2
+  },
+  {
+   "member_id": "m_nuki",
+   "fight_id": "r55_02",
+   "winner_id": "f_mizoguchi",
+   "method": "DEC",
+   "round": null
+  },
+  {
+   "member_id": "m_nuki",
+   "fight_id": "r55_03",
+   "winner_id": "f_saiga",
+   "method": "KO",
+   "round": 2
+  },
+  {
+   "member_id": "m_nuki",
+   "fight_id": "r55_12",
+   "winner_id": "f_hamada",
+   "method": "SUB",
+   "round": 2
   }
  ],
  "supports": [
@@ -207,7 +277,7 @@ window.LDATA = {
     "sim": {
      "m_hame": 0.03,
      "m_nuki": 0.0,
-     "m_maruyama": 0.0
+     "m_maruyama": 0.02
     }
    },
    "br": {
@@ -215,7 +285,7 @@ window.LDATA = {
     "sim": {
      "m_hame": 0.05,
      "m_nuki": 0.0,
-     "m_maruyama": 0.0
+     "m_maruyama": 0.05
     }
    },
    "tl": {
@@ -231,7 +301,7 @@ window.LDATA = {
     "sim": {
      "m_hame": 0.01,
      "m_nuki": 0.0,
-     "m_maruyama": 0.27
+     "m_maruyama": 0.2
     }
    }
   },
@@ -242,7 +312,7 @@ window.LDATA = {
     "sim": {
      "m_hame": 0.03,
      "m_nuki": 0.0,
-     "m_maruyama": 0.0
+     "m_maruyama": 0.01
     }
    },
    "br": {
@@ -250,7 +320,7 @@ window.LDATA = {
     "sim": {
      "m_hame": 0.04,
      "m_nuki": 0.0,
-     "m_maruyama": 0.0
+     "m_maruyama": 0.03
     }
    },
    "tl": {
@@ -258,7 +328,7 @@ window.LDATA = {
     "sim": {
      "m_hame": 0.22,
      "m_nuki": 0.0,
-     "m_maruyama": 0.12
+     "m_maruyama": 0.13
     }
    },
    "tr": {
@@ -266,7 +336,7 @@ window.LDATA = {
     "sim": {
      "m_hame": 0.01,
      "m_nuki": 0.01,
-     "m_maruyama": 0.28
+     "m_maruyama": 0.26
     }
    }
   },
@@ -285,7 +355,7 @@ window.LDATA = {
     "sim": {
      "m_hame": 0.06,
      "m_nuki": 0.0,
-     "m_maruyama": 0.0
+     "m_maruyama": 0.04
     }
    },
    "tl": {
@@ -293,7 +363,7 @@ window.LDATA = {
     "sim": {
      "m_hame": 0.21,
      "m_nuki": 0.01,
-     "m_maruyama": 0.1
+     "m_maruyama": 0.11
     }
    },
    "tr": {
@@ -301,7 +371,7 @@ window.LDATA = {
     "sim": {
      "m_hame": 0.02,
      "m_nuki": 0.0,
-     "m_maruyama": 0.27
+     "m_maruyama": 0.25
     }
    }
   },
@@ -312,7 +382,7 @@ window.LDATA = {
     "sim": {
      "m_hame": 0.02,
      "m_nuki": 0.0,
-     "m_maruyama": 0.0
+     "m_maruyama": 0.01
     }
    },
    "br": {
@@ -320,7 +390,7 @@ window.LDATA = {
     "sim": {
      "m_hame": 0.05,
      "m_nuki": 0.0,
-     "m_maruyama": 0.0
+     "m_maruyama": 0.01
     }
    },
    "tl": {
@@ -328,7 +398,7 @@ window.LDATA = {
     "sim": {
      "m_hame": 0.22,
      "m_nuki": 0.0,
-     "m_maruyama": 0.16
+     "m_maruyama": 0.18
     }
    },
    "tr": {
@@ -336,7 +406,7 @@ window.LDATA = {
     "sim": {
      "m_hame": 0.03,
      "m_nuki": 0.0,
-     "m_maruyama": 0.29
+     "m_maruyama": 0.25
     }
    }
   },
@@ -355,7 +425,7 @@ window.LDATA = {
     "sim": {
      "m_hame": 0.06,
      "m_nuki": 0.0,
-     "m_maruyama": 0.0
+     "m_maruyama": 0.03
     }
    },
    "tl": {
@@ -363,7 +433,7 @@ window.LDATA = {
     "sim": {
      "m_hame": 0.22,
      "m_nuki": 0.0,
-     "m_maruyama": 0.13
+     "m_maruyama": 0.14
     }
    },
    "tr": {
@@ -371,7 +441,7 @@ window.LDATA = {
     "sim": {
      "m_hame": 0.01,
      "m_nuki": 0.0,
-     "m_maruyama": 0.27
+     "m_maruyama": 0.24
     }
    }
   },
@@ -390,7 +460,7 @@ window.LDATA = {
     "sim": {
      "m_hame": 0.06,
      "m_nuki": 0.0,
-     "m_maruyama": 0.0
+     "m_maruyama": 0.03
     }
    },
    "tl": {
@@ -398,7 +468,7 @@ window.LDATA = {
     "sim": {
      "m_hame": 0.22,
      "m_nuki": 0.0,
-     "m_maruyama": 0.18
+     "m_maruyama": 0.21
     }
    },
    "tr": {
@@ -406,7 +476,7 @@ window.LDATA = {
     "sim": {
      "m_hame": 0.02,
      "m_nuki": 0.0,
-     "m_maruyama": 0.28
+     "m_maruyama": 0.24
     }
    }
   },
@@ -425,7 +495,7 @@ window.LDATA = {
     "sim": {
      "m_hame": 0.07,
      "m_nuki": 0.0,
-     "m_maruyama": 0.0
+     "m_maruyama": 0.02
     }
    },
    "tl": {
@@ -433,7 +503,7 @@ window.LDATA = {
     "sim": {
      "m_hame": 0.22,
      "m_nuki": 0.0,
-     "m_maruyama": 0.12
+     "m_maruyama": 0.13
     }
    },
    "tr": {
@@ -441,7 +511,7 @@ window.LDATA = {
     "sim": {
      "m_hame": 0.02,
      "m_nuki": 0.0,
-     "m_maruyama": 0.29
+     "m_maruyama": 0.24
     }
    }
   },
@@ -452,7 +522,7 @@ window.LDATA = {
     "sim": {
      "m_hame": 0.06,
      "m_nuki": 0.0,
-     "m_maruyama": 0.0
+     "m_maruyama": 0.01
     }
    },
    "br": {
@@ -460,7 +530,7 @@ window.LDATA = {
     "sim": {
      "m_hame": 0.07,
      "m_nuki": 0.0,
-     "m_maruyama": 0.0
+     "m_maruyama": 0.03
     }
    },
    "tl": {
@@ -468,7 +538,7 @@ window.LDATA = {
     "sim": {
      "m_hame": 0.22,
      "m_nuki": 0.0,
-     "m_maruyama": 0.14
+     "m_maruyama": 0.15
     }
    },
    "tr": {
@@ -476,7 +546,7 @@ window.LDATA = {
     "sim": {
      "m_hame": 0.02,
      "m_nuki": 0.0,
-     "m_maruyama": 0.29
+     "m_maruyama": 0.25
     }
    }
   },
@@ -487,7 +557,7 @@ window.LDATA = {
     "sim": {
      "m_hame": 0.02,
      "m_nuki": 0.0,
-     "m_maruyama": 0.0
+     "m_maruyama": 0.03
     }
    },
    "br": {
@@ -495,7 +565,7 @@ window.LDATA = {
     "sim": {
      "m_hame": 0.05,
      "m_nuki": 0.0,
-     "m_maruyama": 0.0
+     "m_maruyama": 0.02
     }
    },
    "tl": {
@@ -511,7 +581,7 @@ window.LDATA = {
     "sim": {
      "m_hame": 0.02,
      "m_nuki": 0.0,
-     "m_maruyama": 0.29
+     "m_maruyama": 0.25
     }
    }
   },
@@ -522,7 +592,7 @@ window.LDATA = {
     "sim": {
      "m_hame": 0.02,
      "m_nuki": 0.0,
-     "m_maruyama": 0.0
+     "m_maruyama": 0.02
     }
    },
    "br": {
@@ -530,7 +600,7 @@ window.LDATA = {
     "sim": {
      "m_hame": 0.07,
      "m_nuki": 0.0,
-     "m_maruyama": 0.0
+     "m_maruyama": 0.02
     }
    },
    "tl": {
@@ -538,7 +608,7 @@ window.LDATA = {
     "sim": {
      "m_hame": 0.22,
      "m_nuki": 0.0,
-     "m_maruyama": 0.11
+     "m_maruyama": 0.12
     }
    },
    "tr": {
@@ -546,7 +616,7 @@ window.LDATA = {
     "sim": {
      "m_hame": 0.02,
      "m_nuki": 0.0,
-     "m_maruyama": 0.3
+     "m_maruyama": 0.26
     }
    }
   },
@@ -565,7 +635,7 @@ window.LDATA = {
     "sim": {
      "m_hame": 0.05,
      "m_nuki": 0.0,
-     "m_maruyama": 0.0
+     "m_maruyama": 0.03
     }
    },
    "tl": {
@@ -581,7 +651,7 @@ window.LDATA = {
     "sim": {
      "m_hame": 0.01,
      "m_nuki": 0.0,
-     "m_maruyama": 0.27
+     "m_maruyama": 0.23
     }
    }
   },
@@ -592,7 +662,7 @@ window.LDATA = {
     "sim": {
      "m_hame": 0.06,
      "m_nuki": 0.0,
-     "m_maruyama": 0.0
+     "m_maruyama": 0.01
     }
    },
    "br": {
@@ -600,7 +670,7 @@ window.LDATA = {
     "sim": {
      "m_hame": 0.08,
      "m_nuki": 0.0,
-     "m_maruyama": 0.0
+     "m_maruyama": 0.03
     }
    },
    "tl": {
@@ -616,7 +686,7 @@ window.LDATA = {
     "sim": {
      "m_hame": 0.01,
      "m_nuki": 0.0,
-     "m_maruyama": 0.29
+     "m_maruyama": 0.26
     }
    }
   },
@@ -627,7 +697,7 @@ window.LDATA = {
     "sim": {
      "m_hame": 0.05,
      "m_nuki": 0.0,
-     "m_maruyama": 0.0
+     "m_maruyama": 0.02
     }
    },
    "br": {
@@ -635,7 +705,7 @@ window.LDATA = {
     "sim": {
      "m_hame": 0.04,
      "m_nuki": 0.0,
-     "m_maruyama": 0.0
+     "m_maruyama": 0.05
     }
    },
    "tl": {
@@ -651,10 +721,10 @@ window.LDATA = {
     "sim": {
      "m_hame": 0.06,
      "m_nuki": 0.01,
-     "m_maruyama": 0.3
+     "m_maruyama": 0.29
     }
    }
   }
  },
- "built_at": "11/7 21:54"
+ "built_at": "11/8 04:10"
 };

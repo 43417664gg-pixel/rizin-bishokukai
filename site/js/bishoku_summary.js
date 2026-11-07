@@ -77,7 +77,7 @@ const CSS = `
   .ic.tri > i { --k:calc(var(--ic) * .5); position:relative; top:calc(var(--ic) * .07); }
   .ci.tri > i { --k:calc(var(--ci) * .5); position:relative; top:calc(var(--ci) * .07); }
   .ic.lt, .ci.lt { color:#1a1408; text-shadow:none; }   /* 金など明るい塗り＝白い字が沈むので黒字 */
-  /* 縁の色＝寮の差し色（ハメ＝金・抜き＝銀・丸山＝黒・Gaku指定11/7）。正本は demo-data.js の members[].trim。
+  /* 縁の色＝寮の差し色（ハメ＝金・抜き＝銀・丸山＝黄〔11/8 黒から変更〕・Gaku指定11/7）。正本は demo-data.js の members[].trim。
      字は寮の色にしない＝白（明るい塗りだけ黒）。「色は背景であって、中の文字は視認性優先」（Gaku 11/7） */
   /* 背景がその人の色に近い／明るい場所だけ、黒い後光を足す（build_data.py が大会ごとにバナーを測る） */
   .ic.pop, .ci.pop { box-shadow:0 0 0 calc(3px * var(--u) + 2px) #08080a, 0 0 calc(20px * var(--u) + 6px) calc(8px * var(--u) + 3px) rgba(0,0,0,.8); }
