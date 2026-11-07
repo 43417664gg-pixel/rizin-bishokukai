@@ -982,13 +982,17 @@ tr.top .lb-rate { color: var(--gold-hot); }
 /* 左右で段の高さをそろえる（片側だけ異名が2行等でも下の段がずれない） */
 .st-side { padding: 10px 10px 10px; min-width: 0; display: grid; grid-row: span var(--rows, 4); grid-template-rows: subgrid; align-content: start; }
 .st-side.c2 { border-left: 1px solid var(--line); text-align: right; }
-/* 名前と異名は1行（異名で改行しない・Gaku指示11/7）。入りきらない異名は…で切る。名前が長すぎる時だけ名前が折れる */
+/* 名前と異名は1行（異名で改行しない・Gaku指示11/7）。異名は切らない（「異名切れてる」11/7）：
+   入りきらない時は event.html の fitNicks() が字を小さくして収める。同じ行で収まらなければ異名だけ次の行へ（.below） */
 .st-head { display: flex; align-items: baseline; gap: 6px; min-width: 0; margin-bottom: 8px; }
 .st-side.c2 .st-head { flex-direction: row-reverse; }
 .st-name { flex: 0 1 auto; min-width: 0; font-size: 15px; font-weight: 900; line-height: 1.3; overflow-wrap: anywhere; }
 .st-age { flex: none; font-size: 11px; font-weight: 700; color: var(--muted); white-space: nowrap; }   /* 年齢は名前の横に小さく（Gaku指示11/7） */
 .st-nick { flex: 1 1 0; min-width: 0; font-size: 11px; font-weight: 700; color: var(--muted); line-height: 1.35;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.st-head.below { flex-wrap: wrap; row-gap: 0; }
+.st-head.below .st-nick { flex: 1 0 100%; }
+.st-nick.wrap { white-space: normal; overflow: visible; }   /* 9pxまで縮めても入らない長い異名だけ折り返す（白鵬女子高等学校…） */
 /* 勝ち方のバー：左右で必ず同じ置き方にする（片側だけ折り返すと高さがずれた・Gaku指摘11/7）。
    段は 名前／戦績／バー／前戦の見出し／前戦 の5段。狭い時はバーを3段目（戦績の下）、
    カードが広い時（PC）は2段目＝戦績の横の空きへ。判定はカード幅（container）で左右まとめて行う。
@@ -1034,9 +1038,19 @@ tr.top .lb-rate { color: var(--gold-hot); }
 .sb-lab .zero { opacity: .4; }
 @media (max-width: 480px) {   /* スマホでは3つを1行に収める */
   .st-side { padding-left: 8px; padding-right: 8px; }
-  .st-head { flex-wrap: wrap; row-gap: 0; }   /* 半分の幅に並びきらない＝1行目に名前、2行目に「年齢 “異名”」（異名は途中で折らず…で切る） */
-  .st-name { flex: 1 0 100%; }
-  .st-nick { flex: 1 1 0; }
+  /* 半分の幅に並びきらない＝1行目に「名前 年齢」、2行目は異名だけ（幅を丸ごと使う・切らない） */
+  /* 年齢のせいで名前が折れる時は、年齢を異名の行へ（.age-n）。そこで異名が入らなければ異名の下へ（.age-b）＝fitNicks() が決める。
+     右側は左右反転（rtl の格子・中身は ltr のまま）＝左右で同じ規則を使う */
+  .st-head { display: grid; grid-template-columns: minmax(0, max-content) 1fr; column-gap: 5px; align-content: start; }   /* 左右で段数が違っても行を引き伸ばさない＝異名の高さが揃う */
+  .st-side.c2 .st-head { direction: rtl; }
+  .st-side.c2 .st-head > * { direction: ltr; }
+  .st-name { grid-area: 1 / 1; }
+  .st-age { grid-area: 1 / 2; }
+  .st-nick { grid-area: 2 / 1 / 3 / -1; }
+  .st-side .st-head.age-n .st-name, .st-side .st-head.age-b .st-name { grid-area: 1 / 1 / 2 / -1; }
+  .st-side .st-head.age-n .st-age { grid-area: 2 / 1; }
+  .st-side .st-head.age-n .st-nick { grid-area: 2 / 2; }
+  .st-side .st-head.age-b .st-age { grid-area: 3 / 1 / 4 / -1; }
   .sb-lab { gap: 2px 0; font-size: 9px; }   /* 間隔は space-between に任せる（375pxで3つが1行に入る） */
   .sb-lab b { font-size: 12px; margin-left: 2px; }
   .sb-lab span::before { width: 5px; height: 5px; margin-right: 2px; }
@@ -1080,3 +1094,16 @@ tr.top .lb-rate { color: var(--gold-hot); }
 .pitari[open] > summary::after { content: "−"; }
 .pitari .chips { padding: 6px 0; }
 .pick-foot { display: flex; justify-content: flex-end; padding: 6px 16px 0; }
+
+/* 得票率のバー。色分けは「赤コーナーか青コーナーか」を伝えるため（Gaku 11/7「赤青がチープ。全体の空気に合わせて」）。
+   原色のベタ塗りをやめ、外側を暗く・ぶつかる中央を明るく。境目は斜めに切る（ファイトカードの鋭角トーン） */
+.vb { --cut: 7px; --gap: 3px; display: flex; height: 22px; }
+.vb > i { display: flex; align-items: center; min-width: 0; overflow: hidden; white-space: nowrap; font-style: normal;
+  font: 600 13px/1 var(--num); letter-spacing: .05em; color: rgba(255, 255, 255, .92); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .1); }
+.vb > .r { background: linear-gradient(90deg, #2b0609, #7d0d16 55%, #c4111f); padding-left: 8px;
+  clip-path: polygon(0 0, 100% 0, calc(100% - var(--cut)) 100%, 0 100%); }
+.vb > .b { background: linear-gradient(270deg, #061328, #123a74 55%, #1f5fbf); padding-right: 8px; justify-content: flex-end;
+  clip-path: polygon(var(--cut) 0, 100% 0, 100% 100%, 0 100%); }
+.vb > .r + .b { margin-left: calc(var(--gap) - var(--cut)); }
+.vb.mini { --cut: 3px; --gap: 2px; height: 7px; margin-top: 4px; }
+.vb.mini > i { padding: 0; }

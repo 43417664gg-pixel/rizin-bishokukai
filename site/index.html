@@ -7,18 +7,18 @@
 <title>予想番付｜格闘技の勝敗予想</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261107211356">
+<link rel="stylesheet" href="css/style.css?v=20261107214453">
 </head>
 <body>
 <div id="app-header"></div>
 <div class="wrap" id="main"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261107211356"></script>
-<script src="js/techniques.js?v=20261107211356"></script>
-<script src="js/demo-data.js?v=20261107211356"></script>
-<script src="js/api.js?v=20261107211356"></script>
-<script src="js/app.js?v=20261107211356"></script>
+<script src="js/config.js?v=20261107214453"></script>
+<script src="js/techniques.js?v=20261107214453"></script>
+<script src="js/demo-data.js?v=20261107214453"></script>
+<script src="js/api.js?v=20261107214453"></script>
+<script src="js/app.js?v=20261107214453"></script>
 <script>
 // Xから来た人に「いま何をやっているか」を最初に見せる。
 // 監査（2026-08-31）で、入口に大会情報がゼロのまま登録を求めていて離脱する形だったため追加。
@@ -126,8 +126,10 @@ async function renderHome() {
   const FMAP = fighterMap(await DB.listFighters());
   const isFin = (e) => e.status === "finished";
   // 「結果ダイジェスト」は直近の1大会だけ上部に残す（Gaku方針・2026-08-11）。残りの終了大会は下の「これまでの大会」へ。
+  // 上に出すのは大会の3日後まで。次の大会の前に、前の大会の結果が一番上にあるのは気持ちよくない（Gaku指示11/7）
+  const RECENT_DAYS = 3;
   const finishedDesc = all.filter(isFin).sort((a, b) => (b.event_date || "").localeCompare(a.event_date || ""));
-  const recentFinished = finishedDesc.slice(0, 1);
+  const recentFinished = finishedDesc.slice(0, 1).filter(e => (daysToEvent(e) ?? -Infinity) >= -RECENT_DAYS);
   const recentIds = new Set(recentFinished.map(e => e.id));
   const live = all.filter(e => !isFin(e)).sort((a, b) => (a.event_date || "").localeCompare(b.event_date || ""));
   const pastFinished = finishedDesc.filter(e => !recentIds.has(e.id));
@@ -194,7 +196,6 @@ async function renderHome() {
   document.getElementById("main").innerHTML = `
     <div class="en-label">EVENTS</div>
     <h1 class="page-title">大会</h1>
-    <p class="page-sub">カードをタップして予想。この大会は締切なし・いつでも編集OK。</p>
     ${recentHtml ? `<div class="section-label">直近の結果</div>${recentHtml}` : ""}
     ${liveHtml}
     ${pastHtml ? `<div class="section-label">これまでの大会</div>${pastHtml}` : ""}`;

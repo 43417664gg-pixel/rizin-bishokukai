@@ -7,7 +7,7 @@
 <title>大会予想｜予想番付</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261107211356">
+<link rel="stylesheet" href="css/style.css?v=20261107214453">
 </head>
 <body>
 <div id="app-header"></div>
@@ -16,12 +16,12 @@
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261107211356"></script>
-<script src="js/techniques.js?v=20261107211356"></script>
-<script src="js/demo-data.js?v=20261107211356"></script>
-<script src="js/api.js?v=20261107211356"></script>
-<script src="js/app.js?v=20261107211356"></script>
-<script src="js/bishoku_summary.js?v=20261107211356"></script>
+<script src="js/config.js?v=20261107214453"></script>
+<script src="js/techniques.js?v=20261107214453"></script>
+<script src="js/demo-data.js?v=20261107214453"></script>
+<script src="js/api.js?v=20261107214453"></script>
+<script src="js/app.js?v=20261107214453"></script>
+<script src="js/bishoku_summary.js?v=20261107214453"></script>
 <script>
 let EV, PHASE, FIGHTS, FMAP, MEMBERS, myPreds = {}, allPreds = [], ALL_SUPPORTS = [];
 
@@ -453,7 +453,7 @@ function consensus(f) {
     : { level: "split", n: picks.length };
 }
 
-// 得票率の横グラフ（オッズ可視化）。赤=RED側・青=BLUE側の勝者予想の割合。
+// 得票率の横グラフ（オッズ可視化）。赤=RED側・青=BLUE側の勝者予想の割合。色は .vb（style.css）
 function voteBar(f) {
   const picks = allPreds.filter(p => p.fight_id === f.id);
   const n = picks.length;
@@ -463,10 +463,7 @@ function voteBar(f) {
   const p1 = Math.round(n1 / n * 100), p2 = 100 - p1;
   return `
     <div class="votebar" style="margin:8px 0 4px">
-      <div style="display:flex;height:22px;border-radius:5px;overflow:hidden;font:700 12px/22px 'Noto Sans JP',sans-serif;color:#fff">
-        <div style="width:${p1}%;background:#e60012;padding:0 6px;white-space:nowrap;overflow:hidden">${p1 >= 12 ? p1 + "%" : ""}</div>
-        <div style="width:${p2}%;background:#1e6fd9;text-align:right;padding:0 6px;white-space:nowrap;overflow:hidden">${p2 >= 12 ? p2 + "%" : ""}</div>
-      </div>
+      <div class="vb">${p1 ? `<i class="r" style="flex:${p1}">${p1 >= 12 ? p1 + "%" : ""}</i>` : ""}${p2 ? `<i class="b" style="flex:${p2}">${p2 >= 12 ? p2 + "%" : ""}</i>` : ""}</div>
       <div style="display:flex;justify-content:space-between;font-size:11px;color:#888;margin-top:3px">
         <span>${fnm(f1?.name)} ${p1}%</span><span>${p2}% ${fnm(f2?.name)}</span>
       </div>
@@ -496,9 +493,7 @@ function allPicksMatrix() {
     const mn1 = mp.filter(p => p.winner_id === f.fighter1_id).length;
     const mpr1 = mp.length ? Math.round(mn1 / mp.length * 100) : 0, mpr2 = 100 - mpr1;
     const miniBar = mp.length ? `
-      <div style="display:flex;height:7px;border-radius:3px;overflow:hidden;margin-top:4px">
-        <div style="width:${mpr1}%;background:#e60012"></div><div style="width:${mpr2}%;background:#1e6fd9"></div>
-      </div>
+      <div class="vb mini">${mpr1 ? `<i class="r" style="flex:${mpr1}"></i>` : ""}${mpr2 ? `<i class="b" style="flex:${mpr2}"></i>` : ""}</div>
       <div style="display:flex;justify-content:space-between;font-size:9px;color:#999;margin-top:1px"><span>${mpr1}%</span><span>${mpr2}%</span></div>` : "";
     // 応援📣もALL PICKSに出す（予想とは別軸・どちらを応援したか）
     const sc1 = ALL_SUPPORTS.filter(s => s.fight_id === f.id && s.fighter_id === f.fighter1_id).length;
@@ -652,6 +647,61 @@ async function drawBishokuSummary() {
   // 幅が変わった時だけ合わせ直す（fit が高さを変える→また通知、の空回りで ResizeObserver loop のエラーが出ていた）
   if (!host._ro) { host._ro = new ResizeObserver(() => { if (host.clientWidth !== host._w) { host._w = host.clientWidth; fit(); } }); host._ro.observe(host); }
 }
+
+// 異名は切らない・途中で折らない（Gaku指摘11/7「異名切れてる」）。入りきらない時は字を小さくして1行に収める。
+// 名前と同じ行で収まらなければ異名だけ次の行へ（.below）。9pxでも入らない長い異名だけ折り返す（.wrap）
+// 左右の異名は高さと字の大きさを揃える（「異名の上下位置がズレてるとカッコ悪い」Gaku指摘11/7）
+function fitNicks() {
+  const px = (el) => parseFloat(getComputedStyle(el).fontSize);
+  const shrink = (el, min) => {
+    el.style.fontSize = "";
+    let fs = px(el);
+    while (el.scrollWidth > el.clientWidth + 1 && fs > min) { fs -= 0.5; el.style.fontSize = fs + "px"; }
+    return el.scrollWidth <= el.clientWidth + 1;
+  };
+  const oneLine = (el) => el.offsetHeight < parseFloat(getComputedStyle(el).lineHeight) * 1.5;
+  const fitHead = (head) => {
+    const name = head.querySelector(".st-name"), age = head.querySelector(".st-age"), nick = head.querySelector(".st-nick");
+    head.classList.remove("below", "age-n", "age-b");
+    if (nick) nick.classList.remove("wrap");
+    if (getComputedStyle(head).display === "grid") {   // スマホ：1行目「名前 年齢」・2行目「異名」
+      if (age && !oneLine(name)) {   // 年齢のせいで名前が折れる→年齢は異名の行へ。そこで異名が10pxを切るなら異名の下へ
+        head.classList.add("age-n");
+        if (nick && !shrink(nick, 10)) head.classList.replace("age-n", "age-b");
+      }
+      if (nick && !shrink(nick, 9)) nick.classList.add("wrap");
+      return;
+    }
+    if (!nick || shrink(nick, 10)) return;   // 同じ行で縮めるのは1px（10px）まで
+    head.classList.add("below");
+    if (!shrink(nick, 9)) nick.classList.add("wrap");
+  };
+  document.querySelectorAll(".st-cols").forEach(cols => {
+    const heads = [...cols.querySelectorAll(".st-head")];
+    const names = heads.map(h => h.querySelector(".st-name"));
+    names.forEach(n => { n.style.minHeight = ""; });
+    heads.forEach(fitHead);
+    // 片側だけ異名が次の行へ落ちたら、もう片側も落とす
+    if (heads.some(h => h.classList.contains("below")))
+      heads.forEach(h => {
+        const k = h.querySelector(".st-nick");
+        if (k && !h.classList.contains("below")) { h.classList.add("below"); if (!shrink(k, 9)) k.classList.add("wrap"); }
+      });
+    // 字の大きさは左右で小さい方に合わせる
+    const nicks = heads.map(h => h.querySelector(".st-nick")).filter(Boolean);
+    const min = Math.min(...nicks.map(px));
+    nicks.forEach(k => { if (px(k) > min) k.style.fontSize = min + "px"; });
+    // 名前の段の高さを左右で揃える＝片側の名前が2行になっても異名は同じ高さから始まる
+    const hmax = Math.max(...names.map(n => n.offsetHeight));
+    names.forEach(n => { if (n.offsetHeight < hmax) n.style.minHeight = hmax + "px"; });
+  });
+}
+// カードは予想のたびに差し替わる（replaceCard）ので、描き直しを見張って合わせ直す
+let NICK_T = 0;
+const refitNicks = () => { clearTimeout(NICK_T); NICK_T = setTimeout(fitNicks, 30); };
+new MutationObserver(refitNicks).observe(document.getElementById("main"), { childList: true, subtree: true });
+addEventListener("resize", refitNicks);
+document.fonts?.ready.then(refitNicks);
 
 load();
 </script>
