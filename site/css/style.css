@@ -975,26 +975,42 @@ tr.top .lb-rate { color: var(--gold-hot); }
 .pred-row .psup { font-size: 11px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 45%; }
 .pred-row .psup.r { color: #ff5a67; } .pred-row .psup.b { color: #5aa0ff; }
 
-/* 予想カードのスタッツ（戦績・勝ち方・前戦の○×・連勝／トグルで直近5試合・Gaku依頼2026-11-07） */
+/* 予想カードのスタッツ（戦績・勝ち方・直近5戦・前戦／トグルで直近5試合・Gaku依頼2026-11-07）
+   細かい文字ではなく形で見せる：大きな勝敗数／一番多い勝ち方が光る3枠／色の四角の○× */
 .stats { margin: 8px 14px 2px; border: 1px solid var(--line); background: var(--panel2); }
 .st-cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
-.st-side { padding: 8px 10px 9px; min-width: 0; }
+.st-side { padding: 10px 10px 10px; min-width: 0; }
 .st-side.c1 { border-left: 3px solid var(--red); }
 .st-side.c2 { border-right: 3px solid var(--blue); border-left: 1px solid var(--line); text-align: right; }
-.st-rec { font-size: 15px; font-weight: 900; letter-spacing: .02em; }
-.st-brk { font-size: 11px; color: var(--muted); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.st-streak { display: inline-block; font-size: 10.5px; font-weight: 700; margin-top: 5px; padding: 1px 7px; border-radius: 3px; }
-.st-streak.w { color: #7fe0a0; background: rgba(40, 160, 90, .16); }
-.st-streak.l { color: #ff8a94; background: rgba(230, 0, 18, .13); }
-.st-k { font-size: 10px; color: var(--muted); margin-top: 7px; letter-spacing: .08em; }
-.st-row { display: flex; gap: 6px; align-items: flex-start; margin-top: 3px; min-width: 0; }
+.st-recn { display: flex; flex-wrap: wrap; gap: 2px 6px; align-items: baseline; }
+.st-side.c2 .st-recn { justify-content: flex-end; }
+.st-n { font-size: 10.5px; font-weight: 700; color: var(--muted); white-space: nowrap; }
+.st-n b { font-family: var(--num); font-size: 30px; line-height: 1; margin-right: 2px; }
+.st-n.w b { color: #fff; }
+.st-n.l b { color: #c9707a; }
+.st-n.d b { color: var(--muted); font-size: 16px; margin-left: 2px; }   /* 分・NC は脇役＝小さく（4つ並んでも1行に収める） */
+.st-way { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; margin-top: 9px; }
+.st-way span { border: 1px solid var(--line); border-radius: 4px; text-align: center; padding: 3px 0 3px;
+  font-size: 10px; font-weight: 700; color: var(--muted); line-height: 1.15; }
+.st-way span b { display: block; font-family: var(--num); font-size: 19px; color: #d8d8de; }
+.st-way span.top { border-color: var(--gold); background: rgba(201, 168, 74, .16); color: var(--gold-hot); }
+.st-way span.top b { color: #fff; }
+.st-way span.zero { opacity: .35; }
+.st-form { display: flex; gap: 3px; align-items: center; margin-top: 4px; }
+.st-side.c2 .st-form { flex-direction: row-reverse; }
+.st-streak { font-size: 11px; font-weight: 900; margin: 0 5px; padding: 1px 6px; border-radius: 3px; letter-spacing: 0; }
+.st-streak.w { color: #7fe0a0; background: rgba(40, 160, 90, .18); }
+.st-streak.l { color: #ff8a94; background: rgba(230, 0, 18, .15); }
+.rm { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 21px; height: 21px; border-radius: 4px;
+  font-size: 13px; font-weight: 900; color: #fff; line-height: 1; }
+.rm.w { background: #1f9d55; } .rm.l { background: #d0102a; } .rm.d { background: #4a4a55; font-size: 9px; }
+.st-k { font-size: 10px; color: var(--muted); margin-top: 9px; letter-spacing: .08em; }
+.st-row { display: flex; gap: 7px; align-items: center; margin-top: 3px; min-width: 0; }
 .st-side.c2 .st-row { flex-direction: row-reverse; }
-.st-row + .st-row { margin-top: 7px; }
-.rm { flex: none; width: 1.3em; text-align: center; font-size: 13px; font-weight: 900; line-height: 1.35; }
-.rm.w { color: #4cd07d; } .rm.l { color: var(--red-hot); } .rm.d { color: var(--muted); font-size: 10px; }
+.st-row + .st-row { margin-top: 8px; }
 .st-body { min-width: 0; flex: 1; }
-.st-opp { display: block; font-size: 12.5px; font-weight: 700; line-height: 1.35; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.st-how { display: block; font-size: 10.5px; color: var(--muted); line-height: 1.4; }
+.st-opp { display: block; font-size: 13px; font-weight: 700; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.st-how { display: block; font-size: 10.5px; color: var(--muted); line-height: 1.35; }
 .st-more summary { list-style: none; cursor: pointer; text-align: center; font-size: 12px; font-weight: 700; color: var(--gold-hot);
   padding: 7px; border-top: 1px solid var(--line); }
 .st-more summary::-webkit-details-marker { display: none; }

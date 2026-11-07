@@ -7,7 +7,7 @@
 <title>大会予想｜予想番付</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261107190413">
+<link rel="stylesheet" href="css/style.css?v=20261107191410">
 </head>
 <body>
 <div id="app-header"></div>
@@ -16,11 +16,11 @@
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261107190413"></script>
-<script src="js/techniques.js?v=20261107190413"></script>
-<script src="js/demo-data.js?v=20261107190413"></script>
-<script src="js/api.js?v=20261107190413"></script>
-<script src="js/app.js?v=20261107190413"></script>
+<script src="js/config.js?v=20261107191410"></script>
+<script src="js/techniques.js?v=20261107191410"></script>
+<script src="js/demo-data.js?v=20261107191410"></script>
+<script src="js/api.js?v=20261107191410"></script>
+<script src="js/app.js?v=20261107191410"></script>
 <script>
 let EV, PHASE, FIGHTS, FMAP, MEMBERS, myPreds = {}, allPreds = [], ALL_SUPPORTS = [];
 let drafts = {};              // 決定前の編集中の選択（ローカルのみ）
@@ -130,15 +130,27 @@ function streakText(h) {
   let n = 0; while (n < h.length && h[n].r === h[0].r) n++;
   return n >= 2 ? `${n}${h[0].r === "W" ? "連勝" : "連敗"}中` : "";
 }
+// 細かい文字で読ませず形で見せる（Gaku指示11/7「シンプルな中に視認性を。ビジュアルで誘導」）：
+// 勝敗数は大きな数字／勝ち方は3つの枠で一番多いものを光らせる／直近5戦は色の四角で並べる
 function statsSide(x, cls) {
   const h = recentOf(x);
-  const rec = x?.rec_w != null ? `${x.rec_w}勝${x.rec_l ?? 0}敗${x.rec_d ? `${x.rec_d}分` : ""}${x.rec_nc ? `${x.rec_nc}NC` : ""}` : "戦績なし";
-  const brk = x?.rec_ko != null ? `KO ${x.rec_ko}・一本 ${x.rec_sub ?? 0}・判定 ${x.rec_dec ?? 0}` : "";
+  const num = (n, u, c) => `<span class="st-n ${c}"><b>${n}</b>${u}</span>`;
+  const rec = x?.rec_w != null
+    ? num(x.rec_w, "勝", "w") + num(x.rec_l ?? 0, "敗", "l")
+      + (x.rec_d || x.rec_nc ? `<span class="st-n d">${x.rec_d ? `<b>${x.rec_d}</b>分` : ""}${x.rec_nc ? `<b>${x.rec_nc}</b>NC` : ""}</span>` : "")
+    : `<span class="st-n d">戦績なし</span>`;
+  let way = "";
+  if (x?.rec_ko != null) {
+    const ws = [["KO", x.rec_ko], ["一本", x.rec_sub ?? 0], ["判定", x.rec_dec ?? 0]];
+    const top = Math.max(...ws.map(w => w[1]));
+    way = `<div class="st-way">${ws.map(([l, n]) => `<span class="${n === 0 ? "zero" : n === top ? "top" : ""}"><b>${n}</b>${l}</span>`).join("")}</div>`;
+  }
   const st = streakText(h);
   return `<div class="st-side ${cls}">
-    <div class="st-rec">${rec}</div>
-    ${brk ? `<div class="st-brk">${brk}</div>` : ""}
-    ${st ? `<div class="st-streak ${h[0].r === "W" ? "w" : "l"}">${st}</div>` : ""}
+    <div class="st-recn">${rec}</div>
+    ${way}
+    ${h.length ? `<div class="st-k">直近${Math.min(5, h.length)}戦${st ? `<span class="st-streak ${h[0].r === "W" ? "w" : "l"}">${st}</span>` : ""}</div>
+    <div class="st-form">${h.slice(0, 5).map(r => resMark(r.r)).join("")}</div>` : ""}
     <div class="st-k">前戦</div>
     ${h[0] ? histRow(h[0]) : `<div class="st-row"><span class="st-how">データなし</span></div>`}
   </div>`;
