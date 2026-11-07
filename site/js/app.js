@@ -165,6 +165,11 @@
   window.esc = (s) => String(s ?? "").replace(/[&<>"']/g, c =>
     ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   window.qp = (k) => new URLSearchParams(location.search).get(k);
+  // 選手名は「・」の所でだけ折り返す（「ラジャブアリ・シェ｜イドゥラエフ」と語の途中で割れた・Gaku指摘11/7）。
+  // .fnm が仮名・漢字の途中での改行を止め、<wbr> が「・」の後ろにだけ改行の候補を置く。1語が欄より長い時だけ最後の手段で割る
+  // 「・」の無い名前（松尾クリスチャンアキラ）は漢字とカタカナの境目を候補にする＝姓と名の間で折れる
+  window.fnm = (s) => `<span class="fnm">${esc(s).split("・").join("・<wbr>")
+    .replace(/([\u4E00-\u9FFF々])(?=[\u30A1-\u30FA])|([\u30A1-\u30FA])(?=[\u4E00-\u9FFF々])/g, "$1$2<wbr>")}</span>`;
 
   // 外部予想者のチャンネルロゴ（tools/fetch_avatars.py が data/avatars.json と assets/predictors/ を作る）。
   // ロゴの無い人（美食会・ゲスト出演）は色付きの丸に頭文字。各ページは描画前に AVATARS_READY を待つ

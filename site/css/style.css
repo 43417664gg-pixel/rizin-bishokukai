@@ -1007,8 +1007,9 @@ tr.top .lb-rate { color: var(--gold-hot); }
   .stats > .st-cols > .st-side > .st-bar { grid-column: 2; grid-row: 2; align-self: start; margin-top: 6px; justify-self: end; }
   .stats > .st-cols > .st-side.c2 > .st-bar { justify-self: start; }   /* 左右ともバーは真ん中の仕切り寄り＝戦績との間に余白 */
   .stats .sb-lab { gap: 2px 0; font-size: 9px; }   /* 横に置く時は割合を一段小さく＝短いバー（150px）に3つが1行で入る */
-  .stats .sb-lab b { font-size: 12px; margin-left: 1px; }
-  .stats .sb-lab span::before { width: 5px; height: 5px; margin-right: 2px; }
+  .stats .sb-lab b { font-size: 12px; margin: 0 1px 0 1px; }
+  .stats .sb-lab i::before { width: 5px; height: 5px; margin-right: 2px; }
+  .stats .sb-lab em { padding-left: 7px; font-size: 9px; }
   .stats > .st-cols > .st-side.c2 > .st-recn { grid-column: 2; }
   .stats > .st-cols > .st-side.c2 > .st-bar { grid-column: 1; }
 }
@@ -1025,16 +1026,21 @@ tr.top .lb-rate { color: var(--gold-hot); }
 .sb-track i + i { border-left: 2px solid var(--panel2); }   /* 同じ白の KO と一本を仕切る */
 .sb-lab { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 2px 6px; margin-top: 5px;
   font-size: 10px; font-weight: 700; color: var(--muted); white-space: nowrap; }
-.sb-lab span::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 2px; margin-right: 3px; background: var(--sw); }
-.sb-lab b { font-family: var(--num); font-size: 14px; color: #e8e8ec; margin-left: 3px; }
+/* 各ラベル＝上に「KO 10勝」（勝ちのうち何勝か）、下に割合。勝数を主役にし、割合は添える（Gaku指示11/7） */
+.sb-lab > span { display: flex; flex-direction: column; }
+.sb-lab i { font-style: normal; }
+.sb-lab i::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 2px; margin-right: 3px; background: var(--sw); }
+.sb-lab b { font-family: var(--num); font-size: 14px; color: #e8e8ec; margin: 0 1px 0 3px; }
+.sb-lab em { font-style: normal; font-family: var(--num); font-size: 10px; font-weight: 400; color: var(--muted); padding-left: 10px; line-height: 1.2; }
 .sb-lab .zero { opacity: .4; }
 @media (max-width: 480px) {   /* スマホでは3つを1行に収める */
   .st-side { padding-left: 8px; padding-right: 8px; }
   .st-head { flex-wrap: wrap; row-gap: 0; }   /* 半分の幅に名前と異名は並びきらない＝異名は名前の下に1行（途中で折らず…で切る） */
   .st-nick { flex: 1 0 100%; }
   .sb-lab { gap: 2px 0; font-size: 9px; }   /* 間隔は space-between に任せる（375pxで3つが1行に入る） */
-  .sb-lab b { font-size: 12px; margin-left: 1px; }
-  .sb-lab span::before { width: 5px; height: 5px; margin-right: 2px; }
+  .sb-lab b { font-size: 12px; margin: 0 1px 0 1px; }
+  .sb-lab i::before { width: 5px; height: 5px; margin-right: 2px; }
+  .sb-lab em { padding-left: 7px; font-size: 9px; }
 }
 .rm { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 21px;
   font-size: 15px; font-weight: 900; color: #fff; line-height: 1; }   /* 枠も色も付けない＝記号だけで○×を読む（11/7） */
@@ -1060,3 +1066,18 @@ tr.top .lb-rate { color: var(--gold-hot); }
 
 /* 美食会3人の予想まとめ（中身は Shadow DOM・幅に合わせて縮小。高さは JS が入れる） */
 .bsum { margin: 4px 0 18px; overflow: hidden; border: 1px solid var(--line); background: #0b0b0e; }
+/* 選手名（app.js の fnm）：仮名・漢字の途中では折らず「・」の後ろでだけ折る。1語が欄より長い時だけ anywhere が割る */
+.fnm { word-break: keep-all; overflow-wrap: anywhere; }
+/* 予想の入力：タップで即保存（決定ボタンなし・11/7）。保存済みは「✓ 〇〇 の勝ちで決定」と、押し直せば変更できる旨 */
+.win-hint.done { color: var(--text); }
+.win-hint.done .mp-check { color: var(--ok); font-weight: 900; margin-right: 6px; }
+.win-hint.done b { color: var(--text); font-size: 14px; }
+.win-hint.done small { display: block; font-size: 10.5px; color: var(--muted); }
+/* ピタリ（任意）＝保存した後に開ける追加入力。選んだ時点で保存 */
+.pitari { margin: 8px 14px 0; border-top: 1px dashed var(--line); }
+.pitari > summary { list-style: none; cursor: pointer; padding: 10px 2px 4px; font-size: 12px; font-weight: 700; color: var(--gold-hot); }
+.pitari > summary::-webkit-details-marker { display: none; }
+.pitari > summary::after { content: "＋"; float: right; color: var(--muted); }
+.pitari[open] > summary::after { content: "−"; }
+.pitari .chips { padding: 6px 0; }
+.pick-foot { display: flex; justify-content: flex-end; padding: 6px 16px 0; }

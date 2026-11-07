@@ -7,7 +7,7 @@
 <title>大会予想｜予想番付</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261107195526">
+<link rel="stylesheet" href="css/style.css?v=20261107201417">
 </head>
 <body>
 <div id="app-header"></div>
@@ -16,16 +16,14 @@
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261107195526"></script>
-<script src="js/techniques.js?v=20261107195526"></script>
-<script src="js/demo-data.js?v=20261107195526"></script>
-<script src="js/api.js?v=20261107195526"></script>
-<script src="js/app.js?v=20261107195526"></script>
-<script src="js/bishoku_summary.js?v=20261107195526"></script>
+<script src="js/config.js?v=20261107201417"></script>
+<script src="js/techniques.js?v=20261107201417"></script>
+<script src="js/demo-data.js?v=20261107201417"></script>
+<script src="js/api.js?v=20261107201417"></script>
+<script src="js/app.js?v=20261107201417"></script>
+<script src="js/bishoku_summary.js?v=20261107201417"></script>
 <script>
 let EV, PHASE, FIGHTS, FMAP, MEMBERS, myPreds = {}, allPreds = [], ALL_SUPPORTS = [];
-let drafts = {};              // 決定前の編集中の選択（ローカルのみ）
-const editing = new Set();    // 「編集」で開き直した試合ID
 
 // 美食会の3人（ハメ・抜き・丸山）は一覧では左・各カードでは最上部に固定する（Gaku方針）
 const FRIEND_IDS = ["m_hame", "m_nuki", "m_maruyama"];
@@ -114,8 +112,8 @@ function profileLinks(f) {
   const f1 = FMAP[f.fighter1_id], f2 = FMAP[f.fighter2_id];
   return `
     <div class="profile-links">
-      <a href="fighter.html?id=${f.fighter1_id}">${esc(f1?.name)} の名鑑 ›</a>
-      <a href="fighter.html?id=${f.fighter2_id}">${esc(f2?.name)} の名鑑 ›</a>
+      <a href="fighter.html?id=${f.fighter1_id}">${fnm(f1?.name)} の名鑑 ›</a>
+      <a href="fighter.html?id=${f.fighter2_id}">${fnm(f2?.name)} の名鑑 ›</a>
     </div>`;
 }
 
@@ -139,7 +137,7 @@ function wayBar(x) {
   const base = Math.max(x.rec_w, ws.reduce((a, w) => a + w[1], 0));
   return `<div class="st-bar">
     <div class="sb-track">${ws.map(([, n, c]) => n ? `<i class="${c}" style="width:${(n / base * 100).toFixed(1)}%"></i>` : "").join("")}</div>
-    <div class="sb-lab">${ws.map(([l, n, c]) => `<span class="${c}${n ? "" : " zero"}">${l}<b>${Math.round(n / base * 100)}</b>%</span>`).join("")}</div>
+    <div class="sb-lab">${ws.map(([l, n, c]) => `<span class="${c}${n ? "" : " zero"}"><i>${l}<b>${n}</b>勝</i><em>${Math.round(n / base * 100)}%</em></span>`).join("")}</div>
   </div>`;
 }
 function statsSide(x, cls) {
@@ -150,7 +148,7 @@ function statsSide(x, cls) {
       + (x.rec_d || x.rec_nc ? `<span class="st-n d">${x.rec_d ? `<b>${x.rec_d}</b>分` : ""}${x.rec_nc ? `<b>${x.rec_nc}</b>NC` : ""}</span>` : "")
     : `<span class="st-n d">戦績なし</span>`;
   return `<div class="st-side ${cls}">
-    <div class="st-head"><span class="st-name">${esc(x?.name || "")}</span>${x?.nickname ? `<span class="st-nick" title="${esc(x.nickname)}">“${esc(x.nickname)}”</span>` : ""}</div>
+    <div class="st-head"><span class="st-name">${fnm(x?.name || "")}</span>${x?.nickname ? `<span class="st-nick" title="${esc(x.nickname)}">“${esc(x.nickname)}”</span>` : ""}</div>
     <div class="st-recn">${rec}</div>
     ${wayBar(x) || `<div class="st-bar"></div>`}
     <div class="st-k">前戦</div>
@@ -173,70 +171,42 @@ function statsBlock(f) {
 }
 
 // ---------- 予想UI（受付中） ----------
-// 保存済み＆編集中でなければ「確定ビュー」、それ以外は「選択ビュー（決定ボタン付き）」
+// 勝つ方をタップした瞬間に保存する（「決定」ボタンは表に出さない・Gaku指示11/7）。押し直せば変更。
+// ピタリ（決まり手・ラウンド）は保存した後に開ける任意の追加入力で、選んだ時点で保存される
+const pitariOpen = new Set();   // ピタリ欄を開いている試合ID（保存のたびに描き直しても開いたまま）
 function predictCard(f) {
-  const saved = myPreds[f.id];
-  if (saved && !editing.has(f.id)) return confirmedCard(f, saved);
-  const p = drafts[f.id] || (saved ? { ...saved } : {});
-  const f1 = FMAP[f.fighter1_id], f2 = FMAP[f.fighter2_id];
-  // 決まり手＝「判定」or 具体的な決定打を1つ選ぶ（当てれば“ピタリ”）。任意。
+  const p = myPreds[f.id] || {};
   const curKim = p.method === "DEC" ? "DEC" : (p.technique || "");
-  const kimSelect = p.winner_id ? `
-    <div class="chips">
-      <span class="clabel">おまけ：決まり手 — 当てれば🎯ピタリ（任意・ランキングには関係なし）</span>
-      <select class="tech-select" onchange="setKimarite('${f.id}',this.value)">
-        <option value="">— 選ばない（勝敗だけ）—</option>
-        <option value="DEC" ${curKim === "DEC" ? "selected" : ""}>判定</option>
-        <optgroup label="KO/TKO">
-          ${techsFor("KO").map(t => `<option value="${t.id}" ${curKim === t.id ? "selected" : ""}>${t.label}</option>`).join("")}
-        </optgroup>
-        <optgroup label="一本">
-          ${techsFor("SUB").map(t => `<option value="${t.id}" ${curKim === t.id ? "selected" : ""}>${t.label}</option>`).join("")}
-        </optgroup>
-      </select>
-    </div>` : "";
-  // KO/一本を選んだ時だけラウンド選択（ピタリ＝決まり手＋ラウンド）。判定はラウンド無し。
-  const roundChips = (p.winner_id && p.method && p.method !== "DEC") ? `
-    <div class="chips">
-      <span class="clabel">おまけ：ラウンド — 決まり手と両方一致で🎯ピタリ</span>
-      ${Array.from({ length: f.rounds || 3 }, (_, i) => i + 1).map(r =>
-        `<button class="chip ${Number(p.round) === r ? "sel" : ""}" onclick="setDraft('${f.id}','round',${r})">${r}R</button>`).join("")}
-    </div>` : "";
-  return `
-    <div class="fight-card" id="fc_${f.id}">
-      ${f.image_url ? `<div class="banner"><img src="${esc(f.image_url)}" alt="" loading="lazy"></div>` : ""}
-      ${voteBar(f)}
-      <div class="fight-label">${fightLabel(f)}</div>
-      ${statsBlock(f)}
-      ${profileLinks(f)}
-      <div class="pick-zone">
-      <div class="pz-head">勝敗予想</div>
-      <div class="vs-row">
-        <button class="corner-btn c1 ${p.winner_id === f.fighter1_id ? "sel" : ""}"
-          onclick="setDraft('${f.id}','winner_id','${f.fighter1_id}')"><small>RED</small>${esc(f1?.name)}</button>
-        <span class="vs-mark">VS</span>
-        <button class="corner-btn c2 ${p.winner_id === f.fighter2_id ? "sel" : ""}"
-          onclick="setDraft('${f.id}','winner_id','${f.fighter2_id}')"><small>BLUE</small>${esc(f2?.name)}</button>
-      </div>
-      <div class="win-hint">${p.winner_id ? "あとは「決定」を押すだけ。" : "勝つと思う方をタップするだけでOK。"}<b>ランキングは勝敗だけ</b>で決まります</div>
-      ${kimSelect}${roundChips}
-      <div class="confirm-bar">
-        <button class="btn decide" ${p.winner_id ? "" : "disabled"} onclick="confirmPred('${f.id}')">この予想で決定</button>
-        ${saved ? `<button class="btn ghost" onclick="cancelEdit('${f.id}')">キャンセル</button>` : ""}
-      </div>
-      ${supportRow(f)}
-      </div>
-    </div>`;
-}
-
-// 確定ビュー：自分の予想サマリー＋編集／取り消し
-function confirmedCard(f, p) {
-  const f1 = FMAP[f.fighter1_id], f2 = FMAP[f.fighter2_id];
   const kim = p.method === "DEC" ? "判定" : (p.technique ? TECH_LABEL[p.technique] : null);
   const detail = [kim, (p.method !== "DEC" && p.round) ? `${p.round}R` : null].filter(Boolean).join("・");
-  const tier = kim ? "🎯ピタリも狙い中" : "勝敗で勝負";
+  const corner = (fid, c, label) => `<button class="corner-btn ${c} ${p.winner_id === fid ? "sel" : ""}"
+          onclick="pickWinner('${f.id}','${fid}')"><small>${label}</small>${fnm(FMAP[fid]?.name)}</button>`;
+  // KO/一本を選んだ時だけラウンド（ピタリ＝決まり手＋ラウンド）。判定はラウンド無し
+  const roundChips = (p.method && p.method !== "DEC") ? `
+      <div class="chips">
+        <span class="clabel">ラウンド — 決まり手と両方一致で🎯ピタリ</span>
+        ${Array.from({ length: f.rounds || 3 }, (_, i) => i + 1).map(r =>
+          `<button class="chip ${Number(p.round) === r ? "sel" : ""}" onclick="setRound('${f.id}',${r})">${r}R</button>`).join("")}
+      </div>` : "";
+  const pitari = p.winner_id ? `
+      <details class="pitari" ${kim || pitariOpen.has(f.id) ? "open" : ""} ontoggle="pitariOpen[this.open ? 'add' : 'delete']('${f.id}')">
+        <summary>${kim ? `🎯 ピタリ狙い：${esc(detail)}` : "🎯 ピタリも狙う（決まり手・ラウンド）"}</summary>
+        <div class="chips">
+          <span class="clabel">決まり手 — 当てれば🎯ピタリ（ランキングには関係なし）</span>
+          <select class="tech-select" onchange="setKimarite('${f.id}',this.value)">
+            <option value="">— 選ばない（勝敗だけ）—</option>
+            <option value="DEC" ${curKim === "DEC" ? "selected" : ""}>判定</option>
+            <optgroup label="KO/TKO">
+              ${techsFor("KO").map(t => `<option value="${t.id}" ${curKim === t.id ? "selected" : ""}>${t.label}</option>`).join("")}
+            </optgroup>
+            <optgroup label="一本">
+              ${techsFor("SUB").map(t => `<option value="${t.id}" ${curKim === t.id ? "selected" : ""}>${t.label}</option>`).join("")}
+            </optgroup>
+          </select>
+        </div>${roundChips}
+      </details>` : "";
   return `
-    <div class="fight-card confirmed" id="fc_${f.id}">
+    <div class="fight-card${p.winner_id ? " confirmed" : ""}" id="fc_${f.id}">
       ${f.image_url ? `<div class="banner"><img src="${esc(f.image_url)}" alt="" loading="lazy"></div>` : ""}
       ${voteBar(f)}
       <div class="fight-label">${fightLabel(f)}</div>
@@ -245,19 +215,15 @@ function confirmedCard(f, p) {
       <div class="pick-zone">
       <div class="pz-head">勝敗予想</div>
       <div class="vs-row">
-        <div class="corner-btn c1 ${p.winner_id === f.fighter1_id ? "sel" : ""}"><small>RED</small>${esc(f1?.name)}</div>
+        ${corner(f.fighter1_id, "c1", "RED")}
         <span class="vs-mark">VS</span>
-        <div class="corner-btn c2 ${p.winner_id === f.fighter2_id ? "sel" : ""}"><small>BLUE</small>${esc(f2?.name)}</div>
+        ${corner(f.fighter2_id, "c2", "BLUE")}
       </div>
-      <div class="my-pick">
-        <span class="mp-check">✓</span>
-        <span class="mp-body"><b>${esc(FMAP[p.winner_id]?.name)}</b>${detail ? `　${esc(detail)}` : ""}
-          <span class="mp-max">${tier}</span></span>
-      </div>
-      <div class="confirm-bar">
-        <button class="btn ghost" onclick="startEdit('${f.id}')">編集</button>
-        <button class="clear-btn" onclick="clearPred('${f.id}')">予想を取り消す</button>
-      </div>
+      ${p.winner_id
+        ? `<div class="win-hint done"><span class="mp-check">✓</span><b>${fnm(FMAP[p.winner_id]?.name)}</b> の勝ちで決定<small>押し直せば変更できます</small></div>`
+        : `<div class="win-hint">勝つと思う方をタップ！<br>ランキングは<b>勝敗予想だけ</b>で決まります。</div>`}
+      ${pitari}
+      ${p.winner_id ? `<div class="pick-foot"><button class="clear-btn" onclick="clearPred('${f.id}')">予想を取り消す</button></div>` : ""}
       ${supportRow(f)}
       </div>
     </div>`;
@@ -276,9 +242,9 @@ function previewCard(f) {
       <div class="pick-zone">
       <div class="pz-head">勝敗予想</div>
       <div class="vs-row">
-        <div class="corner-btn c1 disabled"><small>RED</small>${esc(f1?.name)}</div>
+        <div class="corner-btn c1 disabled"><small>RED</small>${fnm(f1?.name)}</div>
         <span class="vs-mark">VS</span>
-        <div class="corner-btn c2 disabled"><small>BLUE</small>${esc(f2?.name)}</div>
+        <div class="corner-btn c2 disabled"><small>BLUE</small>${fnm(f2?.name)}</div>
       </div>
       <div class="fight-foot"><span class="save-note">計量終了後に予想開始</span></div>
       ${supportRow(f)}
@@ -298,9 +264,9 @@ function cancelledCard(f) {
       ${voteBar(f)}
       <div class="fight-label">${fightLabel(f)}</div>
       <div class="vs-row">
-        <div class="corner-btn c1 disabled"><small>RED</small>${esc(f1?.name)}</div>
+        <div class="corner-btn c1 disabled"><small>RED</small>${fnm(f1?.name)}</div>
         <span class="vs-mark">VS</span>
-        <div class="corner-btn c2 disabled"><small>BLUE</small>${esc(f2?.name)}</div>
+        <div class="corner-btn c2 disabled"><small>BLUE</small>${fnm(f2?.name)}</div>
       </div>
       <div class="cancel-note">${esc(f.cancel_note || "この試合は中止・延期になりました")}</div>
       ${picks ? `<div class="ob-picks" id="op_${f.id}">
@@ -310,66 +276,50 @@ function cancelledCard(f) {
     </div>`;
 }
 
-// 選択はローカルに貯めるだけ。「決定」で初めて保存される
-function setDraft(fightId, key, val) {
-  const base = drafts[fightId] || (myPreds[fightId] ? { ...myPreds[fightId] } : {});
-  const next = { ...base, member_id: getMemberId(), fight_id: fightId };
-  if (key === "winner_id") {
-    if (next.winner_id === val) return;
-    next.winner_id = val;
-  } else if (next[key] === val) {
-    next[key] = null; // 同じチップ再タップで解除
-    if (key === "method") { next.round = null; next.technique = null; }
-  } else {
-    next[key] = val || null;
-    if (key === "method") { next.round = null; next.technique = null; }
-  }
-  drafts[fightId] = next;
+// 予想の保存。押した瞬間に画面を変え（待たせない）、裏で保存する。失敗したら元に戻して知らせる。
+// 同じ試合の保存は順番に流す（素早く押し直しても、最後に押した方が残る）
+const saveChain = {};
+function savePred(fightId, patch, msg) {
+  const prev = myPreds[fightId];
+  const next = { ...(prev || {}), ...patch, member_id: getMemberId(), fight_id: fightId };
+  myPreds[fightId] = next;
   replaceCard(fightId);
+  saveChain[fightId] = (saveChain[fightId] || Promise.resolve()).then(async () => {
+    try {
+      // 名前の紐づけ（claim）は画面を開いた直後に裏で走る。終わる前に保存するとRLSで弾かれるので待つ
+      if (window.CLAIM_PROMISE) await window.CLAIM_PROMISE;
+      await DB.upsertPrediction({
+        member_id: getMemberId(), fight_id: fightId,
+        winner_id: next.winner_id, method: next.method || null,
+        round: next.round || null, technique: next.technique || null,
+      });
+      toast(msg);
+      await refreshMatrix();
+    } catch (e) {
+      if (myPreds[fightId] === next) { if (prev) myPreds[fightId] = prev; else delete myPreds[fightId]; replaceCard(fightId); }
+      toast(window.saveErrorText ? saveErrorText(e) : (e.message || "保存できなかった"));
+    }
+  });
 }
 
-// 決まり手ピッカー：判定 or 決定打(technique)を1つ。method を自動で決める。ラウンドは廃止。
+function pickWinner(fightId, fighterId) {
+  const prev = myPreds[fightId];
+  if (prev?.winner_id === fighterId) return;
+  savePred(fightId, { winner_id: fighterId }, `${FMAP[fighterId]?.name || ""}の勝ちで${prev ? "変更" : "決定"} ✓`);
+}
+
+// 決まり手：判定 or 決定打(technique)を1つ。method は決定打から決まる。選び直したらラウンドは消す
 function setKimarite(fightId, val) {
-  const base = drafts[fightId] || (myPreds[fightId] ? { ...myPreds[fightId] } : {});
-  const next = { ...base, member_id: getMemberId(), fight_id: fightId };
-  if (!val) { next.method = null; next.technique = null; }
-  else if (val === "DEC") { next.method = "DEC"; next.technique = null; }
-  else { const t = TECHNIQUES.find(x => x.id === val); next.method = t ? t.method : null; next.technique = val; }
-  next.round = null;
-  drafts[fightId] = next;
-  replaceCard(fightId);
+  const t = val && val !== "DEC" ? TECHNIQUES.find(x => x.id === val) : null;
+  const patch = !val ? { method: null, technique: null } : val === "DEC" ? { method: "DEC", technique: null }
+    : { method: t ? t.method : null, technique: val };
+  pitariOpen.add(fightId);
+  savePred(fightId, { ...patch, round: null }, val ? "🎯ピタリ予想を保存 ✓" : "決まり手を外した");
 }
 
-async function confirmPred(fightId) {
-  const p = drafts[fightId] || myPreds[fightId];
-  if (!p || !p.winner_id) return;
-  try {
-    // 名前の紐づけ（claim）は画面を開いた直後に裏で走る。終わる前に保存するとRLSで弾かれるので待つ
-    if (window.CLAIM_PROMISE) await window.CLAIM_PROMISE;
-    await DB.upsertPrediction({
-      member_id: getMemberId(), fight_id: fightId,
-      winner_id: p.winner_id, method: p.method || null,
-      round: p.round || null, technique: p.technique || null,
-    });
-    myPreds[fightId] = { ...p, member_id: getMemberId(), fight_id: fightId };
-    delete drafts[fightId];
-    editing.delete(fightId);
-    replaceCard(fightId);
-    await refreshMatrix();
-    toast("予想を決定した ✓");
-  } catch (e) { toast(window.saveErrorText ? saveErrorText(e) : (e.message || "保存できなかった")); }
-}
-
-function startEdit(fightId) {
-  editing.add(fightId);
-  drafts[fightId] = { ...myPreds[fightId] };
-  replaceCard(fightId);
-}
-
-function cancelEdit(fightId) {
-  editing.delete(fightId);
-  delete drafts[fightId];
-  replaceCard(fightId);
+function setRound(fightId, r) {
+  const cur = Number(myPreds[fightId]?.round) === r;   // 同じラウンドを押し直すと外す
+  savePred(fightId, { round: cur ? null : r }, cur ? "ラウンドを外した" : `${r}Rで保存 ✓`);
 }
 
 async function clearPred(fightId) {
@@ -378,8 +328,7 @@ async function clearPred(fightId) {
     await DB.deletePrediction(getMemberId(), fightId);
   } catch (e) { toast(window.saveErrorText ? saveErrorText(e) : (e.message || "取り消せなかった")); return; }
   delete myPreds[fightId];
-  delete drafts[fightId];
-  editing.delete(fightId);
+  pitariOpen.delete(fightId);
   replaceCard(fightId);
   await refreshMatrix();
   toast("取り消した");
@@ -418,7 +367,7 @@ function resultCard(f) {
   if (f.no_score) {
     const w = FMAP[f.winner_id];
     const res = (f.winner_id && f.result_method)
-      ? `<div class="rline"><span class="win">🏆 ${esc(w?.name)}</span>　${METHOD_LABEL[f.result_method] || ""}${f.result_method !== "DEC" && f.result_round ? ` ${f.result_round}R` : ""}${f.result_technique ? `／${TECH_LABEL[f.result_technique] || esc(f.result_technique)}` : ""}</div>`
+      ? `<div class="rline"><span class="win">🏆 ${fnm(w?.name)}</span>　${METHOD_LABEL[f.result_method] || ""}${f.result_method !== "DEC" && f.result_round ? ` ${f.result_round}R` : ""}${f.result_technique ? `／${TECH_LABEL[f.result_technique] || esc(f.result_technique)}` : ""}</div>`
       : "";
     resultBox = `<div class="result-box">${res}<span class="rline" style="color:#ffcf66">⚠️ ${esc(f.no_score_note || "体重超過")}（予想対象外・集計に含めない）</span></div>`;
   } else if (decided) {
@@ -427,7 +376,7 @@ function resultCard(f) {
     } else {
       const w = FMAP[f.winner_id];
       resultBox = `<div class="result-box">
-        <div class="rline"><span class="win">🏆 ${esc(w?.name)}</span>　${METHOD_LABEL[f.result_method] || ""}
+        <div class="rline"><span class="win">🏆 ${fnm(w?.name)}</span>　${METHOD_LABEL[f.result_method] || ""}
           ${f.result_method !== "DEC" && f.result_round ? ` ${f.result_round}R` : ""}
           ${f.result_technique ? `／${TECH_LABEL[f.result_technique] || esc(f.result_technique)}` : ""}</div>
       </div>`;
@@ -438,15 +387,19 @@ function resultCard(f) {
       ${f.image_url ? `<div class="banner"><img src="${esc(f.image_url)}" alt="" loading="lazy"></div>` : ""}
       ${voteBar(f)}
       <div class="fight-label">${fightLabel(f)}</div>
-      <div class="vs-row">
-        <div class="corner-btn c1 ${decided && f.winner_id === f.fighter1_id ? "sel" : ""}"><small>RED</small>${esc(f1?.name)}</div>
-        <span class="vs-mark">VS</span>
-        <div class="corner-btn c2 ${decided && f.winner_id === f.fighter2_id ? "sel" : ""}"><small>BLUE</small>${esc(f2?.name)}</div>
-      </div>
+      ${statsBlock(f)}
       ${profileLinks(f)}
+      <div class="pick-zone">
+      <div class="pz-head">${decided ? "結果と答え合わせ" : "勝敗予想（締切済み）"}</div>
+      <div class="vs-row">
+        <div class="corner-btn c1 ${decided && f.winner_id === f.fighter1_id ? "sel" : ""}"><small>RED</small>${fnm(f1?.name)}</div>
+        <span class="vs-mark">VS</span>
+        <div class="corner-btn c2 ${decided && f.winner_id === f.fighter2_id ? "sel" : ""}"><small>BLUE</small>${fnm(f2?.name)}</div>
+      </div>
       ${supportRow(f)}
       ${resultBox}
       ${picksRows(f)}
+      </div>
     </div>`;
 }
 
@@ -462,7 +415,7 @@ function picksRows(f) {
   const sups = ALL_SUPPORTS.filter(s => s.fight_id === f.id);
   const supTag = (mid) => {
     const sup = sups.find(s => s.member_id === mid);
-    return sup ? `<span class="psup ${sup.fighter_id === f.fighter1_id ? "r" : "b"}">📣 ${esc(FMAP[sup.fighter_id]?.name)}</span>` : "";
+    return sup ? `<span class="psup ${sup.fighter_id === f.fighter1_id ? "r" : "b"}">📣 ${fnm(FMAP[sup.fighter_id]?.name)}</span>` : "";
   };
   const cheerOnly = sups.filter(s => !preds.some(x => x.p.member_id === s.member_id))
     .map(s => MEMBERS.find(m => m.id === s.member_id)).filter(Boolean)
@@ -512,7 +465,7 @@ function voteBar(f) {
         <div style="width:${p2}%;background:#1e6fd9;text-align:right;padding:0 6px;white-space:nowrap;overflow:hidden">${p2 >= 12 ? p2 + "%" : ""}</div>
       </div>
       <div style="display:flex;justify-content:space-between;font-size:11px;color:#888;margin-top:3px">
-        <span>${esc(f1?.name)} ${p1}%</span><span>${p2}% ${esc(f2?.name)}</span>
+        <span>${fnm(f1?.name)} ${p1}%</span><span>${p2}% ${fnm(f2?.name)}</span>
       </div>
     </div>`;
 }
@@ -693,7 +646,8 @@ async function drawBishokuSummary() {
   };
   fit();
   root.querySelectorAll("img").forEach(im => im.complete || im.addEventListener("load", fit, { once: true }));
-  if (!host._ro) { host._ro = new ResizeObserver(fit); host._ro.observe(host); }
+  // 幅が変わった時だけ合わせ直す（fit が高さを変える→また通知、の空回りで ResizeObserver loop のエラーが出ていた）
+  if (!host._ro) { host._ro = new ResizeObserver(() => { if (host.clientWidth !== host._w) { host._w = host.clientWidth; fit(); } }); host._ro.observe(host); }
 }
 
 load();

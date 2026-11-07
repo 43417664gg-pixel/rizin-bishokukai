@@ -2152,6 +2152,7 @@ window.DEMO_SEED = {
     {
       id: "f_leekaiwen",
       name: "リー・カイウェン",
+      nickname: "紅の青龍刀",
       action_photo: "https://d1uzk9o9cg136f.cloudfront.net/f/16782696/rc/2026/08/11/fd7bf48d04ee266f9bc4530167682d032d739d1a_xlarge.jpg",
       rec_w: 17,
       rec_l: 8,
@@ -2720,6 +2721,7 @@ window.DEMO_SEED = {
     {
       id: "f_aimoto",
       name: "相本宗輝",
+      nickname: "野生のプロスペクト",
       birth_date: "2001-01-23",
       team: "フリー",
       origin: "日本 茨城県",
