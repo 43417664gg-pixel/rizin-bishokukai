@@ -360,19 +360,17 @@ button.corner-btn:active { transform: scale(.98); }
 @keyframes cb-face { from { opacity: .4; transform: scale(1.1); } to { opacity: 1; transform: none; } }
 .corner-btn.disabled { opacity: .55; }
 /* 選手名→名鑑リンク */
-.profile-links { display: flex; flex-direction: column; gap: 6px; padding: 8px 14px 2px; }
+.profile-links { display: flex; gap: 8px; padding: 8px 14px 2px; }
 .profile-links a {
-  position: relative; display: flex; align-items: center; gap: 8px; padding: 9px 12px 9px 16px;
-  border: 1px solid var(--line); background: var(--panel2);
-  clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+  position: relative; flex: 1; min-width: 0; display: flex; align-items: center; gap: 6px; padding: 9px 12px 9px 18px;
+  border: 1px solid var(--line); background: var(--panel2); white-space: nowrap;
+  font: 700 12.5px/1.3 "Noto Sans JP", sans-serif; letter-spacing: .06em; color: #c9c9d2;
 }
-.profile-links a::before { content: ""; position: absolute; left: 6px; top: 9px; bottom: 9px; width: 3px; transform: skewX(-18deg); }
-.profile-links a.c1::before { background: var(--red); }
-.profile-links a.c2::before { background: #1e6fd9; }
-.profile-links a span { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  font: 700 12px/1.3 "Noto Sans JP", sans-serif; letter-spacing: .02em; color: var(--muted); }
-.profile-links a b { font-size: 13.5px; color: var(--text); margin-right: 1px; }
-.profile-links a.long b { font-size: 12px; }
+.profile-links a.c1 { clip-path: polygon(0 0, 100% 0, calc(100% - 8px) 100%, 0 100%); }
+.profile-links a.c2 { justify-content: flex-end; padding: 9px 18px 9px 12px; clip-path: polygon(8px 0, 100% 0, 100% 100%, 0 100%); }
+.profile-links a::before { content: ""; position: absolute; top: 9px; bottom: 9px; width: 3px; transform: skewX(-18deg); }
+.profile-links a.c1::before { left: 7px; background: var(--red); }
+.profile-links a.c2::before { right: 7px; background: #1e6fd9; }
 .profile-links a i { flex: none; font-style: normal; font: 700 16px/1 var(--num); color: var(--muted); }
 .profile-links a:active { color: var(--gold-hot); border-color: var(--gold); }
 
