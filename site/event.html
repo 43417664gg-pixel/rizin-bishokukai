@@ -7,21 +7,22 @@
 <title>大会予想｜予想番付</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261107220152">
+<link rel="stylesheet" href="css/style.css?v=20261107221321">
 </head>
 <body>
 <div id="app-header"></div>
 <div id="sticky-cd"></div>
 <div class="wrap" id="main"></div>
 <div class="toast" id="toast"></div>
+<button type="button" class="pick-guide" id="pick-guide" onclick="goNextPick()"><span class="pg-in"><i class="pg-arrow">▼</i>予想を入れる<span class="pg-left">あと<b class="pg-n"></b>試合</span></span></button>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261107220152"></script>
-<script src="js/techniques.js?v=20261107220152"></script>
-<script src="js/demo-data.js?v=20261107220152"></script>
-<script src="js/api.js?v=20261107220152"></script>
-<script src="js/app.js?v=20261107220152"></script>
-<script src="js/bishoku_summary.js?v=20261107220152"></script>
+<script src="js/config.js?v=20261107221321"></script>
+<script src="js/techniques.js?v=20261107221321"></script>
+<script src="js/demo-data.js?v=20261107221321"></script>
+<script src="js/api.js?v=20261107221321"></script>
+<script src="js/app.js?v=20261107221321"></script>
+<script src="js/bishoku_summary.js?v=20261107221321"></script>
 <script>
 let EV, PHASE, FIGHTS, FMAP, MEMBERS, myPreds = {}, allPreds = [], ALL_SUPPORTS = [];
 
@@ -660,14 +661,15 @@ function fitNicks() {
     return el.scrollWidth <= el.clientWidth + 1;
   };
   const oneLine = (el) => el.offsetHeight < parseFloat(getComputedStyle(el).lineHeight) * 1.5;
-  const fitHead = (head) => {
+  // lv＝年齢の置き場の下限（0＝名前の横／1＝異名の行／2＝異名の下）。左右を揃える時に使う
+  const fitHead = (head, lv = 0) => {
     const name = head.querySelector(".st-name"), age = head.querySelector(".st-age"), nick = head.querySelector(".st-nick");
     head.classList.remove("below", "age-n", "age-b");
     if (nick) nick.classList.remove("wrap");
     if (getComputedStyle(head).display === "grid") {   // スマホ：1行目「名前 年齢」・2行目「異名」
-      if (age && !oneLine(name)) {   // 年齢のせいで名前が折れる→年齢は異名の行へ。そこで異名が10pxを切るなら異名の下へ
-        head.classList.add("age-n");
-        if (nick && !shrink(nick, 10)) head.classList.replace("age-n", "age-b");
+      if (age && (lv || !oneLine(name))) {   // 年齢のせいで名前が折れる→年齢は異名の行へ。そこで異名が10pxを切るなら異名の下へ
+        head.classList.add(lv === 2 ? "age-b" : "age-n");
+        if (lv < 2 && nick && !shrink(nick, 10)) head.classList.replace("age-n", "age-b");
       }
       if (nick && !shrink(nick, 9)) nick.classList.add("wrap");
       return;
@@ -679,8 +681,18 @@ function fitNicks() {
   document.querySelectorAll(".st-cols").forEach(cols => {
     const heads = [...cols.querySelectorAll(".st-head")];
     const names = heads.map(h => h.querySelector(".st-name"));
+    const ages = heads.map(h => h.querySelector(".st-age")).filter(Boolean);
     names.forEach(n => { n.style.minHeight = ""; });
-    heads.forEach(fitHead);
+    ages.forEach(a => { a.style.marginTop = ""; });
+    heads.forEach(h => fitHead(h));
+    // 年齢も左右で同じ段に置く（Gaku指摘11/7「年齢」＝片側だけ年齢が3段目にあった）。
+    // 片側が年齢を下の段へ逃がしたら、もう片側も同じ段へ。そこで片側がさらに下へ逃げたら、もう一度揃える
+    const lvOf = (h) => h.classList.contains("age-b") ? 2 : h.classList.contains("age-n") ? 1 : 0;
+    for (let i = 0, lv = 0; i < 2; i++) {
+      const top = Math.max(...heads.map(lvOf));
+      if (top === lv || heads.every(h => lvOf(h) === top)) break;
+      lv = top; heads.forEach(h => fitHead(h, lv));
+    }
     // 片側だけ異名が次の行へ落ちたら、もう片側も落とす
     if (heads.some(h => h.classList.contains("below")))
       heads.forEach(h => {
@@ -694,13 +706,47 @@ function fitNicks() {
     // 名前の段の高さを左右で揃える＝片側の名前が2行になっても異名は同じ高さから始まる
     const hmax = Math.max(...names.map(n => n.offsetHeight));
     names.forEach(n => { if (n.offsetHeight < hmax) n.style.minHeight = hmax + "px"; });
+    // スマホで年齢が異名の下にある時は、片側だけ異名が無い・2行になると年齢の高さがずれる→高い方を下げて揃える
+    if (ages.length === 2 && getComputedStyle(heads[0]).display === "grid") {
+      const d = Math.round(ages[1].getBoundingClientRect().top - ages[0].getBoundingClientRect().top);
+      if (d) ages[d > 0 ? 0 : 1].style.marginTop = Math.abs(d) + "px";
+    }
   });
 }
+// 予想ガイド（Gaku指示11/7「予想入れに来たのにどこかな？ってなっちゃう」）：画面の下に小さく浮かせて付いてくる。
+// 押すと、まだ予想していない試合の「勝敗予想」へ飛ぶ（今いる所より下の最初の1つ・下に無ければ上へ）。
+// まだ予想していない「勝敗予想」が画面に入っている間は引っ込む＝予想を入れたら、また次を指して出てくる
+function guideTarget() {
+  if (PHASE !== "open") return null;
+  const zs = FIGHTS.filter(f => !f.cancelled && !f.event_only && !myPreds[f.id]?.winner_id)
+    .map(f => document.querySelector(`#fc_${f.id} .pick-zone`)).filter(Boolean)
+    .map(z => ({ z, r: z.getBoundingClientRect() }));
+  if (!zs.length) return null;
+  const vh = innerHeight;
+  if (zs.some(({ r }) => r.top < vh * 0.9 && r.bottom > vh * 0.1)) return { left: zs.length };
+  return { left: zs.length, ...(zs.find(({ r }) => r.top >= 0) || zs[zs.length - 1]) };
+}
+function updateGuide() {
+  const g = document.getElementById("pick-guide"), t = guideTarget();
+  g.classList.toggle("show", !!t?.z);
+  if (!t?.z) return;
+  g.querySelector(".pg-arrow").textContent = t.r.top < 0 ? "▲" : "▼";
+  g.querySelector(".pg-n").textContent = t.left;
+}
+function goNextPick() {
+  const z = guideTarget()?.z;
+  if (!z) return;
+  z.scrollIntoView({ behavior: "smooth", block: "center" });
+  z.classList.remove("pz-flash"); void z.offsetWidth; z.classList.add("pz-flash");   // 着いた先を一瞬光らせる
+}
+let GUIDE_RAF = 0;
+const refreshGuide = () => { if (!GUIDE_RAF) GUIDE_RAF = requestAnimationFrame(() => { GUIDE_RAF = 0; updateGuide(); }); };
+addEventListener("scroll", refreshGuide, { passive: true });
 // カードは予想のたびに差し替わる（replaceCard）ので、描き直しを見張って合わせ直す
 let NICK_T = 0;
 const refitNicks = () => { clearTimeout(NICK_T); NICK_T = setTimeout(fitNicks, 30); };
-new MutationObserver(refitNicks).observe(document.getElementById("main"), { childList: true, subtree: true });
-addEventListener("resize", refitNicks);
+new MutationObserver(() => { refitNicks(); refreshGuide(); }).observe(document.getElementById("main"), { childList: true, subtree: true });
+addEventListener("resize", () => { refitNicks(); refreshGuide(); });
 document.fonts?.ready.then(refitNicks);
 
 load();
