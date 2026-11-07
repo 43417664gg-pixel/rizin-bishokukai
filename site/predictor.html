@@ -198,7 +198,7 @@ async function load() {
     <div class="cr-dots">${last}</div>
     <div class="cr-best"><div>ベスト大会<b>${best1}</b></div></div>
     ${C.channel
-      ? `<div class="cr-src">出典：<b>${esc(C.channel)}</b>（YouTube）の公開予想動画${C.videos}本から本人の発言のみ抽出。結果は日本語版Wikipediaの大会記事と照合。メンバー限定配信・複数人出演回は除外。</div>`
+      ? `<div class="cr-src">出典：<b>${esc(C.channel)}</b>（YouTube）の公開予想動画${C.videos}本から本人の発言のみ抽出。結果は日本語版Wikipediaの大会記事と照合。${esc(C.source_note || "メンバー限定配信・複数人出演回は除外。")}</div>`
       : /^m_yt_/.test(id) ? `<div class="cr-src">出典：本人の公開予想動画（大会ごとの予想カードに動画URLを記載）</div>` : ""}
     <div class="cr-foot"><span class="site">${esc(window.SITE_URL)}</span><span>#予想番付</span></div>`;
 
