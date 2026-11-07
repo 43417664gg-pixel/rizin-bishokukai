@@ -165,6 +165,18 @@
   window.esc = (s) => String(s ?? "").replace(/[&<>"']/g, c =>
     ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   window.qp = (k) => new URLSearchParams(location.search).get(k);
+
+  // 外部予想者のチャンネルロゴ（tools/fetch_avatars.py が data/avatars.json と assets/predictors/ を作る）。
+  // ロゴの無い人（美食会・ゲスト出演）は色付きの丸に頭文字。各ページは描画前に AVATARS_READY を待つ
+  window.AVATARS = {};
+  window.AVATARS_READY = fetch("data/avatars.json", { cache: "no-cache" })
+    .then(r => r.ok ? r.json() : {}).then(a => { window.AVATARS = a; }).catch(() => {});
+  window.avatarHTML = (m, cls = "ava") => {
+    const src = m && window.AVATARS[m.id];
+    if (src) return `<img class="${cls} ava-img" src="${esc(src)}" alt="" loading="lazy">`;
+    const ini = String(m?.name || "?").trim().slice(0, 1);
+    return `<span class="${cls}" style="background:${esc(m?.color || "#555")}">${esc(ini)}</span>`;
+  };
   window.fmtDate = (d) => {
     if (!d) return "";
     const dt = new Date(d + (d.length === 10 ? "T00:00:00" : ""));

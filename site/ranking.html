@@ -7,7 +7,7 @@
 <title>ランキング｜予想番付</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261107155222">
+<link rel="stylesheet" href="css/style.css?v=20261107162330">
 <style>
 /* ランキングを1枚のカードにする（2026-10-20）：スクショ単体でXに貼れるよう、
    ブランド・集計対象・サイトURLをカードの中に入れる。名前をタップ→その人の戦績へ。 */
@@ -69,11 +69,11 @@ a.lb-name:active { color:var(--gold-hot); }
 <div class="wrap" id="main"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261107155222"></script>
-<script src="js/techniques.js?v=20261107155222"></script>
-<script src="js/demo-data.js?v=20261107155222"></script>
-<script src="js/api.js?v=20261107155222"></script>
-<script src="js/app.js?v=20261107155222"></script>
+<script src="js/config.js?v=20261107162330"></script>
+<script src="js/techniques.js?v=20261107162330"></script>
+<script src="js/demo-data.js?v=20261107162330"></script>
+<script src="js/api.js?v=20261107162330"></script>
+<script src="js/app.js?v=20261107162330"></script>
 <script>
 let EVENTS, MEMBERS, ALL_FIGHTS, ALL_PREDS, FMAP = {};
 let checked = new Set();   // 集計対象の大会ID
@@ -87,6 +87,7 @@ async function load() {
   FMAP = fighterMap(FIGHTERS);
   ALL_PREDS = await DB.listPredictions({});
   checked = new Set(EVENTS.map(e => e.id));  // 初期状態＝全選択
+  await window.AVATARS_READY;
   render();
 }
 
@@ -195,7 +196,7 @@ function winTable(rows) {
         ${rows.map((r, i) => `
           <tr class="${r.rate !== null && rankOf(rows, i, same) === 1 ? "top" : ""}">
             <td class="lb-rank">${r.rate === null ? "—" : rankOf(rows, i, same)}</td>
-            <td><a class="lb-name" href="predictor.html?id=${esc(r.member.id)}">${esc(r.member.name)}</a></td>
+            <td><span class="lb-who">${avatarHTML(r.member, "lb-ava")}<a class="lb-name" href="predictor.html?id=${esc(r.member.id)}">${esc(r.member.name)}</a></span></td>
             <td><span class="lb-hit">${r.hits}</span><span class="lb-of">/${r.decided}</span></td>
             <td><span class="lb-rate${r.decided < window.RATE_MIN ? " thin" : ""}">${fmtRate(r.rate)}</span></td>
           </tr>`).join("")}
@@ -214,7 +215,7 @@ function pitariTable(allRows) {
         ${rows.map((r, i) => `
           <tr class="${rankOf(rows, i, same) === 1 ? "top" : ""}">
             <td class="lb-rank">${rankOf(rows, i, same)}</td>
-            <td><a class="lb-name" href="predictor.html?id=${esc(r.member.id)}">${esc(r.member.name)}</a></td>
+            <td><span class="lb-who">${avatarHTML(r.member, "lb-ava")}<a class="lb-name" href="predictor.html?id=${esc(r.member.id)}">${esc(r.member.name)}</a></span></td>
             <td><span class="pit-cell" tabindex="0" onclick="this.classList.toggle('open')">
                   <span class="pit-btn">${r.pitari}</span>
                   <span class="pit-pop"><b class="pit-head">🎯 ${esc(r.member.name)} のピタリ</b>${(window.PITARI[r.member.id] || []).map(s => `<span class="pit-row">${s}</span>`).join("")}</span>

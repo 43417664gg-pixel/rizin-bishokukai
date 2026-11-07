@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#08080b">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261107155222">
+<link rel="stylesheet" href="css/style.css?v=20261107162330">
 <style>
 /* SNSで一枚歩きする「予想カード」。2026-10-19 作り直し：
    スマホで1スクショ＝そのままXに貼れる、を唯一の目的にする。
@@ -88,11 +88,11 @@ body { padding-bottom: 24px; }
 <p class="pk-hint">この画面をそのままスクショすると、Xで1枚に収まります。</p>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261107155222"></script>
-<script src="js/techniques.js?v=20261107155222"></script>
-<script src="js/demo-data.js?v=20261107155222"></script>
-<script src="js/api.js?v=20261107155222"></script>
-<script src="js/app.js?v=20261107155222"></script>
+<script src="js/config.js?v=20261107162330"></script>
+<script src="js/techniques.js?v=20261107162330"></script>
+<script src="js/demo-data.js?v=20261107162330"></script>
+<script src="js/api.js?v=20261107162330"></script>
+<script src="js/app.js?v=20261107162330"></script>
 <script>
 // 決着の表示ラベル（結果側）。fights.result_method は KO / SUB / DEC / DRAW / NC。
 const RES_LABEL = { KO: "KO", SUB: "一本", DEC: "判定", DRAW: "ドロー", NC: "無効" };
@@ -118,7 +118,7 @@ async function load() {
   const evId = qp("event"), memId = qp("member");
   const card = document.getElementById("card");
   if (!evId || !memId) { card.innerHTML = "<div class='pk-empty'>予想者と大会を指定してください。</div>"; return; }
-  const [ev, members, fighters, SRC] = await Promise.all([DB.getEvent(evId), DB.listMembers(), DB.listFighters(), loadSources()]);
+  const [ev, members, fighters, SRC] = await Promise.all([DB.getEvent(evId), DB.listMembers(), DB.listFighters(), loadSources(), window.AVATARS_READY]);
   const FMAP = fighterMap(fighters);
   const me = members.find(m => m.id === memId);
   if (!ev || !me) { card.innerHTML = "<div class='pk-empty'>見つかりませんでした。</div>"; return; }
@@ -190,7 +190,7 @@ async function load() {
     <div class="pk-top"><span class="pk-brand">予想<span>番付</span></span><span class="pk-date">${esc(fmtDate(ev.event_date))}</span></div>
     <div class="pk-ev">${esc(ev.name)}</div>
     <div class="pk-hero">
-      <span class="pk-ava" style="background:${esc(me.color || "#e60012")}">${ini(me.name)}</span>
+      ${avatarHTML({ ...me, color: me.color || "#e60012" }, "pk-ava")}
       <div class="pk-whowrap"><div class="pk-name">${esc(me.name)}</div><div class="pk-sub">${sub}</div></div>
       ${ringBox}
     </div>
