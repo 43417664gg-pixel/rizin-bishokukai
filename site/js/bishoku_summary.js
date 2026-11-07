@@ -67,8 +67,15 @@ const CSS = `
   /* 縁の太さ b を辺で揃える＝内側の三角を重心に向けて縮める（上 1.506b・左右 1.292b・下 1.078b） */
   .ic.tri::after, .ci.tri::after { --b:calc(4px * var(--u) + 1px); inset:calc(var(--b) * 1.506) calc(var(--b) * 1.292) calc(var(--b) * 1.078);
         background:radial-gradient(circle at 44% 62%, color-mix(in srgb, var(--c) 58%, #fff) 0%, var(--c) 46%, color-mix(in srgb, var(--c) 52%, #000) 100%); }
-  /* 頭文字は大きく真ん中に（Gaku 11/8・style.css の span.mav と同じ比率）。三角は重心に置き、狭い頭にかからない大きさ */
-  .tri > i { font-style:normal; font-size:.74em; position:relative; top:.2em; }
+  /* 頭文字は字の実際の形で真ん中に、大きさを揃えて（Gaku 11/8「丸とか中心じゃない」「文字で大きさが異なりすぎ」・style.css の span.mav と同じ比率）。
+     --gs/--gx/--gy は app.js の fitGlyph が1字ずつ測って入れる。三角は重心に置き、狭い頭にかからない大きさ */
+  .ic > i, .ci > i { --k:calc(var(--ic) * .53); font-style:normal; display:inline-block; line-height:1; font-size:calc(var(--k) * var(--gs, 1.14));
+        transform:translate(calc(var(--gx, 0) * 1em), calc(var(--gy, 0) * 1em)); }
+  .ci > i { --k:calc(var(--ci) * .53); }
+  .ic.sq > i { --k:calc(var(--ic) * .56); }
+  .ci.sq > i { --k:calc(var(--ci) * .56); }
+  .ic.tri > i { --k:calc(var(--ic) * .39); position:relative; top:calc(var(--ic) * .15); }
+  .ci.tri > i { --k:calc(var(--ci) * .39); position:relative; top:calc(var(--ci) * .15); }
   .ic.lt, .ci.lt { color:#1a1408; text-shadow:none; }   /* 金など明るい塗り＝白い字が沈むので黒字 */
   /* 縁の色＝寮の差し色（ハメ＝金・抜き＝銀・丸山＝黒・Gaku指定11/7）。正本は demo-data.js の members[].trim。
      字は寮の色にしない＝白（明るい塗りだけ黒）。「色は背景であって、中の文字は視認性優先」（Gaku 11/7） */
@@ -122,8 +129,8 @@ const seedOf = m => ((window.DEMO_SEED && window.DEMO_SEED.members) || []).find(
 const trimOf = m => seedOf(m).trim || "";
 const paint = m => `--c:${esc(m.color)}${trimOf(m) ? `;--t:${esc(trimOf(m))}` : ""}`;
 const sq = m => ({ square: " sq", triangle: " tri" })[seedOf(m).shape] || "";
-// 三角は字を下へ寄せる（重心が下にある）＝<i> で包んで位置と大きさだけ変える
-const face = m => seedOf(m).shape === "triangle" ? `<i>${ini(m)}</i>` : ini(m);
+// 頭文字は <i> で包む＝app.js の fitGlyph が字の形を測って真ん中に置く
+const face = m => `<i>${ini(m)}</i>`;
 // 塗りが明るい（金など）なら黒字。相対輝度 > .4
 const light = c => { const [r, g, b] = [1, 3, 5].map(i => parseInt(c.slice(i, i + 2), 16) / 255)
   .map(v => v <= .04045 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4); return .2126 * r + .7152 * g + .0722 * b > .4; };
