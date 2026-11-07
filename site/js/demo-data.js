@@ -3111,7 +3111,7 @@ window.DEMO_SEED = {
       poster_url: "assets/r55/poster_main.jpg",   // 榊原CEOのInstagram（https://www.instagram.com/p/Dd6OmbDS1bH/）。公式サイトには縦長ポスターが無く「試合順」の一覧を掴んでいた（11/7 Gaku指摘）
       event_date: "2026-11-08",
       no_deadline: false,
-      lock_at: "2026-11-08T00:00:00+09:00",
+      lock_at: "2026-11-08T14:00:00+09:00",   // 締切＝開始時刻（Gaku確定11/7「締切は開演までに変更」）。公式「12:30開場／14:00開始」。オープニングファイト（12:45）は当サイトのカードに無い
       official_url: "https://jp.rizinff.com/_ct/17852466",
       status: "upcoming",
     },
@@ -3121,7 +3121,7 @@ window.DEMO_SEED = {
       poster_url: "assets/cho6/poster.jpg",   // 第一弾ポスター＝榊原CEOのInstagram（https://www.instagram.com/p/DfRkF0-kbA0/・左右の黒帯を切ってB2比）。公式サイトには未掲載（11/7 Gakuが提供）
       event_date: "2026-12-31",
       no_deadline: false,
-      lock_at: "2026-12-31T00:00:00+09:00",
+      lock_at: "2026-12-31T13:00:00+09:00",   // 締切＝開始時刻。公式は「13:00開始（予定）」＝確定したら合わせる。オープニングファイトをカードに入れるならその開始時刻に
       official_url: "https://jp.rizinff.com/_ct/17870447",
       status: "upcoming",
       note: "会場＝バンテリンドーム ナゴヤ。2026-11-03に第1弾10試合が発表。試合順は未発表（公式の掲載順で仮置き）。第一弾ポスターは榊原CEOのInstagramから（公式サイト未掲載）",

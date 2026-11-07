@@ -40,7 +40,7 @@ create table events (
   event_date date,
   no_deadline boolean not null default false, -- 締切なし・オープンブック運用
   open_at timestamptz,                   -- 予想開始＝前日計量終了後（nullなら即開放）
-  lock_at timestamptz,                   -- 予想締切＝前日の夜24:00（no_deadline時は未使用）
+  lock_at timestamptz,                   -- 予想締切＝大会の開始時刻（2026-11-07変更。以前は前日の夜24:00）（no_deadline時は未使用）
   poster_url text,
   official_url text,                     -- rizin.jp の大会ページ（admin参照用）
   status text not null default 'upcoming' check (status in ('upcoming','finished')),
