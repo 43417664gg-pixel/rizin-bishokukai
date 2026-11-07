@@ -1086,7 +1086,8 @@ span.mav.tri > i { --k: 50cqw; position: relative; top: 7cqh; }
 .pred-row .psup.r { color: #ff5a67; } .pred-row .psup.b { color: #5aa0ff; }
 
 /* 予想カードのスタッツ（名前・戦績・勝ち方の割合・前戦／トグルで直近5試合・Gaku依頼2026-11-07）
-   色は使わず白〜灰の濃淡だけ。枠で囲まない。大きな勝敗数＋その横に勝ち方の1本バー */
+   大きな勝敗数＋その横に勝ち方の1本バー。色はコーナーの赤・青だけを「どっち側の人か」の印として刺す
+   （Gaku 11/8「赤青の色もそれぞれ刺していったらメリハリつくかも」）：異名の前の斜めの棒・勝ち数・勝ち方のフィニッシュ部分 */
 .stats { margin: 8px 14px 2px; border: 1px solid var(--line); background: var(--panel2); container-type: inline-size; }
 .st-cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: repeat(var(--rows, 4), auto); }
 /* 左右で段の高さをそろえる（片側だけ異名が2行等でも下の段がずれない） */
@@ -1098,8 +1099,15 @@ span.mav.tri > i { --k: 50cqw; position: relative; top: 7cqh; }
 .st-head { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; min-width: 0; margin-bottom: 8px; }
 .st-side.c2 .st-head { align-items: flex-end; }
 .st-nick { flex: none; max-width: 100%; font-size: 14px; font-weight: 900; color: var(--text); line-height: 1.3;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  font-feature-settings: "palt"; }   /* かな・括弧を詰める＝長い異名（足立区のバカストイックマン）も10pxで1行に入る（詰めないと1px足りず「…」で切れていた） */
 .st-nick.wrap { white-space: normal; overflow: visible; }   /* 10pxまで縮めても入らない長い異名だけ折り返す（白鵬女子高等学校…） */
+/* 異名の前にコーナー色の斜めの棒＝下の「選手DATA 詳しく」と同じ印。閉じている間もここだけで左右の人が分かる。
+   棒は列の外側の余白に置く＝異名の幅を食わない（幅を取ったら長い異名が改行した・「異名で改行はないなあ」） */
+.st-names .st-head { position: relative; }
+.st-names .st-head::before { content: ""; position: absolute; top: 3px; bottom: 3px; right: 100%; margin-right: 3px; width: 3px; background: var(--red); transform: skewX(-18deg); }
+.st-names .st-side.c2 .st-head::before { right: auto; left: 100%; margin: 0 0 0 3px; background: var(--blue); }
+.st-names .st-head:empty::before { display: none; }
 /* 勝ち方のバー：左右で必ず同じ置き方にする（片側だけ折り返すと高さがずれた・Gaku指摘11/7）。
    段は 名前／STATSの見出し／戦績／バー／前戦の見出し／前戦 の6段。狭い時はバーを4段目（戦績の下）、
    カードが広い時（PC）は3段目＝戦績の横の空きへ。判定はカード幅（container）で左右まとめて行う。
@@ -1161,14 +1169,18 @@ span.mav.tri > i { --k: 50cqw; position: relative; top: 7cqh; }
 .st-n { font-size: 12px; font-weight: 700; color: #b4b4be; white-space: nowrap; }
 .st-n b { font-family: var(--num); font-size: 36px; line-height: 1; margin-right: 2px; color: #fff; }
 .st-n.d b { color: var(--muted); font-size: 16px; margin-left: 2px; }   /* 分・NC は脇役＝小さく */
+.st-side.c1 .st-n.w b { color: var(--red-hot); }   /* 勝ち数だけコーナー色＝負け数（白）と一目で分かれる */
+.st-side.c2 .st-n.w b { color: var(--blue-hot); }
 .st-bar { width: 100%; min-width: 0; max-width: 172px; }   /* 長いと戦績が窮屈に見えた（Gaku指摘11/7）＝割合3つが入る幅まで。字を一回り上げた分（「少しだけ大きく」11/7）だけ広げた */
-/* KO と一本はどちらもフィニッシュ＝同じ白。仕切りで2つと分かる。判定だけ灰＝白の長さがそのままフィニッシュ率（Gaku指示11/7） */
-.sb-k, .sb-s { --sw: #f0f0f2; } .sb-d { --sw: #5a5a64; }
-/* 割合はバーの中（白地に黒字・灰地に白字）、下のラベルは「KO 2」＝勝ちのうち何勝か（Gaku指示11/7） */
+/* KO と一本はどちらもフィニッシュ＝コーナー色、判定だけ灰＝色の長さがそのままフィニッシュ率（Gaku指示11/7・色は11/8）。
+   KO は明るく、一本は一段深く＝下のラベルの印と色で対応が取れる（同じ色だと 43% がどっちか読めなかった） */
+.sb-d { --sw: #5a5a64; }
+.st-side.c1 .sb-k { --sw: var(--red-hot); } .st-side.c1 .sb-s { --sw: #a3000e; }
+.st-side.c2 .sb-k { --sw: var(--blue-hot); } .st-side.c2 .sb-s { --sw: #1a52a8; }
+/* 割合はバーの中（白字）、下のラベルは「KO 2」＝勝ちのうち何勝か（Gaku指示11/7） */
 .sb-track { display: flex; height: 17px; border-radius: 3px; overflow: hidden; background: rgba(255, 255, 255, .07); }
 .sb-track i { display: block; height: 100%; background: var(--sw); overflow: hidden; white-space: nowrap; text-align: center;
-  font-style: normal; font-family: var(--num); font-size: 12px; font-weight: 700; line-height: 17px; color: #111; }
-.sb-track i.sb-d { color: #e8e8ec; }
+  font-style: normal; font-family: var(--num); font-size: 12px; font-weight: 700; line-height: 17px; color: #fff; text-shadow: 0 1px 2px rgba(0, 0, 0, .35); }
 .sb-track i + i { border-left: 2px solid var(--panel2); }   /* 同じ白の KO と一本を仕切る */
 .sb-lab { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 2px 6px; margin-top: 5px;
   font-size: 11.5px; font-weight: 700; color: var(--muted); white-space: nowrap; }

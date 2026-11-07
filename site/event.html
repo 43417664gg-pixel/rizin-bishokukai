@@ -7,7 +7,7 @@
 <title>大会予想｜予想番付</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261108025516">
+<link rel="stylesheet" href="css/style.css?v=20261108030705">
 </head>
 <body>
 <div id="app-header"></div>
@@ -18,13 +18,13 @@
 <div class="pg-spot" id="pg-spot" hidden></div><div class="pick-guide" id="pick-guide" aria-hidden="true"><span class="pg-t"></span><span class="pg-a"></span><span class="pg-x">予想を入れる<i class="pg-arw"></i></span></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261108025516"></script>
-<script src="js/techniques.js?v=20261108025516"></script>
-<script src="js/demo-data.js?v=20261108025516"></script>
-<script src="js/api.js?v=20261108025516"></script>
-<script src="js/app.js?v=20261108025516"></script>
-<script src="js/glyph_fit.js?v=20261108025516"></script>
-<script src="js/bishoku_summary.js?v=20261108025516"></script>
+<script src="js/config.js?v=20261108030705"></script>
+<script src="js/techniques.js?v=20261108030705"></script>
+<script src="js/demo-data.js?v=20261108030705"></script>
+<script src="js/api.js?v=20261108030705"></script>
+<script src="js/app.js?v=20261108030705"></script>
+<script src="js/glyph_fit.js?v=20261108030705"></script>
+<script src="js/bishoku_summary.js?v=20261108030705"></script>
 <script>
 let EV, PHASE, FIGHTS, FMAP, MEMBERS, myPreds = {}, allPreds = [], ALL_SUPPORTS = [];
 
@@ -145,7 +145,7 @@ const resMark = (r) => { const [s, c] = RMARK[r] || ["?", "d"]; return `<span cl
 const histRow = (r) => `<div class="st-row">${resMark(r.r)}<span class="st-body"><span class="st-opp">${esc(r.opp)}</span>
   <span class="st-how">${esc([r.how, r.d].filter(Boolean).join("・"))}</span></span></div>`;
 // 細かい文字で読ませず形で見せる（Gaku指示11/7「シンプルな中に視認性を。ビジュアルで誘導」「色多い・情報は少なく」）：
-// 勝敗数は大きな数字／勝ち方は戦績の横の空きに1本のバー（KO・一本・判定の割合）。色は使わず白〜灰の濃淡だけ
+// 勝敗数は大きな数字／勝ち方は戦績の横の空きに1本のバー（KO・一本・判定の割合）。色はコーナーの赤・青だけ（11/8「赤青の色もそれぞれ刺して」）
 // 予想の入力は下の「勝敗予想」に分けたので、ここで選手名も持つ（判断材料はここだけで読める）
 // 左右の段（名前・戦績・バー・前戦）は subgrid で高さをそろえる。片側にデータが無くても空の段を置いて行数を合わせる
 // バーは左右で必ず同じ置き方（広い時は戦績の横・狭い時は戦績の下）＝左右の高さがずれない（Gaku指摘11/7「平行になってない」）
@@ -531,11 +531,14 @@ async function drawBishokuSummary() {
 // 10pxでも入らない長い異名だけ折り返す（.wrap）。左右の異名は字の大きさを揃える（「異名の上下位置がズレてるとカッコ悪い」Gaku指摘11/7）
 function fitNicks() {
   const px = (el) => parseFloat(getComputedStyle(el).fontSize);
+  // はみ出しは文字の実寸（小数）で測る。scrollWidth は整数に丸まり、1px未満のはみ出しで「…」が出ても気づけなかった（11/8）
+  const over = (el) => { const r = document.createRange(); r.selectNodeContents(el);
+    return r.getBoundingClientRect().width > el.getBoundingClientRect().width + .05 || el.scrollWidth > el.clientWidth + 1; };
   const shrink = (el, min) => {
     el.style.fontSize = "";
     let fs = px(el);
-    while (el.scrollWidth > el.clientWidth + 1 && fs > min) { fs -= 0.5; el.style.fontSize = fs + "px"; }
-    return el.scrollWidth <= el.clientWidth + 1;
+    while (over(el) && fs > min) { fs -= 0.5; el.style.fontSize = fs + "px"; }
+    return !over(el);
   };
   // 年齢は戦績と同じ1行目の、真ん中の仕切り寄りの空きに置く。片側でも入りきらず次の行へ落ちたら、左右とも2行目へ（.age2）＝左右の高さを揃える
   document.querySelectorAll(".st-main").forEach(m => {
