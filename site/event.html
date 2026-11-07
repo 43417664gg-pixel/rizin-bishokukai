@@ -7,7 +7,7 @@
 <title>大会予想｜予想番付</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261108034853">
+<link rel="stylesheet" href="css/style.css?v=20261108035135">
 </head>
 <body>
 <div id="app-header"></div>
@@ -18,13 +18,13 @@
 <div class="pg-spot" id="pg-spot" hidden></div><div class="pick-guide" id="pick-guide" aria-hidden="true"><span class="pg-t"></span><span class="pg-a"></span><span class="pg-x">予想を入れる<i class="pg-arw"></i></span></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261108034853"></script>
-<script src="js/techniques.js?v=20261108034853"></script>
-<script src="js/demo-data.js?v=20261108034853"></script>
-<script src="js/api.js?v=20261108034853"></script>
-<script src="js/app.js?v=20261108034853"></script>
-<script src="js/glyph_fit.js?v=20261108034853"></script>
-<script src="js/bishoku_summary.js?v=20261108034853"></script>
+<script src="js/config.js?v=20261108035135"></script>
+<script src="js/techniques.js?v=20261108035135"></script>
+<script src="js/demo-data.js?v=20261108035135"></script>
+<script src="js/api.js?v=20261108035135"></script>
+<script src="js/app.js?v=20261108035135"></script>
+<script src="js/glyph_fit.js?v=20261108035135"></script>
+<script src="js/bishoku_summary.js?v=20261108035135"></script>
 <script>
 let EV, PHASE, FIGHTS, FMAP, MEMBERS, myPreds = {}, allPreds = [], ALL_SUPPORTS = [];
 
@@ -124,11 +124,21 @@ const TITLE_BELT = `<span class="t-belt" aria-hidden="true"><svg viewBox="0 0 34
 // 試合の見出し：1行（Gaku 11/7「2段になってる・文字ダサい」）。大きい番号 → 題（あれば赤）／階級（体重）
 // 体重は階級の直後に括弧でくっつける（Gaku 11/8「バンタム級（61.0kg）くっつけて欲しい。はなさず」。前は右端に離していた）
 // 題に階級名が入っていれば（RIZINフライ級タイトルマッチ）階級も体重も繰り返さない（階級＝体重は決まっている・スマホで1行に収める）
+// title_label はタイトルマッチ専用ではない（「キックボクシングルール」「甲子園 決勝戦」「GP決勝」も入る）。
+// 金の演出とベルトは王座が懸かる試合だけ＝題に「タイトルマッチ」か「王座」があるもの
+const isTitleFight = (f) => /タイトルマッチ|王座/.test(f.title_label || "");
+// 王座戦の題は「フライ級」＋金の「TITLE MATCH」に組み直す（Gaku 11/8「RIZINフライ級タイトルマッチの文字部分がダサい」＝和文の長い金字をやめた）。
+// 「RIZIN〇〇級タイトルマッチ」の形でない題（王座決定戦の併記など）はそのまま金の字
+function titleText(f) {
+  const m = f.title_label.match(/^(?:RIZIN\s*)?(.+?級)タイトルマッチ$/);
+  return m ? `<span class="fl-t tl-ttl"><span class="tl-wc">${esc(m[1])}</span><span class="tl-en">TITLE MATCH</span></span>`
+    : `<span class="fl-t title-label gold">${esc(f.title_label)}</span>`;
+}
 function fightLabel(f) {
   const wc = f.weight_class ? weightClassName(f.weight_class) : "";
   const kg = f.weight_class && f.weight_class !== wc ? `<span class="fl-kg">（${esc(f.weight_class)}）</span>` : "";
   const cls = wc ? `<span class="fl-t">${esc(wc)}${kg}</span>` : "";
-  const t = f.title_label ? `<span class="fl-t title-label">${esc(f.title_label)}</span>${f.title_label.includes(wc) ? "" : cls}` : cls;
+  const t = f.title_label ? `${isTitleFight(f) ? titleText(f) : `<span class="fl-t title-label">${esc(f.title_label)}</span>`}${f.title_label.includes(wc) ? "" : cls}` : cls;
   return `<span class="fno">${f.segment === "opening" ? "OP " : ""}第<b>${f.order_no}</b>試合</span>${t}`;
 }
 // 体重超過・MMA以外の注意書き。読ませたいので写真には重ねず、写真の下に段で出す
@@ -480,8 +490,8 @@ function render() {
   // 既に全員のピックを内包しているので、二重にしないため predictCard のときだけ足す。
   // 中止・延期の試合は専用カード（大きくCANCELLED・予想は見れる）に差し替える。
   // タイトルマッチは金の煙をまとい、右上にベルトが掛かる（.aura＝カードの縁にかかる靄・外側の煙と縁は CSS の ::before/::after・.t-belt＝ベルト）
-  const card = (f) => `<section class="fight-unit${f.title_label ? " title" : ""}">${f.cancelled ? cancelledCard(f)
-    : base === predictCard ? base(f) + othersBlock(f) : base(f)}${f.title_label ? `<i class="aura" aria-hidden="true"></i>${TITLE_BELT}` : ""}</section>`;
+  const card = (f) => `<section class="fight-unit${isTitleFight(f) ? " title" : ""}">${f.cancelled ? cancelledCard(f)
+    : base === predictCard ? base(f) + othersBlock(f) : base(f)}${isTitleFight(f) ? `<i class="aura" aria-hidden="true"></i>${TITLE_BELT}` : ""}</section>`;
   const openBook = isOpenBook(EV);
   document.getElementById("main").innerHTML = `
     <div class="title-row"><h1 class="page-title">${esc(evParts(EV.name)[0])}${evParts(EV.name)[1] ? `<small class="ev-sub">${esc(evParts(EV.name)[1])}</small>` : ""}</h1>${dateBlock(EV.event_date)}</div>
