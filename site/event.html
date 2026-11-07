@@ -7,7 +7,7 @@
 <title>大会予想｜予想番付</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261108000942">
+<link rel="stylesheet" href="css/style.css?v=20261108001312">
 </head>
 <body>
 <div id="app-header"></div>
@@ -17,12 +17,12 @@
 <div class="wiz" id="wiz" hidden role="dialog" aria-modal="true" aria-label="勝敗予想"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261108000942"></script>
-<script src="js/techniques.js?v=20261108000942"></script>
-<script src="js/demo-data.js?v=20261108000942"></script>
-<script src="js/api.js?v=20261108000942"></script>
-<script src="js/app.js?v=20261108000942"></script>
-<script src="js/bishoku_summary.js?v=20261108000942"></script>
+<script src="js/config.js?v=20261108001312"></script>
+<script src="js/techniques.js?v=20261108001312"></script>
+<script src="js/demo-data.js?v=20261108001312"></script>
+<script src="js/api.js?v=20261108001312"></script>
+<script src="js/app.js?v=20261108001312"></script>
+<script src="js/bishoku_summary.js?v=20261108001312"></script>
 <script>
 let EV, PHASE, FIGHTS, FMAP, MEMBERS, myPreds = {}, allPreds = [], ALL_SUPPORTS = [];
 
@@ -158,9 +158,10 @@ function statsSide(x, cls) {
     : `<span class="st-n d">戦績なし</span>`;
   return `<div class="st-side ${cls}">
     <div class="st-head"><span class="st-name">${fnm(x?.name || "")}</span>${age ? `<span class="st-age">${age}</span>` : ""}${x?.nickname ? `<span class="st-nick" title="${esc(x.nickname)}">“${esc(x.nickname)}”</span>` : ""}</div>
+    <div class="st-gap g1"></div>
     <div class="st-recn">${rec}</div>
     ${wayBar(x) || `<div class="st-bar"></div>`}
-    <div class="st-k">前戦</div>
+    <div class="st-gap g2"></div>
     ${h[0] ? histRow(h[0]) : `<div class="st-row"><span class="st-how">データなし</span></div>`}
   </div>`;
 }
@@ -171,7 +172,8 @@ function statsBlock(f) {
     while (rows.length < n) rows.push("<div></div>");
     return `<div class="st-side ${cls}">${rows.join("")}</div>`; };
   return `<div class="stats">
-    <div class="st-cols" style="--rows:5">${statsSide(f1, "c1")}${statsSide(f2, "c2")}</div>
+    <div class="st-cols" style="--rows:6">${statsSide(f1, "c1")}${statsSide(f2, "c2")}
+      <div class="st-sep s1"><span>STATS</span></div><div class="st-sep s2"><span>前戦</span></div></div>
     ${n > 1 ? `<details class="st-more" ${statsOpen.has(f.id) ? "open" : ""} ontoggle="statsOpen[this.open ? 'add' : 'delete']('${f.id}')">
       <summary>直近5試合</summary>
       <div class="st-cols" style="--rows:${n}">${list(f1, "c1")}${list(f2, "c2")}</div>
@@ -181,7 +183,7 @@ function statsBlock(f) {
 
 // ---------- 予想UI（受付中） ----------
 // 勝敗は、カードの札を押してもその試合から予想の画面（openWiz）が開き、最後の「これでいい？」で決定して保存する（Gaku 11/7）。
-// 決まり手・ラウンドは勝敗を保存した後にカードで入れる任意の追加入力で、選んだ時点で保存される
+// 決まり手・ラウンドも同じ画面の中だけで入れる（任意）。カードには選んだ中身が勝者の札に小さく出るだけ
 // 勝敗予想の札（Gaku 11/7「勝敗予想のタップ部分はこだわりたい。気持ちが昂る瞬間」）：うっすら赤・青の地に選手の顔を透かす。
 // 選んだ方（締切後は勝った方）は金で囲み、顔がはっきり出る。選ばなかった方は沈む。予想・締切後・計量前・中止の全カードで同じ札
 function cornerBox(f, side, { sel = false, tag = "div", attrs = "", cls = "", note = "" } = {}) {
