@@ -11,6 +11,7 @@ YouTube API もキーも使わない。結果は site/assets/predictors/<member_
 ゲスト出演（RIZIN公式番組の平本蓮、中村拓己チャンネルの大沢ケンジ等）にチャンネルのロゴを付けると、
 別人のロゴがその人の顔になる。台帳に動画が無い人（番組のパネリスト等）も取らない＝頭文字のまま。
 ただし番組出演で取り込んだ人でも、本人のチャンネルを Gaku が指定したら OWN_CHANNEL から取る。
+本人の顔を手で切り出した人は MANUAL に書く＝このスクリプトは触らない（--force でも上書きしない）。
 """
 import io, json, os, re, sys, time, urllib.parse, urllib.request
 from PIL import Image
@@ -26,8 +27,11 @@ GUESTS = {"m_yt_hiramotoren", "m_yt_osawa_kenji"}
 # 1人が複数チャンネルを持つときは本チャンネルを使う（切り抜き・サブは避ける）
 SUB_CHANNEL = re.compile(r"切り抜き|日常")
 # 番組出演で取り込んだ人の本人チャンネル（台帳の動画は番組側のチャンネルなので使えない）
-OWN_CHANNEL = {
-    "m_yt_inoue_yusaku": "https://www.youtube.com/channel/UCHoOFVQAhK-QyoXgf0iaZIg",  # マッスルグリル（Gaku 2026-11-08「彼のYOUTUBEそれでいいよ」）
+OWN_CHANNEL = {}
+# 手で用意したアイコン（出典）。ロゴより本人の顔を、と言われた人
+MANUAL = {
+    # 一度マッスルグリル（本人チャンネル）のロゴにしたが、Gaku 2026-11-08「本人の顔がいいな」で差し替え
+    "m_yt_inoue_yusaku": "RIZIN公式の選手ポートレート（jp.rizinff.com/_tags/井上雄策・alt完全一致）を顔中心に正方形で切り出し",
 }
 SIZE = 176
 
@@ -58,7 +62,7 @@ def main():
             os.remove(path)
 
     for mid in sorted(set(src) | set(OWN_CHANNEL)):
-        if mid not in live or mid in GUESTS or (mid in manifest and not force):
+        if mid not in live or mid in GUESTS or mid in MANUAL or (mid in manifest and not force):
             continue
         try:
             if mid in OWN_CHANNEL:
