@@ -144,8 +144,9 @@ async function load() {
   const id = qp("id");
   const card = document.getElementById("card");
   // 遡りデータ（data/career/<id>.json）は一部の予想者だけ。無ければサイト掲載分だけで出す。
+  // 作り直すたびに中身が変わるので、固定の版番号ではなく毎回サーバーに確かめる（ranking.html と同じ・2026-11-08 古い通算が出続けた）
   let C = null;
-  try { const r = await fetch(`data/career/${encodeURIComponent(id)}.json?v=20261020`); C = r.ok ? await r.json() : null; } catch (e) { C = null; }
+  try { const r = await fetch(`data/career/${encodeURIComponent(id)}.json`, { cache: "no-cache" }); C = r.ok ? await r.json() : null; } catch (e) { C = null; }
   const [members] = await Promise.all([DB.listMembers(), window.AVATARS_READY]);
   const me = members.find(m => m.id === id);
   if (!me && !C) { card.innerHTML = "<div class='cr-empty'>見つかりませんでした。</div>"; return; }
