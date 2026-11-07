@@ -73,21 +73,21 @@ img { max-width: 100%; display: block; }
   font-size: 9px; color: var(--gold); border: 1px solid rgba(212, 175, 55, .5);
   padding: 1px 6px; letter-spacing: .18em; white-space: nowrap;
 }
-/* 右上の自分の名前＝予想者アイコンと同じ塗りのフルネーム版（Gaku 11/8「ここの「ハメ太郎」部分もデザイン一緒にしよ。フルネームバージョン」）。
-   左上に光・縁に影の色の球、寮の差し色の縁、字は読めること優先（明るい塗りは黒字）。形はヘッダーの斬り札に合わせた斜めの札。
-   縁を札の斜めに沿わせるため、縁の色の札の上に一回り小さい塗りの札（::after）を重ねる */
+/* 右上の自分の名前（フルネーム）。形はヘッダーの斬り札に合わせた斜めの札。
+   質感は予想の札（.corner-btn）と同じ＝暗い地に自分の色をうっすら差し、縁を自分の色で（Gaku 11/8「ハメ太郎の枠の色が異質でダサく浮く。
+   他の人も」「色というか質感？見えやすいのがいいけど」＝以前の光る球の塗り・寮の金の縁をやめた）。字はいつも白＝どの色の人でも読める。
+   縁を札の斜めに沿わせるため、縁の色の札の上に一回り小さい地の札（::after）を重ねる。暗い色の人でも縁が見えるよう白を混ぜる */
 .member-chip {
   --c: #555; position: relative; isolation: isolate; border: 0; cursor: pointer;
-  background: var(--t, color-mix(in srgb, var(--c) 55%, #000)); color: #fff; text-shadow: 0 1px 2px rgba(0, 0, 0, .45);
+  background: color-mix(in srgb, var(--c), #fff 22%); color: #fff;
   padding: 4.25px 14px 5.75px; font-size: 12px; font-weight: 900; letter-spacing: .04em; white-space: nowrap;   /* 字の上下を形で揃える（5/5 だと上 8.8・下 7.3＝ロゴと同じ理由） */
   max-width: 128px; overflow: hidden; text-overflow: ellipsis;
   clip-path: polygon(7px 0, 100% 0, calc(100% - 7px) 100%, 0 100%);
 }
 .member-chip::after {
-  content: ""; position: absolute; inset: 1.5px 2px; z-index: -1; clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
-  background: radial-gradient(ellipse at 30% 15%, color-mix(in srgb, var(--c) 58%, #fff) 0%, var(--c) 48%, color-mix(in srgb, var(--c) 52%, #000) 100%);
+  content: ""; position: absolute; inset: 1px 1.5px; z-index: -1; clip-path: polygon(6.5px 0, 100% 0, calc(100% - 6.5px) 100%, 0 100%);
+  background: linear-gradient(160deg, color-mix(in srgb, var(--c) 42%, var(--panel2)), color-mix(in srgb, var(--c) 12%, var(--panel2)) 75%);
 }
-.member-chip.lt { color: #1a1408; text-shadow: none; }
 .member-chip:active { filter: brightness(.9); }
 
 /* ===== 見出し ===== */

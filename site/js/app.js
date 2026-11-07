@@ -124,10 +124,10 @@
   };
 
   // ---------- 共通ヘッダー ----------
-  // 右上の自分の名前は予想者アイコンと同じ塗り（色・寮の差し色の縁・明るい塗りは黒字）＝avatarHTML のフルネーム版
+  // 右上の自分の名前の札＝自分の色だけを渡す（質感は CSS の .member-chip。字はいつも白・寮の縁は使わない＝11/8 作り直し）
   const chipPaint = (m) => {
-    const c = /^#[0-9a-f]{6}$/i.test(m?.color || "") ? m.color : "#555555", t = memberSeed(m?.id).trim;
-    return `${isLightColor(c) ? " lt" : ""}" style="--c:${c}${t ? `;--t:${t}` : ""}`;
+    const c = /^#[0-9a-f]{6}$/i.test(m?.color || "") ? m.color : "#555555";
+    return `" style="--c:${c}`;
   };
   window.renderHeader = async function (active) {
     // 名前を選び直したら（index.html はページ遷移せずに再描画する）その名前で確かめ直す
