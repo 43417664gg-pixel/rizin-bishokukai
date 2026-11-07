@@ -3098,7 +3098,7 @@ window.DEMO_SEED = {
     {
       id: "ev_lm16",
       name: "RIZIN LANDMARK 16 in NAGASAKI",
-      poster_url: "assets/lm16/fight_01.jpg",
+      poster_url: "assets/lm16/poster.jpg",   // 榊原CEOのInstagram（https://www.instagram.com/p/DdVxMN8PkD8/・左右の黒帯を切ってB2比）
       event_date: "2026-10-03",
       no_deadline: false,
       lock_at: "2026-10-03T00:00:00+09:00",
@@ -3108,7 +3108,7 @@ window.DEMO_SEED = {
     {
       id: "ev_lm17",
       name: "RIZIN.55",
-      poster_url: "assets/r55/keyvisual.jpg",   // 縦長ポスターは公式未掲載。「試合順」の一覧画像は同じB2比なのでポスターと取り違えた（11/7 Gaku指摘）。大会情報ページ先頭のメインビジュアルを採る
+      poster_url: "assets/r55/poster_main.jpg",   // 榊原CEOのInstagram（https://www.instagram.com/p/Dd6OmbDS1bH/）。公式サイトには縦長ポスターが無く「試合順」の一覧を掴んでいた（11/7 Gaku指摘）
       event_date: "2026-11-08",
       no_deadline: false,
       lock_at: "2026-11-08T00:00:00+09:00",
