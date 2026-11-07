@@ -71,12 +71,22 @@ img { max-width: 100%; display: block; }
   font-size: 9px; color: var(--gold); border: 1px solid rgba(212, 175, 55, .5);
   padding: 1px 6px; letter-spacing: .18em; white-space: nowrap;
 }
+/* 右上の自分の名前＝予想者アイコンと同じ塗りのフルネーム版（Gaku 11/8「ここの「ハメ太郎」部分もデザイン一緒にしよ。フルネームバージョン」）。
+   左上に光・縁に影の色の球、寮の差し色の縁、字は読めること優先（明るい塗りは黒字）。形はヘッダーの斬り札に合わせた斜めの札。
+   縁を札の斜めに沿わせるため、縁の色の札の上に一回り小さい塗りの札（::after）を重ねる */
 .member-chip {
-  background: var(--panel2); border: 1px solid var(--line); color: var(--text);
-  padding: 4px 10px; font-size: 11.5px; font-weight: 700; white-space: nowrap;
-  max-width: 96px; overflow: hidden; text-overflow: ellipsis;
-  clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+  --c: #555; position: relative; isolation: isolate; border: 0; cursor: pointer;
+  background: var(--t, color-mix(in srgb, var(--c) 55%, #000)); color: #fff; text-shadow: 0 1px 2px rgba(0, 0, 0, .45);
+  padding: 5px 14px; font-size: 12px; font-weight: 900; letter-spacing: .04em; white-space: nowrap;
+  max-width: 128px; overflow: hidden; text-overflow: ellipsis;
+  clip-path: polygon(7px 0, 100% 0, calc(100% - 7px) 100%, 0 100%);
 }
+.member-chip::after {
+  content: ""; position: absolute; inset: 1.5px 2px; z-index: -1; clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+  background: radial-gradient(ellipse at 30% 15%, color-mix(in srgb, var(--c) 58%, #fff) 0%, var(--c) 48%, color-mix(in srgb, var(--c) 52%, #000) 100%);
+}
+.member-chip.lt { color: #1a1408; text-shadow: none; }
+.member-chip:active { filter: brightness(.9); }
 
 /* ===== 見出し ===== */
 .en-label {

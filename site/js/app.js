@@ -124,6 +124,11 @@
   };
 
   // ---------- 共通ヘッダー ----------
+  // 右上の自分の名前は予想者アイコンと同じ塗り（色・寮の差し色の縁・明るい塗りは黒字）＝avatarHTML のフルネーム版
+  const chipPaint = (m) => {
+    const c = /^#[0-9a-f]{6}$/i.test(m?.color || "") ? m.color : "#555555", t = memberSeed(m?.id).trim;
+    return `${isLightColor(c) ? " lt" : ""}" style="--c:${c}${t ? `;--t:${t}` : ""}`;
+  };
   window.renderHeader = async function (active) {
     // 名前を選び直したら（index.html はページ遷移せずに再描画する）その名前で確かめ直す
     const claimKey = getMemberId() || "";
@@ -131,12 +136,12 @@
     setTimeout(() => window.showNoticeIfAny && window.showNoticeIfAny(), 400);
     const el = document.getElementById("app-header");
     if (!el) return;
-    let memberName = "";
+    let memberName = "", me = null;
     const mid = getMemberId();
     if (mid) {
       const members = await DB.listMembers();
       const m = members.find(x => x.id === mid);
-      if (m) memberName = m.name; else clearMemberId();
+      if (m) { memberName = m.name; me = m; } else clearMemberId();
     }
     const link = (href, label, key) =>
       `<a href="${href}" class="nav-link${active === key ? " active" : ""}">${label}</a>`;
@@ -151,7 +156,7 @@
         <div class="header-right">
           ${window.IS_DEMO ? '<span class="demo-badge">デモ</span>' : ""}
           ${memberName
-            ? `<button class="member-chip" onclick="clearMemberId();location.href='index.html'" title="プレイヤー切替">${esc(memberName)}</button>`
+            ? `<button class="member-chip${chipPaint(me)}" onclick="clearMemberId();location.href='index.html'" title="プレイヤー切替">${esc(memberName)}</button>`
             : ""}
         </div>
       </div>`;
