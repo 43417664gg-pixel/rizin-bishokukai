@@ -7,7 +7,7 @@
 <title>大会予想｜予想番付</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261107231744">
+<link rel="stylesheet" href="css/style.css?v=20261107232210">
 </head>
 <body>
 <div id="app-header"></div>
@@ -17,12 +17,12 @@
 <div class="wiz" id="wiz" hidden role="dialog" aria-modal="true" aria-label="勝敗予想"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261107231744"></script>
-<script src="js/techniques.js?v=20261107231744"></script>
-<script src="js/demo-data.js?v=20261107231744"></script>
-<script src="js/api.js?v=20261107231744"></script>
-<script src="js/app.js?v=20261107231744"></script>
-<script src="js/bishoku_summary.js?v=20261107231744"></script>
+<script src="js/config.js?v=20261107232210"></script>
+<script src="js/techniques.js?v=20261107232210"></script>
+<script src="js/demo-data.js?v=20261107232210"></script>
+<script src="js/api.js?v=20261107232210"></script>
+<script src="js/app.js?v=20261107232210"></script>
+<script src="js/bishoku_summary.js?v=20261107232210"></script>
 <script>
 let EV, PHASE, FIGHTS, FMAP, MEMBERS, myPreds = {}, allPreds = [], ALL_SUPPORTS = [];
 
@@ -653,8 +653,16 @@ function wizCta() {
       ${face(m.fighter1_id)}<span class="wc-t">${all ? "予想を見直す" : "予想を入れる"}<small>${all ? "CHECK YOUR PICKS" : "WHO WINS?"}</small></span>${face(m.fighter2_id)}
     </button>`;
 }
-const WIZ = { list: [], i: 0, pend: null };   // pend＝この試合で押した勝者。「決定」で保存するまでは仮（Gaku 11/7「これでいい？は各試合の予想登録の話」）
+const WIZ = { list: [], i: 0, pend: null };   // pend＝この試合で押した中身（勝者・決まり手・ラウンド）。「決定」で保存するまでは仮（Gaku 11/7「これでいい？は各試合の予想登録の話」）
 const wizSaved = (f) => myPreds[f.id]?.winner_id || null;
+const WIZ_KEYS = ["winner_id", "method", "technique", "round"];
+const wizBase = (f) => Object.fromEntries(WIZ_KEYS.map(k => [k, myPreds[f.id]?.[k] || null]));
+const wizCur = (f) => WIZ.pend || wizBase(f);
+// 保存済みと同じ中身に戻ったら仮を消す（「これでいい？」を出さない）
+function wizSet(p) {
+  const f = WIZ.list[WIZ.i], b = wizBase(f);
+  WIZ.pend = WIZ_KEYS.every(k => (p[k] || null) == (b[k] || null)) ? null : p;
+}
 function openWiz(fightId) {
   WIZ.list = WIZ_FIGHTS();
   if (!WIZ.list.length) return;
@@ -674,7 +682,7 @@ addEventListener("popstate", () => { if (!document.getElementById("wiz").hidden)
 function wizGo(k) { WIZ.i = k; WIZ.pend = null; drawWiz(); }
 function drawWiz(pop) {
   const w = document.getElementById("wiz"), L = WIZ.list, f = L[WIZ.i];
-  const saved = wizSaved(f), wid = WIZ.pend || saved, ask = !!WIZ.pend, last = WIZ.i === L.length - 1;
+  const saved = wizSaved(f), cur = wizCur(f), wid = cur.winner_id, ask = !!WIZ.pend, last = WIZ.i === L.length - 1;
   const bar = `<span class="ep-bar wiz-bar">${L.map((x, k) =>
     `<i class="${wizSaved(x) ? "on" : ""}${k === WIZ.i ? " cur" : ""}" onclick="wizGo(${k})"></i>`).join("")}</span>`;
   const c = (side) => {
@@ -684,6 +692,7 @@ function drawWiz(pop) {
   w.innerHTML = `<div class="wiz-top"><button type="button" class="wiz-x" onclick="closeWiz()" aria-label="閉じる">×</button>${bar}</div>
     <div class="wiz-q"><div class="fight-label">${fightLabel(f)}</div><h2 class="wiz-h">${ask ? "これでいい？" : "どっちが勝つ？"}</h2></div>
     <div class="vs-row wiz-stage${wid ? " has-sel" : ""}">${c(1)}<span class="vs-mark">VS</span>${c(2)}</div>
+    ${wid ? wizKim(f, cur) : ""}
     <div class="wiz-nav${ask ? " ask" : ""}">${ask
       ? `<button type="button" class="wiz-arw" onclick="wizStep(-1)" ${WIZ.i === 0 ? "disabled" : ""} aria-label="前の試合">‹</button>
          <button type="button" class="wiz-ok" id="wiz-ok" onclick="wizCommit()">決定</button>
@@ -692,28 +701,54 @@ function drawWiz(pop) {
          <button type="button" onclick="wizStep(1)">${last ? "閉じる" : saved ? "次へ ›" : "飛ばす ›"}</button>`}
     </div>`;
 }
+// 決まり手は入れたい人だけ（Gaku 11/7「入れる人入れるし入れない人はスルー」）。押さなければ勝敗だけで決定できる。
+// 判定ならそれで終わり。KO/一本は決定打とラウンドまで当てて🎯ピタリ（scoreFight と同じ条件）
+function wizKim(f, cur) {
+  const m = cur.method, chip = (on, js, t) => `<button type="button" class="chip${on ? " sel" : ""}" onclick="${js}">${t}</button>`;
+  return `<div class="wiz-kim">
+    <div class="wk-row">${METHODS.map(x => chip(m === x.id, `wizMethod('${x.id}')`, x.label)).join("")}</div>
+    ${m && m !== "DEC" ? `<div class="wk-row">
+      <select class="tech-select" onchange="wizTech(this.value)" aria-label="決定打">
+        <option value="">決定打 —</option>
+        ${techsFor(m).map(t => `<option value="${t.id}" ${cur.technique === t.id ? "selected" : ""}>${t.label}</option>`).join("")}
+      </select>
+      ${Array.from({ length: f.rounds || 3 }, (_, i) => i + 1).map(r => chip(Number(cur.round) === r, `wizRound(${r})`, `${r}R`)).join("")}
+    </div>` : ""}
+  </div>`;
+}
+// 同じものを押し直すと外す
+function wizMethod(m) {
+  const p = { ...wizCur(WIZ.list[WIZ.i]) };
+  if (p.method === m) Object.assign(p, { method: null, technique: null, round: null });
+  else Object.assign(p, { method: m, technique: null, round: m === "DEC" ? null : p.round });
+  wizSet(p); drawWiz();
+}
+function wizTech(v) { wizSet({ ...wizCur(WIZ.list[WIZ.i]), technique: v || null }); drawWiz(); }
+function wizRound(r) {
+  const p = wizCur(WIZ.list[WIZ.i]);
+  wizSet({ ...p, round: Number(p.round) === r ? null : r }); drawWiz();
+}
 // 決定せずに離れた試合は保存しない（押しただけでは入らない）
 function wizStep(d) {
   const k = WIZ.i + d;
   if (k >= WIZ.list.length) return closeWiz();
   wizGo(Math.max(0, k));
 }
-// 押したら金で囲んで「これでいい？」。もう一方を押せば選び直し、登録済みと同じ方なら仮を消す
+// 押したら金で囲んで「これでいい？」。もう一方を押せば選び直し。勝者を変えても決まり手・ラウンドはそのまま
 function wizPick(side) {
   const f = WIZ.list[WIZ.i], fid = side === 1 ? f.fighter1_id : f.fighter2_id;
-  WIZ.pend = fid === wizSaved(f) ? null : fid;
+  wizSet({ ...wizCur(f), winner_id: fid });
   drawWiz(true);
 }
 // 「決定」：この1試合を保存して、まだ予想していない次の試合へ。全部入っていれば閉じる。
-// 勝者を変えても決まり手・ラウンドはそのまま
 async function wizCommit() {
-  const f = WIZ.list[WIZ.i], wid = WIZ.pend, btn = document.getElementById("wiz-ok");
-  if (!wid) return;
+  const f = WIZ.list[WIZ.i], p = WIZ.pend, btn = document.getElementById("wiz-ok");
+  if (!p?.winner_id) return;
   btn.disabled = true; btn.textContent = "保存中…";
   try {
     if (window.CLAIM_PROMISE) await window.CLAIM_PROMISE;   // 名前の紐づけが終わる前に保存するとRLSで弾かれる
-    const next = { ...(myPreds[f.id] || {}), winner_id: wid, member_id: getMemberId(), fight_id: f.id };
-    await DB.upsertPrediction({ member_id: next.member_id, fight_id: f.id, winner_id: wid,
+    const next = { ...(myPreds[f.id] || {}), ...p, member_id: getMemberId(), fight_id: f.id };
+    await DB.upsertPrediction({ member_id: next.member_id, fight_id: f.id, winner_id: next.winner_id,
       method: next.method || null, round: next.round || null, technique: next.technique || null });
     myPreds[f.id] = next;
     WIZ.pend = null;

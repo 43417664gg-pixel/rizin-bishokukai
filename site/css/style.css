@@ -1226,6 +1226,11 @@ body.wiz-open { overflow: hidden; }
 .wiz-nav button:disabled { opacity: .3; }
 
 /* 押したら「これでいい？」：真ん中に大きい「決定」、両脇は前後の試合へ（Gaku 11/7「これでいい？は各試合の予想登録の話」） */
+/* 決まり手（任意）：判定／KO/TKO／一本 → KO・一本なら決定打とラウンド */
+.wiz-kim { flex: none; max-width: 720px; width: 100%; margin: 0 auto; padding: 2px 14px 4px; }
+.wk-row { display: flex; gap: 6px; margin-top: 6px; }
+.wk-row .chip { flex: 1; height: 40px; padding: 0 6px; font-size: 14px; font-weight: 700; }
+.wk-row .tech-select { flex: 2.4; min-width: 0; height: 40px; }
 .wiz-nav.ask button.wiz-arw { flex: none; width: 54px; font-size: 22px; }
 .wiz-nav button.wiz-ok { flex: 1; height: 54px; border: 0; color: #fff; font-size: 19px; letter-spacing: .3em; text-indent: .3em;
   background: linear-gradient(180deg, var(--red-hot), var(--red)); clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
