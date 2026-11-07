@@ -142,7 +142,7 @@
       `<a href="${href}" class="nav-link${active === key ? " active" : ""}">${label}</a>`;
     el.innerHTML = `
       <div class="header-inner">
-        <a class="brand" href="index.html">予想<span>番付</span></a>
+        <a class="brand" href="index.html">予想番付</a>
         <nav>
           ${link("index.html", "大会", "home")}
           ${link("ranking.html", "ランキング", "ranking")}

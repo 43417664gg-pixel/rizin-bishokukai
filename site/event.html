@@ -7,7 +7,7 @@
 <title>大会予想｜予想番付</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261107230854">
+<link rel="stylesheet" href="css/style.css?v=20261107231744">
 </head>
 <body>
 <div id="app-header"></div>
@@ -17,12 +17,12 @@
 <div class="wiz" id="wiz" hidden role="dialog" aria-modal="true" aria-label="勝敗予想"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261107230854"></script>
-<script src="js/techniques.js?v=20261107230854"></script>
-<script src="js/demo-data.js?v=20261107230854"></script>
-<script src="js/api.js?v=20261107230854"></script>
-<script src="js/app.js?v=20261107230854"></script>
-<script src="js/bishoku_summary.js?v=20261107230854"></script>
+<script src="js/config.js?v=20261107231744"></script>
+<script src="js/techniques.js?v=20261107231744"></script>
+<script src="js/demo-data.js?v=20261107231744"></script>
+<script src="js/api.js?v=20261107231744"></script>
+<script src="js/app.js?v=20261107231744"></script>
+<script src="js/bishoku_summary.js?v=20261107231744"></script>
 <script>
 let EV, PHASE, FIGHTS, FMAP, MEMBERS, myPreds = {}, allPreds = [], ALL_SUPPORTS = [];
 
@@ -97,11 +97,15 @@ async function toggleSupport(fightId, fighterId) {
   } catch (e) { toast("応援テーブルが未作成かも（要SQL）"); }
 }
 
+// 試合の見出し：1行（Gaku 11/7「2段になってる・文字ダサい」）。大きい番号 → 題（あれば赤）／階級 → 右端に体重
+// 題に階級名が入っていれば（RIZINフライ級タイトルマッチ）階級も体重も繰り返さない（階級＝体重は決まっている・スマホで1行に収める）
 function fightLabel(f) {
-  const no = f.segment === "opening" ? `OPENING 第${f.order_no}試合` : `第${f.order_no}試合`;
-  return `<span class="fno">${no}</span>
-    ${f.title_label ? `<span class="title-label">${esc(f.title_label)}</span>` : ""}
-    ${f.weight_class ? `<span>${esc(weightClassName(f.weight_class))}（${esc(f.weight_class)}）</span>` : ""}
+  const wc = f.weight_class ? weightClassName(f.weight_class) : "";
+  const t = f.title_label
+    ? `<span class="fl-t title-label">${esc(f.title_label)}</span>${wc && !f.title_label.includes(wc) ? `<span class="fl-t">${esc(wc)}</span>` : ""}`
+    : wc ? `<span class="fl-t">${esc(wc)}</span>` : "";
+  return `<span class="fno">${f.segment === "opening" ? "OP " : ""}第<b>${f.order_no}</b>試合</span>${t}
+    ${f.weight_class && f.weight_class !== wc && !f.title_label?.includes(wc) ? `<span class="fl-kg">${esc(f.weight_class)}</span>` : ""}
     ${f.no_score ? `<span class="ns-badge">⚠️ ${esc(f.no_score_note || "体重超過")}｜予想対象外</span>` : ""}
     ${f.event_only ? `<span class="ns-badge">${esc(f.event_only_note || "MMA以外のルール")}｜予想は任意・通算対象外</span>` : ""}`;
 }
@@ -467,7 +471,7 @@ function voteBar(f) {
 // 各カードの下に出す「みんなの予想」ブロック。得票率グラフで割れ具合は一目なので文言バッジは出さない。
 function othersBlock(f) {
   return `<div class="ob-picks" id="op_${f.id}">
-    <div class="ob-head">みんなの予想</div>
+    <div class="ob-head">みんなの予想<span class="ob-n">${allPreds.filter(p => p.fight_id === f.id).length}<small>人</small></span></div>
     ${picksRows(f)}
   </div>`;
 }
@@ -478,7 +482,6 @@ function eventSummary() {
   if (!rows.length) return "";
   return `
     <div class="summary-box">
-      <div class="en-label gold">FINAL RESULT</div>
       <div class="summary-title">この大会の成績</div>
       ${rows.map((r, i) => `
         <div class="summary-row ${i === 0 ? "champ" : ""}">
@@ -650,15 +653,13 @@ function wizCta() {
       ${face(m.fighter1_id)}<span class="wc-t">${all ? "予想を見直す" : "予想を入れる"}<small>${all ? "CHECK YOUR PICKS" : "WHO WINS?"}</small></span>${face(m.fighter2_id)}
     </button>`;
 }
-const WIZ = { list: [], i: 0, draft: {} };   // draft＝この画面で選んだ勝者（決定するまで保存しない・閉じても次に開けば残っている）
+const WIZ = { list: [], i: 0, pend: null };   // pend＝この試合で押した勝者。「決定」で保存するまでは仮（Gaku 11/7「これでいい？は各試合の予想登録の話」）
 const wizSaved = (f) => myPreds[f.id]?.winner_id || null;
-const wizPickOf = (f) => (f.id in WIZ.draft ? WIZ.draft[f.id] : wizSaved(f));
-const wizChanged = () => WIZ.list.filter(f => wizPickOf(f) !== wizSaved(f));
 function openWiz(fightId) {
   WIZ.list = WIZ_FIGHTS();
   if (!WIZ.list.length) return;
-  const at = WIZ.list.findIndex(f => fightId ? f.id === fightId : !wizPickOf(f));
-  WIZ.i = at < 0 ? (fightId ? 0 : "done") : at;
+  WIZ.i = Math.max(0, WIZ.list.findIndex(f => fightId ? f.id === fightId : !wizSaved(f)));
+  WIZ.pend = null;
   document.getElementById("wiz").hidden = false;
   document.body.classList.add("wiz-open");
   history.pushState({ wiz: 1 }, "");
@@ -668,93 +669,66 @@ function hideWiz() {
   document.getElementById("wiz").hidden = true;
   document.body.classList.remove("wiz-open");
 }
-// × は、まだ決定していない選択があれば先に「これでいい？」へ寄る
-function closeWiz(force) {
-  if (!force && WIZ.i !== "done" && wizChanged().length) { WIZ.i = "done"; drawWiz(); return; }
-  if (history.state?.wiz) history.back(); else hideWiz();
-}
-function discardWiz() { WIZ.draft = {}; closeWiz(true); }
+function closeWiz() { if (history.state?.wiz) history.back(); else hideWiz(); }
 addEventListener("popstate", () => { if (!document.getElementById("wiz").hidden) hideWiz(); });
+function wizGo(k) { WIZ.i = k; WIZ.pend = null; drawWiz(); }
 function drawWiz(pop) {
-  const w = document.getElementById("wiz"), L = WIZ.list;
-  const bar = `<span class="ep-bar wiz-bar">${L.map((f, k) =>
-    `<i class="${wizPickOf(f) ? "on" : ""}${k === WIZ.i ? " cur" : ""}" onclick="WIZ.i=${k};drawWiz()"></i>`).join("")}</span>`;
-  const top = `<div class="wiz-top"><button type="button" class="wiz-x" onclick="closeWiz()" aria-label="閉じる">×</button>${bar}</div>`;
-  if (WIZ.i === "done") {
-    const n = L.filter(wizPickOf).length, chg = wizChanged().length;
-    w.innerHTML = top + `<div class="wiz-done">
-        <div class="wd-n"><b>${n}</b>/${L.length}</div>
-        ${chg ? `<h2 class="wiz-h wd-h">これでいい？</h2>` : ""}
-        <ol class="wd-list">${L.map((f, k) => {
-          const wid = wizPickOf(f), win = wid ? FMAP[wid] : null;
-          const lose = win ? FMAP[wid === f.fighter1_id ? f.fighter2_id : f.fighter1_id] : null;
-          return `<li${wid !== wizSaved(f) ? ` class="chg"` : ""}><button type="button" onclick="WIZ.i=${k};drawWiz()"><span class="wd-no">${f.segment === "opening" ? "OP" : ""}${f.order_no}</span>${win
-            ? `<b class="${wid === f.fighter1_id ? "r" : "b"}">${esc(win.name)}</b><small>vs ${esc(lose?.name || "")}</small>`
-            : `<span class="wd-none">${esc(FMAP[f.fighter1_id]?.name || "")} vs ${esc(FMAP[f.fighter2_id]?.name || "")}</span>`}</button></li>`;
-        }).join("")}</ol>
-        <div class="wd-actions">${chg
-          ? `<button type="button" class="wiz-close" id="wiz-commit" onclick="wizCommit()">これで決定</button>
-             <button type="button" class="wd-discard" onclick="discardWiz()">保存しないで閉じる</button>`
-          : `<button type="button" class="wiz-close" onclick="closeWiz(true)">閉じる</button>`}
-          <p class="wd-note">決まり手・ラウンドは決定のあと各カードで</p>
-        </div>
-      </div>`;
-    return;
-  }
-  const f = L[WIZ.i], wid = wizPickOf(f);
+  const w = document.getElementById("wiz"), L = WIZ.list, f = L[WIZ.i];
+  const saved = wizSaved(f), wid = WIZ.pend || saved, ask = !!WIZ.pend, last = WIZ.i === L.length - 1;
+  const bar = `<span class="ep-bar wiz-bar">${L.map((x, k) =>
+    `<i class="${wizSaved(x) ? "on" : ""}${k === WIZ.i ? " cur" : ""}" onclick="wizGo(${k})"></i>`).join("")}</span>`;
   const c = (side) => {
     const fid = side === 1 ? f.fighter1_id : f.fighter2_id, sel = wid === fid;
     return cornerBox(f, side, { sel, tag: "button", attrs: ` onclick="wizPick(${side})"`, cls: sel && pop ? "pop" : "" });
   };
-  w.innerHTML = top + `
-    <div class="wiz-q"><div class="fight-label">${fightLabel(f)}</div><h2 class="wiz-h">どっちが勝つ？</h2></div>
+  w.innerHTML = `<div class="wiz-top"><button type="button" class="wiz-x" onclick="closeWiz()" aria-label="閉じる">×</button>${bar}</div>
+    <div class="wiz-q"><div class="fight-label">${fightLabel(f)}</div><h2 class="wiz-h">${ask ? "これでいい？" : "どっちが勝つ？"}</h2></div>
     <div class="vs-row wiz-stage${wid ? " has-sel" : ""}">${c(1)}<span class="vs-mark">VS</span>${c(2)}</div>
-    <div class="wiz-nav">
-      <button type="button" onclick="wizStep(-1)" ${WIZ.i === 0 ? "disabled" : ""}>‹ 戻る</button>
-      <button type="button" onclick="wizStep(1)">${wid ? "次へ" : "飛ばす"} ›</button>
+    <div class="wiz-nav${ask ? " ask" : ""}">${ask
+      ? `<button type="button" class="wiz-arw" onclick="wizStep(-1)" ${WIZ.i === 0 ? "disabled" : ""} aria-label="前の試合">‹</button>
+         <button type="button" class="wiz-ok" id="wiz-ok" onclick="wizCommit()">決定</button>
+         <button type="button" class="wiz-arw" onclick="wizStep(1)" aria-label="${last ? "閉じる" : "次の試合"}">›</button>`
+      : `<button type="button" onclick="wizStep(-1)" ${WIZ.i === 0 ? "disabled" : ""}>‹ 戻る</button>
+         <button type="button" onclick="wizStep(1)">${last ? "閉じる" : saved ? "次へ ›" : "飛ばす ›"}</button>`}
     </div>`;
 }
+// 決定せずに離れた試合は保存しない（押しただけでは入らない）
 function wizStep(d) {
   const k = WIZ.i + d;
-  WIZ.i = k < 0 ? 0 : k >= WIZ.list.length ? "done" : k;
-  drawWiz();
+  if (k >= WIZ.list.length) return closeWiz();
+  wizGo(Math.max(0, k));
 }
-let WIZ_T = 0;
+// 押したら金で囲んで「これでいい？」。もう一方を押せば選び直し、登録済みと同じ方なら仮を消す
 function wizPick(side) {
-  const f = WIZ.list[WIZ.i];
-  WIZ.draft[f.id] = side === 1 ? f.fighter1_id : f.fighter2_id;
+  const f = WIZ.list[WIZ.i], fid = side === 1 ? f.fighter1_id : f.fighter2_id;
+  WIZ.pend = fid === wizSaved(f) ? null : fid;
   drawWiz(true);
-  // 次は、まだ選んでいない次の試合（後ろに無ければ前から）。全部選んだら「これでいい？」
-  clearTimeout(WIZ_T);
-  WIZ_T = setTimeout(() => {
-    const L = WIZ.list, from = WIZ.i;
-    const rest = [...L.slice(from + 1), ...L.slice(0, from)].find(x => !wizPickOf(x));
-    WIZ.i = rest ? L.indexOf(rest) : "done";
-    drawWiz();
-  }, 650);
 }
-// 「これで決定」：変えた試合だけを順に保存する。勝者を変えても決まり手・ラウンドはそのまま（カードで押し直した時と同じ）
+// 「決定」：この1試合を保存して、まだ予想していない次の試合へ。全部入っていれば閉じる。
+// 勝者を変えても決まり手・ラウンドはそのまま
 async function wizCommit() {
-  const btn = document.getElementById("wiz-commit"), todo = wizChanged().filter(wizPickOf);
+  const f = WIZ.list[WIZ.i], wid = WIZ.pend, btn = document.getElementById("wiz-ok");
+  if (!wid) return;
   btn.disabled = true; btn.textContent = "保存中…";
-  let done = 0;
   try {
     if (window.CLAIM_PROMISE) await window.CLAIM_PROMISE;   // 名前の紐づけが終わる前に保存するとRLSで弾かれる
-    for (const f of todo) {
-      const next = { ...(myPreds[f.id] || {}), winner_id: wizPickOf(f), member_id: getMemberId(), fight_id: f.id };
-      await DB.upsertPrediction({ member_id: next.member_id, fight_id: f.id, winner_id: next.winner_id,
-        method: next.method || null, round: next.round || null, technique: next.technique || null });
-      myPreds[f.id] = next;
-      delete WIZ.draft[f.id];
-      replaceCard(f.id);
-      done++;
-    }
-    toast(`${done}試合の予想を保存 ✓`);
-    closeWiz(true);
-    await refreshMatrix();
+    const next = { ...(myPreds[f.id] || {}), winner_id: wid, member_id: getMemberId(), fight_id: f.id };
+    await DB.upsertPrediction({ member_id: next.member_id, fight_id: f.id, winner_id: wid,
+      method: next.method || null, round: next.round || null, technique: next.technique || null });
+    myPreds[f.id] = next;
+    WIZ.pend = null;
+    replaceCard(f.id);
+    refreshMatrix().catch(() => {});
+    btn.textContent = "✓";
+    const L = WIZ.list, rest = [...L.slice(WIZ.i + 1), ...L.slice(0, WIZ.i)].find(x => !wizSaved(x));
+    setTimeout(() => {
+      if (document.getElementById("wiz").hidden) return;
+      if (rest) wizGo(L.indexOf(rest));
+      else { toast(`全${L.length}試合 予想済み ✓`); closeWiz(); }
+    }, 420);
   } catch (e) {
     toast(window.saveErrorText ? saveErrorText(e) : (e.message || "保存できなかった"));
-    drawWiz();   // 保存できた分は保存済み、残りは選んだまま「これでいい？」に残る
+    btn.disabled = false; btn.textContent = "決定";
   }
 }
 
