@@ -103,7 +103,9 @@
   window.CAREER_MIN = 8;
   // 美食会の3人は母数に関わらず通算でもランクインさせる（Gaku指示・2026-11-07「丸山先生も入れてあげて」）。
   // 基準は外部の予想者が少数的中で居座るのを防ぐためのもので、仲間をはじくためのものではない。
-  window.ALWAYS_RANKED = ["m_hame", "m_nuki", "m_maruyama"];
+  // 美食会の3人。予想を書ける条件（LINEの固定リンクで開いたブラウザ）も同じ3人＝SQLの owns_member() と揃える
+  window.BISHOKU = ["m_hame", "m_nuki", "m_maruyama"];
+  window.ALWAYS_RANKED = window.BISHOKU;
   window.isRanked = function (row, scope) {
     if (row.answered > 0 && row.member && window.ALWAYS_RANKED.includes(row.member.id)) return true;
     return scope !== "career" || row.decided >= window.CAREER_MIN;
@@ -306,86 +308,54 @@
   window.addEventListener("unhandledrejection", (e) => { console.error("[fatal]", e.reason); showFatal(e); });
   window.addEventListener("error", (e) => { console.error("[fatal]", e.error || e.message); showFatal(e.error || e.message); });
 
-  // 端末に残っているメンバーを、持ち主が空なら自分のものとして主張する。
-  // 仲間3人（ハメ太郎・抜き太郎・丸山探偵事務所）は、次にサイトを開いた時点で
-  // 自動的に紐づく＝本人の操作は不要。失敗しても黙って続行する（体験を止めない）。
+  // ---------- 予想を書けるブラウザか（2026-11-07 作り直し） ----------
+  // 美食会の3人：LINEに貼った固定リンク（index.html#bishoku=鍵）で開いたブラウザなら書ける。
+  //   LINE内ブラウザとSafariが別扱い・iPhoneの7日消去・機種変更があっても、同じリンクから開けば戻る。
+  // ゲスト（自分で名前を作った人）：作ったブラウザで書ける（members.owner_uid）。
+  // 書けない時は黙って失敗させず、開いた瞬間に赤い帯で知らせる。
+  const keyMatch = /[#&]bishoku=([A-Za-z0-9]+)/.exec(location.hash);
+  if (keyMatch) history.replaceState(null, "", location.pathname + location.search);   // 鍵をURLバーに残さない
+  window.JOIN_PROMISE = (async () => {
+    if (!keyMatch || !window.DB || typeof DB.joinBishoku !== "function") return null;
+    try { return await DB.joinBishoku(keyMatch[1].toLowerCase()); }
+    catch (e) { console.warn("[auth] join_bishoku 失敗:", e); return "error"; }
+  })();
+
   window.claimMyMember = async function () {
     try {
-      if (!window.DB || typeof DB.claimMember !== "function") return;
-      // 合言葉リンク（…#bind=xxxxxx）で開かれたら、この端末をその名前の端末として登録する
-      const bind = /[#&]bind=([A-Za-z0-9]+)/.exec(location.hash);
-      if (bind) {
-        history.replaceState(null, "", location.pathname + location.search);
-        await bindAndReload(bind[1]);
-        return;
-      }
+      const joined = await window.JOIN_PROMISE;
       const mid = getMemberId();
-      if (!mid) return;
+      if (!mid || !window.DB || typeof DB.isBishokuDevice !== "function") return;
       const uid = await window.AUTH_READY;
       if (!uid) return;
       const me = (await DB.listMembers()).find(m => m.id === mid);
       if (!me || me.is_curated) return;
-      if (me.owner_uid && me.owner_uid !== uid) {
-        // 2026-11-07：名前が別の端末（＝別の見えないID）に紐づいていると、RLSで保存が全部弾かれる。
-        // iPhoneのSafariは7日来ないとサイトのデータを消す／LINEのブラウザとSafariは別扱い、で普通に起きる。
-        // 合言葉で追加登録済みなら書ける。未登録なら黙って失敗させず、開いた瞬間に分かるように出す。
-        if (await DB.isBoundDevice(mid).catch(() => false)) return;
+      if (window.BISHOKU.includes(mid)) {
+        if (joined === true || await DB.isBishokuDevice().catch(() => false)) return;
+        if (me.owner_uid === uid) return;   // 以前からこのブラウザに紐づいている
         window.MEMBER_LOCKED = me.name;
-        installLockedBanner(me.name);
+        installLockedBanner(me.name, joined === false ? "リンクの鍵が古いようです。LINEの最新のリンクから開いてください" : "");
         return;
       }
-      if (me.owner_uid) return;
-      await DB.claimMember(mid, uid);
-      console.info("[auth] メンバーを引き継ぎました:", me.name);
-    } catch (e) { /* 列が未追加／権限なし等。公開前の移行期は無視してよい */ }
+      if (me.owner_uid && me.owner_uid !== uid) {
+        window.MEMBER_LOCKED = me.name;
+        installLockedBanner(me.name, "");
+      }
+    } catch (e) { /* 表示を止めない */ }
   };
-  // 成功したら名前を選んだ状態にして開き直す。失敗はエラーで返す（呼び元が表示する）
-  async function bindAndReload(code) {
-    let mid;
-    try {
-      mid = await DB.bindByCode(code.trim().toLowerCase());
-    } catch (e) {
-      // SQL未適用（関数が無い）など。合言葉の正誤とは別の失敗
-      console.warn("[auth] bind_by_code 失敗:", e);
-      bindNotify("いま合言葉を受け付けられません（サーバー側の準備中）。Gakuに連絡してください");
-      throw e;
-    }
-    if (!mid) {
-      bindNotify("合言葉が違います");
-      throw new Error("合言葉が違います");
-    }
-    setMemberId(mid);
-    location.reload();
-  }
-  // 赤い帯があれば帯の中に残す（トーストは1.5秒で消えて読めない）。帯が無い時（リンクで開いた時）は alert
-  function bindNotify(msg) {
-    const el = document.getElementById("bind-msg");
-    if (el) el.textContent = msg; else alert(msg);
-  }
-  function installLockedBanner(name) {
+  function installLockedBanner(name, extra) {
+    const isFriend = window.BISHOKU.includes(getMemberId());
     const put = () => {
       if (document.getElementById("locked-banner")) return;
       const d = document.createElement("div");
       d.id = "locked-banner";
       d.style.cssText = "position:sticky;top:0;z-index:9999;background:#7a1520;color:#ffd9dd;" +
         "padding:10px 14px;font-size:13px;line-height:1.6;border-bottom:2px solid #c9a84a;text-align:center";
-      d.innerHTML = "⚠️ <b>この端末からは「" + esc(name) + "」の予想をまだ保存できません。</b><br>" +
-        "Gakuから届いたリンクを開くか、合言葉（6文字）を入れてください。<br>" +
-        '<form style="margin-top:6px;display:inline-flex;gap:6px">' +
-        '<input name="code" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="12" ' +
-        'placeholder="合言葉" style="width:9em;padding:6px 8px;border-radius:6px;border:1px solid #c9a84a;' +
-        'background:#1a0d10;color:#fff;font-size:16px">' +
-        '<button style="padding:6px 12px;border-radius:6px;border:0;background:#c9a84a;color:#1a0d10;font-weight:800">使えるようにする</button>' +
-        "</form>" +
-        '<div id="bind-msg" style="margin-top:4px;font-weight:800;color:#ffe08a"></div>';
-      d.querySelector("form").addEventListener("submit", async (ev) => {
-        ev.preventDefault();
-        const code = ev.target.code.value;
-        if (!code.trim()) return;
-        const btn = ev.target.querySelector("button");
-        btn.disabled = true;
-        try { await bindAndReload(code); } catch (_) { btn.disabled = false; }
-      });
+      d.innerHTML = "⚠️ <b>このブラウザからは「" + esc(name) + "」の予想を保存できません。</b><br>" +
+        (isFriend
+          ? "<b>美食会のLINEに貼ってあるリンク</b>から開き直してください（そのまま予想できます）。"
+          : "この名前を作った端末・ブラウザから開いてください。") +
+        (extra ? '<div style="margin-top:4px;font-weight:800;color:#ffe08a">' + esc(extra) + "</div>" : "");
       document.body.prepend(d);
     };
     if (document.body) put(); else document.addEventListener("DOMContentLoaded", put);
@@ -395,7 +365,9 @@
     const s = String((e && (e.code + " " + e.message)) || e || "");
     if (/42501|row-level security/i.test(s)) {
       if (window.MEMBER_LOCKED)
-        return "保存できませんでした：この端末は「" + window.MEMBER_LOCKED + "」としてまだ登録されていません。画面上の赤い帯に合言葉を入れてください";
+        return window.BISHOKU.includes(getMemberId())
+          ? "保存できませんでした：美食会のLINEのリンクから開き直してください"
+          : "保存できませんでした：この名前を作った端末・ブラウザから開いてください";
       return "保存できませんでした（締切後か、名前の紐づけが済んでいません）。再読み込みしてもう一度試してください";
     }
     return (e && e.message) || "保存できなかった";
@@ -416,7 +388,7 @@
           "端末をまたいでも引き継げる仕組みに作り直しますので、" +
           "次の大会からは確実に入れる状態にしてお迎えします。"
   };
-  // 2026-11-07 掲出終了：新しいブラウザ（LINE内など）では毎回出て、合言葉の赤い帯を覆い隠していた
+  // 2026-11-07 掲出終了：新しいブラウザ（LINE内など）では毎回出て、保存できない時の赤い帯を覆い隠していた
   const NOTICE_UNTIL = Date.parse("2026-10-01T00:00:00+09:00");
   window.showNoticeIfAny = function () {
     try {

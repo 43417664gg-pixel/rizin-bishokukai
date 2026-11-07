@@ -1,5 +1,5 @@
 -- ============================================================
--- ★緊急（2026-11-07・RIZIN.55前日）★ 同じ名前を複数の端末・ブラウザで使えるようにする
+-- ★緊急（2026-11-07・RIZIN.55前日）★ 美食会の3人は「LINEの固定リンク」から開けば必ず予想できる
 --
 -- 症状：仲間が予想を登録できない（2回目。1回目は2026-09-09）
 --       new row violates row-level security policy for table "predictions" (42501)
@@ -13,59 +13,65 @@
 --       いったん別の端末に紐づくと、二度と書けない。2026-09-10のお詫びで
 --       「端末をまたいでも引き継げる仕組みに作り直します」と約束したまま、未実装だった。
 --
--- 対策：名前ごとの「合言葉」を1つ持たせ、合言葉を入れた端末を member_devices に追加登録する。
---       書き込みの判定は「owner_uid が自分」または「member_devices に自分がいる」。
---       合言葉の値はこのファイルに書かない（公開リポジトリ）。別ファイルで投入する。
+-- 運用（Gaku確定・2026-11-07）：美食会の3人はLINEでやりとりし、Gakuが毎回同じリンクを引用して
+--       「お願いします」と投稿する。3人はそのリンクから入り、自分の名前で予想する。
+--
+-- 対策：そのリンクに「美食会の鍵」を1つ埋め込む（index.html#bishoku=<鍵>）。
+--       リンクから開いたブラウザを group_devices に登録し、登録済みのブラウザは
+--       美食会3人の名前で予想を書ける。ブラウザがデータを消しても、同じリンクから開けば自動で戻る。
+--       鍵の無いURLで開いた第三者は、3人の名前で書けない（一般公開に耐える）。
+--       鍵の値はこのファイルに書かない（公開リポジトリ）。別ファイルで投入する。
 --
 -- 併せて塞ぐ穴（同日の監査で発見）：
 --   A) is_real_admin() が「匿名でないログイン者なら誰でも」＝メール登録が開いているので、
 --      誰でもアカウントを作って管理者になれた → 管理者のUIDに固定する
 --   B) 9月以降に取り込んだ外部予想者14人が is_curated=false のまま
 --      ＝「持ち主のいない名前は誰でも名乗れる」に掛かり、第三者がその名義で予想を書き換えられた
+--   C) 同じ穴で、丸山探偵事務所（持ち主が空）も最初に選んだ人のものになっていた
+--      → 「持ち主のいない名前を名乗る」ポリシー自体を廃止（美食会はリンクの鍵で書ける）
 -- ============================================================
 
--- 1) 追加の端末
-create table if not exists member_devices (
-  member_id  text not null references members(id) on delete cascade,
-  uid        uuid not null,
-  created_at timestamptz not null default now(),
-  primary key (member_id, uid)
+-- 1) 美食会の鍵で登録されたブラウザ
+create table if not exists group_devices (
+  uid        uuid primary key,
+  created_at timestamptz not null default now()
 );
-alter table member_devices enable row level security;
-drop policy if exists "read own devices" on member_devices;
-create policy "read own devices" on member_devices for select using (uid = auth.uid());
--- 書き込みのポリシーは作らない＝直接は誰も書けない。下の bind_by_code だけが書く
+alter table group_devices enable row level security;
+drop policy if exists "read own group device" on group_devices;
+create policy "read own group device" on group_devices for select using (uid = auth.uid());
+-- 書き込みのポリシーは作らない＝直接は誰も書けない。下の join_bishoku だけが書く
 
--- 2) 合言葉。ポリシー無し＝ブラウザからは誰も読めない
-create table if not exists member_secrets (
-  member_id text primary key references members(id) on delete cascade,
-  code      text not null unique
+-- 2) 鍵。ポリシー無し＝ブラウザからは誰も読めない
+create table if not exists app_secrets (
+  name text primary key,
+  code text not null
 );
-alter table member_secrets enable row level security;
+alter table app_secrets enable row level security;
 
--- 3) 合言葉を入れた端末を、その名前の端末として登録する。成功したら member_id を返す
-create or replace function public.bind_by_code(p_code text) returns text
+-- 3) 鍵の入ったリンクで開いたブラウザを、美食会のブラウザとして登録する
+create or replace function public.join_bishoku(p_code text) returns boolean
 language plpgsql security definer set search_path = public as $$
-declare mid text;
 begin
-  if auth.uid() is null or p_code is null then return null; end if;
-  select member_id into mid from member_secrets where code = lower(trim(p_code));
-  if mid is null then
+  if auth.uid() is null or p_code is null then return false; end if;
+  if not exists (select 1 from app_secrets where name = 'bishoku' and code = lower(trim(p_code))) then
     perform pg_sleep(1);   -- 総当たりを遅くする
-    return null;
+    return false;
   end if;
-  insert into member_devices (member_id, uid) values (mid, auth.uid()) on conflict do nothing;
-  return mid;
+  insert into group_devices (uid) values (auth.uid()) on conflict do nothing;
+  return true;
 end $$;
-revoke all on function public.bind_by_code(text) from public;
-revoke all on function public.bind_by_code(text) from anon;
-grant execute on function public.bind_by_code(text) to authenticated;
+revoke all on function public.join_bishoku(text) from public;
+revoke all on function public.join_bishoku(text) from anon;
+grant execute on function public.join_bishoku(text) to authenticated;
 
 -- 4) 「この名前で書いてよいか」の判定を1か所に
+--    ゲスト（自分で作った名前）＝作ったブラウザ／美食会3人＝鍵で登録したブラウザ
+--    ※3人の一覧は site/js/app.js の BISHOKU と揃える
 create or replace function public.owns_member(p_member text) returns boolean
 language sql stable security definer set search_path = public as $$
   select exists (select 1 from members m where m.id = p_member and m.owner_uid = auth.uid())
-      or exists (select 1 from member_devices d where d.member_id = p_member and d.uid = auth.uid())
+      or (p_member in ('m_hame', 'm_nuki', 'm_maruyama')
+          and exists (select 1 from group_devices g where g.uid = auth.uid()))
 $$;
 grant execute on function public.owns_member(text) to anon, authenticated;
 
@@ -112,8 +118,11 @@ $$;
 -- 7) 穴B：外部予想者は全員「運営が入れた名前」＝誰も名乗れない
 update members set is_curated = true where id like 'm_yt_%' and coalesce(is_curated, false) = false;
 
+-- 8) 穴C：持ち主のいない名前を名乗るポリシーを廃止
+drop policy if exists "claim unowned member" on members;
+
 -- 確認用
 --   select id, name, owner_uid, is_curated from members where coalesce(is_curated,false) = false;
 --     → m_hame / m_nuki / m_maruyama の3人だけになっていればよい
---   select member_id from member_secrets order by 1;
---     → 合言葉を投入した名前が並ぶ（値は出さない）
+--   select name from app_secrets;   → bishoku が1行（値は出さない）
+--   select count(*) from group_devices;   → リンクから開いたブラウザの数
