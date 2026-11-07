@@ -263,13 +263,16 @@ img { max-width: 100%; display: block; }
 .compact-main { font-size: 12px; color: #e8e8ee; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .compact-hook { font-size: 11px; color: var(--gold); font-weight: 700; }
 
-/* 次大会の匂わせラベル */
+/* 次大会の匂わせラベル。絵文字で飾らない（Gaku 11/7「スマホの文字で打った感がダメ」）＝英字の組みと斜めの3本線だけ */
 .next-flag {
-  display: inline-flex; align-items: center; gap: 6px; margin: 2px 0 8px;
-  font-size: 12px; font-weight: 900; letter-spacing: .04em; color: #fff;
-  background: linear-gradient(90deg, var(--red), #7a0a12); padding: 5px 12px;
+  display: inline-flex; align-items: center; gap: 9px; margin: 2px 0 8px;
+  font-family: var(--num); font-size: 13px; font-weight: 700; letter-spacing: .34em; line-height: 1; color: #fff;
+  background: linear-gradient(90deg, var(--red), #7a0a12); padding: 6px 18px 6px 12px;
   clip-path: polygon(0 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
 }
+.next-flag i { width: 13px; height: 10px; transform: skewX(-24deg);
+  background: repeating-linear-gradient(90deg, #fff 0 2.5px, transparent 2.5px 5px); }
+.cm-w { margin-right: 7px; padding: 1px 6px; font: 700 10px/1.4 var(--num); letter-spacing: .14em; color: #fff; background: var(--red); vertical-align: 1px; }
 
 /* カード未発表（COMING SOON） */
 .event-card.soon {

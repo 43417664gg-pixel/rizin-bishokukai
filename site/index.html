@@ -7,18 +7,18 @@
 <title>予想番付｜格闘技の勝敗予想</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261107223900">
+<link rel="stylesheet" href="css/style.css?v=20261107224127">
 </head>
 <body>
 <div id="app-header"></div>
 <div class="wrap" id="main"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261107223900"></script>
-<script src="js/techniques.js?v=20261107223900"></script>
-<script src="js/demo-data.js?v=20261107223900"></script>
-<script src="js/api.js?v=20261107223900"></script>
-<script src="js/app.js?v=20261107223900"></script>
+<script src="js/config.js?v=20261107224127"></script>
+<script src="js/techniques.js?v=20261107224127"></script>
+<script src="js/demo-data.js?v=20261107224127"></script>
+<script src="js/api.js?v=20261107224127"></script>
+<script src="js/app.js?v=20261107224127"></script>
 <script>
 // Xから来た人に「いま何をやっているか」を最初に見せる。
 // 監査（2026-08-31）で、入口に大会情報がゼロのまま登録を求めていて離脱する形だったため追加。
@@ -140,7 +140,7 @@ async function renderHome() {
       .sort((a, b) => b.order_no - a.order_no);
     const main = done[0];
     const mainTxt = main
-      ? `🏆 ${esc(FMAP[main.winner_id]?.name || "")}　${METHOD_LABEL[main.result_method] || ""}`
+      ? `<span class="cm-w">WIN</span>${esc(FMAP[main.winner_id]?.name || "")}　${METHOD_LABEL[main.result_method] || ""}`
       : "結果発表";
     return `
       <a class="event-card compact result" href="event.html?id=${ev.id}">
@@ -213,7 +213,7 @@ async function renderHome() {
   const liveCards = await Promise.all(live.map(fullCard));
   // 先頭の未来大会＝次大会。NEXTで匂わせる。
   const liveHtml = liveCards.map((html, i) =>
-    i === 0 ? `<div class="next-flag">🔥 NEXT</div>${html}` : html).join("");
+    i === 0 ? `<div class="next-flag"><i></i>NEXT</div>${html}` : html).join("");
   const pastHtml = (await Promise.all(pastFinished.map(fullCard))).join("");
 
   document.getElementById("main").innerHTML = `
