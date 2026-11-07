@@ -56,6 +56,16 @@ const CSS = `
   /* 塗りは原色ベタではなく、左上に光・縁に影の球（Gaku 11/7「丸アイコンの色もデザイン寄せて」）。赤・青・金の系統は見分けの目印なので残す */
   .ic, .ci { background:radial-gradient(circle at 32% 26%, color-mix(in srgb, var(--c) 58%, #fff) 0%, var(--c) 46%, color-mix(in srgb, var(--c) 52%, #000) 100%); }
   .ic.sq, .ci.sq { border-radius:12%; }   /* 抜き太郎だけ正方形（Gaku指定11/7） */
+  /* ハメ太郎は三角形（Gaku 11/8）。三角に切ると縁と黒いシールの輪郭（border／box-shadow）も消えるので、
+     縁（寮の金）と塗りは疑似要素の三角2枚を重ね、黒い輪郭は drop-shadow で形に沿わせる */
+  .ic.tri, .ci.tri { position:relative; isolation:isolate; border:0; border-radius:0; background:none; box-shadow:none;
+        filter:drop-shadow(3px 0 0 #08080a) drop-shadow(-3px 0 0 #08080a) drop-shadow(0 3px 0 #08080a) drop-shadow(0 -3px 0 #08080a) drop-shadow(0 3px 10px rgba(0,0,0,.7)); }
+  .ic.tri::before, .ic.tri::after, .ci.tri::before, .ci.tri::after { content:""; position:absolute; z-index:-1; clip-path:polygon(50% 0, 100% 100%, 0 100%); }
+  .ic.tri::before, .ci.tri::before { inset:0; background:var(--t, #f4f1ea); }
+  /* 縁の太さ b を三辺で揃える＝内側の三角を内心に向けて縮める（上 2.236b・左右 1.618b・下 b） */
+  .ic.tri::after, .ci.tri::after { --b:calc(4px * var(--u) + 1px); inset:calc(var(--b) * 2.236) calc(var(--b) * 1.618) var(--b);
+        background:radial-gradient(circle at 44% 62%, color-mix(in srgb, var(--c) 58%, #fff) 0%, var(--c) 46%, color-mix(in srgb, var(--c) 52%, #000) 100%); }
+  .tri > i { font-style:normal; font-size:.8em; position:relative; top:.3em; }
   .ic.lt, .ci.lt { color:#1a1408; text-shadow:none; }   /* 金など明るい塗り＝白い字が沈むので黒字 */
   /* 縁の色＝寮の差し色（ハメ＝金・抜き＝銀・丸山＝黒・Gaku指定11/7）。正本は demo-data.js の members[].trim。
      字は寮の色にしない＝白（明るい塗りだけ黒）。「色は背景であって、中の文字は視認性優先」（Gaku 11/7） */
@@ -79,6 +89,7 @@ const CSS = `
   .yet { position:absolute; top:calc(100% + 8px * var(--u)); left:50%; transform:translateX(-50%); display:flex; align-items:center;
          gap:calc(6px * var(--u)); font-size:calc(20px * var(--u)); font-weight:700; color:var(--mute); white-space:nowrap; }
   .yet .ic { --ic:calc(42px * var(--u) + 4px); border-width:2px; opacity:.45; box-shadow:none; }
+  .yet .ic.tri { filter:none; }
 
   .ft { display:flex; justify-content:space-between; font-size:20px; color:var(--mute); font-weight:700; }
   .ft b { color:var(--ink); } .ft b span { color:var(--gold); }
@@ -107,13 +118,15 @@ const ini = m => esc(String(m.name).trim().slice(0, 1));
 const seedOf = m => ((window.DEMO_SEED && window.DEMO_SEED.members) || []).find(x => x.id === m.id) || {};
 const trimOf = m => seedOf(m).trim || "";
 const paint = m => `--c:${esc(m.color)}${trimOf(m) ? `;--t:${esc(trimOf(m))}` : ""}`;
-const sq = m => seedOf(m).shape === "square" ? " sq" : "";
+const sq = m => ({ square: " sq", triangle: " tri" })[seedOf(m).shape] || "";
+// 三角は字を下へ寄せる（重心が下にある）＝<i> で包んで位置と大きさだけ変える
+const face = m => seedOf(m).shape === "triangle" ? `<i>${ini(m)}</i>` : ini(m);
 // 塗りが明るい（金など）なら黒字。相対輝度 > .4
 const light = c => { const [r, g, b] = [1, 3, 5].map(i => parseInt(c.slice(i, i + 2), 16) / 255)
   .map(v => v <= .04045 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4); return .2126 * r + .7152 * g + .0722 * b > .4; };
 // 沈む＝その場所の画素の12%以上がその人の色に近い（ΔE<30）か、場所が明るい（L≥62）
 const sinks = (f, zone, m) => { const z = D.zones?.[f.id]?.[zone]; return !!z && (z.L >= 62 || (z.sim[m.id] || 0) >= .12); };
-const icon = (m, f, zone) => `<span class="ic${sq(m)}${light(m.color) ? " lt" : ""}${f && sinks(f, zone, m) ? " pop" : ""}" style="${paint(m)}">${ini(m)}</span>`;
+const icon = (m, f, zone) => `<span class="ic${sq(m)}${light(m.color) ? " lt" : ""}${f && sinks(f, zone, m) ? " pop" : ""}" style="${paint(m)}">${face(m)}</span>`;
 // 絵の彩度が高い大会ほど下端の影を濃く（.3〜.65）
 const scrimOf = f => { const c = D.zones?.[f.id]?.chroma; return c == null ? .45 : Math.min(.65, Math.max(.3, .3 + (c - 15) / 60)).toFixed(2); };
 const predOf = (m, f) => D.preds.find(p => p.member_id === m.id && p.fight_id === f.id);
@@ -127,7 +140,7 @@ function fightCard(f) {
   }).join("");
   const cheer = fid => D.members.filter(m => supOf(m, f)?.fighter_id === fid)
     .map(m => { const z = fid === f.fighter1_id ? "tl" : "tr";
-      return `<span class="ci${sq(m)}${light(m.color) ? " lt" : ""}${sinks(f, z, m) ? " pop" : ""}" style="${paint(m)}">${ini(m)}<span class="mg">📣応援</span></span>`; }).join("");
+      return `<span class="ci${sq(m)}${light(m.color) ? " lt" : ""}${sinks(f, z, m) ? " pop" : ""}" style="${paint(m)}">${face(m)}<span class="mg">📣応援</span></span>`; }).join("");
   const yet = D.members.filter(m => !predOf(m, f));
   const winners = new Set(picks.map(x => x.p.winner_id));
   const badge = BARE || picks.length < 2 ? "" : winners.size === 1 ? `<span class="bd same">一致</span>` : `<span class="bd split">割れた</span>`;

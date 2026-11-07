@@ -89,6 +89,9 @@ img { max-width: 100%; display: block; }
   letter-spacing: .03em; margin: 2px 0 6px; text-transform: uppercase;
 }
 .page-sub { color: var(--muted); font-size: 12px; margin-bottom: 18px; }
+/* 大会名の副題は主題の下に小さく（Gaku 11/8「超RIZIN.6だけ大きくてサブタイトルは小さく」・3行に折れていた） */
+.page-title .ev-sub { display: block; margin-top: 6px; font: 900 13px/1.3 "Noto Sans JP", sans-serif; letter-spacing: .08em;
+  color: #b9b9c4; text-transform: none; }
 /* 見出しは1行（Gaku 11/7「2段で右の空白が多くてダサい」）：大きい日本語 → 赤い線で横幅を埋める → 右端に英字 */
 .title-row { display: flex; align-items: center; gap: 12px; margin: 22px 0 14px; }
 .title-row .page-title { flex: 0 1 auto; min-width: 0; margin: 0; font-size: 38px; line-height: 1.05; }
@@ -1040,6 +1043,14 @@ span.mav.lt { color: #1a1408; text-shadow: 0 1px 0 rgba(255, 255, 255, .3); }
 span.mav.trim { box-shadow: inset 0 0 0 1.5px var(--t); }   /* 縁＝寮の差し色（金・銀・黒）。字は読めること優先で白／明るい塗りだけ黒（Gaku 11/7「色は背景、中の文字は視認性優先」） */
 span.mav.lt.trim { text-shadow: none; }
 span.mav.sq { border-radius: 12%; }   /* 抜き太郎だけ正方形（Gaku指定11/7） */
+/* ハメ太郎は三角形（Gaku 11/8）。三角に切ると縁の box-shadow も消えるので、縁（寮の金）と塗りを疑似要素の三角2枚で重ねる。
+   内側の三角は内心に向けて縮めて、縁の太さを三辺で揃える（上 2.236b・左右 1.618b・下 b） */
+span.mav.tri { position: relative; isolation: isolate; background: none; box-shadow: none; border-radius: 0; }
+span.mav.tri::before, span.mav.tri::after { content: ""; position: absolute; z-index: -1; clip-path: polygon(50% 0, 100% 100%, 0 100%); }
+span.mav.tri::before { inset: 0; background: var(--t, var(--c)); }
+span.mav.tri::after { inset: 3.4px 2.4px 1.5px;
+  background: radial-gradient(circle at 44% 62%, color-mix(in srgb, var(--c) 58%, #fff) 0%, var(--c) 46%, color-mix(in srgb, var(--c) 52%, #000) 100%); }
+span.mav.tri > i { font-style: normal; font-size: .8em; position: relative; top: .3em; }
 .lb-who { display: inline-flex; align-items: center; gap: 8px; }
 .lb-ava, .pava {
   width: 22px; height: 22px; border-radius: 50%; flex: none;
@@ -1240,6 +1251,21 @@ span.mav.sq { border-radius: 12%; }   /* 抜き太郎だけ正方形（Gaku指�
 .wiz-cta.done { height: 64px; }
 .wiz-cta.done .wc-t { font-size: 20px; }
 .wiz-cta.done::after { animation: none; }
+/* 浮いて追いかけてくる「予想を入れる」（Gaku 11/8）：上の札と同じ赤→青の地と光の筋。トーストが出ている間はその上へ逃げる */
+.pick-guide { position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom)); z-index: 90;
+  display: flex; align-items: center; gap: 10px; height: 50px; padding: 0 24px 0 28px; border: 0; overflow: hidden; cursor: pointer;
+  color: #fff; clip-path: polygon(12px 0, 100% 0, calc(100% - 12px) 100%, 0 100%);
+  background: linear-gradient(90deg, #c4000f, #6e0710 46%, #0f2348 58%, #1e6fd9);
+  opacity: 0; pointer-events: none; transform: translate(-50%, 14px); transition: opacity .25s, transform .25s; }
+.pick-guide.show { opacity: 1; pointer-events: auto; transform: translate(-50%, 0); }
+.toast.show ~ .pick-guide.show { transform: translate(-50%, -54px); }
+body.wiz-open .pick-guide { display: none; }
+.pick-guide::after { content: ""; position: absolute; inset: 0; pointer-events: none; border-top: 1px solid rgba(255, 255, 255, .24);
+  background: linear-gradient(105deg, transparent 40%, rgba(255, 255, 255, .22) 50%, transparent 60%) -100% 0 / 60% 100% no-repeat;
+  animation: wc-shine 3.2s ease-in-out infinite; }
+.pg-t { position: relative; font-family: var(--display); font-size: 19px; letter-spacing: .06em; white-space: nowrap; text-shadow: 0 2px 8px rgba(0, 0, 0, .6); }
+.pg-arw { position: relative; font: 400 26px/1 var(--num); font-style: normal; margin-top: -3px; animation: pg-nudge 1.6s ease-in-out infinite; }
+@keyframes pg-nudge { 0%, 60%, 100% { transform: translateX(0); } 80% { transform: translateX(5px); } }
 
 /* 画面いっぱいの1試合 */
 body.wiz-open { overflow: hidden; }

@@ -161,6 +161,9 @@
   window.esc = (s) => String(s ?? "").replace(/[&<>"']/g, c =>
     ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   window.qp = (k) => new URLSearchParams(location.search).get(k);
+  // 大会名を「主題｜副題」に分ける＝番号の後ろの空白で切る（超RIZIN.6 師走の尾張名古屋下剋上祭り → 超RIZIN.6｜師走の…）。
+  // 主題だけ大きく、副題は小さく添える（Gaku 11/8「超RIZIN.6だけ大きくてサブタイトルは小さく」）。番号の無い名前は切らない
+  window.evParts = (name) => { const m = /^(.*?\d+)\s+(.+)$/.exec(name || ""); return m ? [m[1], m[2]] : [name || "", ""]; };
   // 選手名は「・」の所でだけ折り返す（「ラジャブアリ・シェ｜イドゥラエフ」と語の途中で割れた・Gaku指摘11/7）。
   // .fnm が仮名・漢字の途中での改行を止め、<wbr> が「・」の後ろにだけ改行の候補を置く。1語が欄より長い時だけ最後の手段で割る
   // 「・」の無い名前（松尾クリスチャンアキラ）は漢字とカタカナの境目を候補にする＝姓と名の間で折れる
@@ -177,10 +180,10 @@
     if (src) return `<img class="${cls} ava-img" src="${esc(src)}" alt="" loading="lazy">`;
     const ini = String(m?.name || "?").trim().slice(0, 1);
     const c = /^#[0-9a-f]{6}$/i.test(m?.color || "") ? m.color : "#555555";
-    const t = memberSeed(m?.id).trim, sq = memberSeed(m?.id).shape === "square";
-    return `<span class="${cls} mav${isLightColor(c) ? " lt" : ""}${t ? " trim" : ""}${sq ? " sq" : ""}" style="--c:${c}${t ? `;--t:${t}` : ""}">${esc(ini)}</span>`;
+    const t = memberSeed(m?.id).trim, shp = { square: " sq", triangle: " tri" }[memberSeed(m?.id).shape] || "";
+    return `<span class="${cls} mav${isLightColor(c) ? " lt" : ""}${t ? " trim" : ""}${shp}" style="--c:${c}${t ? `;--t:${t}` : ""}">${shp === " tri" ? `<i>${esc(ini)}</i>` : esc(ini)}</span>`;
   };
-  // 縁と字の色（美食会3人＝寮の配色：ハメ＝深紅×金・抜き＝深緑×銀・丸山＝黄×黒）と形（抜き太郎だけ正方形）・Gaku指定11/7。
+  // 縁と字の色（美食会3人＝寮の配色：ハメ＝深紅×金・抜き＝深緑×銀・丸山＝黄×黒）と形（抜き太郎＝正方形・Gaku指定11/7／ハメ太郎＝三角形・11/8）。
   // 正本は demo-data.js の members[].trim / shape
   window.memberSeed = (id) => ((window.DEMO_SEED && window.DEMO_SEED.members) || []).find(x => x.id === id) || {};
   // 塗りが明るい（金など）なら黒字。相対輝度 > .4（bishoku_summary.js の light と同じ判定）
