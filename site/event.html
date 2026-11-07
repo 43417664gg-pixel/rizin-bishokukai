@@ -7,7 +7,7 @@
 <title>大会予想｜予想番付</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261107233333">
+<link rel="stylesheet" href="css/style.css?v=20261107233944">
 </head>
 <body>
 <div id="app-header"></div>
@@ -17,12 +17,12 @@
 <div class="wiz" id="wiz" hidden role="dialog" aria-modal="true" aria-label="勝敗予想"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261107233333"></script>
-<script src="js/techniques.js?v=20261107233333"></script>
-<script src="js/demo-data.js?v=20261107233333"></script>
-<script src="js/api.js?v=20261107233333"></script>
-<script src="js/app.js?v=20261107233333"></script>
-<script src="js/bishoku_summary.js?v=20261107233333"></script>
+<script src="js/config.js?v=20261107233944"></script>
+<script src="js/techniques.js?v=20261107233944"></script>
+<script src="js/demo-data.js?v=20261107233944"></script>
+<script src="js/api.js?v=20261107233944"></script>
+<script src="js/app.js?v=20261107233944"></script>
+<script src="js/bishoku_summary.js?v=20261107233944"></script>
 <script>
 let EV, PHASE, FIGHTS, FMAP, MEMBERS, myPreds = {}, allPreds = [], ALL_SUPPORTS = [];
 
@@ -656,13 +656,14 @@ function wizCta() {
 // 予想の画面：1試合ずつ質問に答えていく（Gaku 11/7）
 //   どっちが勝つ？ → どう勝つ？（KO/TKO・一本・判定）→ 決まり手は？ → ラウンドは？ → これでいい？ → 決定
 //   判定ならその先は無い。決まり手を入れない人は各段の「入れない」で「これでいい？」へ。決定するまで保存しない
-const WIZ = { list: [], i: 0, step: "win", trail: [], pend: null };
+const WIZ = { list: [], i: 0, step: "win", trail: [], pend: null, one: false };   // one＝カードから1試合だけ開いた
 const WIZ_KEYS = ["winner_id", "method", "technique", "round"];
 const wizSaved = (f) => myPreds[f.id]?.winner_id || null;
 const wizBase = (f) => Object.fromEntries(WIZ_KEYS.map(k => [k, myPreds[f.id]?.[k] || null]));
 function openWiz(fightId) {
   WIZ.list = WIZ_FIGHTS();
   if (!WIZ.list.length) return;
+  WIZ.one = !!fightId;
   document.getElementById("wiz").hidden = false;
   document.body.classList.add("wiz-open");
   history.pushState({ wiz: 1 }, "");
@@ -757,7 +758,8 @@ function wizSkip() {
   if (st === "rnd") p.round = null;
   wizTo("ok");
 }
-// 「決定」：この1試合を保存して、まだ予想していない次の試合へ。全部入っていれば閉じる
+// 「決定」：この1試合を保存する。カードから開いた時はそれで閉じてカードに戻る（Gaku 11/7「追ってくるようなものが出てきた。これいらない」）。
+// 「予想を入れる」から入った時だけ、この先のまだの試合へ進む（前に戻って追いかけない）。最後まで来たら閉じる
 async function wizCommit() {
   const f = WIZ.list[WIZ.i], p = WIZ.pend, btn = document.getElementById("wiz-ok"), b = wizBase(f);
   if (!p?.winner_id) return;
@@ -772,11 +774,12 @@ async function wizCommit() {
       refreshMatrix().catch(() => {});
     }
     btn.textContent = "✓";
-    const L = WIZ.list, rest = [...L.slice(WIZ.i + 1), ...L.slice(0, WIZ.i)].find(x => !wizSaved(x));
+    const L = WIZ.list, rest = WIZ.one ? null : L.slice(WIZ.i + 1).find(x => !wizSaved(x));
     setTimeout(() => {
       if (document.getElementById("wiz").hidden) return;
-      if (rest) wizGo(L.indexOf(rest));
-      else { toast(`全${L.length}試合 予想済み ✓`); closeWiz(); }
+      if (rest) return wizGo(L.indexOf(rest));
+      toast(L.every(wizSaved) ? `全${L.length}試合 予想済み ✓` : "予想を保存 ✓");
+      closeWiz();
     }, 420);
   } catch (e) {
     toast(window.saveErrorText ? saveErrorText(e) : (e.message || "保存できなかった"));
