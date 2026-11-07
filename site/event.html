@@ -7,7 +7,7 @@
 <title>大会予想｜予想番付</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261107221321">
+<link rel="stylesheet" href="css/style.css?v=20261107221941">
 </head>
 <body>
 <div id="app-header"></div>
@@ -17,12 +17,12 @@
 <button type="button" class="pick-guide" id="pick-guide" onclick="goNextPick()"><span class="pg-in"><i class="pg-arrow">▼</i>予想を入れる<span class="pg-left">あと<b class="pg-n"></b>試合</span></span></button>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261107221321"></script>
-<script src="js/techniques.js?v=20261107221321"></script>
-<script src="js/demo-data.js?v=20261107221321"></script>
-<script src="js/api.js?v=20261107221321"></script>
-<script src="js/app.js?v=20261107221321"></script>
-<script src="js/bishoku_summary.js?v=20261107221321"></script>
+<script src="js/config.js?v=20261107221941"></script>
+<script src="js/techniques.js?v=20261107221941"></script>
+<script src="js/demo-data.js?v=20261107221941"></script>
+<script src="js/api.js?v=20261107221941"></script>
+<script src="js/app.js?v=20261107221941"></script>
+<script src="js/bishoku_summary.js?v=20261107221941"></script>
 <script>
 let EV, PHASE, FIGHTS, FMAP, MEMBERS, myPreds = {}, allPreds = [], ALL_SUPPORTS = [];
 
@@ -92,8 +92,6 @@ async function toggleSupport(fightId, fighterId) {
     // 「みんなの予想」と全員の予想一覧にも応援が出るので貼り直す
     const op = document.getElementById("op_" + fightId);
     if (op) op.outerHTML = othersBlock(FIGHTS.find(x => x.id === fightId));
-    const box = document.getElementById("matrix-section");
-    if (box) box.innerHTML = allPicksMatrix();
     drawBishokuSummary();
     toast("📣 応援を更新した");
   } catch (e) { toast("応援テーブルが未作成かも（要SQL）"); }
@@ -103,7 +101,7 @@ function fightLabel(f) {
   const no = f.segment === "opening" ? `OPENING 第${f.order_no}試合` : `第${f.order_no}試合`;
   return `<span class="fno">${no}</span>
     ${f.title_label ? `<span class="title-label">${esc(f.title_label)}</span>` : ""}
-    <span>${esc(f.weight_class || "")}</span>
+    ${f.weight_class ? `<span>${esc(weightClassName(f.weight_class))}（${esc(f.weight_class)}）</span>` : ""}
     ${f.no_score ? `<span class="ns-badge">⚠️ ${esc(f.no_score_note || "体重超過")}｜予想対象外</span>` : ""}
     ${f.event_only ? `<span class="ns-badge">${esc(f.event_only_note || "MMA以外のルール")}｜予想は任意・通算対象外</span>` : ""}`;
 }
@@ -342,8 +340,6 @@ async function clearPred(fightId) {
 async function refreshMatrix() {
   if (PHASE === "before_open") return;
   allPreds = await DB.listPredictions({ fightIds: FIGHTS.map(f => f.id) });
-  const box = document.getElementById("matrix-section");
-  if (box) box.innerHTML = allPicksMatrix();
   drawBishokuSummary();
   // 各カード下の「みんなの予想」も貼り直す（自分のピックが増減し、一致/割れも変わるため）
   // 中止試合のブロックは専用カード側で描画済みなので触らない。
@@ -479,70 +475,6 @@ function othersBlock(f) {
   </div>`;
 }
 
-// ---------- 全員の予想マトリクス（締切後） ----------
-function allPicksMatrix() {
-  const activeMembers = orderMembers(MEMBERS.filter(m => allPreds.some(p => p.member_id === m.id)));
-  if (!activeMembers.length) return "";
-  const ordered = FIGHTS;  // renderと同じ並び（メイン降順→オープニング降順）
-  const rows = ordered.map(f => {
-    // 行頭はカード写真（適度な大きさ）＋得票率ミニ棒グラフ。番号（第X）は出さない。
-    const thumb = f.image_url
-      ? `<img class="mx-thumb" src="${esc(f.image_url)}" alt="" loading="lazy"
-           style="width:112px;height:auto;display:block;border-radius:4px">`
-      : "";
-    const mp = allPreds.filter(p => p.fight_id === f.id);
-    const mn1 = mp.filter(p => p.winner_id === f.fighter1_id).length;
-    const mpr1 = mp.length ? Math.round(mn1 / mp.length * 100) : 0, mpr2 = 100 - mpr1;
-    const miniBar = mp.length ? `
-      <div class="vb mini">${mpr1 ? `<i class="r" style="flex:${mpr1}"></i>` : ""}${mpr2 ? `<i class="b" style="flex:${mpr2}"></i>` : ""}</div>
-      <div style="display:flex;justify-content:space-between;font-size:9px;color:#999;margin-top:1px"><span>${mpr1}%</span><span>${mpr2}%</span></div>` : "";
-    // 応援📣もALL PICKSに出す（予想とは別軸・どちらを応援したか）
-    const sc1 = ALL_SUPPORTS.filter(s => s.fight_id === f.id && s.fighter_id === f.fighter1_id).length;
-    const sc2 = ALL_SUPPORTS.filter(s => s.fight_id === f.id && s.fighter_id === f.fighter2_id).length;
-    const supBadge = (sc1 || sc2)
-      ? `<div style="font-size:9px;color:#c9a84a;font-weight:700;margin-top:2px">📣 <span style="color:#ff5a67">${sc1}</span> - <span style="color:#5aa0ff">${sc2}</span></div>` : "";
-    const decided = f.winner_id && f.result_method && !f.no_score && !["DRAW", "NC"].includes(f.result_method);
-    const cells = activeMembers.map(m => {
-      const p = allPreds.find(x => x.fight_id === f.id && x.member_id === m.id);
-      const sup = ALL_SUPPORTS.find(s => s.fight_id === f.id && s.member_id === m.id);
-      const supNm = sup ? esc((FMAP[sup.fighter_id]?.name || "").replace(/[ 　].*$/, "").slice(0, 5)) : "";
-      const supMk = sup ? `<span class="mx-sup ${sup.fighter_id === f.fighter1_id ? "r" : "b"}">📣${supNm}</span>` : "";
-      if (!p) return `<td class="mx-cell none">${supMk || "—"}</td>`;
-      const corner = p.winner_id === f.fighter1_id ? "c1" : "c2";
-      const hitCls = decided ? (p.winner_id === f.winner_id ? " hit" : " miss") : "";
-      const sub = p.method === "DEC" ? "判定"
-        : [p.technique ? techShort(p.technique) : "", p.round ? `${p.round}R` : ""].filter(Boolean).join(" ");
-      const s = decided ? scoreFight(p, f) : null;
-      const mark = s?.pitari ? " ピタリ" : "";
-      return `<td class="mx-cell ${corner}${hitCls}">
-        <span class="mx-name">${esc(FMAP[p.winner_id]?.name || "")}</span>
-        ${sub || mark ? `<span class="mx-sub">${esc(sub)}${mark}</span>` : ""}
-        ${supMk}
-      </td>`;
-    }).join("");
-    if (f.cancelled) {  // 中止試合：番号に×を付け、行をグレーアウト（ピックは残す）
-      return `<tr class="mxrow cancelled"><th class="mx-fight">${thumb}<span class="mx-x">中止</span></th>${cells}</tr>`;
-    }
-    if (f.no_score) {  // 体重超過：試合はやるが予想対象外。琥珀タグ＋ピックは残す
-      return `<tr class="mxrow noscore"><th class="mx-fight">${thumb}<span class="mx-x ns">体重超過｜対象外</span></th>${cells}</tr>`;
-    }
-    if (f.event_only) {  // キック等：この大会の的中率には入るが通算には入らない
-      return `<tr class="mxrow noscore"><th class="mx-fight">${thumb}<span class="mx-x ns">任意｜通算対象外</span></th>${cells}</tr>`;
-    }
-    const c = decided ? { level: "" } : consensus(f);  // 結果が出たら○×優先、未確定なら一致/割れ
-    return `<tr class="mxrow ${c.level}"><th class="mx-fight">${thumb}${miniBar}${supBadge}</th>${cells}</tr>`;
-  }).join("");
-  return `
-    <div class="section-label">ALL PICKS</div>
-    <div class="matrix-wrap">
-      <table class="matrix">
-        <tr><th></th>${activeMembers.map(m => `<th class="mx-member"><a href="picks.html?event=${EV.id}&member=${m.id}" style="color:inherit;text-decoration:none;display:block">${esc(m.name)}<span style="display:block;font-size:9px;color:#c9a84a;font-weight:700;margin-top:1px">▶ 予想カード</span></a></th>`).join("")}</tr>
-        ${rows}
-      </table>
-    </div>
-    <p class="page-sub" style="margin-top:6px">赤＝RED側・青＝BLUE側の予想。結果が出ると○×で色分け。</p>`;
-}
-
 // ---------- 結果発表（finished時の大会サマリー） ----------
 function eventSummary() {
   const rows = computeLeaderboard(MEMBERS, FIGHTS, allPreds, { scope: "event" }).filter(r => r.answered > 0);
@@ -574,26 +506,13 @@ function render() {
     : base === predictCard ? base(f) + othersBlock(f) : base(f);
   const days = daysToEvent(EV);
   const openBook = isOpenBook(EV);
-  const subText = openBook ? "締切なし・いつでも予想＆編集OK。みんなの予想も公開中。"
-    : {
-      before_open: "カード公開中。計量終了後に予想が開く。",
-      open: "受付中。みんなの予想は最初から公開——見ながら予想できる。",
-      locked: "締切済み。全員の予想を公開中——あとは試合を待つだけ。",
-      finished: "結果確定・答え合わせ",
-    }[PHASE];
   document.getElementById("main").innerHTML = `
     <div class="en-label">${PHASE === "finished" ? "RESULT" : "FIGHT CARD"}</div>
     <h1 class="page-title">${esc(EV.name)}</h1>
-    <p class="page-sub">${fmtDate(EV.event_date)}　${subText}</p>
     ${PHASE === "finished" ? eventSummary() : ""}
-    <!-- ALL PICKSは横に長く、スマホでは横スクロールが要る。自分が予想する導線を先に
-         置き、一覧は下へ回して既定で畳む（広い画面だけ最初から開く）。2026-08-31の監査より -->
+    <!-- 日付と案内文・ALL PICKS（全員の予想の一覧表）は撤去（Gaku指示11/7「これ削除」「ALLPICKS削除」）。
+         みんなの予想は各カードの下と美食会予想まとめで見える -->
     ${PHASE !== "before_open" ? `<div id="bsum" class="bsum"></div>` : ""}
-    <details id="matrix-details" class="mx-details" ${window.innerWidth >= 900 ? "open" : ""}>
-      <summary class="mx-summary">ALL PICKS　全員の予想を一覧で見る<span class="mx-count">${
-        new Set(allPreds.map(p => p.member_id)).size}人</span></summary>
-      <div id="matrix-section">${PHASE !== "before_open" ? allPicksMatrix() : ""}</div>
-    </details>
     ${main.length ? `<div class="section-label">MAIN CARD</div>` : ""}
     ${main.map(card).join("")}
     ${op.length ? `<div class="section-label">OPENING FIGHTS</div>` : ""}
@@ -637,7 +556,7 @@ async function drawBishokuSummary() {
   const fights = FIGHTS.filter(f => !f.cancelled).sort((a, b) => b.order_no - a.order_no);
   const root = host.shadowRoot || host.attachShadow({ mode: "open" });
   root.innerHTML = `<style>:host{display:block} .fit{transform-origin:0 0}${BishokuSummary.CSS}</style>
-    <div class="fit"><div class="sheet">${BishokuSummary.render(D, { ev: EV, fights, fname: id => FMAP[id]?.name, img: u => u })}</div></div>`;
+    <div class="fit"><div class="sheet">${BishokuSummary.render(D, { ev: EV, fights, fname: id => FMAP[id]?.name, img: u => u, bare: true })}</div></div>`;
   const fit = () => {
     const el = root.querySelector(".fit"), k = host.clientWidth / 1080;
     el.style.transform = `scale(${k})`;

@@ -13,6 +13,7 @@ const CSS = `
   .hd { border-left:10px solid #e60012; padding-left:18px; }
   .hd .ttl { font-size:70px; font-weight:900; line-height:1.1; letter-spacing:.02em; }
   .hd .ttl b { color:var(--gold); }
+  .hd.bare { margin-bottom:30px; }   /* 大会ページ：下の文字を外した分、絵との間をあける */
   .hd .sub { margin-top:6px; font-size:27px; font-weight:700; color:var(--mute); }
   .hd .sub em { font-style:normal; color:var(--ink); }
   .who { display:flex; gap:24px; flex-wrap:wrap; margin:20px 0 8px; }
@@ -90,6 +91,8 @@ function render(D, o) {
 const { ev, fights, fname } = o;
 const rows = LAYOUTS[o.layout] || LAYOUTS.wide3;
 const DEMO = !!o.demo;
+// 大会ページに埋める時（Gaku指示11/7）：見出しの下の日付・締切・人数・凡例、一番上の試合名、「一致」「割れた」を出さない。LINE画像はそのまま
+const BARE = !!o.bare;
 if (DEMO) {   // 勝敗・決まり手・応援・未予想が一通り出るように散らす
   const P = [["KO", 1], ["DEC", null], ["SUB", 2]];
   D.preds = []; D.supports = [];
@@ -126,10 +129,10 @@ function fightCard(f) {
       return `<span class="ci${sq(m)}${light(m.color) ? " lt" : ""}${sinks(f, z, m) ? " pop" : ""}" style="${paint(m)}">${ini(m)}<span class="mg">📣応援</span></span>`; }).join("");
   const yet = D.members.filter(m => !predOf(m, f));
   const winners = new Set(picks.map(x => x.p.winner_id));
-  const badge = picks.length < 2 ? "" : winners.size === 1 ? `<span class="bd same">一致</span>` : `<span class="bd split">割れた</span>`;
+  const badge = BARE || picks.length < 2 ? "" : winners.size === 1 ? `<span class="bd same">一致</span>` : `<span class="bd split">割れた</span>`;
   const title = f.title_label || `${fname(f.fighter1_id)} vs ${fname(f.fighter2_id)}`;
   return `<div class="fc">
-    <div class="lab"><span class="no">第${f.order_no}試合</span><span class="tt">${esc(title)}</span>${badge}</div>
+    ${BARE && f === fights[0] ? "" : `<div class="lab"><span class="no">第${f.order_no}試合</span><span class="tt">${esc(title)}</span>${badge}</div>`}
     <div class="ph">
       <img class="banner" src="${esc(o.img(f.image_url))}"><div class="scrim" style="--scrim:${scrimOf(f)}"></div>
       <div class="cheer l">${cheer(f.fighter1_id)}</div><div class="cheer r">${cheer(f.fighter2_id)}</div>
@@ -149,12 +152,12 @@ const d = new Date(ev.event_date + "T00:00:00+09:00");
 const lock = ev.lock_at ? new Date(ev.lock_at) : null;
 const counts = D.members.map(m => `<span class="m">${icon(m)}${esc(m.name)}<small>${D.preds.filter(p => p.member_id === m.id).length}/${fights.length}</small></span>`).join("");
 return `
-  <div class="hd">
+  <div class="hd${BARE ? " bare" : ""}">
     <div class="ttl">美食会<b>予想まとめ</b>${DEMO ? `<span style="font-size:30px;color:#ff5a67;margin-left:16px">見本（ダミー）</span>` : ""}</div>
-    <div class="sub"><em>${esc(ev.name)}</em>　${d.getFullYear()}.${d.getMonth() + 1}.${d.getDate()}（${WD[d.getDay()]}）${lock ? `　締切 ${lock.getMonth() + 1}/${lock.getDate()} ${lock.getHours()}:${String(lock.getMinutes()).padStart(2, "0")}` : ""}</div>
+    ${BARE ? "" : `<div class="sub"><em>${esc(ev.name)}</em>　${d.getFullYear()}.${d.getMonth() + 1}.${d.getDate()}（${WD[d.getDay()]}）${lock ? `　締切 ${lock.getMonth() + 1}/${lock.getDate()} ${lock.getHours()}:${String(lock.getMinutes()).padStart(2, "0")}` : ""}</div>`}
   </div>
-  <div class="who">${counts}</div>
-  <div class="legend"><b>下の丸</b>＝その選手が勝つと予想　<b>上の「📣応援」の丸</b>＝その選手を応援（勝敗とは別）</div>
+  ${BARE ? "" : `<div class="who">${counts}</div>
+  <div class="legend"><b>下の丸</b>＝その選手が勝つと予想　<b>上の「📣応援」の丸</b>＝その選手を応援（勝敗とは別）</div>`}
   ${grids}
   <div class="ft"><span>${esc(D.built_at)}時点</span><b>予想<span>番付</span>　43417664gg-pixel.github.io/rizin-bishokukai</b></div>`;
 }
