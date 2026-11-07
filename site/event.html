@@ -7,7 +7,7 @@
 <title>大会予想｜予想番付</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261107194131">
+<link rel="stylesheet" href="css/style.css?v=20261107194639">
 </head>
 <body>
 <div id="app-header"></div>
@@ -16,12 +16,12 @@
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261107194131"></script>
-<script src="js/techniques.js?v=20261107194131"></script>
-<script src="js/demo-data.js?v=20261107194131"></script>
-<script src="js/api.js?v=20261107194131"></script>
-<script src="js/app.js?v=20261107194131"></script>
-<script src="js/bishoku_summary.js?v=20261107194131"></script>
+<script src="js/config.js?v=20261107194639"></script>
+<script src="js/techniques.js?v=20261107194639"></script>
+<script src="js/demo-data.js?v=20261107194639"></script>
+<script src="js/api.js?v=20261107194639"></script>
+<script src="js/app.js?v=20261107194639"></script>
+<script src="js/bishoku_summary.js?v=20261107194639"></script>
 <script>
 let EV, PHASE, FIGHTS, FMAP, MEMBERS, myPreds = {}, allPreds = [], ALL_SUPPORTS = [];
 let drafts = {};              // 決定前の編集中の選択（ローカルのみ）
@@ -130,7 +130,8 @@ const histRow = (r) => `<div class="st-row">${resMark(r.r)}<span class="st-body"
 // 細かい文字で読ませず形で見せる（Gaku指示11/7「シンプルな中に視認性を。ビジュアルで誘導」「色多い・情報は少なく」）：
 // 勝敗数は大きな数字／勝ち方は戦績の横の空きに1本のバー（KO・一本・判定の割合）。色は使わず白〜灰の濃淡だけ
 // 予想の入力は下の「勝敗予想」に分けたので、ここで選手名も持つ（判断材料はここだけで読める）
-// 左右の段（名前・戦績・前戦）は subgrid で高さをそろえる。片側にデータが無くても空の段を置いて行数を合わせる
+// 左右の段（名前・戦績・バー・前戦）は subgrid で高さをそろえる。片側にデータが無くても空の段を置いて行数を合わせる
+// バーは左右で必ず同じ置き方（広い時は戦績の横・狭い時は戦績の下）＝左右の高さがずれない（Gaku指摘11/7「平行になってない」）
 function wayBar(x) {
   if (x?.rec_ko == null || !x.rec_w) return "";
   const ws = [["KO", x.rec_ko, "sb-k"], ["一本", x.rec_sub ?? 0, "sb-s"], ["判定", x.rec_dec ?? 0, "sb-d"]];
@@ -150,7 +151,8 @@ function statsSide(x, cls) {
     : `<span class="st-n d">戦績なし</span>`;
   return `<div class="st-side ${cls}">
     <div class="st-head"><span class="st-name">${esc(x?.name || "")}</span>${x?.nickname ? `<span class="st-nick" title="${esc(x.nickname)}">“${esc(x.nickname)}”</span>` : ""}</div>
-    <div class="st-top"><div class="st-recn">${rec}</div>${wayBar(x)}</div>
+    <div class="st-recn">${rec}</div>
+    ${wayBar(x) || `<div class="st-bar"></div>`}
     <div class="st-k">前戦</div>
     ${h[0] ? histRow(h[0]) : `<div class="st-row"><span class="st-how">データなし</span></div>`}
   </div>`;
@@ -162,7 +164,7 @@ function statsBlock(f) {
     while (rows.length < n) rows.push("<div></div>");
     return `<div class="st-side ${cls}">${rows.join("")}</div>`; };
   return `<div class="stats">
-    <div class="st-cols" style="--rows:4">${statsSide(f1, "c1")}${statsSide(f2, "c2")}</div>
+    <div class="st-cols" style="--rows:5">${statsSide(f1, "c1")}${statsSide(f2, "c2")}</div>
     ${n > 1 ? `<details class="st-more" ${statsOpen.has(f.id) ? "open" : ""} ontoggle="statsOpen[this.open ? 'add' : 'delete']('${f.id}')">
       <summary>直近5試合</summary>
       <div class="st-cols" style="--rows:${n}">${list(f1, "c1")}${list(f2, "c2")}</div>
