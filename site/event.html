@@ -7,7 +7,7 @@
 <title>大会予想｜予想番付</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261107201417">
+<link rel="stylesheet" href="css/style.css?v=20261107202133">
 </head>
 <body>
 <div id="app-header"></div>
@@ -16,12 +16,12 @@
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261107201417"></script>
-<script src="js/techniques.js?v=20261107201417"></script>
-<script src="js/demo-data.js?v=20261107201417"></script>
-<script src="js/api.js?v=20261107201417"></script>
-<script src="js/app.js?v=20261107201417"></script>
-<script src="js/bishoku_summary.js?v=20261107201417"></script>
+<script src="js/config.js?v=20261107202133"></script>
+<script src="js/techniques.js?v=20261107202133"></script>
+<script src="js/demo-data.js?v=20261107202133"></script>
+<script src="js/api.js?v=20261107202133"></script>
+<script src="js/app.js?v=20261107202133"></script>
+<script src="js/bishoku_summary.js?v=20261107202133"></script>
 <script>
 let EV, PHASE, FIGHTS, FMAP, MEMBERS, myPreds = {}, allPreds = [], ALL_SUPPORTS = [];
 
@@ -112,8 +112,8 @@ function profileLinks(f) {
   const f1 = FMAP[f.fighter1_id], f2 = FMAP[f.fighter2_id];
   return `
     <div class="profile-links">
-      <a href="fighter.html?id=${f.fighter1_id}">${fnm(f1?.name)} の名鑑 ›</a>
-      <a href="fighter.html?id=${f.fighter2_id}">${fnm(f2?.name)} の名鑑 ›</a>
+      <a href="fighter.html?id=${f.fighter1_id}">${esc(f1?.name)} の名鑑 ›</a>
+      <a href="fighter.html?id=${f.fighter2_id}">${esc(f2?.name)} の名鑑 ›</a>
     </div>`;
 }
 
@@ -136,8 +136,10 @@ function wayBar(x) {
   // 母数は勝ち数（反則勝ち等の「その他」はバーの空きとして残る）。内訳の合計が勝ち数を超える古いデータでもはみ出さない
   const base = Math.max(x.rec_w, ws.reduce((a, w) => a + w[1], 0));
   return `<div class="st-bar">
-    <div class="sb-track">${ws.map(([, n, c]) => n ? `<i class="${c}" style="width:${(n / base * 100).toFixed(1)}%"></i>` : "").join("")}</div>
-    <div class="sb-lab">${ws.map(([l, n, c]) => `<span class="${c}${n ? "" : " zero"}"><i>${l}<b>${n}</b>勝</i><em>${Math.round(n / base * 100)}%</em></span>`).join("")}</div>
+    <div class="sb-track">${ws.map(([, n, c]) => { const pc = n / base * 100;
+      // 割合はバーの中。狭くて字が入らない区切り（18%未満）は数字を出さない＝長さで読む
+      return n ? `<i class="${c}" style="width:${pc.toFixed(1)}%">${pc >= 18 ? `${Math.round(pc)}%` : ""}</i>` : ""; }).join("")}</div>
+    <div class="sb-lab">${ws.map(([l, n, c]) => `<span class="${c}${n ? "" : " zero"}">${l}<b>${n}</b></span>`).join("")}</div>
   </div>`;
 }
 function statsSide(x, cls) {

@@ -83,7 +83,7 @@
 >   （「打ち合いを制するのは平本」は打撃戦の話で、直後に「問題はその後」と続く）
 > - どちらも断定ではなく傾き。同じ水準の発言を他の予想者でも採用しているため揃えた
 | 2026-08-22 | Yusuke Yachi | ev_cho5 | 0件 | https://www.youtube.com/watch?v=--w5iETHqQw | m_yt_yusukeyachi |
-| 2026-08-22 | ヌルの格闘技ラジオ | ev_cho5 | 8件 | https://www.youtube.com/watch?v=0zT9BdHXAUw | m_yt_e1ff8ceb |
+| 2026-08-22 | ヌルの格闘技ラジオ | ev_cho5 | 8件 | https://www.youtube.com/watch?v=0zT9BdHXAUw | m_yt_e1ff8ceb | ※2026-11-07 Gaku判断で掲載取り下げ（DBから削除・member_map の blocked へ）
 | 2026-08-26 | クリケンchannel | ev_cho5 | 1件 | https://www.youtube.com/watch?v=1Rw3rcAWLzA | m_yt_channel |
 | 2026-08-24 | S.W.G格闘技 | ev_cho5 | 2件 | https://www.youtube.com/watch?v=1h8UmO4MXO8 | m_yt_swg |
 | 2025-12-03 | 扇久保博正 おぎちゃんねる。Ogichannel | ev_cho5 | 1件 | https://www.youtube.com/watch?v=49sjkQtbFYc | m_yt_ogichannel |
@@ -597,4 +597,4 @@ LM16に**出場する選手本人**が全8試合を予想した回（09-29）。
 | 2026-11-02 | ストラッサー起一 [ストチャンネル] | ev_lm17 | 11件 | https://www.youtube.com/watch?v=fzz3D73zsww | m_yt_b91a384d |
 | 2026-10-27 | 秋元強真　Kyoma Akimoto | ev_lm17 | 10件 | https://www.youtube.com/watch?v=ixKPI7iteqY | m_yt_kyomaakimoto |
 | 2026-11-03 | 杉山廣平の HEY! HEY! チャンネル | ev_lm17 | 4件 | https://www.youtube.com/watch?v=wtZwt7jkCL8 | m_yt_sugiyamakohei |
-| 2026-11-05 | ヌルの格闘技ラジオ | ev_lm17 | 13件 | https://www.youtube.com/watch?v=Myf3BXwvSyE | m_yt_e1ff8ceb |
+| 2026-11-05 | ヌルの格闘技ラジオ | ev_lm17 | 13件 | https://www.youtube.com/watch?v=Myf3BXwvSyE | m_yt_e1ff8ceb | ※2026-11-07 Gaku判断で掲載取り下げ（DBから削除・member_map の blocked へ）

@@ -1007,9 +1007,8 @@ tr.top .lb-rate { color: var(--gold-hot); }
   .stats > .st-cols > .st-side > .st-bar { grid-column: 2; grid-row: 2; align-self: start; margin-top: 6px; justify-self: end; }
   .stats > .st-cols > .st-side.c2 > .st-bar { justify-self: start; }   /* 左右ともバーは真ん中の仕切り寄り＝戦績との間に余白 */
   .stats .sb-lab { gap: 2px 0; font-size: 9px; }   /* 横に置く時は割合を一段小さく＝短いバー（150px）に3つが1行で入る */
-  .stats .sb-lab b { font-size: 12px; margin: 0 1px 0 1px; }
-  .stats .sb-lab i::before { width: 5px; height: 5px; margin-right: 2px; }
-  .stats .sb-lab em { padding-left: 7px; font-size: 9px; }
+  .stats .sb-lab b { font-size: 12px; margin-left: 2px; }
+  .stats .sb-lab span::before { width: 5px; height: 5px; margin-right: 2px; }
   .stats > .st-cols > .st-side.c2 > .st-recn { grid-column: 2; }
   .stats > .st-cols > .st-side.c2 > .st-bar { grid-column: 1; }
 }
@@ -1021,26 +1020,24 @@ tr.top .lb-rate { color: var(--gold-hot); }
 .st-bar { width: 100%; min-width: 0; max-width: 150px; }   /* 長いと戦績が窮屈に見えた（Gaku指摘11/7）＝割合3つが入る幅まで */
 /* KO と一本はどちらもフィニッシュ＝同じ白。仕切りで2つと分かる。判定だけ灰＝白の長さがそのままフィニッシュ率（Gaku指示11/7） */
 .sb-k, .sb-s { --sw: #f0f0f2; } .sb-d { --sw: #5a5a64; }
-.sb-track { display: flex; height: 8px; border-radius: 4px; overflow: hidden; background: rgba(255, 255, 255, .07); }
-.sb-track i { display: block; height: 100%; background: var(--sw); }
+/* 割合はバーの中（白地に黒字・灰地に白字）、下のラベルは「KO 2」＝勝ちのうち何勝か（Gaku指示11/7） */
+.sb-track { display: flex; height: 14px; border-radius: 3px; overflow: hidden; background: rgba(255, 255, 255, .07); }
+.sb-track i { display: block; height: 100%; background: var(--sw); overflow: hidden; white-space: nowrap; text-align: center;
+  font-style: normal; font-family: var(--num); font-size: 10px; font-weight: 700; line-height: 14px; color: #111; }
+.sb-track i.sb-d { color: #e8e8ec; }
 .sb-track i + i { border-left: 2px solid var(--panel2); }   /* 同じ白の KO と一本を仕切る */
 .sb-lab { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 2px 6px; margin-top: 5px;
   font-size: 10px; font-weight: 700; color: var(--muted); white-space: nowrap; }
-/* 各ラベル＝上に「KO 10勝」（勝ちのうち何勝か）、下に割合。勝数を主役にし、割合は添える（Gaku指示11/7） */
-.sb-lab > span { display: flex; flex-direction: column; }
-.sb-lab i { font-style: normal; }
-.sb-lab i::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 2px; margin-right: 3px; background: var(--sw); }
-.sb-lab b { font-family: var(--num); font-size: 14px; color: #e8e8ec; margin: 0 1px 0 3px; }
-.sb-lab em { font-style: normal; font-family: var(--num); font-size: 10px; font-weight: 400; color: var(--muted); padding-left: 10px; line-height: 1.2; }
+.sb-lab span::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 2px; margin-right: 3px; background: var(--sw); }
+.sb-lab b { font-family: var(--num); font-size: 14px; color: #e8e8ec; margin-left: 3px; }
 .sb-lab .zero { opacity: .4; }
 @media (max-width: 480px) {   /* スマホでは3つを1行に収める */
   .st-side { padding-left: 8px; padding-right: 8px; }
   .st-head { flex-wrap: wrap; row-gap: 0; }   /* 半分の幅に名前と異名は並びきらない＝異名は名前の下に1行（途中で折らず…で切る） */
   .st-nick { flex: 1 0 100%; }
   .sb-lab { gap: 2px 0; font-size: 9px; }   /* 間隔は space-between に任せる（375pxで3つが1行に入る） */
-  .sb-lab b { font-size: 12px; margin: 0 1px 0 1px; }
-  .sb-lab i::before { width: 5px; height: 5px; margin-right: 2px; }
-  .sb-lab em { padding-left: 7px; font-size: 9px; }
+  .sb-lab b { font-size: 12px; margin-left: 2px; }
+  .sb-lab span::before { width: 5px; height: 5px; margin-right: 2px; }
 }
 .rm { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 21px;
   font-size: 15px; font-weight: 900; color: #fff; line-height: 1; }   /* 枠も色も付けない＝記号だけで○×を読む（11/7） */
