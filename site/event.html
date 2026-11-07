@@ -7,7 +7,7 @@
 <title>大会予想｜予想番付</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261108014107">
+<link rel="stylesheet" href="css/style.css?v=20261108015110">
 </head>
 <body>
 <div id="app-header"></div>
@@ -15,16 +15,16 @@
 <div class="wrap" id="main"></div>
 <div class="toast" id="toast"></div>
 <div class="wiz" id="wiz" hidden role="dialog" aria-modal="true" aria-label="勝敗予想"></div>
-<div class="pg-spot" id="pg-spot" hidden></div><button type="button" class="pick-guide" id="pick-guide" onclick="toMainPick()"><span class="pg-t"><span class="pg-x">予想を入れる</span><span class="pg-y"><i class="pg-up"></i><b>勝つ方をタップ</b><i class="pg-up"></i></span></span><span class="pg-a"><i class="pg-arw"></i></span></button>
+<div class="pg-spot" id="pg-spot" hidden></div><div class="pick-guide" id="pick-guide" aria-hidden="true"><span class="pg-t">予想を入れる<i class="pg-arw"></i></span></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261108014107"></script>
-<script src="js/techniques.js?v=20261108014107"></script>
-<script src="js/demo-data.js?v=20261108014107"></script>
-<script src="js/api.js?v=20261108014107"></script>
-<script src="js/app.js?v=20261108014107"></script>
-<script src="js/glyph_fit.js?v=20261108014107"></script>
-<script src="js/bishoku_summary.js?v=20261108014107"></script>
+<script src="js/config.js?v=20261108015110"></script>
+<script src="js/techniques.js?v=20261108015110"></script>
+<script src="js/demo-data.js?v=20261108015110"></script>
+<script src="js/api.js?v=20261108015110"></script>
+<script src="js/app.js?v=20261108015110"></script>
+<script src="js/glyph_fit.js?v=20261108015110"></script>
+<script src="js/bishoku_summary.js?v=20261108015110"></script>
 <script>
 let EV, PHASE, FIGHTS, FMAP, MEMBERS, myPreds = {}, allPreds = [], ALL_SUPPORTS = [];
 
@@ -587,61 +587,61 @@ function drawProg() {
 }
 // 浮いて追いかけてくる「予想を入れる ↓」（Gaku 11/8「予想ページに来たはずなのにどこで予想を登録すればいいんだ？ってなっちゃうから、
 // 下にあるよって追従する」）。上の大きな入口札は撤去し、これを最初から出す（「これがそもそもいらない」「最初から出しておいて」）。
+// 押す物ではなく「この下にある」の合図（「右の青いボタン押さないといけない感じじゃなくて」）＝指は素通り。
 // 美食会予想まとめは写真に撮る面なので、まとめの頭が上の帯の下まで来て画面を占めている間（下の端が画面の8割より下にある間）は引っ込む。
-// 行き先は「まだ入れていない一番上の試合」の「どっちが勝つ？」（最初はメインイベント）。そこまでべったり付いていき
-// （「予想入れる⇨どっち勝つ？と勝敗予想ボタンにべったり誘導したい」）、2人の札が見える所に着いたら形と字が変わる＝
-// 赤｜青に割れた横長の札「↑ 勝つ方をタップ ↑」になり、2人の札が交互に光る（「ボタン押す箇所まできたら、ボタンの形と中の文字も変化」
-// 「ここだよー、ここを押せば勝敗書き込めるよーってわかるように」）。
-// 一度着いたら（押さなくても）3秒ほど見せて消え、そのページではもう出さない＝一度きりの演出（「ボタンまで一度誘導し切ったら消える」）。
+// 上から順にスクロールしてメインイベント（一番上の試合）の「どっちが勝つ？」と2人の札が浮く札の上まで来たら、勝手に照らす＝arriveGuide
+// （「行ったら勝手に背景黒くしてハイライトする感じ。流れるように繋がってるの、しかも一度きりの出現」）。照らしたら、そのページではもう出さない。
 // 全試合を入れ終えている時は最初から出さない（1-2b 促さない）
-const nextPick = () => { const f = WIZ_FIGHTS().find(f => !myPreds[f.id]?.winner_id); return f ? document.querySelector(`#fc_${f.id} .pick-zone`) : null; };
+const mainPick = () => document.querySelector(".fight-card .pick-zone");
 const topBar = () => Math.max(...["app-header", "sticky-cd"].map(id => document.getElementById(id)?.getBoundingClientRect().bottom || 0));
 let GUIDE_DONE = false;
 function updateGuide() {
   const g = document.getElementById("pick-guide");
-  if (!g || !Array.isArray(FIGHTS) || GUIDE_DONE) return;   // 読み込み前・演出を終えた後は何もしない
-  const H = innerHeight, bar = topBar();
-  const row = nextPick()?.querySelector(".vs-row"), r = row?.getBoundingClientRect(), bs = document.getElementById("bsum")?.getBoundingClientRect();
+  if (!g || !Array.isArray(FIGHTS) || GUIDE_DONE) return;   // 読み込み前・照らし終えた後は何もしない
+  const H = innerHeight, bar = topBar(), z = mainPick();
+  const r = z?.querySelector(".vs-row")?.getBoundingClientRect(), bs = document.getElementById("bsum")?.getBoundingClientRect();
   const show = PHASE === "open" && document.getElementById("wiz").hidden && !!r
-    && r.top >= bar - 8   // 2人の札をもう通り過ぎている（戻るで下から開いた等）なら下向きの矢印は嘘になるので出さない
+    && r.top >= bar - 8   // もう通り過ぎている（戻るで下から開いた等）なら下向きの矢印は嘘になるので出さない
+    && FIGHTS.some(f => !f.cancelled && !f.event_only && !myPreds[f.id]?.winner_id)
     && !(bs && bs.height > 0 && bs.top < bar + 48 && bs.bottom > H * 0.78);
   g.classList.toggle("show", show);
-  if (!show || r.bottom > H - 72 + 8) return;
-  GUIDE_DONE = true;   // 着いた＝2人の札が上の帯と浮く札の間に見えている
-  arriveGuide(g, row);
+  if (!show || r.bottom > g.getBoundingClientRect().top - 8) return;
+  GUIDE_DONE = true;   // 2人の札が浮く札より上に出きった
+  arriveGuide(g, z);
 }
-// 着いた時の演出（Gaku 11/8「変化の過程は途切れてない？唐突じゃない？めっちゃデフォルメしていい。他が暗くなってボタンだけがハイライト」）。
-// 画面いっぱいの穴が2人の札まで絞られて周りが暗くなり（アイリス）、浮く札は一度つぶれて札の方へ跳ね、下向きの矢印が上を向き、
-// 青い矢印の札が赤い札に流れ込んで赤｜青の横長の札「↑ 勝つ方をタップ ↑」になる。3.2秒で明かりが戻って消える。
-// 画面に触れたらそこで終える（照明は指を通すので、そのまま札を押せる）
-function arriveGuide(g, row) {
-  const spot = document.getElementById("pg-spot"), pad = 8;
-  const place = () => { const r = row.getBoundingClientRect();
-    Object.assign(spot.style, { left: r.left - pad + "px", top: r.top - pad + "px", width: r.width + pad * 2 + "px", height: r.height + pad * 2 + "px" }); };
-  Object.assign(spot.style, { left: "0px", top: "0px", width: innerWidth + "px", height: innerHeight + "px" });
+// 照らす（Gaku 11/8「他が暗くなってボタンだけがハイライト」「流れるように繋がってる」）。浮く札がそのまま光になって飛んでいく：
+// 照明の穴は浮く札の位置・大きさから始まり、周りが暗くなりながら、行き過ぎて戻る動きで「どっちが勝つ？」と2人の札を囲む大きさまで飛ぶ。
+// 飛ぶ間もスクロールに付いていく（行き先を毎こま測り直す）。着いたら2人の札が交互に光る。3.4秒か画面に触れたら明かりが戻る
+// （照明は指を通すので、そのまま札を押せる）
+function arriveGuide(g, z) {
+  const spot = document.getElementById("pg-spot"), row = z.querySelector(".vs-row"), head = z.querySelector(".pz-head") || row, pad = 10;
+  const put = q => Object.assign(spot.style, { left: q.l + "px", top: q.t + "px", width: q.w + "px", height: q.h + "px" });
+  const to = () => { const a = head.getBoundingClientRect(), b = row.getBoundingClientRect(), l = Math.min(a.left, b.left);
+    return { l: l - pad, t: a.top - pad, w: Math.max(a.right, b.right) - l + pad * 2, h: b.bottom - a.top + pad * 2 }; };
+  const s = g.querySelector(".pg-t").getBoundingClientRect(), from = { l: s.left, t: s.top, w: s.width, h: s.height };
+  const T = matchMedia("(prefers-reduced-motion: reduce)").matches ? 1 : 620, t0 = performance.now();
+  const back = k => 1 + 2.7 * (k - 1) ** 3 + 1.7 * (k - 1) ** 2;   // 1割ほど行き過ぎて戻る（デフォルメ）
+  put(from);
   spot.hidden = false;
   void spot.offsetWidth;
-  spot.classList.add("on", "iris");
-  place();
-  g.classList.add("at");
-  row.classList.add("beckon");
+  spot.classList.add("on");
+  g.classList.add("fly");
   let live = true;
-  const follow = () => { if (live) { place(); requestAnimationFrame(follow); } };   // 絞り終えたらスクロールに付いていく
-  setTimeout(() => { spot.classList.remove("iris"); follow(); }, 520);
+  const step = now => {
+    if (!live) return;
+    const k = Math.min(1, (now - t0) / T), e = back(k), q = to();
+    put({ l: from.l + (q.l - from.l) * e, t: from.t + (q.t - from.t) * e, w: from.w + (q.w - from.w) * e, h: from.h + (q.h - from.h) * e });
+    if (k === 1 && !spot.classList.contains("lit")) { spot.classList.add("lit"); row.classList.add("beckon"); }
+    requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
   const end = () => {
     if (!live) return;
-    live = false;
-    g.classList.remove("show");
-    spot.classList.remove("on");
-    setTimeout(() => { spot.hidden = true; row.classList.remove("beckon"); }, 600);
+    spot.classList.add("off");
+    setTimeout(() => { live = false; spot.hidden = true; g.classList.remove("show"); row.classList.remove("beckon"); }, 600);
   };
-  setTimeout(end, 3200);
+  setTimeout(end, 3400);
   addEventListener("pointerdown", end, { once: true });
-}
-// 押すと「どっちが勝つ？」を上の帯のすぐ下まで滑らせる（着いた時の演出は updateGuide が出す）
-function toMainPick() {
-  const z = nextPick();
-  if (z) scrollTo({ top: scrollY + z.getBoundingClientRect().top - topBar() - 6, behavior: "smooth" });
 }
 let GUIDE_RAF = 0;
 function refreshGuide() { if (!GUIDE_RAF) GUIDE_RAF = requestAnimationFrame(() => { GUIDE_RAF = 0; updateGuide(); }); }
