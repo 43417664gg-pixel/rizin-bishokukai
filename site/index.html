@@ -7,18 +7,18 @@
 <title>予想番付｜格闘技の勝敗予想</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261107223317">
+<link rel="stylesheet" href="css/style.css?v=20261107223900">
 </head>
 <body>
 <div id="app-header"></div>
 <div class="wrap" id="main"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261107223317"></script>
-<script src="js/techniques.js?v=20261107223317"></script>
-<script src="js/demo-data.js?v=20261107223317"></script>
-<script src="js/api.js?v=20261107223317"></script>
-<script src="js/app.js?v=20261107223317"></script>
+<script src="js/config.js?v=20261107223900"></script>
+<script src="js/techniques.js?v=20261107223900"></script>
+<script src="js/demo-data.js?v=20261107223900"></script>
+<script src="js/api.js?v=20261107223900"></script>
+<script src="js/app.js?v=20261107223900"></script>
 <script>
 // Xから来た人に「いま何をやっているか」を最初に見せる。
 // 監査（2026-08-31）で、入口に大会情報がゼロのまま登録を求めていて離脱する形だったため追加。
@@ -153,6 +153,28 @@ async function renderHome() {
       </a>`;
   };
 
+  // 大会カードの名前の段（Gaku 11/7「ここも手抜き」）：日付・何試合入れたかを文で並べず、数字と形で見せる。
+  // 日付＝右端に大きく「11.8」＋小さく年と曜日（ポスターと同じ英字）。受付中のタグは下の残り時間が言うので出さない
+  const dateBlock = (d) => {
+    if (!d) return "";
+    const dt = new Date(d + "T00:00:00");
+    return `<div class="edate"><small>${dt.getFullYear()} ${["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"][dt.getDay()]}</small><b>${dt.getMonth() + 1}.${dt.getDate()}</b></div>`;
+  };
+  // 大会名は「主題＋副題」に割る（「超RIZIN.6｜師走の尾張名古屋下剋上祭り」「RIZIN LANDMARK 16｜in NAGASAKI」）。
+  // 1本のまま大きくすると「尾張名古／屋」のように語の途中で折れるため。副題は小さく下の段へ
+  const nameBlock = (name, tag) => {
+    const m = String(name).match(/^(.+?)\s+((?:in\s|[^\x00-\x7F]).*)$/);
+    const main = m ? m[1] : name, sub = m ? m[2] : "";
+    return `<div class="ename${main.length > 12 ? " long" : ""}"><span class="en-m">${esc(main)}</span>${tag}${sub ? `<small class="en-s">${esc(sub)}</small>` : ""}</div>`;
+  };
+  // 予想した数＝試合数ぶんの目盛り。入れた分だけ金色に埋まる。全部入れたら「✓ 予想」
+  const progBlock = (n, total) => !total ? "" : `
+          <div class="eprog${n >= total ? " full" : ""}">
+            <span class="ep-k">予想</span>
+            <span class="ep-bar">${Array.from({ length: total }, (_, i) => `<i${i < n ? ` class="on"` : ""}></i>`).join("")}</span>
+            <span class="ep-n"><b>${Math.min(n, total)}</b>/${total}</span>
+          </div>`;
+
   // 通常サイズ（受付中・COMING SOON・過去）
   const fullCard = async (ev) => {
     const fights = await DB.listFights(ev.id);
@@ -177,8 +199,11 @@ async function renderHome() {
       <a class="event-card" href="event.html?id=${ev.id}">
         ${ev.poster_url ? `<div class="eposter" style="background-image:url('${esc(ev.poster_url)}')"><img src="${esc(ev.poster_url)}" alt=""></div>` : ""}
         <div class="ebody">
-          <div class="ename">${esc(ev.name)}</div>
-          <div class="emeta"><span>${fmtDate(ev.event_date)}</span>${tag}<span>予想済み ${myPreds.length}/${fights.length}</span></div>
+          <div class="eb-top">
+            ${nameBlock(ev.name, phase === "open" && !openBook ? "" : tag)}
+            ${dateBlock(ev.event_date)}
+          </div>
+          ${progBlock(myPreds.length, fights.filter(f => !f.cancelled).length)}
         </div>
         ${countdown}
       </a>`;

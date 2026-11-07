@@ -176,7 +176,7 @@ img { max-width: 100%; display: block; }
 .cdb { position: relative; display: flex; flex-direction: column; align-items: center; font-size: min(17cqw, 92px); }
 .cd-big.n3 .cdb { font-size: min(23cqw, 112px); }
 .cdb b { font-family: var(--num); font-weight: 700; font-size: 1em; line-height: .95; letter-spacing: .01em;
-  color: var(--gold-hot); font-variant-numeric: tabular-nums; text-shadow: 0 0 .35em rgba(240, 205, 90, .18); }
+  color: #f4f1ea; font-variant-numeric: tabular-nums; text-shadow: 0 2px .3em rgba(0, 0, 0, .5); }   /* 黄色はやめる（Gaku 11/7）＝白 */
 .cdb + .cdb::before { content: ":"; position: absolute; left: 0; top: 0; transform: translate(-50%, -.06em);
   font-family: var(--num); font-weight: 400; line-height: .95; color: rgba(255, 36, 54, .55); }
 .cdb.d + .cdb::before { content: none; }   /* 「2日 03:02:04」＝日と時間の間はコロンで繋がない */
@@ -219,6 +219,25 @@ img { max-width: 100%; display: block; }
 .event-card .ebody { padding: 12px 14px; }
 .event-card .ename { font-weight: 900; font-size: 15px; letter-spacing: .02em; }
 .event-card .emeta { color: var(--muted); font-size: 11px; margin-top: 3px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+/* 名前の段（index.html の dateBlock／progBlock・Gaku 11/7）：大会名は大きく、日付は右端に数字で、予想した数は目盛りで */
+.eb-top { display: flex; align-items: flex-end; gap: 12px; }
+.eb-top .ename { flex: 1; min-width: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px;
+  font-family: var(--display); font-weight: 400; font-size: 30px; line-height: 1.05; letter-spacing: .03em; }
+.eb-top .ename.long { font-size: 24px; }
+.eb-top .en-s { flex-basis: 100%; font-family: "Noto Sans JP", sans-serif; font-size: 13px; font-weight: 700; letter-spacing: .04em; color: #c9c9d2; }
+.eb-top .ename .tag { font-family: "Noto Sans JP", sans-serif; letter-spacing: .06em; }
+.edate { flex: none; text-align: right; line-height: 1; }
+.edate small { display: block; margin-bottom: 4px; font: 700 10px/1 var(--num); letter-spacing: .28em; margin-right: -.28em; color: var(--red-hot); }
+.edate b { font: 700 28px/1 var(--num); letter-spacing: .02em; color: var(--text); }
+.eprog { display: flex; align-items: center; gap: 10px; margin-top: 12px; padding-top: 10px; border-top: 1px solid rgba(255, 255, 255, .07); }
+.ep-k { flex: none; font-size: 10.5px; color: var(--muted); letter-spacing: .15em; }
+.ep-bar { flex: 1; min-width: 0; display: flex; gap: 3px; height: 9px; }
+.ep-bar i { flex: 1; background: rgba(255, 255, 255, .09); transform: skewX(-20deg); }
+.ep-bar i.on { background: linear-gradient(180deg, var(--red-hot), var(--red)); box-shadow: 0 0 6px rgba(255, 36, 54, .3); }
+.ep-n { flex: none; font: 500 13px/1 var(--num); color: var(--muted); letter-spacing: .04em; }
+.ep-n b { font-size: 22px; font-weight: 700; color: #f4f1ea; margin-right: 1px; }
+.eprog.full .ep-k { color: var(--ok); font-weight: 700; }
+.eprog.full .ep-k::before { content: "✓ "; }
 .tag {
   font-size: 10px; padding: 2px 8px; font-weight: 700; letter-spacing: .06em;
   clip-path: polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%);
