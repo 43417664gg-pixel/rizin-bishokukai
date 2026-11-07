@@ -3,9 +3,9 @@
 // 更新後は admin の「ローカルデータをSupabaseへ同期」で本番反映する。
 window.DEMO_SEED = {
   members: [
-    { id: "m_hame", name: "ハメ太郎", color: "#c4111f" },
-    { id: "m_nuki", name: "抜き太郎", color: "#1f5fbf" },
-    { id: "m_maruyama", name: "丸山先生", color: "#d4af37" },
+    { id: "m_hame", name: "ハメ太郎", color: "#ae0001", trim: "#d3a625" },
+    { id: "m_nuki", name: "抜き太郎", color: "#2a623d", trim: "#c0c0c0", shape: "square" },
+    { id: "m_maruyama", name: "丸山先生", color: "#ecb939", trim: "#16130f" },
   ],
 
   fighters: [

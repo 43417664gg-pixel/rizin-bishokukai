@@ -176,8 +176,12 @@
     if (src) return `<img class="${cls} ava-img" src="${esc(src)}" alt="" loading="lazy">`;
     const ini = String(m?.name || "?").trim().slice(0, 1);
     const c = /^#[0-9a-f]{6}$/i.test(m?.color || "") ? m.color : "#555555";
-    return `<span class="${cls} mav${isLightColor(c) ? " lt" : ""}" style="--c:${c}">${esc(ini)}</span>`;
+    const t = memberSeed(m?.id).trim, sq = memberSeed(m?.id).shape === "square";
+    return `<span class="${cls} mav${isLightColor(c) ? " lt" : ""}${t ? " trim" : ""}${sq ? " sq" : ""}" style="--c:${c}${t ? `;--t:${t}` : ""}">${esc(ini)}</span>`;
   };
+  // 縁と字の色（美食会3人＝寮の配色：ハメ＝深紅×金・抜き＝深緑×銀・丸山＝黄×黒）と形（抜き太郎だけ正方形）・Gaku指定11/7。
+  // 正本は demo-data.js の members[].trim / shape
+  window.memberSeed = (id) => ((window.DEMO_SEED && window.DEMO_SEED.members) || []).find(x => x.id === id) || {};
   // 塗りが明るい（金など）なら黒字。相対輝度 > .4（bishoku_summary.js の light と同じ判定）
   window.isLightColor = (c) => [1, 3, 5].map(i => parseInt(c.slice(i, i + 2), 16) / 255)
     .map(v => v <= .04045 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4)
