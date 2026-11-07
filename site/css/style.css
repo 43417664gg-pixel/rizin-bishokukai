@@ -321,9 +321,11 @@ img { max-width: 100%; display: block; }
 .fight-label .fno b { font: 700 28px/1 var(--num); color: #f4f1ea; margin: 0 2px; letter-spacing: 0; }
 .fight-label .fl-t { white-space: nowrap; }
 .fight-label .title-label { color: var(--red-hot); }
-.fight-label .fl-kg { font-size: 13px; font-weight: 700; color: var(--muted); letter-spacing: .02em; }   /* 階級の直後に（61.0kg）＝離さない（Gaku 11/8） */
+/* 階級の直後に（61.0kg）＝離さない（Gaku 11/8）。小さく「級」に寄せて添える（「小さめで級の字に近づけて。添える感じ」）：
+   全角括弧の左の空き（半角分）を palt で詰める */
+.fight-label .fl-kg { font-size: 11px; font-weight: 700; color: var(--muted); letter-spacing: .02em; font-feature-settings: "palt"; margin-left: 1px; }
 /* カードの一番上＝写真の上の段（Gaku 11/8「カード写真に被らないで、その上ね」） */
-.fight-label.top { padding: 12px 14px 10px; }
+.fight-label.top { padding: 10px 14px 12px; }   /* 字の上下の余白をそろえる（12/10 だと数字の「9」の上 15px・下 11.6px で下に寄って見えた・Gaku 11/8「上下位置」） */
 .vs-row { display: flex; gap: 6px; padding: 10px 14px 4px; align-items: stretch; position: relative; }
 .vs-mark { position: absolute; left: 50%; top: 50%; z-index: 2; transform: translate(-50%, -50%) skewX(-8deg); pointer-events: none;
   font-family: var(--display); font-size: calc(14px + 20px * var(--grow, 0)); color: #fff; letter-spacing: .04em;
