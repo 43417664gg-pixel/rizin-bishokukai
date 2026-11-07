@@ -1102,7 +1102,7 @@ span.mav.tri > i { --k: 50cqw; position: relative; top: 7cqh; }
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   font-feature-settings: "palt"; }   /* かな・括弧を詰める＝長い異名（足立区のバカストイックマン）も10pxで1行に入る（詰めないと1px足りず「…」で切れていた） */
 .st-nick.wrap { white-space: normal; overflow: visible; }   /* 10pxまで縮めても入らない長い異名だけ折り返す（白鵬女子高等学校…） */
-/* 異名の前にコーナー色の斜めの棒＝下の「選手DATA 詳しく」と同じ印。閉じている間もここだけで左右の人が分かる。
+/* 異名の前にコーナー色の斜めの棒＝下の「選手DATA 詳しく」と同じ印。異名の段だけでも左右の人が分かる。
    棒は列の外側の余白に置く＝異名の幅を食わない（幅を取ったら長い異名が改行した・「異名で改行はないなあ」） */
 .st-names .st-head { position: relative; }
 .st-names .st-head::before { content: ""; position: absolute; top: 3px; bottom: 3px; right: 100%; margin-right: 3px; width: 3px; background: var(--red); transform: skewX(-18deg); }
@@ -1112,14 +1112,14 @@ span.mav.tri > i { --k: 50cqw; position: relative; top: 7cqh; }
    段は 名前／STATSの見出し／戦績／バー／前戦の見出し／前戦 の6段。狭い時はバーを4段目（戦績の下）、
    カードが広い時（PC）は3段目＝戦績の横の空きへ。判定はカード幅（container）で左右まとめて行う。
    横に置く時はバーの上端を段の上から一定の位置に固定する（中央寄せだと割合の行数で上下にずれる） */
-/* 名前の段（.st-names）は閉じている間も見える。STATS 以下（.st-main）は .st-fold の中＝閉じている間は高さ0。
-   左右の仕切り線は2つの段で同じ位置に引くので、つながって1本に見える */
+/* 名前の段（.st-names）と STATS 以下（.st-main）は別の格子。左右の仕切り線は2つの段で同じ位置に引くので、つながって1本に見える */
 :is(.st-names, .st-main) > .st-side { grid-template-columns: auto minmax(0, 1fr); column-gap: 10px; }
 :is(.st-names, .st-main) > .st-side.c2 { grid-template-columns: minmax(0, 1fr) auto; }
 :is(.st-names, .st-main) > .st-side > * { grid-column: 1 / -1; }
 :is(.st-names, .st-main) > .st-side { grid-row: 1 / -1; }   /* 見出しの帯が両列をまたぐので、左右の列は位置を明示する（自動配置だと帯を避けて下へずれる） */
 :is(.st-names, .st-main) > .st-side.c1 { grid-column: 1; }
 :is(.st-names, .st-main) > .st-side.c2 { grid-column: 2; }
+.st-names > .st-side { padding-bottom: 0; }   /* 名前の段と STATS の帯の間は帯の上の空き（.g1）が持つ */
 .st-names > .st-side > .st-head { grid-row: 1; margin-bottom: 0; }
 .st-main > .st-side { padding-top: 0; }
 .st-main > .st-side > .g1 { grid-row: 1; }
@@ -1163,9 +1163,8 @@ span.mav.tri > i { --k: 50cqw; position: relative; top: 7cqh; }
 .st-side.c2 .st-agen { order: -1; margin-right: auto; }
 .st-main.age2 .st-side.c1 .st-agen { order: 3; }
 .st-main.age2 .st-side.c2 .st-agen { order: 2; }
-/* 2人とも異名が無い試合は名前の段を出さない。閉じている間は枠も見せない（空の帯にしない） */
+/* 2人とも異名が無い試合は名前の段を出さない（空の帯にしない） */
 .stats.nonick .st-names { display: none; }
-.stats.nonick:not(.pop) { border-color: transparent; }
 .st-n { font-size: 12px; font-weight: 700; color: #b4b4be; white-space: nowrap; }
 .st-n b { font-family: var(--num); font-size: 36px; line-height: 1; margin-right: 2px; color: #fff; }
 .st-n.d b { color: var(--muted); font-size: 16px; margin-left: 2px; }   /* 分・NC は脇役＝小さく */
@@ -1208,37 +1207,6 @@ span.mav.tri > i { --k: 50cqw; position: relative; top: 7cqh; }
 .st-more summary::after { content: " ▼"; font-size: 9px; }
 .st-more[open] summary::after { content: " ▲"; }
 .st-more .st-cols { border-top: 1px solid var(--line); }
-/* STATS と前戦は閉じておき、画面の下3割の線まで上がってきたら飛び出して開く（Gaku 11/8「初めは閉じてて広がるイメージ。飛び出し。
-   スクロールの幅は狭めでいい」）。閉じている間は場所も取らない＝名前の段の真下に「どっちが勝つ？」が来る
-   （11/8「すぐ下というのは物理的にね、視覚的にではなく。スタッツの部分がごっそりないのよ一見。その箇所を通ると情報が見れる」）。
-   線を越えたら時間で動く：段の高さが0から一気に伸び（.st-fold・.pl-fold＝1行の格子の 0fr→1fr）、その中で
-   仕切りの線と「STATS」「前戦」は真ん中から左右へ広がり、数字・バー・前戦・選手DATAは小さい所から少し行き過ぎて飛び出す。
-   上の段から順に70msずつ遅らせる。名前の段は閉じない（誰の試合かは常に見える）。
-   一度開いたら開いたまま（描き直しても上へ戻っても閉じない）。仕掛けは event.html の popIO */
-.st-fold, .pl-fold { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .5s cubic-bezier(.2, .9, .25, 1); }
-.st-fold > div, .pl-fold > div { min-height: 0; overflow: hidden; }
-.stats.pop .st-fold, .stats.pop + .pl-fold { grid-template-rows: 1fr; }
-/* 閉じている間は名前の段の下に余白を持つ。開くとその余白は STATS の帯の上の空き（.g1）へ受け渡す＝開いた形は前と同じ */
-.st-names > .st-side { transition: padding-bottom .5s cubic-bezier(.2, .9, .25, 1); }
-.stats.pop .st-names > .st-side { padding-bottom: 0; }
-.stats :is(.st-side > :not(.st-head), .st-sep), .st-more > summary, .pl-fold a {
-  transition: opacity .2s ease-out calc(var(--i, 0) * 70ms), transform .55s cubic-bezier(.3, 1.6, .5, 1) calc(var(--i, 0) * 70ms); }
-.stats:not(.pop) .st-side > :not(.st-head), .stats:not(.pop) .st-more > summary, .stats:not(.pop) + .pl-fold a { opacity: 0; transform: scale(.55); }
-.stats:not(.pop) .st-sep { opacity: 0; transform: scaleX(0); }
-.stats.now :is(.st-fold, .st-names > .st-side, .st-side > :not(.st-head), .st-sep), .stats.now .st-more > summary,
-.stats.now + .pl-fold, .stats.now + .pl-fold a { transition: none; }
-.stats .st-sep.s1 { --i: 0; }
-.stats .st-recn { --i: 1; }
-.stats .st-bar { --i: 2; }
-.stats .st-sep.s2 { --i: 3; }
-.stats .st-row { --i: 4; }
-.st-more > summary { --i: 5; }
-.pl-fold a { --i: 5; }
-@media (prefers-reduced-motion: reduce) {
-  .st-fold, .pl-fold, .st-names > .st-side { transition: none; }
-  .stats :is(.st-side > :not(.st-head), .st-sep), .st-more > summary, .pl-fold a { transition: opacity .2s; }
-  .stats:not(.pop) :is(.st-side > :not(.st-head), .st-sep), .stats:not(.pop) .st-more > summary, .stats:not(.pop) + .pl-fold a { transform: none; }
-}
 
 /* 勝敗予想の入力は判断材料（スタッツ・名鑑）の下にまとめて分ける（Gaku指示11/7「別物」） */
 .pick-zone { margin-top: 14px; border-top: 1px solid var(--line); background: rgba(255, 255, 255, .02); padding-bottom: 4px; }

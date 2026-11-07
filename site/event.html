@@ -7,7 +7,7 @@
 <title>大会予想｜予想番付</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261108030705">
+<link rel="stylesheet" href="css/style.css?v=20261108031359">
 </head>
 <body>
 <div id="app-header"></div>
@@ -18,13 +18,13 @@
 <div class="pg-spot" id="pg-spot" hidden></div><div class="pick-guide" id="pick-guide" aria-hidden="true"><span class="pg-t"></span><span class="pg-a"></span><span class="pg-x">予想を入れる<i class="pg-arw"></i></span></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261108030705"></script>
-<script src="js/techniques.js?v=20261108030705"></script>
-<script src="js/demo-data.js?v=20261108030705"></script>
-<script src="js/api.js?v=20261108030705"></script>
-<script src="js/app.js?v=20261108030705"></script>
-<script src="js/glyph_fit.js?v=20261108030705"></script>
-<script src="js/bishoku_summary.js?v=20261108030705"></script>
+<script src="js/config.js?v=20261108031359"></script>
+<script src="js/techniques.js?v=20261108031359"></script>
+<script src="js/demo-data.js?v=20261108031359"></script>
+<script src="js/api.js?v=20261108031359"></script>
+<script src="js/app.js?v=20261108031359"></script>
+<script src="js/glyph_fit.js?v=20261108031359"></script>
+<script src="js/bishoku_summary.js?v=20261108031359"></script>
 <script>
 let EV, PHASE, FIGHTS, FMAP, MEMBERS, myPreds = {}, allPreds = [], ALL_SUPPORTS = [];
 
@@ -130,15 +130,13 @@ function cardHead(f) {
 // 誰のかは左右の位置とコーナー色の印で分かる（読み上げには名前を渡す）
 function profileLinks(f) {
   const a = (id, side) => `<a class="c${side}" href="fighter.html?id=${id}" aria-label="${esc(FMAP[id]?.name)}の選手データを詳しく"><span>選手<b>DATA</b> 詳しく</span><i>›</i></a>`;
-  // STATS と一緒に畳んでおき、開く時に一緒に出る（.stats.pop + .pl-fold）。中の段が無いと 0 まで縮まない
   return `
-    <div class="pl-fold"><div><div class="profile-links">${a(f.fighter1_id, 1)}${a(f.fighter2_id, 2)}</div></div></div>`;
+    <div class="profile-links">${a(f.fighter1_id, 1)}${a(f.fighter2_id, 2)}</div>`;
 }
 
 // その場で判断できるように：戦績・勝ち方の割合・前戦（○×）。トグルで直近5試合（Gaku依頼11/7）
 // 開閉はカードを描き直しても保つ（選手をタップするたびに閉じないように）
 const statsOpen = new Set();
-const POPPED = new Set();   // STATS と前戦を開き終えた試合（描き直しても閉じない）。仕掛けは popIO
 const RMARK = { W: ["○", "w"], L: ["×", "l"], D: ["△", "d"], NC: ["NC", "d"] };
 const recentOf = (x) => [...(x?.history || [])].sort((a, b) => String(b.d).localeCompare(String(a.d)));
 const resMark = (r) => { const [s, c] = RMARK[r] || ["?", "d"]; return `<span class="rm ${c}">${s}</span>`; };
@@ -161,7 +159,7 @@ function wayBar(x) {
     <div class="sb-lab">${ws.map(([l, n, c]) => `<span class="${c}${n ? "" : " zero"}">${l}<b>${n}</b></span>`).join("")}</div>
   </div>`;
 }
-// 名前の段＝異名だけ。閉じている間に見えるのはここだけ。
+// 名前の段＝異名だけ。
 // 選手名は出さない（Gaku 11/8「異名だけでいいかも。名前は書かなくていいや。カードに書いてある」＝真上の写真と下の札に名前がある）。
 // 年齢は STATS の戦績の横の空きへ（「年齢はSTATSの空きスペースに入れよう。そこは異名だけ」）
 function statsHead(x, cls) {
@@ -191,20 +189,17 @@ function statsBlock(f) {
   const list = (x, cls) => { const rows = recentOf(x).slice(0, 5).map(histRow);
     while (rows.length < n) rows.push("<div></div>");
     return `<div class="st-side ${cls}">${rows.join("")}</div>`; };
-  // 閉じている間は名前の段だけ＝その真下に「どっちが勝つ？」が来る（Gaku 11/8「すぐ下というのは物理的にね、視覚的にではなく。
-  // スタッツの部分がごっそりないのよ一見。その箇所を通ると情報が見れる」）。STATS・前戦・直近5試合は .st-fold の中で高さ0から開く
-  // 2人とも異名が無ければ名前の段は出さない（空の帯になる）。閉じている間は枠も消す
+  // STATS・前戦は最初から開いたまま（11/8 の「スクロールで飛び出して開く」は Gaku 11/8「飛び出て引っ込む仕組みはもう終わり。解除」で廃止）。
+  // 2人とも異名が無ければ名前の段は出さない（空の帯になる）
   const nonick = !f1?.nickname && !f2?.nickname;
-  return `<div class="stats${nonick ? " nonick" : ""}${POPPED.has(f.id) ? " pop now" : ""}" data-f="${f.id}">
+  return `<div class="stats${nonick ? " nonick" : ""}" data-f="${f.id}">
     <div class="st-cols st-names" style="--rows:1">${statsHead(f1, "c1")}${statsHead(f2, "c2")}</div>
-    <div class="st-fold"><div>
-      <div class="st-cols st-main" style="--rows:5">${statsSide(f1, "c1")}${statsSide(f2, "c2")}
-        <div class="st-sep s1"><span>STATS</span></div><div class="st-sep s2"><span>前戦</span></div></div>
-      ${n > 1 ? `<details class="st-more" ${statsOpen.has(f.id) ? "open" : ""} ontoggle="statsOpen[this.open ? 'add' : 'delete']('${f.id}')">
-        <summary>直近5試合</summary>
-        <div class="st-cols" style="--rows:${n}">${list(f1, "c1")}${list(f2, "c2")}</div>
-      </details>` : ""}
-    </div></div>
+    <div class="st-cols st-main" style="--rows:5">${statsSide(f1, "c1")}${statsSide(f2, "c2")}
+      <div class="st-sep s1"><span>STATS</span></div><div class="st-sep s2"><span>前戦</span></div></div>
+    ${n > 1 ? `<details class="st-more" ${statsOpen.has(f.id) ? "open" : ""} ontoggle="statsOpen[this.open ? 'add' : 'delete']('${f.id}')">
+      <summary>直近5試合</summary>
+      <div class="st-cols" style="--rows:${n}">${list(f1, "c1")}${list(f2, "c2")}</div>
+    </details>` : ""}
   </div>`;
 }
 
@@ -781,20 +776,7 @@ new ResizeObserver(([e]) => document.documentElement.style.setProperty("--hdr-h"
   .observe(document.getElementById("app-header"));
 // カードは予想のたびに差し替わる（replaceCard）ので、描き直しを見張って合わせ直す
 let NICK_T = 0;
-// STATS と前戦は閉じておき、下3割の線（画面の高さの72%）まで上がってきたら飛び出して開く（Gaku 11/8「初めは閉じてて広がるイメージ。飛び出し。
-// スクロールの幅は狭めでいい」）。開く動きは CSS の .stats.pop。
-// 閉じている間は場所も取らない（11/8「物理的に」）＝開くと下が押し下がる。画面より上へ通り過ぎた試合はそこで開かない
-// （画面の上で高さが増えると、iPhone の Safari は読んでいる所が下へずれる）。上へ戻ってきて線の内側に入った時に開く
-const popIO = new IntersectionObserver(es => {
-  for (const e of es) {
-    if (!e.isIntersecting) continue;
-    e.target.classList.add("pop");
-    POPPED.add(e.target.dataset.f);
-    popIO.unobserve(e.target);
-  }
-}, { rootMargin: "0px 0px -28% 0px" });
-const watchStats = () => document.querySelectorAll(".stats:not(.pop)").forEach(s => popIO.observe(s));
-const refitNicks = () => { clearTimeout(NICK_T); NICK_T = setTimeout(() => { fitNicks(); watchStats(); }, 30); };
+const refitNicks = () => { clearTimeout(NICK_T); NICK_T = setTimeout(() => { fitNicks(); }, 30); };
 new MutationObserver(refitNicks).observe(document.getElementById("main"), { childList: true, subtree: true });
 addEventListener("resize", refitNicks);
 document.fonts?.ready.then(refitNicks);
