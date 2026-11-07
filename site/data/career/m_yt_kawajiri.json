@@ -3,7 +3,7 @@
  "name": "川尻達也",
  "color": "#e6194b",
  "channel": "川尻達也のじりラジオ",
- "generated": "2026-10-20",
+ "generated": "2026-11-08",
  "videos": 19,
  "method": "公開動画の字幕→Haiku抽出→字幕原文照合＋独立判定→日本語版Wikipedia結果と採点",
  "picks": [
@@ -786,19 +786,6 @@
    "method": "DEC",
    "hit": false,
    "how": false
-  },
-  {
-   "event": "RIZIN.52",
-   "date": "2026-03-07",
-   "no": 9,
-   "f1": "ビクター・コレスニック",
-   "f2": "武田光司",
-   "pick": "武田光司",
-   "pick_method": "判定",
-   "winner": "武田光司",
-   "method": "DEC",
-   "hit": true,
-   "how": true
   },
   {
    "event": "RIZIN.52",
