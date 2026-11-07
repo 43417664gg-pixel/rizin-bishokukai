@@ -1018,10 +1018,11 @@ tr.top .lb-rate { color: var(--gold-hot); }
 .st-n b { font-family: var(--num); font-size: 36px; line-height: 1; margin-right: 2px; color: #fff; }
 .st-n.d b { color: var(--muted); font-size: 16px; margin-left: 2px; }   /* 分・NC は脇役＝小さく */
 .st-bar { width: 100%; min-width: 0; max-width: 150px; }   /* 長いと戦績が窮屈に見えた（Gaku指摘11/7）＝割合3つが入る幅まで */
-.sb-k { --sw: #f0f0f2; } .sb-s { --sw: #9a9aa4; } .sb-d { --sw: #5a5a64; }
+/* KO と一本はどちらもフィニッシュ＝同じ白。仕切りで2つと分かる。判定だけ灰＝白の長さがそのままフィニッシュ率（Gaku指示11/7） */
+.sb-k, .sb-s { --sw: #f0f0f2; } .sb-d { --sw: #5a5a64; }
 .sb-track { display: flex; height: 8px; border-radius: 4px; overflow: hidden; background: rgba(255, 255, 255, .07); }
 .sb-track i { display: block; height: 100%; background: var(--sw); }
-.sb-track i + i { border-left: 2px solid var(--panel2); }
+.sb-track i + i { border-left: 2px solid var(--panel2); }   /* 同じ白の KO と一本を仕切る */
 .sb-lab { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 2px 6px; margin-top: 5px;
   font-size: 10px; font-weight: 700; color: var(--muted); white-space: nowrap; }
 .sb-lab span::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 2px; margin-right: 3px; background: var(--sw); }
