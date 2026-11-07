@@ -1,0 +1,478 @@
+{
+ "member_id": "m_yt_inoue_yusaku",
+ "name": "井上雄策",
+ "color": "#6b8e23",
+ "channel": "RIZIN公式 事前番組",
+ "generated": "2026-11-08",
+ "videos": 11,
+ "method": "公開動画の字幕→Haiku抽出→字幕原文照合＋独立判定→日本語版Wikipedia結果と採点",
+ "picks": [
+  {
+   "event": "RIZIN.47",
+   "date": "2024-06-09",
+   "no": 5,
+   "f1": "スパイク・カーライル",
+   "f2": "キム・ギョンピョ",
+   "pick": "スパイク・カーライル",
+   "pick_method": "判定",
+   "winner": "スパイク・カーライル",
+   "method": "SUB",
+   "hit": true,
+   "how": false
+  },
+  {
+   "event": "RIZIN.47",
+   "date": "2024-06-09",
+   "no": 6,
+   "f1": "武田光司",
+   "f2": "ラジャブアリ・シェイドゥラエフ",
+   "pick": "武田光司",
+   "pick_method": "判定",
+   "winner": "ラジャブアリ・シェイドゥラエフ",
+   "method": "SUB",
+   "hit": false,
+   "how": false
+  },
+  {
+   "event": "RIZIN.48",
+   "date": "2024-09-29",
+   "no": 8,
+   "f1": "フアン・アーチュレッタ",
+   "f2": "ラジャブアリ・シェイドゥラエフ",
+   "pick": "フアン・アーチュレッタ",
+   "pick_method": "不明",
+   "winner": "ラジャブアリ・シェイドゥラエフ",
+   "method": "SUB",
+   "hit": false,
+   "how": false
+  },
+  {
+   "event": "RIZIN.50",
+   "date": "2025-03-30",
+   "no": 1,
+   "f1": "魚井フルスイング",
+   "f2": "赤田プレイボイ功輝",
+   "pick": "赤田プレイボイ功輝",
+   "pick_method": "判定",
+   "winner": "魚井フルスイング",
+   "method": "DEC",
+   "hit": false,
+   "how": false
+  },
+  {
+   "event": "RIZIN.50",
+   "date": "2025-03-30",
+   "no": 6,
+   "f1": "伊藤裕樹",
+   "f2": "トニー・ララミー",
+   "pick": "伊藤裕樹",
+   "pick_method": "判定",
+   "winner": "伊藤裕樹",
+   "method": "DEC",
+   "hit": true,
+   "how": true
+  },
+  {
+   "event": "RIZIN.50",
+   "date": "2025-03-30",
+   "no": 10,
+   "f1": "ルイス・グスタボ",
+   "f2": "野村駿太",
+   "pick": "ルイス・グスタボ",
+   "pick_method": "判定",
+   "winner": "野村駿太",
+   "method": "DEC",
+   "hit": false,
+   "how": false
+  },
+  {
+   "event": "RIZIN男祭り",
+   "date": "2025-05-04",
+   "no": 16,
+   "f1": "クレベル・コイケ",
+   "f2": "ラジャブアリ・シェイドゥラエフ",
+   "pick": "クレベル・コイケ",
+   "pick_method": "一本",
+   "winner": "ラジャブアリ・シェイドゥラエフ",
+   "method": "KO",
+   "hit": false,
+   "how": false
+  },
+  {
+   "event": "超RIZIN.4 真夏の喧嘩祭り",
+   "date": "2025-07-27",
+   "no": 1,
+   "f1": "元谷友貴",
+   "f2": "ヒロヤ",
+   "pick": "元谷友貴",
+   "pick_method": "判定",
+   "winner": "元谷友貴",
+   "method": "DEC",
+   "hit": true,
+   "how": true
+  },
+  {
+   "event": "超RIZIN.4 真夏の喧嘩祭り",
+   "date": "2025-07-27",
+   "no": 2,
+   "f1": "ホセ・トーレス",
+   "f2": "扇久保博正",
+   "pick": "扇久保博正",
+   "pick_method": "判定",
+   "winner": "扇久保博正",
+   "method": "DEC",
+   "hit": true,
+   "how": true
+  },
+  {
+   "event": "超RIZIN.4 真夏の喧嘩祭り",
+   "date": "2025-07-27",
+   "no": 3,
+   "f1": "伊藤裕樹",
+   "f2": "エンカジムーロ・ズールー",
+   "pick": "伊藤裕樹",
+   "pick_method": "KO",
+   "winner": "伊藤裕樹",
+   "method": "DEC",
+   "hit": true,
+   "how": false
+  },
+  {
+   "event": "超RIZIN.4 真夏の喧嘩祭り",
+   "date": "2025-07-27",
+   "no": 4,
+   "f1": "アリベク・ガジャマトフ",
+   "f2": "征矢貴",
+   "pick": "征矢貴",
+   "pick_method": "不明",
+   "winner": "アリベク・ガジャマトフ",
+   "method": "KO",
+   "hit": false,
+   "how": false
+  },
+  {
+   "event": "超RIZIN.4 真夏の喧嘩祭り",
+   "date": "2025-07-27",
+   "no": 5,
+   "f1": "神龍誠",
+   "f2": "山本アーセン",
+   "pick": "山本アーセン",
+   "pick_method": "判定",
+   "winner": "神龍誠",
+   "method": "SUB",
+   "hit": false,
+   "how": false
+  },
+  {
+   "event": "超RIZIN.4 真夏の喧嘩祭り",
+   "date": "2025-07-27",
+   "no": 12,
+   "f1": "秋元強真",
+   "f2": "赤田功輝",
+   "pick": "秋元強真",
+   "pick_method": "不明",
+   "winner": "秋元強真",
+   "method": "SUB",
+   "hit": true,
+   "how": false
+  },
+  {
+   "event": "超RIZIN.4 真夏の喧嘩祭り",
+   "date": "2025-07-27",
+   "no": 13,
+   "f1": "金原正徳",
+   "f2": "YA-MAN",
+   "pick": "金原正徳",
+   "pick_method": "一本",
+   "winner": "YA-MAN",
+   "method": "KO",
+   "hit": false,
+   "how": false
+  },
+  {
+   "event": "超RIZIN.4 真夏の喧嘩祭り",
+   "date": "2025-07-27",
+   "no": 14,
+   "f1": "パトリッキー・ピットブル",
+   "f2": "野村駿太",
+   "pick": "野村駿太",
+   "pick_method": "KO",
+   "winner": "野村駿太",
+   "method": "DEC",
+   "hit": true,
+   "how": false
+  },
+  {
+   "event": "超RIZIN.4 真夏の喧嘩祭り",
+   "date": "2025-07-27",
+   "no": 15,
+   "f1": "クレベル・コイケ",
+   "f2": "朝倉未来",
+   "pick": "朝倉未来",
+   "pick_method": "判定",
+   "winner": "朝倉未来",
+   "method": "DEC",
+   "hit": true,
+   "how": true
+  },
+  {
+   "event": "RIZIN.51",
+   "date": "2025-09-28",
+   "no": 3,
+   "f1": "冨澤大智",
+   "f2": "平本丈",
+   "pick": "冨澤大智",
+   "pick_method": "不明",
+   "winner": "冨澤大智",
+   "method": "DEC",
+   "hit": true,
+   "how": false
+  },
+  {
+   "event": "RIZIN.51",
+   "date": "2025-09-28",
+   "no": 7,
+   "f1": "梅野源治",
+   "f2": "芦澤竜誠",
+   "pick": "梅野源治",
+   "pick_method": "不明",
+   "winner": "梅野源治",
+   "method": "DEC",
+   "hit": true,
+   "how": false
+  },
+  {
+   "event": "RIZIN LANDMARK 12",
+   "date": "2025-11-03",
+   "no": 4,
+   "f1": "鹿志村仁之介",
+   "f2": "安井飛馬",
+   "pick": "鹿志村仁之介",
+   "pick_method": "一本",
+   "winner": "鹿志村仁之介",
+   "method": "DEC",
+   "hit": true,
+   "how": false
+  },
+  {
+   "event": "RIZIN.52",
+   "date": "2026-03-07",
+   "no": 1,
+   "f1": "NOEL",
+   "f2": "イ・ボミ",
+   "pick": "NOEL",
+   "pick_method": "一本",
+   "winner": "NOEL",
+   "method": "SUB",
+   "hit": true,
+   "how": true
+  },
+  {
+   "event": "RIZIN.52",
+   "date": "2026-03-07",
+   "no": 4,
+   "f1": "佐藤将光",
+   "f2": "ジョン・スウィーニー",
+   "pick": "佐藤将光",
+   "pick_method": "不明",
+   "winner": "佐藤将光",
+   "method": "SUB",
+   "hit": true,
+   "how": false
+  },
+  {
+   "event": "RIZIN.52",
+   "date": "2026-03-07",
+   "no": 8,
+   "f1": "大島沙緒里",
+   "f2": "ケイト・ロータス",
+   "pick": "大島沙緒里",
+   "pick_method": "判定",
+   "winner": "大島沙緒里",
+   "method": "DEC",
+   "hit": true,
+   "how": true
+  },
+  {
+   "event": "RIZIN.53",
+   "date": "2026-05-10",
+   "no": 3,
+   "f1": "ジョリー",
+   "f2": "児玉兼慎",
+   "pick": "ジョリー",
+   "pick_method": "一本",
+   "winner": "ジョリー",
+   "method": "SUB",
+   "hit": true,
+   "how": true
+  },
+  {
+   "event": "RIZIN.53",
+   "date": "2026-05-10",
+   "no": 4,
+   "f1": "ダイキ・ライトイヤー",
+   "f2": "梅野源治",
+   "pick": "梅野源治",
+   "pick_method": "判定",
+   "winner": "ダイキ・ライトイヤー",
+   "method": "SUB",
+   "hit": false,
+   "how": false
+  },
+  {
+   "event": "RIZIN.53",
+   "date": "2026-05-10",
+   "no": 5,
+   "f1": "松嶋こよみ",
+   "f2": "ライアン・カファロ",
+   "pick": "松嶋こよみ",
+   "pick_method": "不明",
+   "winner": "ライアン・カファロ",
+   "method": "SUB",
+   "hit": false,
+   "how": false
+  },
+  {
+   "event": "RIZIN.53",
+   "date": "2026-05-10",
+   "no": 7,
+   "f1": "ケイト・ロータス",
+   "f2": "ケイティ・ペレス",
+   "pick": "ケイト・ロータス",
+   "pick_method": "不明",
+   "winner": "ケイト・ロータス",
+   "method": "DEC",
+   "hit": true,
+   "how": false
+  },
+  {
+   "event": "RIZIN.53",
+   "date": "2026-05-10",
+   "no": 8,
+   "f1": "太田忍",
+   "f2": "金太郎",
+   "pick": "太田忍",
+   "pick_method": "判定",
+   "winner": "太田忍",
+   "method": "SUB",
+   "hit": true,
+   "how": false
+  },
+  {
+   "event": "RIZIN.53",
+   "date": "2026-05-10",
+   "no": 9,
+   "f1": "高木凌",
+   "f2": "リー・カイウェン",
+   "pick": "高木凌",
+   "pick_method": "判定",
+   "winner": "高木凌",
+   "method": "KO",
+   "hit": true,
+   "how": false
+  },
+  {
+   "event": "RIZIN.53",
+   "date": "2026-05-10",
+   "no": 11,
+   "f1": "イルホム・ノジモフ",
+   "f2": "ルイス・グスタボ",
+   "pick": "ルイス・グスタボ",
+   "pick_method": "KO",
+   "winner": "ルイス・グスタボ",
+   "method": "KO",
+   "hit": true,
+   "how": true
+  },
+  {
+   "event": "RIZIN LANDMARK 14",
+   "date": "2026-06-06",
+   "no": 1,
+   "f1": "赤田功輝",
+   "f2": "井上聖矢",
+   "pick": "赤田功輝",
+   "pick_method": "不明",
+   "winner": "井上聖矢",
+   "method": "KO",
+   "hit": false,
+   "how": false
+  },
+  {
+   "event": "超RIZIN.5 浪速の超復活祭り",
+   "date": "2026-09-10",
+   "no": 3,
+   "f1": "ヴガール・ケラモフ",
+   "f2": "高木凌",
+   "pick": "高木凌",
+   "pick_method": "不明",
+   "winner": "ヴガール・ケラモフ",
+   "method": "DEC",
+   "hit": false,
+   "how": false,
+   "portal_event": "ev_cho5"
+  },
+  {
+   "event": "超RIZIN.5 浪速の超復活祭り",
+   "date": "2026-09-10",
+   "no": 6,
+   "f1": "カルシャガ・ダウトベック",
+   "f2": "平本蓮",
+   "pick": "平本蓮",
+   "pick_method": "判定",
+   "winner": "平本蓮",
+   "method": "DEC",
+   "hit": true,
+   "how": true,
+   "portal_event": "ev_cho5"
+  },
+  {
+   "event": "超RIZIN.5 浪速の超復活祭り",
+   "date": "2026-09-10",
+   "no": 7,
+   "f1": "朝倉未来",
+   "f2": "青木真也",
+   "pick": "朝倉未来",
+   "pick_method": "不明",
+   "winner": "朝倉未来",
+   "method": "KO",
+   "hit": true,
+   "how": false,
+   "portal_event": "ev_cho5"
+  }
+ ],
+ "event_videos": {
+  "RIZIN.47": [
+   "https://www.youtube.com/watch?v=FFLSzKj-6T4"
+  ],
+  "RIZIN.48": [
+   "https://www.youtube.com/watch?v=lkzaQL8a_0U"
+  ],
+  "RIZIN.50": [
+   "https://www.youtube.com/watch?v=kSIpb4Km59I"
+  ],
+  "RIZIN男祭り": [
+   "https://www.youtube.com/watch?v=KP6oJnFYCeM"
+  ],
+  "超RIZIN.4 真夏の喧嘩祭り": [
+   "https://www.youtube.com/watch?v=8zXzeTMWPQ8"
+  ],
+  "RIZIN.51": [
+   "https://www.youtube.com/watch?v=drczZAJUqAI"
+  ],
+  "RIZIN LANDMARK 12": [
+   "https://www.youtube.com/watch?v=j7nocazvNxw"
+  ],
+  "RIZIN.52": [
+   "https://www.youtube.com/watch?v=oXQNLtHuc9s"
+  ],
+  "RIZIN.53": [
+   "https://www.youtube.com/watch?v=RfF2950EtgY"
+  ],
+  "RIZIN LANDMARK 14": [
+   "https://www.youtube.com/watch?v=S5NSJdaOJLM"
+  ],
+  "超RIZIN.5 浪速の超復活祭り": [
+   "https://www.youtube.com/watch?v=sCU8dMcFcHs"
+  ]
+ }
+}
