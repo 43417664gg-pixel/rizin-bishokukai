@@ -322,7 +322,9 @@ img { max-width: 100%; display: block; }
 .fight-label .fno { flex: none; font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: .04em; white-space: nowrap; }
 .fight-label .fno b { font: 700 28px/1 var(--num); color: #f4f1ea; margin: 0 2px; letter-spacing: 0; }
 .fight-label .fl-t { white-space: nowrap; }
-.fight-label .title-label { color: var(--red-hot); }
+/* 題（タイトルマッチ）は金の字。ベタ塗りでなく上が明るく下が沈む金属の金（Gaku 11/8「文字ベタじゃなくて、金字とかにする？」） */
+.fight-label .title-label { background: linear-gradient(180deg, #fbe7a3 8%, #e8c158 46%, #b5862b 54%, #e4bf62 92%);
+  -webkit-background-clip: text; background-clip: text; color: transparent; }
 /* 階級の直後に（61.0kg）＝離さない（Gaku 11/8）。小さく「級」に寄せて添える（「小さめで級の字に近づけて。添える感じ」）：
    全角括弧の左の空き（半角分）を palt で詰める */
 .fight-label .fl-kg { font-size: 11px; font-weight: 700; color: var(--muted); letter-spacing: .02em; font-feature-settings: "palt"; margin-left: 1px; }
@@ -855,6 +857,14 @@ tr.top .lb-rate { color: var(--gold-hot); }
 .fight-unit > .fight-card { margin-bottom: 0; }
 .fight-unit > .fight-card:has(+ .ob-picks) { clip-path: none; border-bottom: 0; }
 .fight-unit > .ob-picks { margin: 0; }
+/* タイトルマッチは1試合のかたまり全体（カード＋みんなの予想）をほんのり金の細い縁で囲む（Gaku 11/8「ほんのり金で囲もう。そのエリア全体を」）。
+   中の地は塗らない＝予想のアイコンがくすまない。縁を切り欠きの角まで沿わせるため、かたまり自体を1px大きい金の札にして中の札を載せる
+   （角の切り欠きは中の札＋0.6px＝斜めの縁も1pxの太さになる）。中の札の縁は消す。一致／割れの左の帯は下の規則が後から描くので残る */
+.fight-unit.title { --cut: 10.6px; padding: 1px;
+  background: linear-gradient(160deg, rgba(240, 205, 90, .8), rgba(212, 175, 55, .32) 45%, rgba(212, 175, 55, .6));
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%); }
+.fight-unit.title:not(:has(> .ob-picks)) { --cut: 12.6px; }
+.fight-unit.title > :where(.fight-card, .ob-picks) { border-color: transparent; }
 
 /* ===== 予想の一致／割れ を瞬間で視認 ===== */
 /* 併記ブロック：一致は金の左帯、割れは赤の左帯 */
