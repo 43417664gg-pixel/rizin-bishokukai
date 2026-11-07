@@ -7,7 +7,7 @@
 <title>大会予想｜予想番付</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261108005726">
+<link rel="stylesheet" href="css/style.css?v=20261108010459">
 </head>
 <body>
 <div id="app-header"></div>
@@ -15,15 +15,15 @@
 <div class="wrap" id="main"></div>
 <div class="toast" id="toast"></div>
 <div class="wiz" id="wiz" hidden role="dialog" aria-modal="true" aria-label="勝敗予想"></div>
-<button type="button" class="pick-guide" id="pick-guide" onclick="openWiz()"><span class="pg-t">予想を入れる</span><i class="pg-arw">›</i></button>
+<button type="button" class="pick-guide" id="pick-guide" onclick="toMainPick()"><span class="pg-t">予想を入れる</span><i class="pg-arw"></i></button>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261108005726"></script>
-<script src="js/techniques.js?v=20261108005726"></script>
-<script src="js/demo-data.js?v=20261108005726"></script>
-<script src="js/api.js?v=20261108005726"></script>
-<script src="js/app.js?v=20261108005726"></script>
-<script src="js/bishoku_summary.js?v=20261108005726"></script>
+<script src="js/config.js?v=20261108010459"></script>
+<script src="js/techniques.js?v=20261108010459"></script>
+<script src="js/demo-data.js?v=20261108010459"></script>
+<script src="js/api.js?v=20261108010459"></script>
+<script src="js/app.js?v=20261108010459"></script>
+<script src="js/bishoku_summary.js?v=20261108010459"></script>
 <script>
 let EV, PHASE, FIGHTS, FMAP, MEMBERS, myPreds = {}, allPreds = [], ALL_SUPPORTS = [];
 
@@ -452,7 +452,6 @@ function render() {
   const openBook = isOpenBook(EV);
   document.getElementById("main").innerHTML = `
     <div class="title-row"><h1 class="page-title">${esc(evParts(EV.name)[0])}${evParts(EV.name)[1] ? `<small class="ev-sub">${esc(evParts(EV.name)[1])}</small>` : ""}</h1>${dateBlock(EV.event_date)}</div>
-    ${PHASE === "open" ? wizCta() : ""}
     ${PHASE === "finished" ? eventSummary() : ""}
     <!-- 日付と案内文・ALL PICKS（全員の予想の一覧表）は撤去（Gaku指示11/7「これ削除」「ALLPICKS削除」）。
          みんなの予想は各カードの下と美食会予想まとめで見える -->
@@ -575,32 +574,37 @@ function fitNicks() {
     }
   });
 }
-// 上の帯の目盛り（大会タブの予想済みと同じ型）と、上の「予想を入れる」。予想のたびに描き直す
+// 上の帯の目盛り（大会タブの予想済みと同じ型）と、浮く「予想を入れる」。予想のたびに描き直す
 const WIZ_FIGHTS = () => [...document.querySelectorAll(".fight-card")].map(el => FIGHTS.find(f => "fc_" + f.id === el.id))
   .filter(f => f && !f.cancelled && !f.event_only);
 function drawProg() {
   const fs = FIGHTS.filter(f => !f.cancelled && !f.event_only), n = fs.filter(f => myPreds[f.id]?.winner_id).length;
   const el = document.getElementById("sticky-prog");
   if (el) el.innerHTML = progBlock(n, fs.length);
-  const cta = document.getElementById("wiz-cta");
-  if (cta) cta.outerHTML = wizCta();
   refreshGuide();
 }
-// 浮いて追いかけてくる「予想を入れる」（Gaku 11/8「予想ページに来たはずなのにどこで予想を登録すればいいんだ？ってなっちゃうから、
-// 下にあるよって追従する」）。押すと上の札と同じ予想の画面が開く（保存の道は1本）。
-// 上の札が見えている間は出さない（同じ物が2つ並ぶ）。美食会予想まとめは写真に撮る面なので、まとめが画面を占めている間
-// （下の端が画面の8割より下にある間）は引っ込み、少し下へ進むとまた出る（「スクショポジションになったら追従は解除して消して」）。
-// 全試合を入れ終えたら出さない（1-2b 促さない）
+// 浮いて追いかけてくる「予想を入れる ↓」（Gaku 11/8「予想ページに来たはずなのにどこで予想を登録すればいいんだ？ってなっちゃうから、
+// 下にあるよって追従する」）。上の大きな入口札は撤去し、これを最初から出す（「これがそもそもいらない」「最初から出しておいて」）。
+// 美食会予想まとめは写真に撮る面なので、まとめの頭が上の帯の下まで来て画面を占めている間（下の端が画面の8割より下にある間）は引っ込み、
+// 少し下へ進むとまた出る（ページを開いた直後はまとめが下にあるだけなので出しておく）。
+// メインイベントの「どっちが勝つ？」が下から見えてくる直前で消える（「入力する箇所の直前まで行ったら消える」）＝そこから下は出さない。
+// 押すとその「どっちが勝つ？」まで滑らせる。全試合を入れ終えたら出さない（1-2b 促さない）
+const mainPick = () => document.querySelector(".fight-card .pick-zone");
 function updateGuide() {
   const g = document.getElementById("pick-guide");
-  if (!g) return;
-  const H = innerHeight, top = Math.max(...["app-header", "sticky-cd"].map(id => document.getElementById(id)?.getBoundingClientRect().bottom || 0));
-  const on = (id, f) => { const el = document.getElementById(id), r = el?.getBoundingClientRect(); return !!r && r.height > 0 && f(r); };
+  if (!g || !Array.isArray(FIGHTS)) return;   // 読み込み前のスクロール・リサイズでは何もしない
+  const H = innerHeight, gTop = g.getBoundingClientRect().top || H - 70;
+  const bar = Math.max(...["app-header", "sticky-cd"].map(id => document.getElementById(id)?.getBoundingClientRect().bottom || 0));
+  const on = (el, f) => { const r = el?.getBoundingClientRect(); return !!r && r.height > 0 && f(r); };
   const show = PHASE === "open" && document.getElementById("wiz").hidden
     && FIGHTS.some(f => !f.cancelled && !f.event_only && !myPreds[f.id]?.winner_id)
-    && !on("wiz-cta", r => r.bottom > top && r.top < H)
-    && !on("bsum", r => r.top < H && r.bottom > H * 0.78);
+    && !on(document.getElementById("bsum"), r => r.top < bar + 48 && r.bottom > H * 0.78)
+    && !on(mainPick(), r => r.top < gTop + 24);
   g.classList.toggle("show", show);
+}
+function toMainPick() {
+  const z = mainPick();
+  if (z) scrollTo({ top: scrollY + z.getBoundingClientRect().top - innerHeight * 0.3, behavior: "smooth" });
 }
 let GUIDE_RAF = 0;
 function refreshGuide() { if (!GUIDE_RAF) GUIDE_RAF = requestAnimationFrame(() => { GUIDE_RAF = 0; updateGuide(); }); }
@@ -608,18 +612,9 @@ addEventListener("scroll", refreshGuide, { passive: true });
 addEventListener("resize", refreshGuide);
 
 // ---------- 予想の画面（Gaku 11/7「ボタンで押して階層を作る」「脳死で質問に答えれば勝敗が正しく思い通りに入力される」） ----------
-// 大会ページは見る所。予想は上の「予想を入れる」（またはカードの札）から入る別の画面で、1試合ずつ「どっちが勝つ？」に答えるだけ。
+// 大会ページは見る所。予想はカードの札から入る別の画面で、1試合ずつ「どっちが勝つ？」に答えるだけ。
 // 顔の札が画面いっぱい（「MAX時には画面いっぱい」）。押すと金で光って次の試合へ。戻る・飛ばすがあり、全部埋めさせはしない。
 // 押した時点では保存しない。最後に選んだ内容を一覧にして「これでいい？」と聞き、「これで決定」でまとめて保存する（「決定前は…確認を挟む」）
-function wizCta() {
-  const fs = FIGHTS.filter(f => !f.cancelled && !f.event_only);
-  if (!fs.length) return "";
-  const all = fs.every(f => myPreds[f.id]?.winner_id), m = FIGHTS.find(f => !f.cancelled && f.segment !== "opening") || fs[0];
-  const face = (id) => FMAP[id]?.highlight_url ? `<i style="background-image:url('${esc(FMAP[id].highlight_url)}')"></i>` : "<i></i>";
-  return `<button type="button" class="wiz-cta${all ? " done" : ""}" id="wiz-cta" onclick="openWiz()">
-      ${face(m.fighter1_id)}<span class="wc-t">${all ? "予想を見直す" : "予想を入れる"}<small>${all ? "CHECK YOUR PICKS" : "WHO WINS?"}</small></span>${face(m.fighter2_id)}
-    </button>`;
-}
 // 予想の画面：1試合ずつ質問に答えていく（Gaku 11/7）
 //   どっちが勝つ？ → どう勝つ？（KO/TKO・一本・判定）→ 決まり手は？ → ラウンドは？ → これでいい？ → 決定
 //   判定ならその先は無い。決まり手を入れない人は各段の「入れない」で「これでいい？」へ。決定するまで保存しない
