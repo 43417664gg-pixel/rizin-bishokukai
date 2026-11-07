@@ -7,7 +7,7 @@
 <title>大会予想｜予想番付</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261108041732">
+<link rel="stylesheet" href="css/style.css?v=20261108042020">
 </head>
 <body>
 <div id="app-header"></div>
@@ -101,25 +101,10 @@ async function toggleSupport(fightId, fighterId) {
   } catch (e) { toast("応援テーブルが未作成かも（要SQL）"); }
 }
 
-// タイトルマッチの右上に上から掛かるベルト（Gaku 11/8「上からライジンベルトがかかってるみたいにしてほしい」）。
-// 上の9pxはカードの縁の向こうへ回り込む折り返し・黒い革に金のステッチ・金のプレートに赤い石・プレートの下にも革が垂れて先が尖る。公式ベルトの意匠はなぞらない（描き起こし）
-const TITLE_BELT = `<span class="t-belt" aria-hidden="true"><svg viewBox="0 0 34 56" width="34" height="56">
-  <defs>
-    <linearGradient id="tbS" x1="0" x2="1"><stop offset="0" stop-color="#050506"/><stop offset=".5" stop-color="#2a2a30"/><stop offset="1" stop-color="#050506"/></linearGradient>
-    <linearGradient id="tbF" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a3a42"/><stop offset=".35" stop-color="#121215"/><stop offset="1" stop-color="#000"/></linearGradient>
-    <linearGradient id="tbG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff3c4"/><stop offset=".42" stop-color="#e8c158"/><stop offset=".55" stop-color="#9c6d22"/><stop offset="1" stop-color="#f0cd5a"/></linearGradient>
-    <radialGradient id="tbR" cx=".38" cy=".32" r=".75"><stop offset="0" stop-color="#ff6a74"/><stop offset=".45" stop-color="#e60012"/><stop offset="1" stop-color="#6e0008"/></radialGradient>
-  </defs>
-  <path d="M8 9V3.5Q8 0 11.5 0H22.5Q26 0 26 3.5V9Z" fill="url(#tbF)"/>
-  <rect x="8" y="8.5" width="18" height="17" fill="url(#tbS)"/>
-  <path d="M8 41H26V51.5L17 56L8 51.5Z" fill="url(#tbS)"/>
-  <path d="M10.2 10V24M23.8 10V24M10.2 42V50.5M23.8 42V50.5" stroke="#c9a84a" stroke-width=".7" stroke-dasharray="1.6 1.4"/>
-  <path d="M6 22H28L33 27V38L28 43H6L1 38V27Z" fill="url(#tbG)" stroke="#6f4c14" stroke-width=".8"/>
-  <path d="M7.5 24H26.5L30.5 28V37L26.5 41H7.5L3.5 37V28Z" fill="none" stroke="#fff3c4" stroke-opacity=".7" stroke-width=".6"/>
-  <ellipse cx="17" cy="32.5" rx="7.5" ry="5.6" fill="url(#tbR)" stroke="#7a5518" stroke-width=".8"/>
-  <ellipse cx="14.8" cy="30.6" rx="2.4" ry="1.2" fill="#fff" opacity=".55"/>
-  <g fill="#fff3c4"><circle cx="5" cy="27.5" r=".9"/><circle cx="29" cy="27.5" r=".9"/><circle cx="5" cy="37.5" r=".9"/><circle cx="29" cy="37.5" r=".9"/></g>
-</svg></span>`;
+// タイトルマッチの印＝金のプレート（Gaku 11/8 の画像）。見出しの段（第〇試合と同じ高さ）の右端に置き、カード写真には被せない。
+// 前は右上から垂れるベルト（SVG）だったが、写真に掛かっていた（Gaku 11/8「カード写真に被せるのではなく、13試合目とおんなじレベル」）。
+// height は属性でも持つ＝CSSが古いまま読まれても大きく出ない
+const TITLE_PLATE = `<img class="t-plate" src="assets/title_plate.webp" alt="" aria-hidden="true" height="36">`;
 
 // 試合の見出し：1行（Gaku 11/7「2段になってる・文字ダサい」）。大きい番号 → 題（あれば赤）／階級（体重）
 // 体重は階級の直後に括弧でくっつける（Gaku 11/8「バンタム級（61.0kg）くっつけて欲しい。はなさず」。前は右端に離していた）
@@ -148,7 +133,7 @@ const fightWarn = (f) => `${f.no_score ? `<span class="ns-badge">⚠️ ${esc(f.
 // 写真の下は予想の割合バー、注意書きはその下
 function cardHead(f) {
   const warn = fightWarn(f);
-  return `<div class="fight-label top">${fightLabel(f)}</div>
+  return `<div class="fight-label top">${fightLabel(f)}${isTitleFight(f) ? TITLE_PLATE : ""}</div>
       ${f.image_url ? `<div class="banner"><img src="${esc(f.image_url)}" alt="" loading="lazy"></div>` : ""}
       ${voteBar(f)}${warn ? `<div class="fight-label">${warn}</div>` : ""}`;
 }
@@ -489,9 +474,9 @@ function render() {
   // （Gaku方針：みんなの予想は常時公開）。締切後・結果発表後は resultCard が
   // 既に全員のピックを内包しているので、二重にしないため predictCard のときだけ足す。
   // 中止・延期の試合は専用カード（大きくCANCELLED・予想は見れる）に差し替える。
-  // タイトルマッチは金の煙をまとい、右上にベルトが掛かる（.aura＝カードの縁にかかる靄・外側の煙と縁は CSS の ::before/::after・.t-belt＝ベルト）
+  // タイトルマッチは金の煙をまとう（.aura＝カードの縁にかかる靄・外側の煙と縁は CSS の ::before/::after）。金のプレートは見出しの段（cardHead）
   const card = (f) => `<section class="fight-unit${isTitleFight(f) ? " title" : ""}">${f.cancelled ? cancelledCard(f)
-    : base === predictCard ? base(f) + othersBlock(f) : base(f)}${isTitleFight(f) ? `<i class="aura" aria-hidden="true"></i>${TITLE_BELT}` : ""}</section>`;
+    : base === predictCard ? base(f) + othersBlock(f) : base(f)}${isTitleFight(f) ? `<i class="aura" aria-hidden="true"></i>` : ""}</section>`;
   const openBook = isOpenBook(EV);
   document.getElementById("main").innerHTML = `
     <div class="title-row"><h1 class="page-title">${esc(evParts(EV.name)[0])}${evParts(EV.name)[1] ? `<small class="ev-sub">${esc(evParts(EV.name)[1])}</small>` : ""}</h1>${dateBlock(EV.event_date)}</div>

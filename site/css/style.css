@@ -913,11 +913,12 @@ tr.top .lb-rate { color: var(--gold-hot); }
   animation: goldBreath 5s ease-in-out infinite alternate;
 }
 @keyframes goldBreath { 0% { opacity: .55; } 100% { opacity: 1; } }
-/* 右上に上から掛かるベルト（event.html の TITLE_BELT）。上の9pxがカードの縁の向こうへ回り込む＝縁に掛けて垂らした見え方。
-   題がベルトの下に潜らないよう見出しの右を空ける（狭い画面では題が2段目へ回り、ベルトは1段目の右に残る） */
-.fight-unit.title > .t-belt { position: absolute; top: -9px; right: 6px; z-index: 4; pointer-events: none; line-height: 0;
-  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .7)); }
-.fight-unit.title .fight-label.top { padding-right: 40px; }
+/* 王座戦の印＝金のプレート（event.html の TITLE_PLATE）。見出しの段の右端・第〇試合の数字と同じ高さ（Gaku 11/8「13試合目とおんなじレベル」）。
+   写真には被せない。題がプレートの下に潜らないよう見出しの右を空ける（狭い画面では題が2段目へ回り、プレートは1段目の右に残る） */
+.fight-label.top { position: relative; }
+.fight-unit.title .fight-label.top { padding-right: 76px; }
+.fight-label.top > .t-plate { position: absolute; top: 10px; right: 12px; height: 36px; width: auto; pointer-events: none;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .65)); }
 
 /* ===== 予想の一致／割れ を瞬間で視認 ===== */
 /* 併記ブロック：一致は金の左帯、割れは赤の左帯 */
