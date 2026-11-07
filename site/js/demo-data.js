@@ -3108,7 +3108,7 @@ window.DEMO_SEED = {
     {
       id: "ev_lm17",
       name: "RIZIN.55",
-      poster_url: "assets/r55/poster.jpg",
+      poster_url: "assets/r55/keyvisual.jpg",   // 縦長ポスターは公式未掲載。「試合順」の一覧画像は同じB2比なのでポスターと取り違えた（11/7 Gaku指摘）。大会情報ページ先頭のメインビジュアルを採る
       event_date: "2026-11-08",
       no_deadline: false,
       lock_at: "2026-11-08T00:00:00+09:00",
@@ -3118,13 +3118,13 @@ window.DEMO_SEED = {
     {
       id: "ev_ny26",
       name: "超RIZIN.6 師走の尾張名古屋下剋上祭り",
-      poster_url: "assets/cho6/fight_01.jpg",
+      poster_url: "assets/cho6/poster.jpg",   // 第一弾ポスター＝榊原CEOのInstagram（https://www.instagram.com/p/DfRkF0-kbA0/・左右の黒帯を切ってB2比）。公式サイトには未掲載（11/7 Gakuが提供）
       event_date: "2026-12-31",
       no_deadline: false,
       lock_at: "2026-12-31T00:00:00+09:00",
       official_url: "https://jp.rizinff.com/_ct/17870447",
       status: "upcoming",
-      note: "会場＝バンテリンドーム ナゴヤ。2026-11-03に第1弾10試合が発表。試合順は未発表（公式の掲載順で仮置き）。縦長ポスター未公開",
+      note: "会場＝バンテリンドーム ナゴヤ。2026-11-03に第1弾10試合が発表。試合順は未発表（公式の掲載順で仮置き）。第一弾ポスターは榊原CEOのInstagramから（公式サイト未掲載）",
     },
   ],
 
