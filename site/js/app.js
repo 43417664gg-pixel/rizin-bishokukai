@@ -83,6 +83,9 @@
         if (s.winnerHit) row.hits += 1;
         if (s.pitari) row.pitari += 1;
       }
+      // DBの外の成績（サイト開設前の予想動画の遡り採点）を数字だけ足す。ピタリは持たない
+      const x = opts && opts.extra && opts.extra[m.id];
+      if (x) { row.answered += x.answered; row.decided += x.decided; row.hits += x.hits; }
       row.rate = row.decided ? row.hits / row.decided : null;
       return row;
     });

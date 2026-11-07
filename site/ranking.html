@@ -7,7 +7,7 @@
 <title>ランキング｜予想番付</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261107203059">
+<link rel="stylesheet" href="css/style.css?v=20261107204726">
 <style>
 /* ランキングを1枚のカードにする（2026-10-20）：スクショ単体でXに貼れるよう、
    ブランド・集計対象・サイトURLをカードの中に入れる。名前をタップ→その人の戦績へ。 */
@@ -69,14 +69,18 @@ a.lb-name:active { color:var(--gold-hot); }
 <div class="wrap" id="main"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261107203059"></script>
-<script src="js/techniques.js?v=20261107203059"></script>
-<script src="js/demo-data.js?v=20261107203059"></script>
-<script src="js/api.js?v=20261107203059"></script>
-<script src="js/app.js?v=20261107203059"></script>
+<script src="js/config.js?v=20261107204726"></script>
+<script src="js/techniques.js?v=20261107204726"></script>
+<script src="js/demo-data.js?v=20261107204726"></script>
+<script src="js/api.js?v=20261107204726"></script>
+<script src="js/app.js?v=20261107204726"></script>
 <script>
 let EVENTS, MEMBERS, ALL_FIGHTS, ALL_PREDS, FMAP = {};
-let checked = new Set();   // 集計対象の大会ID
+let checked = new Set();   // 集計対象の大会ID（＋PAST）
+// サイト開設前の予想動画の遡り採点（data/career）。通算の数字にだけ足す（Gaku指示11/7「過去動画の実績も入れていいよ。数字としてだけ」）。
+// 大会ページの予想一覧には出さない。チェック欄では「サイト開設前の動画」を1つの大会のように扱う
+const PAST = "_past";
+let RETRO = {};            // member_id → 遡り採点の予想
 let MODE = "win";          // win＝勝敗ランキング（本体）／pitari＝ピタリランキング（おまけ）
 window.PITARI = {};        // member_id → ピタリの内訳（どこで何が）
 
@@ -85,8 +89,8 @@ async function load() {
   let FIGHTERS;
   [EVENTS, MEMBERS, ALL_FIGHTS, FIGHTERS] = await Promise.all([DB.listEvents(), DB.listMembers(), DB.listFights(), DB.listFighters()]);
   FMAP = fighterMap(FIGHTERS);
-  ALL_PREDS = await DB.listPredictions({});
-  checked = new Set(EVENTS.map(e => e.id));  // 初期状態＝全選択
+  [ALL_PREDS, RETRO] = await Promise.all([DB.listPredictions({}), loadRetro()]);
+  checked = new Set([...EVENTS.map(e => e.id), PAST]);  // 初期状態＝全選択
   await window.AVATARS_READY;
   render();
 }
@@ -97,8 +101,42 @@ function toggleEvent(id) {
 }
 function setMode(m) { MODE = m; render(); }
 function toggleAll(on) {
-  checked = on ? new Set(EVENTS.map(e => e.id)) : new Set();
+  checked = on ? new Set([...EVENTS.map(e => e.id), PAST]) : new Set();
   render();
+}
+async function loadRetro() {
+  try {
+    const ids = await (await fetch("data/career/index.json", { cache: "no-cache" })).json();
+    const out = {};
+    await Promise.all(ids.map(async id => {
+      const r = await fetch(`data/career/${encodeURIComponent(id)}.json`, { cache: "no-cache" });
+      if (r.ok) out[id] = (await r.json()).picks || [];
+    }));
+    return out;
+  } catch (e) { return {}; }
+}
+// 遡り採点のうち、いま集計に入れる分を数える。サイトに載っている大会（portal_event）は、
+// その人のDBの予想がその大会で1件でも採点されていればDBが正＝遡り分は数えない（戦績ページと同じ規則・二重に数えない）。
+// DBに無い大会（広島＝サイト公開前）だけ遡り分を使う。サイト以前の大会は「サイト開設前の動画」のチェックで出し入れ
+function retroExtra() {
+  const fById = Object.fromEntries(ALL_FIGHTS.map(f => [f.id, f]));
+  const live = {};
+  for (const p of ALL_PREDS) {
+    const f = fById[p.fight_id]; if (!f) continue;
+    const s = scoreFight(p, f, { scope: "career" });
+    if (s && s.counted) (live[p.member_id] ||= new Set()).add(f.event_id);
+  }
+  const out = {};
+  for (const [mid, picks] of Object.entries(RETRO)) {
+    const x = { answered: 0, decided: 0, hits: 0 };
+    for (const k of picks) {
+      const ev = k.portal_event;
+      if (ev ? (!checked.has(ev) || live[mid]?.has(ev)) : !checked.has(PAST)) continue;
+      x.answered += 1; x.decided += 1; if (k.hit) x.hits += 1;
+    }
+    if (x.decided) out[mid] = x;
+  }
+  return out;
 }
 
 function render() {
@@ -107,8 +145,11 @@ function render() {
   const preds = ALL_PREDS.filter(p => fightIds.has(p.fight_id));
   // 大会が1つだけ選ばれていれば「その大会の的中率」＝event、複数なら通算＝career。
   // event_only（キック等）は career では数えない（Gaku確定・2026-08-21）。
-  const scope = checked.size === 1 ? "event" : "career";
-  const allRows = computeLeaderboard(MEMBERS, fights, preds, { scope });
+  const evOn = EVENTS.filter(e => checked.has(e.id));
+  const single = evOn.length === 1 && !checked.has(PAST) ? evOn[0] : null;   // 大会1つだけ＝その大会の成績
+  const scope = single ? "event" : "career";
+  const extra = retroExtra();
+  const allRows = computeLeaderboard(MEMBERS, fights, preds, { scope, extra });
   // 通算は確定8試合以上でランクイン。未満は下に「ランク外」として出す（除外はしない）。
   const rows = allRows.filter(r => window.isRanked(r, scope));
   const unranked = allRows.filter(r => !window.isRanked(r, scope) && r.answered > 0);
@@ -124,7 +165,7 @@ function render() {
     const kr = [kim, (p.method !== "DEC" && p.round) ? `${p.round}R` : ""].filter(Boolean).join(" ");
     (window.PITARI[p.member_id] ||= []).push(`第${f.order_no} ◎ ${esc(w?.name || "")}　${esc(kr)}`);
   }
-  const allOn = checked.size === EVENTS.length;
+  const allOn = evOn.length === EVENTS.length && checked.has(PAST);
   document.getElementById("main").innerHTML = `
     <div class="rk-mode">
       <button class="${MODE === "win" ? "on" : ""}" onclick="setMode('win')">勝敗</button>
@@ -132,10 +173,10 @@ function render() {
     </div>
     <div class="rk-card">
       <div class="rk-top"><span class="rk-brand">予想<span>番付</span></span><span class="rk-tag">${MODE === "win" ? "RANKING" : "PITARI"}</span></div>
-      <div class="rk-ttl">${checked.size === 1 ? esc(EVENTS.find(e => checked.has(e.id)).name) : MODE === "win" ? "勝敗予想ランキング" : "ピタリランキング"}</div>
-      <p class="rk-scope">${checked.size === EVENTS.length ? "全大会（通算）"
-          : checked.size === 1 ? `${esc(fmtDate(EVENTS.find(e => checked.has(e.id)).event_date))}・この大会の成績`
-          : EVENTS.filter(e => checked.has(e.id)).map(e => esc(e.name)).join("・") || "なし"}</p>
+      <div class="rk-ttl">${single ? esc(single.name) : MODE === "win" ? "勝敗予想ランキング" : "ピタリランキング"}</div>
+      <p class="rk-scope">${allOn ? "全大会（通算）"
+          : single ? `${esc(fmtDate(single.event_date))}・この大会の成績`
+          : [...evOn.map(e => esc(e.name)), ...(checked.has(PAST) ? ["サイト開設前の動画"] : [])].join("・") || "なし"}</p>
       ${MODE === "win"
         ? `<div class="rk-rule">勝ったほうを当てた数で順位が決まる。<b>決まり手・ラウンドは関係なし</b></div>${winTable(rows)}`
         : `<div class="rk-rule">勝者＋決まり手＋ラウンドまで当てた数（おまけ）。<b>本番の順位は「勝敗」タブ</b></div>${pitariTable(allRows)}`}
@@ -152,6 +193,10 @@ function render() {
         <label class="ev-check ${checked.has(e.id) ? "on" : ""}">
           <input type="checkbox" ${checked.has(e.id) ? "checked" : ""} onchange="toggleEvent('${e.id}')">${esc(e.name)}
         </label>`).join("")}
+      ${Object.keys(RETRO).length ? `
+        <label class="ev-check ${checked.has(PAST) ? "on" : ""}">
+          <input type="checkbox" ${checked.has(PAST) ? "checked" : ""} onchange="toggleEvent('${PAST}')">サイト開設前の動画
+        </label>` : ""}
     </div>
 
       ${unranked.length ? `
@@ -161,12 +206,13 @@ function render() {
           <span class="rk-un-n">${r.hits}的中・確定${r.decided}試合<b>（あと${window.CAREER_MIN - r.decided}）</b></span></div>`).join("")}
       </div>` : ""}
       <div class="rk-share">${window.shareButton(
-        (checked.size === 1 ? EVENTS.filter(e=>checked.has(e.id))[0].name + "の" : "") +
+        (single ? single.name + "の" : "") +
         "勝敗予想ランキング" + (rows[0] && rows[0].rate !== null ? `　1位 ${rows[0].member.name}（${rows[0].hits}/${rows[0].decided}的中）` : "") +
         " #予想番付", location.href, "ランキングをポスト")}</div>
       <b>勝者を当てた数</b>で並べる。同じ数なら的中率が高い方が上。<br>
       <b>ピタリ</b>（決まり手＋ラウンドまで一致・判定は「判定」で一致）は上の「🎯 ピタリ」タブで。<br>
       通算は結果の出た予想8試合からランクイン（美食会の3人はいつでも掲載）。<br>
+      通算には、サイト開設前のYouTube予想動画の採点結果（${Object.keys(RETRO).length}人）も数字だけ含む（勝敗のみ・大会ページには出さない）。<br>
       予想しなかった試合・中止・体重超過・ドロー・無効試合は数えない。`;
 }
 
