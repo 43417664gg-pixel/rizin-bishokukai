@@ -307,35 +307,52 @@ img { max-width: 100%; display: block; }
   letter-spacing: .18em;
 }
 .fight-label .title-label { color: var(--red-hot); font-weight: 700; }
-.vs-row { display: flex; gap: 0; padding: 10px 14px 4px; align-items: stretch; position: relative; }
-.vs-mark {
-  font-family: var(--display); font-size: 13px; color: var(--muted);
-  align-self: center; padding: 0 8px; letter-spacing: .05em;
-}
+.vs-row { display: flex; gap: 6px; padding: 10px 14px 4px; align-items: stretch; position: relative; }
+.vs-mark { position: absolute; left: 50%; top: 50%; z-index: 2; transform: translate(-50%, -50%) skewX(-8deg); pointer-events: none;
+  font-family: var(--display); font-size: calc(14px + 20px * var(--grow, 0)); color: #fff; letter-spacing: .04em;
+  text-shadow: 0 0 14px rgba(0, 0, 0, .95), 0 2px 0 rgba(0, 0, 0, .7); }
+/* 勝敗予想の札（Gaku 11/7「気持ちが昂る瞬間」「うっすら赤と青」「顔をすかす」「金で囲む」「縦長でもいい」）。
+   札の地＝枠の色（選ぶと金）／::before＝内側の本体（うっすら赤・青）／::after＝選手の顔（下は名前が読めるよう暗く）。
+   斜めに切っている（clip-path）ので border や box-shadow では斜めの辺に線が出ない＝地の色をそのまま枠にする */
 .corner-btn {
-  flex: 1; background: var(--panel2); border: 1px solid var(--line); color: var(--text);
-  padding: 13px 8px; font-size: 14px; font-weight: 700; line-height: 1.35;
-  transition: border-color .12s, background .12s, box-shadow .12s;
-  position: relative;
+  --sl: 12px;
+  flex: 1; min-width: 0; min-height: 80px; position: relative; isolation: isolate;
+  display: flex; flex-direction: column; justify-content: flex-end;
+  background: #30303b; border: 0; color: #fff;
+  padding: 12px 14px; font-size: 15px; font-weight: 700; line-height: 1.25; text-shadow: 0 1px 4px rgba(0, 0, 0, .9);
+  transition: opacity .2s, transform .12s;
 }
-.corner-btn.c1 { clip-path: polygon(0 0, 100% 0, calc(100% - 10px) 100%, 0 100%); text-align: left; padding-left: 14px; }
-.corner-btn.c2 { clip-path: polygon(10px 0, 100% 0, 100% 100%, 0 100%); text-align: right; padding-right: 14px; }
-.corner-btn small {
-  display: block; font-weight: 700; font-family: var(--num); font-size: 9px;
-  color: var(--muted); letter-spacing: .3em; margin-bottom: 2px;
-}
-.corner-btn.c1.sel {
-  border-color: var(--red);
-  background: linear-gradient(135deg, rgba(230, 0, 18, .28), rgba(230, 0, 18, .07));
-  box-shadow: inset 0 0 24px rgba(230, 0, 18, .18);
-}
-.corner-btn.c1.sel small { color: var(--red-hot); }
-.corner-btn.c2.sel {
-  border-color: var(--blue);
-  background: linear-gradient(225deg, rgba(30, 111, 217, .3), rgba(30, 111, 217, .07));
-  box-shadow: inset 0 0 24px rgba(30, 111, 217, .2);
-}
-.corner-btn.c2.sel small { color: var(--blue-hot); }
+.corner-btn.c1 { clip-path: polygon(0 0, 100% 0, calc(100% - var(--sl)) 100%, 0 100%); align-items: flex-start; text-align: left; padding-right: calc(var(--sl) + 6px); }
+.corner-btn.c2 { clip-path: polygon(var(--sl) 0, 100% 0, 100% 100%, 0 100%); align-items: flex-end; text-align: right; padding-left: calc(var(--sl) + 6px); }
+.corner-btn::before, .corner-btn::after { content: ""; position: absolute; inset: 1px; z-index: -1; clip-path: inherit; }
+.corner-btn.c1::before { background: linear-gradient(160deg, rgba(230, 0, 18, .22), rgba(230, 0, 18, .04) 70%), var(--panel2); }
+.corner-btn.c2::before { background: linear-gradient(200deg, rgba(30, 111, 217, .24), rgba(30, 111, 217, .04) 70%), var(--panel2); }
+.corner-btn::after { opacity: 0; filter: grayscale(.5); transition: opacity .25s, filter .25s;
+  background: linear-gradient(to top, rgba(8, 8, 11, .94), rgba(8, 8, 11, .3) 36%, transparent 58%), var(--face) center 8% / cover no-repeat; }
+.corner-btn.has-face::after { opacity: calc(.3 + .3 * var(--grow, 0)); }   /* 近づくほど顔が濃くなる */
+.corner-btn small { display: block; font-family: var(--num); font-size: 9.5px; font-weight: 700; letter-spacing: .3em; margin-bottom: 3px; }
+.corner-btn.c1 small { color: #ff8a93; }
+.corner-btn.c2 small { color: #8ab8ff; }
+button.corner-btn:not(.sel):hover::after { opacity: .7; }
+button.corner-btn:active { transform: scale(.98); }
+.vs-row .corner-btn { min-height: 112px; }
+/* 選んだ方（締切後は勝った方）：金の枠・顔がはっきり・地の赤青が濃く */
+.corner-btn.sel { background: linear-gradient(115deg, #9a7522 0%, #e9c552 18%, #fff2bf 26%, #e9c552 34%, #a8822a 56%, #d9b547 100%) 0 0 / 240% 100%; }
+.corner-btn.sel::before, .corner-btn.sel::after { inset: 2px; }
+.corner-btn.sel::after { opacity: 1; filter: none; }
+.corner-btn.c1.sel::after { background: linear-gradient(to top, rgba(8, 8, 11, .92), transparent 52%), linear-gradient(160deg, rgba(230, 0, 18, .38), transparent 62%), var(--face) center 8% / cover no-repeat; }
+.corner-btn.c2.sel::after { background: linear-gradient(to top, rgba(8, 8, 11, .92), transparent 52%), linear-gradient(200deg, rgba(30, 111, 217, .4), transparent 62%), var(--face) center 8% / cover no-repeat; }
+.corner-btn.c1.sel:not(.has-face)::before { background: linear-gradient(160deg, rgba(230, 0, 18, .5), rgba(230, 0, 18, .12) 78%), #170d11; }
+.corner-btn.c2.sel:not(.has-face)::before { background: linear-gradient(200deg, rgba(30, 111, 217, .52), rgba(30, 111, 217, .12) 78%), #0d111c; }
+.corner-btn.sel small { color: var(--gold-hot); }
+.vs-row.has-sel .corner-btn:not(.sel) { opacity: .5; }
+.vs-row.has-sel .corner-btn:not(.sel)::after { filter: grayscale(1); }
+/* 押した瞬間だけ：札が弾み、金の光が走り、顔が寄ってくる */
+.corner-btn.pop { animation: cb-pop .4s cubic-bezier(.2, .9, .3, 1.35), cb-sheen .8s ease-out; }
+.corner-btn.pop::after { animation: cb-face .45s ease-out; }
+@keyframes cb-pop { from { transform: scale(.95); } to { transform: none; } }
+@keyframes cb-sheen { from { background-position: 100% 0; } to { background-position: 0 0; } }
+@keyframes cb-face { from { opacity: .4; transform: scale(1.1); } to { opacity: 1; transform: none; } }
 .corner-btn.disabled { opacity: .55; }
 /* 選手名→名鑑リンク */
 .profile-links { display: flex; gap: 8px; padding: 6px 14px 2px; }
@@ -722,18 +739,6 @@ tr.top .lb-rate { color: var(--gold-hot); }
   opacity: 0; transition: opacity .2s; pointer-events: none;
 }
 .toast.show { opacity: 1; }
-/* 予想ガイド（Gaku指示11/7）：下に小さく浮かせる。トーストが出ている間はその上へ逃げる */
-.pick-guide { position: fixed; left: 50%; bottom: 20px; z-index: 90; transform: translate(-50%, 14px) skewX(-6deg);
-  padding: 0; border: 1px solid rgba(255, 255, 255, .14); border-left: 3px solid var(--red);
-  background: rgba(22, 22, 28, .9); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, .55); color: var(--text); font-family: inherit; font-size: 13px; font-weight: 700;
-  cursor: pointer; opacity: 0; pointer-events: none; transition: opacity .25s, transform .25s; }
-.pick-guide.show { opacity: 1; pointer-events: auto; transform: translate(-50%, 0) skewX(-6deg); }
-.toast.show ~ .pick-guide.show { transform: translate(-50%, -46px) skewX(-6deg); }
-.pg-in { display: flex; align-items: center; gap: 8px; padding: 10px 16px 10px 13px; transform: skewX(6deg); white-space: nowrap; }
-.pg-arrow { font-style: normal; font-size: 10px; color: var(--red-hot); }
-.pick-zone.pz-flash { animation: pz-flash 1.4s ease-out; }
-@keyframes pz-flash { 0%, 35% { box-shadow: inset 0 0 0 2px var(--gold-hot); } 100% { box-shadow: inset 0 0 0 2px transparent; } }
 
 /* 三段梯子（的中→ピタリ→あらます） */
 .ladder { display: grid; gap: 12px; margin-bottom: 10px; }
@@ -1184,3 +1189,62 @@ span.mav.sq { border-radius: 12%; }   /* 抜き太郎だけ正方形（Gaku指�
 .vb > .r + .b { margin-left: calc(var(--gap) - var(--cut)); }
 .vb.mini { --cut: 3px; --gap: 2px; height: 7px; margin-top: 4px; }
 .vb.mini > i { padding: 0; }
+
+/* ---------- 予想の画面（event.html の openWiz・Gaku 11/7「ボタンで押して階層を作る」「脳死で質問に答えれば」） ---------- */
+/* 入口：大会名の真下に1つだけ。主試合の2人の顔を両端に透かし、押せば予想が入れられると一目で分かる札 */
+.wiz-cta { position: relative; display: flex; align-items: stretch; width: 100%; height: 84px; margin: 4px 0 18px; padding: 0; border: 0;
+  overflow: hidden; cursor: pointer; color: #fff; clip-path: polygon(14px 0, 100% 0, calc(100% - 14px) 100%, 0 100%);
+  background: linear-gradient(90deg, rgba(230, 0, 18, .55), rgba(120, 6, 16, .5) 38%, rgba(14, 30, 64, .5) 62%, rgba(30, 111, 217, .55)), #101017; }
+.wiz-cta i { position: absolute; top: 0; bottom: 0; left: 0; width: 36%; background: center 10% / cover no-repeat; opacity: .75;
+  -webkit-mask-image: linear-gradient(90deg, #000 30%, transparent); mask-image: linear-gradient(90deg, #000 30%, transparent); }
+.wiz-cta i:last-child { left: auto; right: 0; -webkit-mask-image: linear-gradient(270deg, #000 30%, transparent); mask-image: linear-gradient(270deg, #000 30%, transparent); }
+.wc-t { position: relative; flex: 1; white-space: nowrap; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  font-family: var(--display); font-size: 26px; letter-spacing: .06em; text-shadow: 0 2px 10px rgba(0, 0, 0, .8); }
+.wc-t small { font-family: var(--num); font-size: 10px; letter-spacing: .4em; color: rgba(255, 255, 255, .7); margin-top: 2px; }
+.wiz-cta::after { content: ""; position: absolute; inset: 0; border-top: 1px solid rgba(255, 255, 255, .18); pointer-events: none;
+  background: linear-gradient(105deg, transparent 40%, rgba(255, 255, 255, .16) 50%, transparent 60%) -100% 0 / 60% 100% no-repeat;
+  animation: wc-shine 3.2s ease-in-out infinite; }
+@keyframes wc-shine { 0%, 55% { background-position: -100% 0; } 100% { background-position: 220% 0; } }
+.wiz-cta:active { transform: scale(.985); }
+.wiz-cta.done { height: 64px; }
+.wiz-cta.done .wc-t { font-size: 20px; }
+.wiz-cta.done::after { animation: none; }
+
+/* 画面いっぱいの1試合 */
+body.wiz-open { overflow: hidden; }
+.wiz { position: fixed; inset: 0; z-index: 95; display: flex; flex-direction: column; height: 100dvh;
+  background: radial-gradient(120% 60% at 50% 0%, rgba(230, 0, 18, .12), transparent 60%), var(--bg); }
+.wiz[hidden] { display: none; }
+.wiz-top { flex: none; display: flex; align-items: center; gap: 12px; padding: 12px 14px 6px; max-width: 720px; width: 100%; margin: 0 auto; }
+.wiz-x { flex: none; width: 36px; height: 36px; border: 1px solid var(--line); background: var(--panel); color: var(--text); font-size: 20px; line-height: 1; cursor: pointer; }
+.wiz-bar { flex: 1; height: 10px; cursor: pointer; }
+.wiz-bar i.cur { outline: 2px solid var(--gold-hot); outline-offset: 1px; }
+.wiz-q { flex: none; max-width: 720px; width: 100%; margin: 0 auto; }
+.wiz-q .fight-label { padding-top: 6px; }
+.wiz-h { margin: 6px 14px 0; font-family: var(--display); font-size: 30px; font-weight: 400; letter-spacing: .04em; }
+.wiz-stage { --grow: 1; flex: 1; min-height: 0; max-width: 720px; width: 100%; margin: 0 auto; padding: 12px 12px 8px; }
+.wiz-stage .corner-btn { --sl: 34px; height: 100%; font-size: 22px; padding-bottom: 22px; }
+.wiz-stage .corner-btn small { font-size: 11.5px; }
+.wiz-nav { flex: none; display: flex; justify-content: space-between; gap: 10px; max-width: 720px; width: 100%; margin: 0 auto;
+  padding: 6px 14px calc(14px + env(safe-area-inset-bottom)); }
+.wiz-nav button { flex: 1; height: 46px; border: 1px solid var(--line); background: var(--panel); color: var(--text);
+  font: 700 14px/1 inherit; letter-spacing: .08em; cursor: pointer; }
+.wiz-nav button:disabled { opacity: .3; }
+
+/* 全部入れた／最後まで来た：数字と一覧。押せばその試合に戻る */
+.wiz-done { flex: 1; min-height: 0; overflow-y: auto; max-width: 720px; width: 100%; margin: 0 auto; padding: 8px 14px calc(18px + env(safe-area-inset-bottom)); }
+.wd-n { font: 500 22px/1 var(--num); color: var(--muted); text-align: center; margin: 10px 0 14px; }
+.wd-n b { font-size: 72px; font-weight: 700; color: #f4f1ea; }
+.wd-list { list-style: none; margin: 0 0 16px; padding: 0; border-top: 1px solid var(--line); }
+.wd-list li { border-bottom: 1px solid var(--line); }
+.wd-list button { display: flex; align-items: baseline; gap: 10px; width: 100%; padding: 11px 4px; border: 0; background: none; color: var(--text); text-align: left; cursor: pointer; }
+.wd-no { flex: none; width: 34px; font: 700 13px/1 var(--num); color: var(--muted); letter-spacing: .06em; }
+.wd-list b { font-size: 15px; white-space: nowrap; }
+.wd-list b.r { color: #ff8a93; }
+.wd-list b.b { color: #8ab8ff; }
+.wd-list small { min-width: 0; font-size: 11.5px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.wd-none { font-size: 13px; color: var(--muted); }
+.wiz-close { display: block; width: 100%; height: 50px; border: 0; background: linear-gradient(180deg, var(--red-hot), var(--red)); color: #fff;
+  font: 700 15px/1 inherit; letter-spacing: .1em; cursor: pointer; clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%); }
+.wd-note { margin: 12px 0 0; font-size: 11px; color: var(--muted); text-align: center; }
+body.wiz-open .toast { bottom: 84px; }   /* 予想の画面では「戻る/次へ」に重ねない */

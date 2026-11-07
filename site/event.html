@@ -7,22 +7,22 @@
 <title>大会予想｜予想番付</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261107225130">
+<link rel="stylesheet" href="css/style.css?v=20261107230238">
 </head>
 <body>
 <div id="app-header"></div>
 <div id="sticky-cd"></div>
 <div class="wrap" id="main"></div>
 <div class="toast" id="toast"></div>
-<button type="button" class="pick-guide" id="pick-guide" onclick="goNextPick()"><span class="pg-in"><i class="pg-arrow">▼</i>予想を入れる</span></button>
+<div class="wiz" id="wiz" hidden role="dialog" aria-modal="true" aria-label="勝敗予想"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261107225130"></script>
-<script src="js/techniques.js?v=20261107225130"></script>
-<script src="js/demo-data.js?v=20261107225130"></script>
-<script src="js/api.js?v=20261107225130"></script>
-<script src="js/app.js?v=20261107225130"></script>
-<script src="js/bishoku_summary.js?v=20261107225130"></script>
+<script src="js/config.js?v=20261107230238"></script>
+<script src="js/techniques.js?v=20261107230238"></script>
+<script src="js/demo-data.js?v=20261107230238"></script>
+<script src="js/api.js?v=20261107230238"></script>
+<script src="js/app.js?v=20261107230238"></script>
+<script src="js/bishoku_summary.js?v=20261107230238"></script>
 <script>
 let EV, PHASE, FIGHTS, FMAP, MEMBERS, myPreds = {}, allPreds = [], ALL_SUPPORTS = [];
 
@@ -175,14 +175,26 @@ function statsBlock(f) {
 // ---------- 予想UI（受付中） ----------
 // 勝つ方をタップした瞬間に保存する（「決定」ボタンは表に出さない・Gaku指示11/7）。押し直せば変更。
 // ピタリ（決まり手・ラウンド）は保存した後に開ける任意の追加入力で、選んだ時点で保存される
+// 勝敗予想の札（Gaku 11/7「勝敗予想のタップ部分はこだわりたい。気持ちが昂る瞬間」）：うっすら赤・青の地に選手の顔を透かす。
+// 選んだ方（締切後は勝った方）は金で囲み、顔がはっきり出る。選ばなかった方は沈む。予想・締切後・計量前・中止の全カードで同じ札
+let JUST_PICKED = null;
+function cornerBox(f, side, { sel = false, tag = "div", attrs = "", cls = "" } = {}) {
+  const fx = FMAP[side === 1 ? f.fighter1_id : f.fighter2_id];
+  // CSS変数に入れた url() は style.css（css/）からの相対で読まれる＝絶対URLにして渡す
+  const face = fx?.highlight_url ? ` style="--face:url('${esc(new URL(fx.highlight_url, location.href).href)}')"` : "";
+  return `<${tag} class="corner-btn c${side}${sel ? " sel" : ""}${face ? " has-face" : ""}${cls ? " " + cls : ""}"${face}${attrs}>` +
+    `<small>${side === 1 ? "RED" : "BLUE"}</small><span class="cb-name">${fnm(fx?.name)}</span></${tag}>`;
+}
 const pitariOpen = new Set();   // ピタリ欄を開いている試合ID（保存のたびに描き直しても開いたまま）
 function predictCard(f) {
   const p = myPreds[f.id] || {};
   const curKim = p.method === "DEC" ? "DEC" : (p.technique || "");
   const kim = p.method === "DEC" ? "判定" : (p.technique ? TECH_LABEL[p.technique] : null);
   const detail = [kim, (p.method !== "DEC" && p.round) ? `${p.round}R` : null].filter(Boolean).join("・");
-  const corner = (fid, c, label) => `<button class="corner-btn ${c} ${p.winner_id === fid ? "sel" : ""}"
-          onclick="pickWinner('${f.id}','${fid}')"><small>${label}</small>${fnm(FMAP[fid]?.name)}</button>`;
+  const corner = (side) => {
+    const fid = side === 1 ? f.fighter1_id : f.fighter2_id, sel = p.winner_id === fid;
+    return cornerBox(f, side, { sel, tag: "button", attrs: ` onclick="pickWinner('${f.id}','${fid}')"`, cls: sel && JUST_PICKED === f.id ? "pop" : "" });
+  };
   // KO/一本を選んだ時だけラウンド（ピタリ＝決まり手＋ラウンド）。判定はラウンド無し
   // 決定後の欄は字が散って気が散る（Gaku指摘11/7）＝左揃えの1列にまとめ、見出し「決まり手／ラウンド」＋説明は最後に1行だけ
   const roundChips = (p.method && p.method !== "DEC") ? `
@@ -216,10 +228,10 @@ function predictCard(f) {
       ${profileLinks(f)}
       <div class="pick-zone">
       <div class="pz-head">勝敗予想</div>
-      <div class="vs-row">
-        ${corner(f.fighter1_id, "c1", "RED")}
+      <div class="vs-row${p.winner_id ? " has-sel" : ""}">
+        ${corner(1)}
         <span class="vs-mark">VS</span>
-        ${corner(f.fighter2_id, "c2", "BLUE")}
+        ${corner(2)}
       </div>
       ${p.winner_id
         ? `<div class="win-hint done"><span class="mp-check">✓</span><span class="wh-t"><b>${fnm(FMAP[p.winner_id]?.name)}</b> の勝ちで決定<small>押し直せば変更できます</small></span><button class="clear-btn" onclick="clearPred('${f.id}')">取り消す</button></div>`
@@ -243,9 +255,9 @@ function previewCard(f) {
       <div class="pick-zone">
       <div class="pz-head">勝敗予想</div>
       <div class="vs-row">
-        <div class="corner-btn c1 disabled"><small>RED</small>${fnm(f1?.name)}</div>
+        ${cornerBox(f, 1, { cls: "disabled" })}
         <span class="vs-mark">VS</span>
-        <div class="corner-btn c2 disabled"><small>BLUE</small>${fnm(f2?.name)}</div>
+        ${cornerBox(f, 2, { cls: "disabled" })}
       </div>
       <div class="fight-foot"><span class="save-note">計量終了後に予想開始</span></div>
       ${supportRow(f)}
@@ -265,9 +277,9 @@ function cancelledCard(f) {
       ${voteBar(f)}
       <div class="fight-label">${fightLabel(f)}</div>
       <div class="vs-row">
-        <div class="corner-btn c1 disabled"><small>RED</small>${fnm(f1?.name)}</div>
+        ${cornerBox(f, 1, { cls: "disabled" })}
         <span class="vs-mark">VS</span>
-        <div class="corner-btn c2 disabled"><small>BLUE</small>${fnm(f2?.name)}</div>
+        ${cornerBox(f, 2, { cls: "disabled" })}
       </div>
       <div class="cancel-note">${esc(f.cancel_note || "この試合は中止・延期になりました")}</div>
       ${picks ? `<div class="ob-picks" id="op_${f.id}">
@@ -306,7 +318,9 @@ function savePred(fightId, patch, msg) {
 function pickWinner(fightId, fighterId) {
   const prev = myPreds[fightId];
   if (prev?.winner_id === fighterId) return;
+  JUST_PICKED = fightId;
   savePred(fightId, { winner_id: fighterId }, `${FMAP[fighterId]?.name || ""}の勝ちで${prev ? "変更" : "決定"} ✓`);
+  JUST_PICKED = null;
 }
 
 // 決まり手：判定 or 決定打(technique)を1つ。method は決定打から決まる。選び直したらラウンドは消す
@@ -391,10 +405,10 @@ function resultCard(f) {
       ${profileLinks(f)}
       <div class="pick-zone">
       <div class="pz-head">${decided ? "結果と答え合わせ" : "勝敗予想（締切済み）"}</div>
-      <div class="vs-row">
-        <div class="corner-btn c1 ${decided && f.winner_id === f.fighter1_id ? "sel" : ""}"><small>RED</small>${fnm(f1?.name)}</div>
+      <div class="vs-row${decided && f.winner_id ? " has-sel" : ""}">
+        ${cornerBox(f, 1, { sel: decided && f.winner_id === f.fighter1_id })}
         <span class="vs-mark">VS</span>
-        <div class="corner-btn c2 ${decided && f.winner_id === f.fighter2_id ? "sel" : ""}"><small>BLUE</small>${fnm(f2?.name)}</div>
+        ${cornerBox(f, 2, { sel: decided && f.winner_id === f.fighter2_id })}
       </div>
       ${supportRow(f)}
       ${resultBox}
@@ -507,6 +521,7 @@ function render() {
   const openBook = isOpenBook(EV);
   document.getElementById("main").innerHTML = `
     <div class="title-row"><h1 class="page-title">${esc(EV.name)}</h1><span class="en-label">${PHASE === "finished" ? "RESULT" : "FIGHT CARD"}</span></div>
+    ${PHASE === "open" ? wizCta() : ""}
     ${PHASE === "finished" ? eventSummary() : ""}
     <!-- 日付と案内文・ALL PICKS（全員の予想の一覧表）は撤去（Gaku指示11/7「これ削除」「ALLPICKS削除」）。
          みんなの予想は各カードの下と美食会予想まとめで見える -->
@@ -628,56 +643,108 @@ function fitNicks() {
     }
   });
 }
-// 予想ガイド（Gaku指示11/7「予想入れに来たのにどこかな？ってなっちゃう」）：開いた瞬間の迷子を無くすためだけのもの。
-// 押すと、まだ予想していない最初の試合の「勝敗予想」へ飛ぶ。勝敗予想の所まで一度来たら、もう出さない
-// （Gaku 11/7「予想の選択のところまで来たら無くしていい」）。残りの数は上の帯の目盛りで静かに知らせるだけ＝全部埋めさせようとはしない
-let GUIDE_REACHED = false;
-function guideTarget() {
-  if (PHASE !== "open" || GUIDE_REACHED) return null;
-  if ([...document.querySelectorAll(".pick-zone")].some(z => { const r = z.getBoundingClientRect(); return r.height > 0 && r.top < innerHeight * 0.9 && r.bottom > 0; })) {
-    GUIDE_REACHED = true;
-    return null;
-  }
-  const f = FIGHTS.find(f => !f.cancelled && !f.event_only && !myPreds[f.id]?.winner_id);
-  const z = f && document.querySelector(`#fc_${f.id} .pick-zone`);
-  return z ? { z } : null;
-}
-// 上の帯の目盛り（大会タブの予想済みと同じ型）。予想のたびに描き直す
+// 上の帯の目盛り（大会タブの予想済みと同じ型）と、上の「予想を入れる」。予想のたびに描き直す
+const WIZ_FIGHTS = () => [...document.querySelectorAll(".fight-card")].map(el => FIGHTS.find(f => "fc_" + f.id === el.id))
+  .filter(f => f && !f.cancelled && !f.event_only);
 function drawProg() {
+  const fs = FIGHTS.filter(f => !f.cancelled && !f.event_only), n = fs.filter(f => myPreds[f.id]?.winner_id).length;
   const el = document.getElementById("sticky-prog");
-  if (!el) return;
+  if (el) el.innerHTML = progBlock(n, fs.length);
+  const cta = document.getElementById("wiz-cta");
+  if (cta) cta.outerHTML = wizCta();
+}
+
+// ---------- 予想の画面（Gaku 11/7「ボタンで押して階層を作る」「脳死で質問に答えれば勝敗が正しく思い通りに入力される」） ----------
+// 大会ページは見る所。予想は上の「予想を入れる」から入る別の画面で、1試合ずつ「どっちが勝つ？」に答えるだけ。
+// 顔の札が画面いっぱい（「MAX時には画面いっぱい」）。押すと金で光って次の試合へ。戻る・飛ばすがあり、全部埋めさせはしない
+function wizCta() {
   const fs = FIGHTS.filter(f => !f.cancelled && !f.event_only);
-  el.innerHTML = progBlock(fs.filter(f => myPreds[f.id]?.winner_id).length, fs.length);
+  if (!fs.length) return "";
+  const all = fs.every(f => myPreds[f.id]?.winner_id), m = FIGHTS.find(f => !f.cancelled && f.segment !== "opening") || fs[0];
+  const face = (id) => FMAP[id]?.highlight_url ? `<i style="background-image:url('${esc(FMAP[id].highlight_url)}')"></i>` : "<i></i>";
+  return `<button type="button" class="wiz-cta${all ? " done" : ""}" id="wiz-cta" onclick="openWiz()">
+      ${face(m.fighter1_id)}<span class="wc-t">${all ? "予想を見直す" : "予想を入れる"}<small>${all ? "CHECK YOUR PICKS" : "WHO WINS?"}</small></span>${face(m.fighter2_id)}
+    </button>`;
 }
-// 美食会予想まとめは写真に撮って回す前提（Gaku 11/7）＝ガイドがまとめに重なる間は引っ込む。
-// 開いた直後（まだ一度もスクロールしていない）だけは重なっても出す＝来た人に予想を入れる場所を知らせる
-let GUIDE_SCROLLED = false;
-function overSummary(g) {
-  const b = document.getElementById("bsum");
-  if (!GUIDE_SCROLLED || !b) return false;
-  const r = b.getBoundingClientRect(), top = innerHeight - 20 - g.offsetHeight - 12;   // ガイドの上端より少し上から下
-  return r.height > 10 && r.bottom > top && r.top < innerHeight;
+const WIZ = { list: [], i: 0 };
+function openWiz(fightId) {
+  WIZ.list = WIZ_FIGHTS();
+  if (!WIZ.list.length) return;
+  const at = WIZ.list.findIndex(f => fightId ? f.id === fightId : !myPreds[f.id]?.winner_id);
+  WIZ.i = at < 0 ? (fightId ? 0 : "done") : at;
+  const w = document.getElementById("wiz");
+  w.hidden = false;
+  document.body.classList.add("wiz-open");
+  history.pushState({ wiz: 1 }, "");
+  drawWiz();
 }
-function updateGuide() {
-  const g = document.getElementById("pick-guide"), t = guideTarget();
-  g.classList.toggle("show", !!t?.z && !overSummary(g));
+function hideWiz() {
+  document.getElementById("wiz").hidden = true;
+  document.body.classList.remove("wiz-open");
 }
-function goNextPick() {
-  const z = guideTarget()?.z;
-  if (!z) return;
-  z.scrollIntoView({ behavior: "smooth", block: "center" });
-  z.classList.remove("pz-flash"); void z.offsetWidth; z.classList.add("pz-flash");   // 着いた先を一瞬光らせる
+function closeWiz() { if (history.state?.wiz) history.back(); else hideWiz(); }
+addEventListener("popstate", () => { if (!document.getElementById("wiz").hidden) hideWiz(); });
+function drawWiz(pop) {
+  const w = document.getElementById("wiz"), L = WIZ.list;
+  const bar = `<span class="ep-bar wiz-bar">${L.map((f, k) =>
+    `<i class="${myPreds[f.id]?.winner_id ? "on" : ""}${k === WIZ.i ? " cur" : ""}" onclick="WIZ.i=${k};drawWiz()"></i>`).join("")}</span>`;
+  const top = `<div class="wiz-top"><button type="button" class="wiz-x" onclick="closeWiz()" aria-label="閉じる">×</button>${bar}</div>`;
+  if (WIZ.i === "done") {
+    const n = L.filter(f => myPreds[f.id]?.winner_id).length;
+    w.innerHTML = top + `<div class="wiz-done">
+        <div class="wd-n"><b>${n}</b>/${L.length}</div>
+        <ol class="wd-list">${L.map((f, k) => {
+          const p = myPreds[f.id], win = p?.winner_id ? FMAP[p.winner_id] : null;
+          const lose = win ? FMAP[p.winner_id === f.fighter1_id ? f.fighter2_id : f.fighter1_id] : null;
+          return `<li><button type="button" onclick="WIZ.i=${k};drawWiz()"><span class="wd-no">${f.segment === "opening" ? "OP" : ""}${f.order_no}</span>${win
+            ? `<b class="${p.winner_id === f.fighter1_id ? "r" : "b"}">${esc(win.name)}</b><small>vs ${esc(lose?.name || "")}</small>`
+            : `<span class="wd-none">${esc(FMAP[f.fighter1_id]?.name || "")} vs ${esc(FMAP[f.fighter2_id]?.name || "")}</span>`}</button></li>`;
+        }).join("")}</ol>
+        <button type="button" class="wiz-close" onclick="closeWiz()">閉じる</button>
+        <p class="wd-note">決まり手・ラウンドは各カードの「ピタリも狙う」から</p>
+      </div>`;
+    return;
+  }
+  const f = L[WIZ.i], p = myPreds[f.id] || {};
+  const c = (side) => {
+    const fid = side === 1 ? f.fighter1_id : f.fighter2_id, sel = p.winner_id === fid;
+    return cornerBox(f, side, { sel, tag: "button", attrs: ` onclick="wizPick(${side})"`, cls: sel && pop ? "pop" : "" });
+  };
+  w.innerHTML = top + `
+    <div class="wiz-q"><div class="fight-label">${fightLabel(f)}</div><h2 class="wiz-h">どっちが勝つ？</h2></div>
+    <div class="vs-row wiz-stage${p.winner_id ? " has-sel" : ""}">${c(1)}<span class="vs-mark">VS</span>${c(2)}</div>
+    <div class="wiz-nav">
+      <button type="button" onclick="wizStep(-1)" ${WIZ.i === 0 ? "disabled" : ""}>‹ 戻る</button>
+      <button type="button" onclick="wizStep(1)">${p.winner_id ? "次へ" : "飛ばす"} ›</button>
+    </div>`;
 }
+function wizStep(d) {
+  const k = WIZ.i + d;
+  WIZ.i = k < 0 ? 0 : k >= WIZ.list.length ? "done" : k;
+  drawWiz();
+}
+let WIZ_T = 0;
+function wizPick(side) {
+  const f = WIZ.list[WIZ.i];
+  pickWinner(f.id, side === 1 ? f.fighter1_id : f.fighter2_id);
+  drawWiz(true);
+  // 次は、まだ予想していない次の試合（後ろに無ければ前から）。全部入ったら一覧
+  clearTimeout(WIZ_T);
+  WIZ_T = setTimeout(() => {
+    const L = WIZ.list, from = WIZ.i;
+    const rest = [...L.slice(from + 1), ...L.slice(0, from)].find(x => !myPreds[x.id]?.winner_id);
+    WIZ.i = rest ? L.indexOf(rest) : "done";
+    drawWiz();
+  }, 650);
+}
+
 new ResizeObserver(([e]) => document.documentElement.style.setProperty("--hdr-h", e.target.offsetHeight + "px"))
   .observe(document.getElementById("app-header"));
-let GUIDE_RAF = 0;
-const refreshGuide = () => { if (!GUIDE_RAF) GUIDE_RAF = requestAnimationFrame(() => { GUIDE_RAF = 0; updateGuide(); }); };
-addEventListener("scroll", () => { GUIDE_SCROLLED = true; refreshGuide(); }, { passive: true });
 // カードは予想のたびに差し替わる（replaceCard）ので、描き直しを見張って合わせ直す
 let NICK_T = 0;
 const refitNicks = () => { clearTimeout(NICK_T); NICK_T = setTimeout(fitNicks, 30); };
-new MutationObserver(() => { refitNicks(); refreshGuide(); }).observe(document.getElementById("main"), { childList: true, subtree: true });
-addEventListener("resize", () => { refitNicks(); refreshGuide(); });
+new MutationObserver(refitNicks).observe(document.getElementById("main"), { childList: true, subtree: true });
+addEventListener("resize", refitNicks);
 document.fonts?.ready.then(refitNicks);
 
 load();
