@@ -7,7 +7,7 @@
 <title>大会予想｜予想番付</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261108022025">
+<link rel="stylesheet" href="css/style.css?v=20261108023030">
 </head>
 <body>
 <div id="app-header"></div>
@@ -18,13 +18,13 @@
 <div class="pg-spot" id="pg-spot" hidden></div><div class="pick-guide" id="pick-guide" aria-hidden="true"><span class="pg-t">予想を入れる</span><span class="pg-a"><i class="pg-arw"></i></span></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261108022025"></script>
-<script src="js/techniques.js?v=20261108022025"></script>
-<script src="js/demo-data.js?v=20261108022025"></script>
-<script src="js/api.js?v=20261108022025"></script>
-<script src="js/app.js?v=20261108022025"></script>
-<script src="js/glyph_fit.js?v=20261108022025"></script>
-<script src="js/bishoku_summary.js?v=20261108022025"></script>
+<script src="js/config.js?v=20261108023030"></script>
+<script src="js/techniques.js?v=20261108023030"></script>
+<script src="js/demo-data.js?v=20261108023030"></script>
+<script src="js/api.js?v=20261108023030"></script>
+<script src="js/app.js?v=20261108023030"></script>
+<script src="js/glyph_fit.js?v=20261108023030"></script>
+<script src="js/bishoku_summary.js?v=20261108023030"></script>
 <script>
 let EV, PHASE, FIGHTS, FMAP, MEMBERS, myPreds = {}, allPreds = [], ALL_SUPPORTS = [];
 
@@ -101,15 +101,15 @@ async function toggleSupport(fightId, fighterId) {
   } catch (e) { toast("応援テーブルが未作成かも（要SQL）"); }
 }
 
-// 試合の見出し：1行（Gaku 11/7「2段になってる・文字ダサい」）。大きい番号 → 題（あれば赤）／階級 → 右端に体重
+// 試合の見出し：1行（Gaku 11/7「2段になってる・文字ダサい」）。大きい番号 → 題（あれば赤）／階級（体重）
+// 体重は階級の直後に括弧でくっつける（Gaku 11/8「バンタム級（61.0kg）くっつけて欲しい。はなさず」。前は右端に離していた）
 // 題に階級名が入っていれば（RIZINフライ級タイトルマッチ）階級も体重も繰り返さない（階級＝体重は決まっている・スマホで1行に収める）
 function fightLabel(f) {
   const wc = f.weight_class ? weightClassName(f.weight_class) : "";
-  const t = f.title_label
-    ? `<span class="fl-t title-label">${esc(f.title_label)}</span>${wc && !f.title_label.includes(wc) ? `<span class="fl-t">${esc(wc)}</span>` : ""}`
-    : wc ? `<span class="fl-t">${esc(wc)}</span>` : "";
-  return `<span class="fno">${f.segment === "opening" ? "OP " : ""}第<b>${f.order_no}</b>試合</span>${t}
-    ${f.weight_class && f.weight_class !== wc && !f.title_label?.includes(wc) ? `<span class="fl-kg">${esc(f.weight_class)}</span>` : ""}`;
+  const kg = f.weight_class && f.weight_class !== wc ? `<span class="fl-kg">（${esc(f.weight_class)}）</span>` : "";
+  const cls = wc ? `<span class="fl-t">${esc(wc)}${kg}</span>` : "";
+  const t = f.title_label ? `<span class="fl-t title-label">${esc(f.title_label)}</span>${f.title_label.includes(wc) ? "" : cls}` : cls;
+  return `<span class="fno">${f.segment === "opening" ? "OP " : ""}第<b>${f.order_no}</b>試合</span>${t}`;
 }
 // 体重超過・MMA以外の注意書き。読ませたいので写真には重ねず、写真の下に段で出す
 const fightWarn = (f) => `${f.no_score ? `<span class="ns-badge">⚠️ ${esc(f.no_score_note || "体重超過")}｜予想対象外</span>` : ""}
@@ -130,8 +130,9 @@ function cardHead(f) {
 // 誰のかは左右の位置とコーナー色の印で分かる（読み上げには名前を渡す）
 function profileLinks(f) {
   const a = (id, side) => `<a class="c${side}" href="fighter.html?id=${id}" aria-label="${esc(FMAP[id]?.name)}の選手データを詳しく"><span>選手<b>DATA</b> 詳しく</span><i>›</i></a>`;
+  // STATS と一緒に畳んでおき、開く時に一緒に出る（.stats.pop + .pl-fold）。中の段が無いと 0 まで縮まない
   return `
-    <div class="profile-links">${a(f.fighter1_id, 1)}${a(f.fighter2_id, 2)}</div>`;
+    <div class="pl-fold"><div><div class="profile-links">${a(f.fighter1_id, 1)}${a(f.fighter2_id, 2)}</div></div></div>`;
 }
 
 // その場で判断できるように：戦績・勝ち方の割合・前戦（○×）。トグルで直近5試合（Gaku依頼11/7）
@@ -160,16 +161,21 @@ function wayBar(x) {
     <div class="sb-lab">${ws.map(([l, n, c]) => `<span class="${c}${n ? "" : " zero"}">${l}<b>${n}</b></span>`).join("")}</div>
   </div>`;
 }
+// 名前の段（名前・年齢・異名）。閉じている間に見えるのはここだけ
+function statsHead(x, cls) {
+  const age = ageText(x?.birth_date).replace(/（.*$/, "");   // 「31歳」だけ（生年月日は名鑑で）
+  return `<div class="st-side ${cls}">
+    <div class="st-head"><span class="st-name">${fnm(x?.name || "")}</span>${age ? `<span class="st-age">${age}</span>` : ""}${x?.nickname ? `<span class="st-nick" title="${esc(x.nickname)}">“${esc(x.nickname)}”</span>` : ""}</div>
+  </div>`;
+}
 function statsSide(x, cls) {
   const h = recentOf(x);
-  const age = ageText(x?.birth_date).replace(/（.*$/, "");   // 「31歳」だけ（生年月日は名鑑で）
   const num = (n, u, c) => `<span class="st-n ${c}"><b>${n}</b>${u}</span>`;
   const rec = x?.rec_w != null
     ? num(x.rec_w, "勝", "w") + num(x.rec_l ?? 0, "敗", "l")
       + (x.rec_d || x.rec_nc ? `<span class="st-n d">${x.rec_d ? `<b>${x.rec_d}</b>分` : ""}${x.rec_nc ? `<b>${x.rec_nc}</b>NC` : ""}</span>` : "")
     : `<span class="st-n d">戦績なし</span>`;
   return `<div class="st-side ${cls}">
-    <div class="st-head"><span class="st-name">${fnm(x?.name || "")}</span>${age ? `<span class="st-age">${age}</span>` : ""}${x?.nickname ? `<span class="st-nick" title="${esc(x.nickname)}">“${esc(x.nickname)}”</span>` : ""}</div>
     <div class="st-gap g1"></div>
     <div class="st-recn">${rec}</div>
     ${wayBar(x) || `<div class="st-bar"></div>`}
@@ -183,13 +189,18 @@ function statsBlock(f) {
   const list = (x, cls) => { const rows = recentOf(x).slice(0, 5).map(histRow);
     while (rows.length < n) rows.push("<div></div>");
     return `<div class="st-side ${cls}">${rows.join("")}</div>`; };
+  // 閉じている間は名前の段だけ＝その真下に「どっちが勝つ？」が来る（Gaku 11/8「すぐ下というのは物理的にね、視覚的にではなく。
+  // スタッツの部分がごっそりないのよ一見。その箇所を通ると情報が見れる」）。STATS・前戦・直近5試合は .st-fold の中で高さ0から開く
   return `<div class="stats${POPPED.has(f.id) ? " pop now" : ""}" data-f="${f.id}">
-    <div class="st-cols" style="--rows:6">${statsSide(f1, "c1")}${statsSide(f2, "c2")}
-      <div class="st-sep s1"><span>STATS</span></div><div class="st-sep s2"><span>前戦</span></div></div>
-    ${n > 1 ? `<details class="st-more" ${statsOpen.has(f.id) ? "open" : ""} ontoggle="statsOpen[this.open ? 'add' : 'delete']('${f.id}')">
-      <summary>直近5試合</summary>
-      <div class="st-cols" style="--rows:${n}">${list(f1, "c1")}${list(f2, "c2")}</div>
-    </details>` : ""}
+    <div class="st-cols st-names" style="--rows:1">${statsHead(f1, "c1")}${statsHead(f2, "c2")}</div>
+    <div class="st-fold"><div>
+      <div class="st-cols st-main" style="--rows:5">${statsSide(f1, "c1")}${statsSide(f2, "c2")}
+        <div class="st-sep s1"><span>STATS</span></div><div class="st-sep s2"><span>前戦</span></div></div>
+      ${n > 1 ? `<details class="st-more" ${statsOpen.has(f.id) ? "open" : ""} ontoggle="statsOpen[this.open ? 'add' : 'delete']('${f.id}')">
+        <summary>直近5試合</summary>
+        <div class="st-cols" style="--rows:${n}">${list(f1, "c1")}${list(f2, "c2")}</div>
+      </details>` : ""}
+    </div></div>
   </div>`;
 }
 
@@ -801,11 +812,12 @@ new ResizeObserver(([e]) => document.documentElement.style.setProperty("--hdr-h"
 // カードは予想のたびに差し替わる（replaceCard）ので、描き直しを見張って合わせ直す
 let NICK_T = 0;
 // STATS と前戦は閉じておき、下3割の線（画面の高さの72%）まで上がってきたら飛び出して開く（Gaku 11/8「初めは閉じてて広がるイメージ。飛び出し。
-// スクロールの幅は狭めでいい」）。開く動きは CSS の .stats.pop。最初から線より上にある（戻るで下から開いた等）試合は動かさずに開いておく
+// スクロールの幅は狭めでいい」）。開く動きは CSS の .stats.pop。
+// 閉じている間は場所も取らない（11/8「物理的に」）＝開くと下が押し下がる。画面より上へ通り過ぎた試合はそこで開かない
+// （画面の上で高さが増えると、iPhone の Safari は読んでいる所が下へずれる）。上へ戻ってきて線の内側に入った時に開く
 const popIO = new IntersectionObserver(es => {
   for (const e of es) {
-    if (!e.isIntersecting && e.boundingClientRect.top > 0) continue;   // まだ線より下
-    if (!e.isIntersecting) e.target.classList.add("now");   // もう通り過ぎていた
+    if (!e.isIntersecting) continue;
     e.target.classList.add("pop");
     POPPED.add(e.target.dataset.f);
     popIO.unobserve(e.target);
