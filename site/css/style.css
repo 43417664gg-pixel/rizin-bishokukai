@@ -1192,9 +1192,12 @@ span.mav.tri > i { --k: 50cqw; position: relative; top: 7cqh; }
   .sb-lab b { font-size: 14px; margin-left: 2px; }
   .sb-lab span::before { width: 6px; height: 6px; margin-right: 2px; }
 }
-.rm { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 21px;
-  font-size: 15px; font-weight: 900; color: #fff; line-height: 1; }   /* 枠も色も付けない＝記号だけで○×を読む（11/7） */
-.rm.d { font-size: 9px; }
+/* 前戦の結果は語で WIN／LOSE（Gaku 11/8「まるばつじゃなくて」）。枠は付けない（11/7）。WIN は白・LOSE は灰＝明るさで勝ち負けが分かれる。
+   幅をそろえて相手の名前の頭を縦に揃える（左は左寄せ・右は右寄せ＝外側の端に付く） */
+.rm { flex: none; width: 34px; font: 700 13px/1 var(--num); letter-spacing: .04em; color: #fff; }
+.st-side.c2 .rm { text-align: right; }
+.rm.l { color: #7c7c88; }
+.rm.d { color: var(--muted); }
 .st-row { display: flex; gap: 7px; align-items: center; margin-top: 3px; min-width: 0; }
 .st-side.c2 .st-row { flex-direction: row-reverse; }
 .st-row + .st-row { margin-top: 8px; }

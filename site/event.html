@@ -7,7 +7,7 @@
 <title>大会予想｜予想番付</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261108031359">
+<link rel="stylesheet" href="css/style.css?v=20261108031736">
 </head>
 <body>
 <div id="app-header"></div>
@@ -18,13 +18,13 @@
 <div class="pg-spot" id="pg-spot" hidden></div><div class="pick-guide" id="pick-guide" aria-hidden="true"><span class="pg-t"></span><span class="pg-a"></span><span class="pg-x">予想を入れる<i class="pg-arw"></i></span></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261108031359"></script>
-<script src="js/techniques.js?v=20261108031359"></script>
-<script src="js/demo-data.js?v=20261108031359"></script>
-<script src="js/api.js?v=20261108031359"></script>
-<script src="js/app.js?v=20261108031359"></script>
-<script src="js/glyph_fit.js?v=20261108031359"></script>
-<script src="js/bishoku_summary.js?v=20261108031359"></script>
+<script src="js/config.js?v=20261108031736"></script>
+<script src="js/techniques.js?v=20261108031736"></script>
+<script src="js/demo-data.js?v=20261108031736"></script>
+<script src="js/api.js?v=20261108031736"></script>
+<script src="js/app.js?v=20261108031736"></script>
+<script src="js/glyph_fit.js?v=20261108031736"></script>
+<script src="js/bishoku_summary.js?v=20261108031736"></script>
 <script>
 let EV, PHASE, FIGHTS, FMAP, MEMBERS, myPreds = {}, allPreds = [], ALL_SUPPORTS = [];
 
@@ -134,10 +134,11 @@ function profileLinks(f) {
     <div class="profile-links">${a(f.fighter1_id, 1)}${a(f.fighter2_id, 2)}</div>`;
 }
 
-// その場で判断できるように：戦績・勝ち方の割合・前戦（○×）。トグルで直近5試合（Gaku依頼11/7）
+// その場で判断できるように：戦績・勝ち方の割合・前戦（WIN／LOSE）。トグルで直近5試合（Gaku依頼11/7）
 // 開閉はカードを描き直しても保つ（選手をタップするたびに閉じないように）
 const statsOpen = new Set();
-const RMARK = { W: ["○", "w"], L: ["×", "l"], D: ["△", "d"], NC: ["NC", "d"] };
+// 結果は記号でなく語で（Gaku 11/8「まるばつじゃなくて WIN LOSE にしよ」）
+const RMARK = { W: ["WIN", "w"], L: ["LOSE", "l"], D: ["DRAW", "d"], NC: ["NC", "d"] };
 const recentOf = (x) => [...(x?.history || [])].sort((a, b) => String(b.d).localeCompare(String(a.d)));
 const resMark = (r) => { const [s, c] = RMARK[r] || ["?", "d"]; return `<span class="rm ${c}">${s}</span>`; };
 const histRow = (r) => `<div class="st-row">${resMark(r.r)}<span class="st-body"><span class="st-opp">${esc(r.opp)}</span>
