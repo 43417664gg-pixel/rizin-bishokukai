@@ -7,7 +7,7 @@
 <title>ランキング｜予想番付</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261107153534">
+<link rel="stylesheet" href="css/style.css?v=20261107153759">
 <style>
 /* ランキングを1枚のカードにする（2026-10-20）：スクショ単体でXに貼れるよう、
    ブランド・集計対象・サイトURLをカードの中に入れる。名前をタップ→その人の戦績へ。 */
@@ -40,6 +40,19 @@
 .rk-card .lb-sub { font-size:9.5px; line-height:1.3; }
 .rk-card .lb-table .lb-name { font-size:14px !important; line-height:1.3; }
 .rk-card .pit-btn { transform:scale(.85); }
+/* 2026-11-07 勝敗だけのランキングへ：数字は大きく2つ（的中数・的中率）だけ。小さい字を減らす */
+.rk-card .lb-table td { padding-top:9px !important; padding-bottom:9px !important; }
+.rk-card .lb-table th { font-size:11px; }
+.lb-hit { font-family:var(--num); font-size:26px; font-weight:700; font-variant-numeric:tabular-nums; }
+.lb-of { font-family:var(--num); font-size:14px; color:var(--muted); margin-left:2px; }
+tr.top .lb-hit { color:var(--gold-hot); }
+.rk-card .lb-table .lb-rate { font-size:17px !important; color:#c9c9d2; }
+.rk-card .lb-table .lb-rate.thin { color:var(--muted); }
+.rk-mode { display:flex; gap:6px; margin:4px 0 8px; }
+.rk-mode button { flex:1; padding:9px 0; border-radius:8px; border:1px solid #2a2a33; background:#121217;
+  color:#9a9aa2; font-weight:900; font-size:14px; cursor:pointer; }
+.rk-mode button.on { border-color:var(--gold); color:var(--gold-hot); background:#17150d; }
+.rk-empty { padding:18px 14px; text-align:center; color:var(--muted); font-size:13px; }
 a.lb-name { display:inline-block; border-bottom:1px dashed rgba(255,255,255,.25); }
 a.lb-name:active { color:var(--gold-hot); }
 .rk-foot { position:relative; display:flex; justify-content:space-between; align-items:center; padding:8px 14px 10px;
@@ -53,14 +66,15 @@ a.lb-name:active { color:var(--gold-hot); }
 <div class="wrap" id="main"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261107153534"></script>
-<script src="js/techniques.js?v=20261107153534"></script>
-<script src="js/demo-data.js?v=20261107153534"></script>
-<script src="js/api.js?v=20261107153534"></script>
-<script src="js/app.js?v=20261107153534"></script>
+<script src="js/config.js?v=20261107153759"></script>
+<script src="js/techniques.js?v=20261107153759"></script>
+<script src="js/demo-data.js?v=20261107153759"></script>
+<script src="js/api.js?v=20261107153759"></script>
+<script src="js/app.js?v=20261107153759"></script>
 <script>
 let EVENTS, MEMBERS, ALL_FIGHTS, ALL_PREDS, FMAP = {};
 let checked = new Set();   // 集計対象の大会ID
+let MODE = "win";          // win＝勝敗ランキング（本体）／pitari＝ピタリランキング（おまけ）
 window.PITARI = {};        // member_id → ピタリの内訳（どこで何が）
 
 async function load() {
@@ -77,6 +91,7 @@ function toggleEvent(id) {
   if (checked.has(id)) checked.delete(id); else checked.add(id);
   render();
 }
+function setMode(m) { MODE = m; render(); }
 function toggleAll(on) {
   checked = on ? new Set(EVENTS.map(e => e.id)) : new Set();
   render();
@@ -107,30 +122,17 @@ function render() {
   }
   const allOn = checked.size === EVENTS.length;
   document.getElementById("main").innerHTML = `
+    <div class="rk-mode">
+      <button class="${MODE === "win" ? "on" : ""}" onclick="setMode('win')">勝敗</button>
+      <button class="${MODE === "pitari" ? "on" : ""}" onclick="setMode('pitari')">🎯 ピタリ</button>
+    </div>
     <div class="rk-card">
-      <div class="rk-top"><span class="rk-brand">予想<span>番付</span></span><span class="rk-tag">RANKING</span></div>
-      <div class="rk-ttl">${checked.size === 1 ? esc(EVENTS.find(e => checked.has(e.id)).name) : "予想ランキング"}</div>
+      <div class="rk-top"><span class="rk-brand">予想<span>番付</span></span><span class="rk-tag">${MODE === "win" ? "RANKING" : "PITARI"}</span></div>
+      <div class="rk-ttl">${checked.size === 1 ? esc(EVENTS.find(e => checked.has(e.id)).name) : MODE === "win" ? "勝敗予想ランキング" : "ピタリランキング"}</div>
       <p class="rk-scope">${checked.size === EVENTS.length ? "全大会（通算）"
           : checked.size === 1 ? `${esc(fmtDate(EVENTS.find(e => checked.has(e.id)).event_date))}・この大会の成績`
-          : EVENTS.filter(e => checked.has(e.id)).map(e => esc(e.name)).join("・") || "なし"}　<span style="color:#6f6f7a">的中1点・ピタリ+2点</span></p>
-      <table class="lb-table">
-        <tr><th></th><th>名前</th><th>ポイント</th><th>的中率</th><th>ピタリ</th></tr>
-        ${rows.map((r, i) => `
-          <tr class="${i === 0 && r.rate !== null ? "top" : ""}">
-            <td class="lb-rank">${r.rate === null ? "—" : i + 1}</td>
-            <td><a class="lb-name" href="predictor.html?id=${esc(r.member.id)}">${esc(r.member.name)}</a>
-                <div class="lb-sub">予想 ${r.answered}試合</div></td>
-            <td><span class="lb-pt">${r.points}</span><div class="lb-sub">点</div></td>
-            <td><span class="lb-rate${r.decided < window.RATE_MIN ? " thin" : ""}">${fmtRate(r.rate)}</span>
-                <div class="lb-sub">${r.hits}/${r.decided}${r.decided && r.decided < window.RATE_MIN ? "・参考" : ""}</div></td>
-            <td class="lb-num">${r.pitari
-              ? `<span class="pit-cell" tabindex="0" onclick="this.classList.toggle('open')">
-                   <span class="pit-btn">${r.pitari}</span>
-                   <span class="pit-pop"><b class="pit-head">🎯 ${esc(r.member.name)} のピタリ</b>${(window.PITARI[r.member.id] || []).map(s => `<span class="pit-row">${s}</span>`).join("")}</span>
-                 </span>`
-              : `<span class="pit-zero">0</span>`}</td>
-          </tr>`).join("")}
-      </table>
+          : EVENTS.filter(e => checked.has(e.id)).map(e => esc(e.name)).join("・") || "なし"}</p>
+      ${MODE === "win" ? winTable(rows) : pitariTable(allRows)}
       <div class="rk-foot"><span class="site">${esc(window.SITE_URL)}</span><span>#予想番付</span></div>
     </div>
     <p class="rk-tap">名前をタップすると、その人の戦績が見られます。</p>
@@ -160,17 +162,60 @@ function render() {
       <div class="rk-unranked">
         <div class="rk-un-ttl">ランク外（通算${window.CAREER_MIN}試合からランクイン）</div>
         ${unranked.map(r => `<div class="rk-un-row"><span>${esc(r.member.name)}</span>
-          <span class="rk-un-n">${r.points}点・確定${r.decided}試合<b>（あと${window.CAREER_MIN - r.decided}）</b></span></div>`).join("")}
+          <span class="rk-un-n">${r.hits}的中・確定${r.decided}試合<b>（あと${window.CAREER_MIN - r.decided}）</b></span></div>`).join("")}
       </div>` : ""}
       <div class="rk-share">${window.shareButton(
         (checked.size === 1 ? EVENTS.filter(e=>checked.has(e.id))[0].name + "の" : "") +
-        "的中率ランキング" + (rows[0] && rows[0].rate !== null ? `　1位 ${rows[0].member.name}（${Math.round(rows[0].rate*100)}%）` : "") +
+        "勝敗予想ランキング" + (rows[0] && rows[0].rate !== null ? `　1位 ${rows[0].member.name}（${rows[0].hits}/${rows[0].decided}的中）` : "") +
         " #予想番付", location.href, "ランキングをポスト")}</div>
-      <b>ポイント</b>＝ランキングの本体。<b>的中</b>（勝者を当てる）で<b>1点</b>、
-      <b>ピタリ</b>（決まり手＋ラウンドまで一致・判定は「判定」を当てればピタリ）ならさらに<b>+2点＝合計3点</b>。<br>
-      予想した試合が多いほど得点の機会がある。的中率は参考値で、確定4試合未満は薄く表示。<br>
-      <b>通算ランキングは確定8試合から</b>。1大会だけの参加者は「ランク外」に表示される。<br>
-      勝者を外したらその先は不成立。予想しなかった試合はノーカウント。ドロー・無効試合は除外。</p>`;
+      <b>勝者を当てた数</b>で並べる。同じ数なら的中率が高い方が上。<br>
+      <b>ピタリ</b>（決まり手＋ラウンドまで一致・判定は「判定」で一致）は上の「🎯 ピタリ」タブで。<br>
+      通算は結果の出た予想8試合からランクイン（美食会の3人はいつでも掲載）。<br>
+      予想しなかった試合・中止・体重超過・ドロー・無効試合は数えない。</p>`;
+}
+
+// 同じ成績は同じ順位（1,1,3…）
+function rankOf(list, i, same) {
+  let j = i;
+  while (j > 0 && same(list[j - 1], list[i])) j--;
+  return j + 1;
+}
+
+function winTable(rows) {
+  if (!rows.length) return `<div class="rk-empty">まだ結果の出た予想がありません</div>`;
+  const same = (a, b) => a.hits === b.hits && a.decided === b.decided;
+  return `
+      <table class="lb-table">
+        <tr><th></th><th>名前</th><th>的中</th><th>的中率</th></tr>
+        ${rows.map((r, i) => `
+          <tr class="${r.rate !== null && rankOf(rows, i, same) === 1 ? "top" : ""}">
+            <td class="lb-rank">${r.rate === null ? "—" : rankOf(rows, i, same)}</td>
+            <td><a class="lb-name" href="predictor.html?id=${esc(r.member.id)}">${esc(r.member.name)}</a></td>
+            <td><span class="lb-hit">${r.hits}</span><span class="lb-of">/${r.decided}</span></td>
+            <td><span class="lb-rate${r.decided < window.RATE_MIN ? " thin" : ""}">${fmtRate(r.rate)}</span></td>
+          </tr>`).join("")}
+      </table>`;
+}
+
+function pitariTable(allRows) {
+  const rows = allRows.filter(r => r.pitari > 0)
+    .sort((a, b) => b.pitari - a.pitari || b.hits - a.hits ||
+                    String(a.member.name).localeCompare(String(b.member.name), "ja"));
+  if (!rows.length) return `<div class="rk-empty">この範囲ではまだピタリが出ていません</div>`;
+  const same = (a, b) => a.pitari === b.pitari;
+  return `
+      <table class="lb-table">
+        <tr><th></th><th>名前</th><th>ピタリ</th></tr>
+        ${rows.map((r, i) => `
+          <tr class="${rankOf(rows, i, same) === 1 ? "top" : ""}">
+            <td class="lb-rank">${rankOf(rows, i, same)}</td>
+            <td><a class="lb-name" href="predictor.html?id=${esc(r.member.id)}">${esc(r.member.name)}</a></td>
+            <td><span class="pit-cell" tabindex="0" onclick="this.classList.toggle('open')">
+                  <span class="pit-btn">${r.pitari}</span>
+                  <span class="pit-pop"><b class="pit-head">🎯 ${esc(r.member.name)} のピタリ</b>${(window.PITARI[r.member.id] || []).map(s => `<span class="pit-row">${s}</span>`).join("")}</span>
+                </span></td>
+          </tr>`).join("")}
+      </table>`;
 }
 
 window.showPitari = function (mid) {

@@ -84,17 +84,16 @@
         if (s.pitari) row.pitari += 1;
       }
       row.rate = row.decided ? row.hits / row.decided : null;
-      // ポイント制（Gaku確定・2026-09-11）：的中1点／ピタリはさらに+2点＝合計3点。
-      // 的中率だけで並べると「2試合で2的中＝100%」が「8試合で6的中＝75%」より上に来てしまい、
-      // 予想数の少ない人が上位に居座る（小標本バイアス）。予想した数だけ得点機会がある形にして解消する。
-      row.points = row.hits + row.pitari * 2;
       return row;
     });
+    // 勝敗だけで並べる（Gaku確定・2026-11-07「ピタリを外そう。勝敗だけでランキングを並べたい」）。
+    // 旧ポイント制（的中1点＋ピタリ+2点・2026-09-11）は廃止。ピタリは別タブで見る。
+    // 的中率ではなく的中数を主にするのは、「2試合で2的中＝100%」が「8試合で6的中」より
+    // 上に来る小標本バイアスを避けるため（ポイント制を入れた理由はそのまま引き継ぐ）。
     rows.sort((a, b) =>
-      b.points - a.points ||
-      b.pitari - a.pitari ||
+      b.hits - a.hits ||
       (b.rate ?? -1) - (a.rate ?? -1) ||
-      b.decided - a.decided);
+      String(a.member.name).localeCompare(String(b.member.name), "ja"));
     return rows;
   };
   // 的中率を「参考値」として小さく扱う基準。確定した予想がこれ未満なら母数が薄い。
