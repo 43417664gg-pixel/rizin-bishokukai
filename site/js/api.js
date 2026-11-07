@@ -239,6 +239,11 @@
       async deletePrediction(memberId, fightId) {
         return q(client.from("predictions").delete().eq("member_id", memberId).eq("fight_id", fightId));
       },
+      // ----- 選手名鑑の閲覧（Gaku 11/8「選手名鑑閲覧ランキングは裏でとっておきたい」）-----
+      // 書くだけで読めない（読むのは管理側だけ・RLS）。表がまだ無い間や失敗しても画面は止めない
+      async logFighterView(fighterId, src) {
+        try { await q(client.from("fighter_views").insert({ fighter_id: fighterId, src: src || null })); } catch (e) { /* 記録は裏方 */ }
+      },
       // ----- 応援 -----
       async listSupports(filter = {}) {
         let query = client.from("supports").select("*");
