@@ -18,14 +18,46 @@ def rest(path):
     req = urllib.request.Request(f"{URL}/rest/v1/{path}", headers={"apikey": KEY, "Authorization": f"Bearer {KEY}"})
     return json.load(urllib.request.urlopen(req, timeout=30))
 
-fids = ",".join(f["id"] for f in rest(f"fights?select=id&event_id=eq.{ev}"))
+fights = rest(f"fights?select=id,image_url&event_id=eq.{ev}")
+fids = ",".join(f["id"] for f in fights)
 who = ",".join(BISHOKU)
 members = {m["id"]: m for m in rest(f"members?select=id,name,color&id=in.({who})")}
+# 丸アイコンが乗る場所の背景を測る（大会ごとにバナーの色が違う＝橙・金・紺・空色…）。
+# 下の左右＝勝敗の丸、上の左右＝応援の丸。各場所の明るさ（L）と、メンバー色に近い画素の割合（sim）。
+# summary.html はこれを見て、沈む組み合わせの丸だけ縁を強くする。PIL が無ければ測らない（縁は標準のまま）
+def lab(rgb):
+    def lin(c):
+        c /= 255
+        return c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4
+    r, g, b = (lin(c) for c in rgb)
+    x, y, z = (r * .4124 + g * .3576 + b * .1805) / .9505, r * .2126 + g * .7152 + b * .0722, (r * .0193 + g * .1192 + b * .9505) / 1.089
+    f = lambda t: t ** (1 / 3) if t > 0.008856 else 7.787 * t + 16 / 116
+    return 116 * f(y) - 16, 500 * (f(x) - f(y)), 200 * (f(y) - f(z))
+
+def measure(path, colors):
+    try:
+        from PIL import Image
+        im = Image.open(path).convert("RGB").resize((160, 90))
+    except Exception:
+        return None
+    mc = {mid: lab(tuple(int(c[i:i + 2], 16) for i in (1, 3, 5))) for mid, c in colors.items()}
+    allpx = [lab(p) for p in im.getdata()]
+    # 絵のうるささ＝平均の彩度（a,bの大きさ）。橙・虹色のバナーほど高い。下端の影の濃さに使う
+    out = {"chroma": round(sum((p[1] ** 2 + p[2] ** 2) ** .5 for p in allpx) / len(allpx))}
+    for name, box in {"bl": (0, 76, 72, 90), "br": (88, 76, 160, 90), "tl": (0, 0, 40, 27), "tr": (120, 0, 160, 27)}.items():
+        px = [lab(p) for p in im.crop(box).getdata()]
+        out[name] = {"L": round(sum(p[0] for p in px) / len(px)),
+                     "sim": {mid: round(sum(1 for p in px if sum((p[i] - m[i]) ** 2 for i in range(3)) ** .5 < 30) / len(px), 2)
+                             for mid, m in mc.items()}}
+    return out
+
 out = {
     "event": ev,
     "members": [members[m] for m in BISHOKU if m in members],
     "preds": rest(f"predictions?select=member_id,fight_id,winner_id,method,round&member_id=in.({who})&fight_id=in.({fids})"),
     "supports": rest(f"supports?select=member_id,fight_id,fighter_id&member_id=in.({who})&fight_id=in.({fids})"),
+    "zones": {f["id"]: measure(os.path.join(SITE, f["image_url"]), {m: members[m]["color"] for m in BISHOKU if m in members})
+              for f in fights if f.get("image_url")},
     "built_at": datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9))).strftime("%-m/%-d %H:%M"),
 }
 open(os.path.join(HERE, "data.js"), "w", encoding="utf-8").write(
