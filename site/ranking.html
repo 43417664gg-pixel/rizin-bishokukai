@@ -7,7 +7,7 @@
 <title>ランキング｜予想番付</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261107205534">
+<link rel="stylesheet" href="css/style.css?v=20261107210315">
 <style>
 /* ランキングを1枚のカードにする（2026-10-20）：スクショ単体でXに貼れるよう、
    ブランド・集計対象・サイトURLをカードの中に入れる。名前をタップ→その人の戦績へ。 */
@@ -69,11 +69,11 @@ a.lb-name:active { color:var(--gold-hot); }
 <div class="wrap" id="main"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261107205534"></script>
-<script src="js/techniques.js?v=20261107205534"></script>
-<script src="js/demo-data.js?v=20261107205534"></script>
-<script src="js/api.js?v=20261107205534"></script>
-<script src="js/app.js?v=20261107205534"></script>
+<script src="js/config.js?v=20261107210315"></script>
+<script src="js/techniques.js?v=20261107210315"></script>
+<script src="js/demo-data.js?v=20261107210315"></script>
+<script src="js/api.js?v=20261107210315"></script>
+<script src="js/app.js?v=20261107210315"></script>
 <script>
 let EVENTS, MEMBERS, ALL_FIGHTS, ALL_PREDS, FMAP = {};
 let checked = new Set();   // 集計対象の大会ID（＋PAST）
@@ -149,7 +149,7 @@ function render() {
   const single = evOn.length === 1 && !checked.has(PAST) ? evOn[0] : null;   // 大会1つだけ＝その大会の成績
   const scope = single ? "event" : "career";
   const extra = retroExtra();
-  const allRows = computeLeaderboard(MEMBERS, fights, preds, { scope, extra });
+  const allRows = computeLeaderboard(MEMBERS.filter(m => !window.RANK_HIDDEN.includes(m.id)), fights, preds, { scope, extra });
   // 通算は確定8試合以上でランクイン。未満は下に「ランク外」として出す（除外はしない）。
   const rows = allRows.filter(r => window.isRanked(r, scope));
   const unranked = allRows.filter(r => !window.isRanked(r, scope) && r.answered > 0);
@@ -223,9 +223,30 @@ function rankOf(list, i, same) {
   return j + 1;
 }
 
+// 的中率が競ったら小数点まで出す（Gaku指示・2026-11-07「せったときは小数点まで」）。
+// 隣り合う行が同じ整数の%に丸まるのに率は違う、という並びだけ、違いが見える桁（最大2桁）まで出す
+function rateLabels(rows) {
+  const pct = r => r.rate === null ? null : Math.round(r.rate * 100);
+  const out = rows.map(r => fmtRate(r.rate));
+  for (let i = 0; i < rows.length; ) {
+    let j = i + 1;
+    while (j < rows.length && pct(rows[i]) !== null && pct(rows[j]) === pct(rows[i])) j++;
+    const grp = rows.slice(i, j);
+    const n = new Set(grp.map(r => r.rate)).size;
+    if (n > 1) {
+      let d = 1;
+      while (d < 2 && new Set(grp.map(r => (r.rate * 100).toFixed(d))).size < n) d++;
+      grp.forEach((r, k) => { out[i + k] = `${(r.rate * 100).toFixed(d)}%`; });
+    }
+    i = j;
+  }
+  return out;
+}
+
 function winTable(rows) {
   if (!rows.length) return `<div class="rk-empty">まだ結果の出た予想がありません</div>`;
   const same = (a, b) => a.hits === b.hits && a.decided === b.decided;
+  const rl = rateLabels(rows);
   return `
       <table class="lb-table">
         <tr><th></th><th>名前</th><th>的中</th><th>的中率</th></tr>
@@ -234,7 +255,7 @@ function winTable(rows) {
             <td class="lb-rank">${r.rate === null ? "—" : rankOf(rows, i, same)}</td>
             <td><span class="lb-who">${avatarHTML(r.member, "lb-ava")}<a class="lb-name" href="predictor.html?id=${esc(r.member.id)}">${esc(r.member.name)}</a></span></td>
             <td><span class="lb-hit">${r.hits}</span><span class="lb-of">/${r.decided}</span></td>
-            <td><span class="lb-rate${r.decided < window.RATE_MIN ? " thin" : ""}">${fmtRate(r.rate)}</span></td>
+            <td><span class="lb-rate${r.decided < window.RATE_MIN ? " thin" : ""}">${rl[i]}</span></td>
           </tr>`).join("")}
       </table>`;
 }

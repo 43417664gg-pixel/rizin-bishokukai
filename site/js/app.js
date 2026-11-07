@@ -110,6 +110,11 @@
   // 基準は外部の予想者が少数的中で居座るのを防ぐためのもので、仲間をはじくためのものではない。
   // 美食会の3人。予想を書ける条件（LINEの固定リンクで開いたブラウザ）も同じ3人＝SQLの owns_member() と揃える
   window.BISHOKU = ["m_hame", "m_nuki", "m_maruyama"];
+  // ランキングにだけ出さない予想者。予想は大会ページと戦績ページにそのまま残す（Gaku指示・2026-11-07）
+  //  - 鶴屋怜：「鶴屋はずそう」＝9試合7的中で通算1位に来たため
+  //  - 斎藤裕：「勝敗予想しない方針に変わったように見受けられるなら抜く。不公平じゃん？」
+  //    RIZIN.54までは「勝敗予想」、超RIZIN.5から「展開予想」。RIZIN.55（nkdSWqhsDYs）は注目カードだけで勝者を言わない（「五分五分」）
+  window.RANK_HIDDEN = ["m_yt_tsuruya", "m_yt_yutakasaito"];
   window.ALWAYS_RANKED = window.BISHOKU;
   window.isRanked = function (row, scope) {
     // 美食会は予想0件の範囲でも必ず載せる（Gaku指示・2026-11-07「丸山先生は必ず入れて」）
