@@ -598,3 +598,4 @@ LM16に**出場する選手本人**が全8試合を予想した回（09-29）。
 | 2026-10-27 | 秋元強真　Kyoma Akimoto | ev_lm17 | 10件 | https://www.youtube.com/watch?v=ixKPI7iteqY | m_yt_kyomaakimoto |
 | 2026-11-03 | 杉山廣平の HEY! HEY! チャンネル | ev_lm17 | 4件 | https://www.youtube.com/watch?v=wtZwt7jkCL8 | m_yt_sugiyamakohei |
 | 2026-11-05 | ヌルの格闘技ラジオ | ev_lm17 | 13件 | https://www.youtube.com/watch?v=Myf3BXwvSyE | m_yt_e1ff8ceb | ※2026-11-07 Gaku判断で掲載取り下げ（DBから削除・member_map の blocked へ）
+| 2026-11-04 | RIZIN公式【事前番組】伊藤裕樹／安藤達也／井上雄策（abc presents RIZIN.55） | ev_lm17 | 31件（伊藤11・安藤10・井上10） | https://www.youtube.com/watch?v=ekBr5Jvwgzo | m_yt_ito_hiroki / m_yt_ando_tatsuya / m_yt_inoue_yusaku | ※2026-11-08 取込。帰属は字幕を試合ごとに読み「司会の呼びかけ→本人の答え」で確定（自動判定は6件しか通らず、残りを手で確認）。予想を出していない所は入れない（安藤＝相本戦、井上＝鹿志村vs太田「どっちかわかんない」）。名前が字幕で欠けたもの2件は文脈で確定：井上→牛久（「く選手」「縮選手」＝牛久の話で通す）、安藤→リー（「牛君が判定で勝つのもあり得るが今回は〇〇選手に…すいません」） |
