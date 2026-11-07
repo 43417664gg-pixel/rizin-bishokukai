@@ -7,7 +7,7 @@
 <title>大会予想｜予想番付</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261107235902">
+<link rel="stylesheet" href="css/style.css?v=20261108000115">
 </head>
 <body>
 <div id="app-header"></div>
@@ -17,12 +17,12 @@
 <div class="wiz" id="wiz" hidden role="dialog" aria-modal="true" aria-label="勝敗予想"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261107235902"></script>
-<script src="js/techniques.js?v=20261107235902"></script>
-<script src="js/demo-data.js?v=20261107235902"></script>
-<script src="js/api.js?v=20261107235902"></script>
-<script src="js/app.js?v=20261107235902"></script>
-<script src="js/bishoku_summary.js?v=20261107235902"></script>
+<script src="js/config.js?v=20261108000115"></script>
+<script src="js/techniques.js?v=20261108000115"></script>
+<script src="js/demo-data.js?v=20261108000115"></script>
+<script src="js/api.js?v=20261108000115"></script>
+<script src="js/app.js?v=20261108000115"></script>
+<script src="js/bishoku_summary.js?v=20261108000115"></script>
 <script>
 let EV, PHASE, FIGHTS, FMAP, MEMBERS, myPreds = {}, allPreds = [], ALL_SUPPORTS = [];
 
@@ -112,14 +112,12 @@ function fightLabel(f) {
     ${f.event_only ? `<span class="ns-badge">${esc(f.event_only_note || "MMA以外のルール")}｜予想は任意・通算対象外</span>` : ""}`;
 }
 
-// 選手名から名鑑へ飛ぶリンク行
+// 選手名から名鑑へ飛ぶリンク行。「名鑑」の語は出さず、何が起きるかを言う（Gaku 11/7「『名鑑』は『福田龍彌をもっと詳しく』みたいに」）。
+// 名前を上に大きく・「をもっと詳しく ›」を下に。長さに関わらず左右とも同じ2段（名前の長さで形が変わらない）
 function profileLinks(f) {
-  const f1 = FMAP[f.fighter1_id], f2 = FMAP[f.fighter2_id];
+  const a = (id) => `<a href="fighter.html?id=${id}"><b class="fnm">${fnm(FMAP[id]?.name)}</b><span>をもっと詳しく ›</span></a>`;
   return `
-    <div class="profile-links">
-      <a href="fighter.html?id=${f.fighter1_id}">${esc(f1?.name)} の名鑑 ›</a>
-      <a href="fighter.html?id=${f.fighter2_id}">${esc(f2?.name)} の名鑑 ›</a>
-    </div>`;
+    <div class="profile-links">${a(f.fighter1_id)}${a(f.fighter2_id)}</div>`;
 }
 
 // その場で判断できるように：戦績・勝ち方の割合・前戦（○×）。トグルで直近5試合（Gaku依頼11/7）
