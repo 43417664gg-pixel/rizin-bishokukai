@@ -114,7 +114,8 @@
   //  - 鶴屋怜：「鶴屋はずそう」＝9試合7的中で通算1位に来たため
   //  - 斎藤裕：「勝敗予想しない方針に変わったように見受けられるなら抜く。不公平じゃん？」
   //    RIZIN.54までは「勝敗予想」、超RIZIN.5から「展開予想」。RIZIN.55（nkdSWqhsDYs）は注目カードだけで勝者を言わない（「五分五分」）
-  window.RANK_HIDDEN = ["m_yt_tsuruya", "m_yt_yutakasaito"];
+  //  - 久保優太：「久保はずそう」＝自分の勝敗予想はLANDMARK 15（2026-07）が最後で、以降は直前解説だけ
+  window.RANK_HIDDEN = ["m_yt_tsuruya", "m_yt_yutakasaito", "m_yt_69bc9bd4"];
   window.ALWAYS_RANKED = window.BISHOKU;
   window.isRanked = function (row, scope) {
     // 美食会は予想0件の範囲でも必ず載せる（Gaku指示・2026-11-07「丸山先生は必ず入れて」）
