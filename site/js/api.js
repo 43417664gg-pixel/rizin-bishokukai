@@ -357,6 +357,17 @@
       async claimMember(id, uid) {
         return q(client.from("members").update({ owner_uid: uid }).eq("id", id).is("owner_uid", null));
       },
+      // 2026-11-07：同じ名前を2台目以降の端末・ブラウザでも使えるようにする（合言葉で追加登録）。
+      // 成功したら member_id、合言葉違いは null を返す。
+      async bindByCode(code) {
+        await window.AUTH_READY;
+        return q(client.rpc("bind_by_code", { p_code: code }));
+      },
+      // この端末が合言葉で追加登録済みか（member_devices は自分の行しか読めない）
+      async isBoundDevice(memberId) {
+        const rows = await q(client.from("member_devices").select("member_id").eq("member_id", memberId).limit(1));
+        return rows.length > 0;
+      },
       async resetDemo() {},
     };
   }

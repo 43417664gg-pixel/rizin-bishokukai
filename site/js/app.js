@@ -128,7 +128,9 @@
 
   // ---------- 共通ヘッダー ----------
   window.renderHeader = async function (active) {
-    if (!window._claimed) { window._claimed = true; window.claimMyMember(); }
+    // 名前を選び直したら（index.html はページ遷移せずに再描画する）その名前で確かめ直す
+    const claimKey = getMemberId() || "";
+    if (window._claimedFor !== claimKey) { window._claimedFor = claimKey; window.CLAIM_PROMISE = window.claimMyMember(); }
     setTimeout(() => window.showNoticeIfAny && window.showNoticeIfAny(), 400);
     const el = document.getElementById("app-header");
     if (!el) return;
@@ -310,15 +312,94 @@
   // 自動的に紐づく＝本人の操作は不要。失敗しても黙って続行する（体験を止めない）。
   window.claimMyMember = async function () {
     try {
+      if (!window.DB || typeof DB.claimMember !== "function") return;
+      // 合言葉リンク（…#bind=xxxxxx）で開かれたら、この端末をその名前の端末として登録する
+      const bind = /[#&]bind=([A-Za-z0-9]+)/.exec(location.hash);
+      if (bind) {
+        history.replaceState(null, "", location.pathname + location.search);
+        await bindAndReload(bind[1]);
+        return;
+      }
       const mid = getMemberId();
-      if (!mid || !window.DB || typeof DB.claimMember !== "function") return;
+      if (!mid) return;
       const uid = await window.AUTH_READY;
       if (!uid) return;
       const me = (await DB.listMembers()).find(m => m.id === mid);
-      if (!me || me.owner_uid || me.is_curated) return;
+      if (!me || me.is_curated) return;
+      if (me.owner_uid && me.owner_uid !== uid) {
+        // 2026-11-07：名前が別の端末（＝別の見えないID）に紐づいていると、RLSで保存が全部弾かれる。
+        // iPhoneのSafariは7日来ないとサイトのデータを消す／LINEのブラウザとSafariは別扱い、で普通に起きる。
+        // 合言葉で追加登録済みなら書ける。未登録なら黙って失敗させず、開いた瞬間に分かるように出す。
+        if (await DB.isBoundDevice(mid).catch(() => false)) return;
+        window.MEMBER_LOCKED = me.name;
+        installLockedBanner(me.name);
+        return;
+      }
+      if (me.owner_uid) return;
       await DB.claimMember(mid, uid);
       console.info("[auth] メンバーを引き継ぎました:", me.name);
     } catch (e) { /* 列が未追加／権限なし等。公開前の移行期は無視してよい */ }
+  };
+  // 成功したら名前を選んだ状態にして開き直す。失敗はエラーで返す（呼び元が表示する）
+  async function bindAndReload(code) {
+    let mid;
+    try {
+      mid = await DB.bindByCode(code.trim().toLowerCase());
+    } catch (e) {
+      // SQL未適用（関数が無い）など。合言葉の正誤とは別の失敗
+      console.warn("[auth] bind_by_code 失敗:", e);
+      bindNotify("いま合言葉を受け付けられません（サーバー側の準備中）。Gakuに連絡してください");
+      throw e;
+    }
+    if (!mid) {
+      bindNotify("合言葉が違います");
+      throw new Error("合言葉が違います");
+    }
+    setMemberId(mid);
+    location.reload();
+  }
+  // 赤い帯があれば帯の中に残す（トーストは1.5秒で消えて読めない）。帯が無い時（リンクで開いた時）は alert
+  function bindNotify(msg) {
+    const el = document.getElementById("bind-msg");
+    if (el) el.textContent = msg; else alert(msg);
+  }
+  function installLockedBanner(name) {
+    const put = () => {
+      if (document.getElementById("locked-banner")) return;
+      const d = document.createElement("div");
+      d.id = "locked-banner";
+      d.style.cssText = "position:sticky;top:0;z-index:9999;background:#7a1520;color:#ffd9dd;" +
+        "padding:10px 14px;font-size:13px;line-height:1.6;border-bottom:2px solid #c9a84a;text-align:center";
+      d.innerHTML = "⚠️ <b>この端末からは「" + esc(name) + "」の予想をまだ保存できません。</b><br>" +
+        "Gakuから届いたリンクを開くか、合言葉（6文字）を入れてください。<br>" +
+        '<form style="margin-top:6px;display:inline-flex;gap:6px">' +
+        '<input name="code" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="12" ' +
+        'placeholder="合言葉" style="width:9em;padding:6px 8px;border-radius:6px;border:1px solid #c9a84a;' +
+        'background:#1a0d10;color:#fff;font-size:16px">' +
+        '<button style="padding:6px 12px;border-radius:6px;border:0;background:#c9a84a;color:#1a0d10;font-weight:800">使えるようにする</button>' +
+        "</form>" +
+        '<div id="bind-msg" style="margin-top:4px;font-weight:800;color:#ffe08a"></div>';
+      d.querySelector("form").addEventListener("submit", async (ev) => {
+        ev.preventDefault();
+        const code = ev.target.code.value;
+        if (!code.trim()) return;
+        const btn = ev.target.querySelector("button");
+        btn.disabled = true;
+        try { await bindAndReload(code); } catch (_) { btn.disabled = false; }
+      });
+      document.body.prepend(d);
+    };
+    if (document.body) put(); else document.addEventListener("DOMContentLoaded", put);
+  }
+  // 保存失敗の英語エラー（RLS等）を、利用者に分かる日本語にする
+  window.saveErrorText = function (e) {
+    const s = String((e && (e.code + " " + e.message)) || e || "");
+    if (/42501|row-level security/i.test(s)) {
+      if (window.MEMBER_LOCKED)
+        return "保存できませんでした：この端末は「" + window.MEMBER_LOCKED + "」としてまだ登録されていません。画面上の赤い帯に合言葉を入れてください";
+      return "保存できませんでした（締切後か、名前の紐づけが済んでいません）。再読み込みしてもう一度試してください";
+    }
+    return (e && e.message) || "保存できなかった";
   };
 
   // ---------- お詫びのお知らせ（2026-09-10・超RIZIN.5） ----------
@@ -336,8 +417,11 @@
           "端末をまたいでも引き継げる仕組みに作り直しますので、" +
           "次の大会からは確実に入れる状態にしてお迎えします。"
   };
+  // 2026-11-07 掲出終了：新しいブラウザ（LINE内など）では毎回出て、合言葉の赤い帯を覆い隠していた
+  const NOTICE_UNTIL = Date.parse("2026-10-01T00:00:00+09:00");
   window.showNoticeIfAny = function () {
     try {
+      if (Date.now() > NOTICE_UNTIL) return;
       const mid = getMemberId();
       if (!mid || NOTICE_TARGETS.indexOf(mid) < 0) return;
       const key = NOTICE_ID + ":" + mid;

@@ -7,7 +7,7 @@
 <title>大会予想｜予想番付</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261107151402">
+<link rel="stylesheet" href="css/style.css?v=20261107153534">
 </head>
 <body>
 <div id="app-header"></div>
@@ -15,12 +15,12 @@
 <div class="wrap" id="main"></div>
 <div class="toast" id="toast"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/config.js?v=20261107151402"></script>
-<script src="js/techniques.js?v=20261107151402"></script>
-<script src="js/demo-data.js?v=20261107151402"></script>
-<script src="js/api.js?v=20261107151402"></script>
-<script src="js/app.js?v=20261107151402"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
+<script src="js/config.js?v=20261107153534"></script>
+<script src="js/techniques.js?v=20261107153534"></script>
+<script src="js/demo-data.js?v=20261107153534"></script>
+<script src="js/api.js?v=20261107153534"></script>
+<script src="js/app.js?v=20261107153534"></script>
 <script>
 let EV, PHASE, FIGHTS, FMAP, MEMBERS, myPreds = {}, allPreds = [], ALL_SUPPORTS = [];
 let drafts = {};              // 決定前の編集中の選択（ローカルのみ）
@@ -37,7 +37,7 @@ const predRank = (s) => s ? (s.aramasu ? 3 : s.pitari ? 2 : s.winnerHit ? 1 : 0)
 function toast(msg) {
   const t = document.getElementById("toast");
   t.textContent = msg; t.classList.add("show");
-  clearTimeout(t._tm); t._tm = setTimeout(() => t.classList.remove("show"), 1500);
+  clearTimeout(t._tm); t._tm = setTimeout(() => t.classList.remove("show"), Math.max(1500, msg.length * 90));  // 長いエラー文は読める時間だけ出す
 }
 
 async function load() {
@@ -270,6 +270,8 @@ async function confirmPred(fightId) {
   const p = drafts[fightId] || myPreds[fightId];
   if (!p || !p.winner_id) return;
   try {
+    // 名前の紐づけ（claim）は画面を開いた直後に裏で走る。終わる前に保存するとRLSで弾かれるので待つ
+    if (window.CLAIM_PROMISE) await window.CLAIM_PROMISE;
     await DB.upsertPrediction({
       member_id: getMemberId(), fight_id: fightId,
       winner_id: p.winner_id, method: p.method || null,
@@ -281,7 +283,7 @@ async function confirmPred(fightId) {
     replaceCard(fightId);
     await refreshMatrix();
     toast("予想を決定した ✓");
-  } catch (e) { toast(e.message || "保存できなかった"); }
+  } catch (e) { toast(window.saveErrorText ? saveErrorText(e) : (e.message || "保存できなかった")); }
 }
 
 function startEdit(fightId) {
@@ -297,7 +299,10 @@ function cancelEdit(fightId) {
 }
 
 async function clearPred(fightId) {
-  await DB.deletePrediction(getMemberId(), fightId);
+  try {
+    if (window.CLAIM_PROMISE) await window.CLAIM_PROMISE;
+    await DB.deletePrediction(getMemberId(), fightId);
+  } catch (e) { toast(window.saveErrorText ? saveErrorText(e) : (e.message || "取り消せなかった")); return; }
   delete myPreds[fightId];
   delete drafts[fightId];
   editing.delete(fightId);
