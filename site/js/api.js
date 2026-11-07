@@ -423,12 +423,31 @@
       );
     });
   }
-  function goOffline(e) {
+  // 2026-11-07：初回アクセスの1回のタイムアウト（コールドスタート）や一過性の401で退避モードに入り、
+  // そのままページを開いている間ずっと「誰も予想していない」＋登録不可に固定されていた（リロードで直る）。
+  // 退避は「本当に落ちている時」の装置。一過性の失敗では入らない（1回は待って再試行）、
+  // 入っても裏で疎通を確かめ続け、戻ったら自動で再読み込みする。
+  const RETRY_DELAY_MS = 1500;
+  const PROBE_INTERVAL_MS = 15000;
+  const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+  let probing = false;
+  function goOffline(e, probe) {
     if (window.DB_OFFLINE) return;
     window.DB_OFFLINE = true;
     window.DB_OFFLINE_REASON = String((e && e.message) || e);
     installOfflineBanner();
     console.warn("[api] Supabaseに到達できないため退避モードで表示します:", e);
+    if (probe && !probing) {
+      probing = true;
+      const tick = async () => {
+        try {
+          await withTimeout(probe(), READ_TIMEOUT_MS, "疎通確認");
+          console.info("[api] Supabaseへの接続が戻ったので再読み込みします");
+          location.reload();
+        } catch (_) { setTimeout(tick, PROBE_INTERVAL_MS); }
+      };
+      setTimeout(tick, PROBE_INTERVAL_MS);
+    }
   }
 
   if (IS_DEMO) {
@@ -449,20 +468,31 @@
         if (window.DB_OFFLINE && typeof fb[name] === "function") return fb[name].apply(fb, args);
         try {
           return await withTimeout(supa[name].apply(supa, args), READ_TIMEOUT_MS, name);
-        } catch (e) {
-          goOffline(e);
-          if (typeof fb[name] !== "function") throw e;
-          return await fb[name].apply(fb, args);
+        } catch (e1) {
+          console.warn("[api] " + name + " 失敗・再試行します:", e1);
+          await sleep(RETRY_DELAY_MS);
+          if (window.DB_OFFLINE && typeof fb[name] === "function") return fb[name].apply(fb, args);
+          try {
+            return await withTimeout(supa[name].apply(supa, args), READ_TIMEOUT_MS, name);
+          } catch (e) {
+            goOffline(e, () => supa.listEvents());
+            if (typeof fb[name] !== "function") throw e;
+            return await fb[name].apply(fb, args);
+          }
         }
       };
     }
+    // 書き込みは退避中でも本物のSupabaseへ試す（成功すれば本当に保存されている＝誤解は生まない）。
+    // 失敗はそのままエラーで返す。一過性の失敗で退避に落とすのは読み取り側だけ。
     for (const name of WRITES) {
       if (typeof supa[name] !== "function") continue;
       db[name] = async function (...args) {
-        if (window.DB_OFFLINE) throw new Error("いまサーバーに接続できないため、予想の登録・変更はできません");
         try {
           return await withTimeout(supa[name].apply(supa, args), WRITE_TIMEOUT_MS, name);
-        } catch (e) { goOffline(e); throw e; }
+        } catch (e) {
+          if (window.DB_OFFLINE) throw new Error("いまサーバーに接続できないため、予想の登録・変更はできません");
+          throw e;
+        }
       };
     }
     window.DB = db;
