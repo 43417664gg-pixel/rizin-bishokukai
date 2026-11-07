@@ -56,16 +56,18 @@ const CSS = `
   /* 塗りは原色ベタではなく、左上に光・縁に影の球（Gaku 11/7「丸アイコンの色もデザイン寄せて」）。赤・青・金の系統は見分けの目印なので残す */
   .ic, .ci { background:radial-gradient(circle at 32% 26%, color-mix(in srgb, var(--c) 58%, #fff) 0%, var(--c) 46%, color-mix(in srgb, var(--c) 52%, #000) 100%); }
   .ic.sq, .ci.sq { border-radius:12%; }   /* 抜き太郎だけ正方形（Gaku指定11/7） */
-  /* ハメ太郎は三角形（Gaku 11/8）。三角に切ると縁と黒いシールの輪郭（border／box-shadow）も消えるので、
+  /* ハメ太郎は三角形（Gaku 11/8）。角を丸め辺を少し膨らませた三角（style.css の span.mav.tri と同じ形）。
+     三角に切ると縁と黒いシールの輪郭（border／box-shadow）も消えるので、
      縁（寮の金）と塗りは疑似要素の三角2枚を重ね、黒い輪郭は drop-shadow で形に沿わせる */
   .ic.tri, .ci.tri { position:relative; isolation:isolate; border:0; border-radius:0; background:none; box-shadow:none;
+        --tri:polygon(37.3% 9.0%, 39.9% 6.5%, 43.0% 4.6%, 46.4% 3.4%, 50.0% 3.0%, 53.6% 3.4%, 57.0% 4.6%, 60.1% 6.5%, 62.7% 9.0%, 68.4% 16.2%, 73.7% 23.6%, 78.8% 31.2%, 83.5% 39.0%, 87.9% 47.0%, 91.9% 55.1%, 95.6% 63.5%, 99.0% 71.9%, 99.9% 75.4%, 100.0% 79.1%, 99.3% 82.6%, 97.9% 85.9%, 95.7% 88.8%, 93.0% 91.2%, 89.8% 92.9%, 86.3% 93.9%, 77.3% 95.3%, 68.2% 96.2%, 59.1% 96.8%, 50.0% 97.0%, 40.9% 96.8%, 31.8% 96.2%, 22.7% 95.3%, 13.7% 93.9%, 10.2% 92.9%, 7.0% 91.2%, 4.3% 88.8%, 2.1% 85.9%, 0.7% 82.6%, 0.0% 79.1%, 0.1% 75.4%, 1.0% 71.9%, 4.4% 63.5%, 8.1% 55.1%, 12.1% 47.0%, 16.5% 39.0%, 21.2% 31.2%, 26.3% 23.6%, 31.6% 16.2%);
         filter:drop-shadow(3px 0 0 #08080a) drop-shadow(-3px 0 0 #08080a) drop-shadow(0 3px 0 #08080a) drop-shadow(0 -3px 0 #08080a) drop-shadow(0 3px 10px rgba(0,0,0,.7)); }
-  .ic.tri::before, .ic.tri::after, .ci.tri::before, .ci.tri::after { content:""; position:absolute; z-index:-1; clip-path:polygon(50% 0, 100% 100%, 0 100%); }
+  .ic.tri::before, .ic.tri::after, .ci.tri::before, .ci.tri::after { content:""; position:absolute; z-index:-1; clip-path:var(--tri); }
   .ic.tri::before, .ci.tri::before { inset:0; background:var(--t, #f4f1ea); }
-  /* 縁の太さ b を三辺で揃える＝内側の三角を内心に向けて縮める（上 2.236b・左右 1.618b・下 b） */
-  .ic.tri::after, .ci.tri::after { --b:calc(4px * var(--u) + 1px); inset:calc(var(--b) * 2.236) calc(var(--b) * 1.618) var(--b);
+  /* 縁の太さ b を辺で揃える＝内側の三角を重心に向けて縮める（上 1.506b・左右 1.292b・下 1.078b） */
+  .ic.tri::after, .ci.tri::after { --b:calc(4px * var(--u) + 1px); inset:calc(var(--b) * 1.506) calc(var(--b) * 1.292) calc(var(--b) * 1.078);
         background:radial-gradient(circle at 44% 62%, color-mix(in srgb, var(--c) 58%, #fff) 0%, var(--c) 46%, color-mix(in srgb, var(--c) 52%, #000) 100%); }
-  .tri > i { font-style:normal; font-size:.8em; position:relative; top:.3em; }
+  .tri > i { font-style:normal; font-size:.86em; position:relative; top:.2em; }
   .ic.lt, .ci.lt { color:#1a1408; text-shadow:none; }   /* 金など明るい塗り＝白い字が沈むので黒字 */
   /* 縁の色＝寮の差し色（ハメ＝金・抜き＝銀・丸山＝黒・Gaku指定11/7）。正本は demo-data.js の members[].trim。
      字は寮の色にしない＝白（明るい塗りだけ黒）。「色は背景であって、中の文字は視認性優先」（Gaku 11/7） */

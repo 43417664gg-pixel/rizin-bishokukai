@@ -1043,14 +1043,17 @@ span.mav.lt { color: #1a1408; text-shadow: 0 1px 0 rgba(255, 255, 255, .3); }
 span.mav.trim { box-shadow: inset 0 0 0 1.5px var(--t); }   /* 縁＝寮の差し色（金・銀・黒）。字は読めること優先で白／明るい塗りだけ黒（Gaku 11/7「色は背景、中の文字は視認性優先」） */
 span.mav.lt.trim { text-shadow: none; }
 span.mav.sq { border-radius: 12%; }   /* 抜き太郎だけ正方形（Gaku指定11/7） */
-/* ハメ太郎は三角形（Gaku 11/8）。三角に切ると縁の box-shadow も消えるので、縁（寮の金）と塗りを疑似要素の三角2枚で重ねる。
-   内側の三角は内心に向けて縮めて、縁の太さを三辺で揃える（上 2.236b・左右 1.618b・下 b） */
-span.mav.tri { position: relative; isolation: isolate; background: none; box-shadow: none; border-radius: 0; }
-span.mav.tri::before, span.mav.tri::after { content: ""; position: absolute; z-index: -1; clip-path: polygon(50% 0, 100% 100%, 0 100%); }
+/* ハメ太郎は三角形（Gaku 11/8）。尖りすぎない＝角を丸め、辺も少し膨らませた三角（Gaku「辺が少し膨らんでもいいから丸く」）。
+   形は 正三角形の各辺を半径2倍の弧にし、角を半径0.15で丸めたもの（48点の多角形で近似）。
+   三角に切ると縁の box-shadow も消えるので、縁（寮の金）と塗りを疑似要素の三角2枚で重ねる。
+   内側の三角は重心に向けて縮めて、辺での縁の太さを揃える（上 1.506b・左右 1.292b・下 1.078b） */
+span.mav.tri { position: relative; isolation: isolate; background: none; box-shadow: none; border-radius: 0;
+  --tri: polygon(37.3% 9.0%, 39.9% 6.5%, 43.0% 4.6%, 46.4% 3.4%, 50.0% 3.0%, 53.6% 3.4%, 57.0% 4.6%, 60.1% 6.5%, 62.7% 9.0%, 68.4% 16.2%, 73.7% 23.6%, 78.8% 31.2%, 83.5% 39.0%, 87.9% 47.0%, 91.9% 55.1%, 95.6% 63.5%, 99.0% 71.9%, 99.9% 75.4%, 100.0% 79.1%, 99.3% 82.6%, 97.9% 85.9%, 95.7% 88.8%, 93.0% 91.2%, 89.8% 92.9%, 86.3% 93.9%, 77.3% 95.3%, 68.2% 96.2%, 59.1% 96.8%, 50.0% 97.0%, 40.9% 96.8%, 31.8% 96.2%, 22.7% 95.3%, 13.7% 93.9%, 10.2% 92.9%, 7.0% 91.2%, 4.3% 88.8%, 2.1% 85.9%, 0.7% 82.6%, 0.0% 79.1%, 0.1% 75.4%, 1.0% 71.9%, 4.4% 63.5%, 8.1% 55.1%, 12.1% 47.0%, 16.5% 39.0%, 21.2% 31.2%, 26.3% 23.6%, 31.6% 16.2%); }
+span.mav.tri::before, span.mav.tri::after { content: ""; position: absolute; z-index: -1; clip-path: var(--tri); }
 span.mav.tri::before { inset: 0; background: var(--t, var(--c)); }
-span.mav.tri::after { inset: 3.4px 2.4px 1.5px;
+span.mav.tri::after { inset: 2.26px 1.94px 1.62px;
   background: radial-gradient(circle at 44% 62%, color-mix(in srgb, var(--c) 58%, #fff) 0%, var(--c) 46%, color-mix(in srgb, var(--c) 52%, #000) 100%); }
-span.mav.tri > i { font-style: normal; font-size: .8em; position: relative; top: .3em; }
+span.mav.tri > i { font-style: normal; font-size: .86em; position: relative; top: .2em; }
 .lb-who { display: inline-flex; align-items: center; gap: 8px; }
 .lb-ava, .pava {
   width: 22px; height: 22px; border-radius: 50%; flex: none;
