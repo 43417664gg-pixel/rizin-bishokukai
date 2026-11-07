@@ -7,7 +7,7 @@
 <title>ランキング｜予想番付</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261107204726">
+<link rel="stylesheet" href="css/style.css?v=20261107205534">
 <style>
 /* ランキングを1枚のカードにする（2026-10-20）：スクショ単体でXに貼れるよう、
    ブランド・集計対象・サイトURLをカードの中に入れる。名前をタップ→その人の戦績へ。 */
@@ -69,11 +69,11 @@ a.lb-name:active { color:var(--gold-hot); }
 <div class="wrap" id="main"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261107204726"></script>
-<script src="js/techniques.js?v=20261107204726"></script>
-<script src="js/demo-data.js?v=20261107204726"></script>
-<script src="js/api.js?v=20261107204726"></script>
-<script src="js/app.js?v=20261107204726"></script>
+<script src="js/config.js?v=20261107205534"></script>
+<script src="js/techniques.js?v=20261107205534"></script>
+<script src="js/demo-data.js?v=20261107205534"></script>
+<script src="js/api.js?v=20261107205534"></script>
+<script src="js/app.js?v=20261107205534"></script>
 <script>
 let EVENTS, MEMBERS, ALL_FIGHTS, ALL_PREDS, FMAP = {};
 let checked = new Set();   // 集計対象の大会ID（＋PAST）
@@ -178,7 +178,7 @@ function render() {
           : single ? `${esc(fmtDate(single.event_date))}・この大会の成績`
           : [...evOn.map(e => esc(e.name)), ...(checked.has(PAST) ? ["サイト開設前の動画"] : [])].join("・") || "なし"}</p>
       ${MODE === "win"
-        ? `<div class="rk-rule">勝ったほうを当てた数で順位が決まる。<b>決まり手・ラウンドは関係なし</b></div>${winTable(rows)}`
+        ? `<div class="rk-rule">${single ? "勝ったほうを当てた数" : "勝ったほうを当てた割合（的中率）"}で順位が決まる。<b>決まり手・ラウンドは関係なし</b></div>${winTable(rows)}`
         : `<div class="rk-rule">勝者＋決まり手＋ラウンドまで当てた数（おまけ）。<b>本番の順位は「勝敗」タブ</b></div>${pitariTable(allRows)}`}
       <div class="rk-foot"><span class="site">${esc(window.SITE_URL)}</span><span>#予想番付</span></div>
     </div>
@@ -209,7 +209,7 @@ function render() {
         (single ? single.name + "の" : "") +
         "勝敗予想ランキング" + (rows[0] && rows[0].rate !== null ? `　1位 ${rows[0].member.name}（${rows[0].hits}/${rows[0].decided}的中）` : "") +
         " #予想番付", location.href, "ランキングをポスト")}</div>
-      <b>勝者を当てた数</b>で並べる。同じ数なら的中率が高い方が上。<br>
+      通算は<b>的中率</b>で並べる。同じ率なら当てた数が多い方が上。1大会だけの表示は<b>当てた数</b>で並べる（1試合で1的中＝100%が1位にならないように）。<br>
       <b>ピタリ</b>（決まり手＋ラウンドまで一致・判定は「判定」で一致）は上の「🎯 ピタリ」タブで。<br>
       通算は結果の出た予想8試合からランクイン（美食会の3人はいつでも掲載）。<br>
       通算には、サイト開設前のYouTube予想動画の採点結果（${Object.keys(RETRO).length}人）も数字だけ含む（勝敗のみ・大会ページには出さない）。<br>

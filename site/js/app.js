@@ -91,11 +91,13 @@
     });
     // 勝敗だけで並べる（Gaku確定・2026-11-07「ピタリを外そう。勝敗だけでランキングを並べたい」）。
     // 旧ポイント制（的中1点＋ピタリ+2点・2026-09-11）は廃止。ピタリは別タブで見る。
-    // 的中率ではなく的中数を主にするのは、「2試合で2的中＝100%」が「8試合で6的中」より
-    // 上に来る小標本バイアスを避けるため（ポイント制を入れた理由はそのまま引き継ぐ）。
+    // 通算は的中率で並べる（Gaku指示・2026-11-07「パーセンテージで並べ替えて」）。過去動画の分を足したら
+    // 的中数の順は予想した量の順になったため。小標本はランクインの基準（CAREER_MIN）が防ぐ。
+    // 1大会の表示はその基準が無く「1試合で1的中＝100%」が1位になるので、的中数を主にしたまま。
+    const byRate = (a, b) => (b.rate ?? -1) - (a.rate ?? -1) || b.hits - a.hits;
+    const byHits = (a, b) => b.hits - a.hits || (b.rate ?? -1) - (a.rate ?? -1);
     rows.sort((a, b) =>
-      b.hits - a.hits ||
-      (b.rate ?? -1) - (a.rate ?? -1) ||
+      (scope === "career" ? byRate : byHits)(a, b) ||
       String(a.member.name).localeCompare(String(b.member.name), "ja"));
     return rows;
   };
@@ -110,7 +112,8 @@
   window.BISHOKU = ["m_hame", "m_nuki", "m_maruyama"];
   window.ALWAYS_RANKED = window.BISHOKU;
   window.isRanked = function (row, scope) {
-    if (row.answered > 0 && row.member && window.ALWAYS_RANKED.includes(row.member.id)) return true;
+    // 美食会は予想0件の範囲でも必ず載せる（Gaku指示・2026-11-07「丸山先生は必ず入れて」）
+    if (row.member && window.ALWAYS_RANKED.includes(row.member.id)) return true;
     return scope !== "career" || row.decided >= window.CAREER_MIN;
   };
 
