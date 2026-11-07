@@ -7,7 +7,7 @@
 <title>大会予想｜予想番付</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261108021056">
+<link rel="stylesheet" href="css/style.css?v=20261108022025">
 </head>
 <body>
 <div id="app-header"></div>
@@ -18,13 +18,13 @@
 <div class="pg-spot" id="pg-spot" hidden></div><div class="pick-guide" id="pick-guide" aria-hidden="true"><span class="pg-t">予想を入れる</span><span class="pg-a"><i class="pg-arw"></i></span></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261108021056"></script>
-<script src="js/techniques.js?v=20261108021056"></script>
-<script src="js/demo-data.js?v=20261108021056"></script>
-<script src="js/api.js?v=20261108021056"></script>
-<script src="js/app.js?v=20261108021056"></script>
-<script src="js/glyph_fit.js?v=20261108021056"></script>
-<script src="js/bishoku_summary.js?v=20261108021056"></script>
+<script src="js/config.js?v=20261108022025"></script>
+<script src="js/techniques.js?v=20261108022025"></script>
+<script src="js/demo-data.js?v=20261108022025"></script>
+<script src="js/api.js?v=20261108022025"></script>
+<script src="js/app.js?v=20261108022025"></script>
+<script src="js/glyph_fit.js?v=20261108022025"></script>
+<script src="js/bishoku_summary.js?v=20261108022025"></script>
 <script>
 let EV, PHASE, FIGHTS, FMAP, MEMBERS, myPreds = {}, allPreds = [], ALL_SUPPORTS = [];
 
@@ -114,14 +114,13 @@ function fightLabel(f) {
 // 体重超過・MMA以外の注意書き。読ませたいので写真には重ねず、写真の下に段で出す
 const fightWarn = (f) => `${f.no_score ? `<span class="ns-badge">⚠️ ${esc(f.no_score_note || "体重超過")}｜予想対象外</span>` : ""}
     ${f.event_only ? `<span class="ns-badge">${esc(f.event_only_note || "MMA以外のルール")}｜予想は任意・通算対象外</span>` : ""}`.trim();
-// カードの頭。試合番号と階級はカード写真の左上に重ねる（Gaku 11/8「この位置じゃなくてカード写真の左上じゃない？」）。
-// 写真の無い試合は今まで通り段で出す
+// カードの頭。試合番号と階級はカード写真の上に段で出す（Gaku 11/8「カード写真の左上じゃない？」→「カード写真に被らないで、その上ね」）。
+// 写真の下は予想の割合バー、注意書きはその下
 function cardHead(f) {
   const warn = fightWarn(f);
-  return f.image_url
-    ? `<div class="banner"><img src="${esc(f.image_url)}" alt="" loading="lazy"><div class="fight-label on-photo">${fightLabel(f)}</div></div>
-      ${voteBar(f)}${warn ? `<div class="fight-label">${warn}</div>` : ""}`
-    : `${voteBar(f)}<div class="fight-label">${fightLabel(f)}${warn}</div>`;
+  return `<div class="fight-label top">${fightLabel(f)}</div>
+      ${f.image_url ? `<div class="banner"><img src="${esc(f.image_url)}" alt="" loading="lazy"></div>` : ""}
+      ${voteBar(f)}${warn ? `<div class="fight-label">${warn}</div>` : ""}`;
 }
 
 // 選手名から名鑑へ飛ぶリンク行。「名鑑」の語は出さず、何が起きるかを言う（Gaku 11/7「『名鑑』は『福田龍彌をもっと詳しく』みたいに」）。
@@ -138,6 +137,7 @@ function profileLinks(f) {
 // その場で判断できるように：戦績・勝ち方の割合・前戦（○×）。トグルで直近5試合（Gaku依頼11/7）
 // 開閉はカードを描き直しても保つ（選手をタップするたびに閉じないように）
 const statsOpen = new Set();
+const POPPED = new Set();   // STATS と前戦を開き終えた試合（描き直しても閉じない）。仕掛けは popIO
 const RMARK = { W: ["○", "w"], L: ["×", "l"], D: ["△", "d"], NC: ["NC", "d"] };
 const recentOf = (x) => [...(x?.history || [])].sort((a, b) => String(b.d).localeCompare(String(a.d)));
 const resMark = (r) => { const [s, c] = RMARK[r] || ["?", "d"]; return `<span class="rm ${c}">${s}</span>`; };
@@ -183,7 +183,7 @@ function statsBlock(f) {
   const list = (x, cls) => { const rows = recentOf(x).slice(0, 5).map(histRow);
     while (rows.length < n) rows.push("<div></div>");
     return `<div class="st-side ${cls}">${rows.join("")}</div>`; };
-  return `<div class="stats">
+  return `<div class="stats${POPPED.has(f.id) ? " pop now" : ""}" data-f="${f.id}">
     <div class="st-cols" style="--rows:6">${statsSide(f1, "c1")}${statsSide(f2, "c2")}
       <div class="st-sep s1"><span>STATS</span></div><div class="st-sep s2"><span>前戦</span></div></div>
     ${n > 1 ? `<details class="st-more" ${statsOpen.has(f.id) ? "open" : ""} ontoggle="statsOpen[this.open ? 'add' : 'delete']('${f.id}')">
@@ -800,7 +800,19 @@ new ResizeObserver(([e]) => document.documentElement.style.setProperty("--hdr-h"
   .observe(document.getElementById("app-header"));
 // カードは予想のたびに差し替わる（replaceCard）ので、描き直しを見張って合わせ直す
 let NICK_T = 0;
-const refitNicks = () => { clearTimeout(NICK_T); NICK_T = setTimeout(fitNicks, 30); };
+// STATS と前戦は閉じておき、下3割の線（画面の高さの72%）まで上がってきたら飛び出して開く（Gaku 11/8「初めは閉じてて広がるイメージ。飛び出し。
+// スクロールの幅は狭めでいい」）。開く動きは CSS の .stats.pop。最初から線より上にある（戻るで下から開いた等）試合は動かさずに開いておく
+const popIO = new IntersectionObserver(es => {
+  for (const e of es) {
+    if (!e.isIntersecting && e.boundingClientRect.top > 0) continue;   // まだ線より下
+    if (!e.isIntersecting) e.target.classList.add("now");   // もう通り過ぎていた
+    e.target.classList.add("pop");
+    POPPED.add(e.target.dataset.f);
+    popIO.unobserve(e.target);
+  }
+}, { rootMargin: "0px 0px -28% 0px" });
+const watchStats = () => document.querySelectorAll(".stats:not(.pop)").forEach(s => popIO.observe(s));
+const refitNicks = () => { clearTimeout(NICK_T); NICK_T = setTimeout(() => { fitNicks(); watchStats(); }, 30); };
 new MutationObserver(refitNicks).observe(document.getElementById("main"), { childList: true, subtree: true });
 addEventListener("resize", refitNicks);
 document.fonts?.ready.then(refitNicks);

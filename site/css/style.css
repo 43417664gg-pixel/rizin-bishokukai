@@ -307,7 +307,7 @@ img { max-width: 100%; display: block; }
 /* ===== 試合カード ===== */
 .fight-card {
   background: var(--panel); border: 1px solid var(--line);
-  overflow: clip; margin-bottom: 18px;   /* hidden だとカードがスクロール枠扱いになり、中の「通る間だけ浮かび上がる」がページのスクロールを拾えない */
+  overflow: hidden; margin-bottom: 18px;
   clip-path: polygon(0 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%);
   animation: rise .4s both;
 }
@@ -322,13 +322,8 @@ img { max-width: 100%; display: block; }
 .fight-label .fl-t { white-space: nowrap; }
 .fight-label .title-label { color: var(--red-hot); }
 .fight-label .fl-kg { margin-left: auto; font: 500 14px/1 var(--num); color: var(--muted); letter-spacing: .04em; white-space: nowrap; }
-/* 写真の左上に重ねた試合番号と階級（Gaku 11/8「カード写真の左上じゃない？」）。黒い半透明の斜めの札に小さく＝写真を隠しすぎない */
-.fight-label.on-photo { position: absolute; left: 0; top: 0; z-index: 1; max-width: calc(100% - 40px); flex-wrap: nowrap; gap: 8px;
-  padding: 6px 18px 6px 10px; font-size: 13px; background: rgba(8, 8, 11, .8); clip-path: polygon(0 0, 100% 0, calc(100% - 10px) 100%, 0 100%); }
-.fight-label.on-photo .fno { font-size: 11px; color: #c9c9d1; }
-.fight-label.on-photo .fno b { font-size: 20px; }
-.fight-label.on-photo .fl-t { overflow: hidden; text-overflow: ellipsis; min-width: 0; }
-.fight-label.on-photo .fl-kg { margin-left: 0; font-size: 12px; }
+/* カードの一番上＝写真の上の段（Gaku 11/8「カード写真に被らないで、その上ね」） */
+.fight-label.top { padding: 12px 14px 10px; }
 .vs-row { display: flex; gap: 6px; padding: 10px 14px 4px; align-items: stretch; position: relative; }
 .vs-mark { position: absolute; left: 50%; top: 50%; z-index: 2; transform: translate(-50%, -50%) skewX(-8deg); pointer-events: none;
   font-family: var(--display); font-size: calc(14px + 20px * var(--grow, 0)); color: #fff; letter-spacing: .04em;
@@ -1200,17 +1195,26 @@ span.mav.tri > i { --k: 50cqw; position: relative; top: 7cqh; }
 .st-more summary::after { content: " ▼"; font-size: 9px; }
 .st-more[open] summary::after { content: " ▲"; }
 .st-more .st-cols { border-top: 1px solid var(--line); }
-/* STATS と前戦は、スクロールで画面の真ん中あたりを通る間だけ浮かび上がる（Gaku 11/8「そこをスクロールで通った時だけ浮かび上がる感じに。
-   できるだけ表面の情報量を少なくするため」）。画面の下から上がってくると濃くなり、上の帯に近づくとまた薄く沈む＝一度に読めるのは目の前の1試合分。
-   名前の段は常に出す（誰の試合かは沈めない）。動きはスクロール量そのものに付く（時間で動くアニメではない）。
-   スクロール連動に対応しないブラウザ・動きを減らす設定では、今まで通り全部出す */
-@supports (animation-timeline: view()) {
-  @media (prefers-reduced-motion: no-preference) {
-    .stats .st-side > :not(.st-head), .stats .st-sep, .st-more > summary {
-      animation: st-float linear both; animation-timeline: view(); animation-range: cover 0% cover 100%; }
-  }
+/* STATS と前戦は閉じておき、画面の下3割の線まで上がってきたら飛び出して開く（Gaku 11/8「初めは閉じてて広がるイメージ。飛び出し。
+   スクロールの幅は狭めでいい」。その前は「スクロールで通った時だけ浮かび上がる」＝スクロール量に付けて濃淡を変えていたが、広い範囲でじわじわ変わるだけだった）。
+   線を越えたら時間で動くばねで一気に開く：仕切りの線と「STATS」「前戦」は真ん中から左右へ広がり、数字・バー・前戦は小さい所から少し行き過ぎて飛び出す。
+   上の段から順に70msずつ遅らせる。名前の段は閉じない（誰の試合かは常に見える）。閉じている間も場所は取ってある＝開いても下が押し下がらず画面が跳ねない。
+   一度開いたら開いたまま（描き直しても上へ戻っても閉じない）。仕掛けは event.html の popIO */
+.stats :is(.st-side > :not(.st-head), .st-sep), .st-more > summary {
+  transition: opacity .2s ease-out calc(var(--i, 0) * 70ms), transform .55s cubic-bezier(.3, 1.6, .5, 1) calc(var(--i, 0) * 70ms); }
+.stats:not(.pop) .st-side > :not(.st-head), .stats:not(.pop) .st-more > summary { opacity: 0; transform: scale(.55); }
+.stats:not(.pop) .st-sep { opacity: 0; transform: scaleX(0); }
+.stats.now :is(.st-side > :not(.st-head), .st-sep), .stats.now .st-more > summary { transition: none; }
+.stats .st-sep.s1 { --i: 0; }
+.stats .st-recn { --i: 1; }
+.stats .st-bar { --i: 2; }
+.stats .st-sep.s2 { --i: 3; }
+.stats .st-row { --i: 4; }
+.st-more > summary { --i: 5; }
+@media (prefers-reduced-motion: reduce) {
+  .stats :is(.st-side > :not(.st-head), .st-sep), .st-more > summary { transition: opacity .2s; }
+  .stats:not(.pop) :is(.st-side > :not(.st-head), .st-sep), .stats:not(.pop) .st-more > summary { transform: none; }
 }
-@keyframes st-float { 0%, 12% { opacity: .1; transform: translateY(12px); } 27%, 70% { opacity: 1; transform: none; } 85%, 100% { opacity: .1; transform: translateY(-6px); } }
 
 /* 勝敗予想の入力は判断材料（スタッツ・名鑑）の下にまとめて分ける（Gaku指示11/7「別物」） */
 .pick-zone { margin-top: 14px; border-top: 1px solid var(--line); background: rgba(255, 255, 255, .02); padding-bottom: 4px; }
