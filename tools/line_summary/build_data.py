@@ -60,6 +60,9 @@ out = {
               for f in fights if f.get("image_url")},
     "built_at": datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9))).strftime("%-m/%-d %H:%M"),
 }
+# 大会ページのまとめ（ALL PICKSの上）も同じ測定値で丸の縁を決める＝サイト側にも置く
+zdir = os.path.join(SITE, "data", "zones"); os.makedirs(zdir, exist_ok=True)
+open(os.path.join(zdir, f"{ev}.json"), "w", encoding="utf-8").write(json.dumps(out["zones"], ensure_ascii=False))
 open(os.path.join(HERE, "data.js"), "w", encoding="utf-8").write(
     "window.LDATA = " + json.dumps(out, ensure_ascii=False, indent=1) + ";\n")
 for m in out["members"]:

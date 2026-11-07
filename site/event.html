@@ -7,7 +7,7 @@
 <title>大会予想｜予想番付</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261107193313">
+<link rel="stylesheet" href="css/style.css?v=20261107194131">
 </head>
 <body>
 <div id="app-header"></div>
@@ -16,11 +16,12 @@
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261107193313"></script>
-<script src="js/techniques.js?v=20261107193313"></script>
-<script src="js/demo-data.js?v=20261107193313"></script>
-<script src="js/api.js?v=20261107193313"></script>
-<script src="js/app.js?v=20261107193313"></script>
+<script src="js/config.js?v=20261107194131"></script>
+<script src="js/techniques.js?v=20261107194131"></script>
+<script src="js/demo-data.js?v=20261107194131"></script>
+<script src="js/api.js?v=20261107194131"></script>
+<script src="js/app.js?v=20261107194131"></script>
+<script src="js/bishoku_summary.js?v=20261107194131"></script>
 <script>
 let EV, PHASE, FIGHTS, FMAP, MEMBERS, myPreds = {}, allPreds = [], ALL_SUPPORTS = [];
 let drafts = {};              // 決定前の編集中の選択（ローカルのみ）
@@ -94,6 +95,7 @@ async function toggleSupport(fightId, fighterId) {
     if (op) op.outerHTML = othersBlock(FIGHTS.find(x => x.id === fightId));
     const box = document.getElementById("matrix-section");
     if (box) box.innerHTML = allPicksMatrix();
+    drawBishokuSummary();
     toast("📣 応援を更新した");
   } catch (e) { toast("応援テーブルが未作成かも（要SQL）"); }
 }
@@ -147,7 +149,7 @@ function statsSide(x, cls) {
       + (x.rec_d || x.rec_nc ? `<span class="st-n d">${x.rec_d ? `<b>${x.rec_d}</b>分` : ""}${x.rec_nc ? `<b>${x.rec_nc}</b>NC` : ""}</span>` : "")
     : `<span class="st-n d">戦績なし</span>`;
   return `<div class="st-side ${cls}">
-    <div class="st-head"><span class="st-name">${esc(x?.name || "")}</span>${x?.nickname ? `<span class="st-nick">“${esc(x.nickname)}”</span>` : ""}</div>
+    <div class="st-head"><span class="st-name">${esc(x?.name || "")}</span>${x?.nickname ? `<span class="st-nick" title="${esc(x.nickname)}">“${esc(x.nickname)}”</span>` : ""}</div>
     <div class="st-top"><div class="st-recn">${rec}</div>${wayBar(x)}</div>
     <div class="st-k">前戦</div>
     ${h[0] ? histRow(h[0]) : `<div class="st-row"><span class="st-how">データなし</span></div>`}
@@ -387,6 +389,7 @@ async function refreshMatrix() {
   allPreds = await DB.listPredictions({ fightIds: FIGHTS.map(f => f.id) });
   const box = document.getElementById("matrix-section");
   if (box) box.innerHTML = allPicksMatrix();
+  drawBishokuSummary();
   // 各カード下の「みんなの予想」も貼り直す（自分のピックが増減し、一致/割れも変わるため）
   // 中止試合のブロックは専用カード側で描画済みなので触らない。
   FIGHTS.forEach(f => {
@@ -631,6 +634,7 @@ function render() {
     ${PHASE === "finished" ? eventSummary() : ""}
     <!-- ALL PICKSは横に長く、スマホでは横スクロールが要る。自分が予想する導線を先に
          置き、一覧は下へ回して既定で畳む（広い画面だけ最初から開く）。2026-08-31の監査より -->
+    ${PHASE !== "before_open" ? `<div id="bsum" class="bsum"></div>` : ""}
     <details id="matrix-details" class="mx-details" ${window.innerWidth >= 900 ? "open" : ""}>
       <summary class="mx-summary">ALL PICKS　全員の予想を一覧で見る<span class="mx-count">${
         new Set(allPreds.map(p => p.member_id)).size}人</span></summary>
@@ -653,6 +657,41 @@ function render() {
       </div>`;
     startCountdown(document.getElementById("cd_main"), EV.lock_at, () => location.reload());
   } else sc.innerHTML = "";
+  drawBishokuSummary();
+}
+
+// 美食会3人の予想まとめ（LINEで送る画像と同じ描き方＝js/bishoku_summary.js）を ALL PICKS の上に出す（Gaku指示11/7）
+// 画像ファイルを貼らずにその場で組む＝予想や応援が入るたびに最新になる。幅1080pxの1枚を画面幅まで縮めて見せる。
+// サイトのCSSと class 名がぶつからないよう Shadow DOM に入れる。丸の縁の強さに使うバナーの測定値は data/zones/<大会>.json（build_data.py が書く）
+let BSUM_ZONES = null;
+async function drawBishokuSummary() {
+  const host = document.getElementById("bsum");
+  if (!host || !window.BishokuSummary) return;
+  if (BSUM_ZONES === null) {
+    try { BSUM_ZONES = await (await fetch(`data/zones/${EV.id}.json`)).json(); } catch (e) { BSUM_ZONES = {}; }
+  }
+  const ids = window.BISHOKU;
+  const members = ids.map(id => MEMBERS.find(m => m.id === id)).filter(Boolean);
+  const now = new Date();
+  const D = {
+    members,
+    preds: allPreds.filter(p => ids.includes(p.member_id)),
+    supports: ALL_SUPPORTS.filter(s => ids.includes(s.member_id)),
+    zones: BSUM_ZONES,
+    built_at: `${now.getMonth() + 1}/${now.getDate()} ${now.getHours()}:${String(now.getMinutes()).padStart(2, "0")}`,
+  };
+  const fights = FIGHTS.filter(f => !f.cancelled).sort((a, b) => b.order_no - a.order_no);
+  const root = host.shadowRoot || host.attachShadow({ mode: "open" });
+  root.innerHTML = `<style>:host{display:block} .fit{transform-origin:0 0}${BishokuSummary.CSS}</style>
+    <div class="fit"><div class="sheet">${BishokuSummary.render(D, { ev: EV, fights, fname: id => FMAP[id]?.name, img: u => u })}</div></div>`;
+  const fit = () => {
+    const el = root.querySelector(".fit"), k = host.clientWidth / 1080;
+    el.style.transform = `scale(${k})`;
+    host.style.height = Math.ceil(el.firstElementChild.offsetHeight * k) + "px";
+  };
+  fit();
+  root.querySelectorAll("img").forEach(im => im.complete || im.addEventListener("load", fit, { once: true }));
+  if (!host._ro) { host._ro = new ResizeObserver(fit); host._ro.observe(host); }
 }
 
 load();
