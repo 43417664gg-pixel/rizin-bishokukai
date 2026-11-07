@@ -981,33 +981,27 @@ tr.top .lb-rate { color: var(--gold-hot); }
 .st-cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: repeat(var(--rows, 6), auto); }
 /* 左右で段の高さをそろえる（片側だけ異名が2行・勝ち方が無い等でも下の段がずれない） */
 .st-side { padding: 10px 10px 10px; min-width: 0; display: grid; grid-row: span var(--rows, 6); grid-template-rows: subgrid; align-content: start; }
-.st-nick { font-size: 12px; font-weight: 700; color: var(--gold-hot); line-height: 1.35; margin-bottom: 6px;
+.st-nick { font-size: 12px; font-weight: 700; color: #e8e8ec; line-height: 1.35; margin-bottom: 6px;
   word-break: keep-all; overflow-wrap: anywhere; }   /* カタカナ語の途中で切らず「・」で折る */
-.st-side.c1 { border-left: 3px solid var(--red); }
-.st-side.c2 { border-right: 3px solid var(--blue); border-left: 1px solid var(--line); text-align: right; }
+.st-side.c2 { border-left: 1px solid var(--line); text-align: right; }
 .st-recn { display: flex; flex-wrap: wrap; gap: 2px 6px; align-items: baseline; }
 .st-side.c2 .st-recn { justify-content: flex-end; }
 .st-n { font-size: 10.5px; font-weight: 700; color: var(--muted); white-space: nowrap; }
-.st-n b { font-family: var(--num); font-size: 30px; line-height: 1; margin-right: 2px; }
+.st-n b { font-family: var(--num); font-size: 36px; line-height: 1; margin-right: 2px; }
 .st-n.w b { color: #fff; }
-.st-n.l b { color: #c9707a; }
+.st-n.l b { color: #fff; }
 .st-n.d b { color: var(--muted); font-size: 16px; margin-left: 2px; }   /* 分・NC は脇役＝小さく（4つ並んでも1行に収める） */
 .st-way { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; margin-top: 9px; align-self: start; }
 .st-way:empty { margin-top: 0; }
 .st-way span { border: 1px solid var(--line); border-radius: 4px; text-align: center; padding: 3px 0 3px;
   font-size: 10px; font-weight: 700; color: var(--muted); line-height: 1.15; }
 .st-way span b { display: block; font-family: var(--num); font-size: 19px; color: #d8d8de; }
-.st-way span.top { border-color: var(--gold); background: rgba(201, 168, 74, .16); color: var(--gold-hot); }
+.st-way span.top { border-color: #d8d8de; color: #fff; }
 .st-way span.top b { color: #fff; }
 .st-way span.zero { opacity: .35; }
-.st-form { display: flex; gap: 3px; align-items: center; margin-top: 4px; min-height: 0; }
-.st-side.c2 .st-form { flex-direction: row-reverse; }
-.st-streak { font-size: 11px; font-weight: 900; margin: 0 5px; padding: 1px 6px; border-radius: 3px; letter-spacing: 0; }
-.st-streak.w { color: #7fe0a0; background: rgba(40, 160, 90, .18); }
-.st-streak.l { color: #ff8a94; background: rgba(230, 0, 18, .15); }
 .rm { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 21px; height: 21px; border-radius: 4px;
   font-size: 13px; font-weight: 900; color: #fff; line-height: 1; }
-.rm.w { background: #1f9d55; } .rm.l { background: #d0102a; } .rm.d { background: #4a4a55; font-size: 9px; }
+.rm { background: none; border: 1px solid var(--line); } .rm.d { font-size: 9px; }   /* 色は付けない＝記号だけで○×を読む（11/7） */
 .st-k { font-size: 10px; color: var(--muted); margin-top: 9px; letter-spacing: .08em; }
 .st-row { display: flex; gap: 7px; align-items: center; margin-top: 3px; min-width: 0; }
 .st-side.c2 .st-row { flex-direction: row-reverse; }
@@ -1015,7 +1009,7 @@ tr.top .lb-rate { color: var(--gold-hot); }
 .st-body { min-width: 0; flex: 1; }
 .st-opp { display: block; font-size: 13px; font-weight: 700; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .st-how { display: block; font-size: 10.5px; color: var(--muted); line-height: 1.35; }
-.st-more summary { list-style: none; cursor: pointer; text-align: center; font-size: 12px; font-weight: 700; color: var(--gold-hot);
+.st-more summary { list-style: none; cursor: pointer; text-align: center; font-size: 12px; font-weight: 700; color: var(--muted);
   padding: 7px; border-top: 1px solid var(--line); }
 .st-more summary::-webkit-details-marker { display: none; }
 .st-more summary::after { content: " ▼"; font-size: 9px; }

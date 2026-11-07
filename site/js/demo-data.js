@@ -2631,6 +2631,7 @@ window.DEMO_SEED = {
     {
       id: "f_fukuda",
       name: "福田龍彌",
+      nickname: "壬生の大蛇",
       birth_date: "1992-06-12",
       backbone: "ムエタイ",
       team: "MIBURO",
@@ -2893,6 +2894,7 @@ window.DEMO_SEED = {
     {
       id: "f_nakajima",
       name: "中島太一",
+      nickname: "ハイブリッドクッキングパパ",
       birth_date: "1989-03-19",
       backbone: "ボクシング",
       team: "ロータス世田谷",

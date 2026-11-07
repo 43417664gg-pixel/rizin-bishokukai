@@ -7,7 +7,7 @@
 <title>大会予想｜予想番付</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261107191742">
+<link rel="stylesheet" href="css/style.css?v=20261107192337">
 </head>
 <body>
 <div id="app-header"></div>
@@ -16,11 +16,11 @@
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261107191742"></script>
-<script src="js/techniques.js?v=20261107191742"></script>
-<script src="js/demo-data.js?v=20261107191742"></script>
-<script src="js/api.js?v=20261107191742"></script>
-<script src="js/app.js?v=20261107191742"></script>
+<script src="js/config.js?v=20261107192337"></script>
+<script src="js/techniques.js?v=20261107192337"></script>
+<script src="js/demo-data.js?v=20261107192337"></script>
+<script src="js/api.js?v=20261107192337"></script>
+<script src="js/app.js?v=20261107192337"></script>
 <script>
 let EV, PHASE, FIGHTS, FMAP, MEMBERS, myPreds = {}, allPreds = [], ALL_SUPPORTS = [];
 let drafts = {};              // 決定前の編集中の選択（ローカルのみ）
@@ -117,7 +117,7 @@ function profileLinks(f) {
     </div>`;
 }
 
-// その場で判断できるように：戦績・勝ち方・前戦（○×）・連勝/連敗。トグルで直近5試合（Gaku依頼11/7）
+// その場で判断できるように：戦績・勝ち方・前戦（○×）。トグルで直近5試合（Gaku依頼11/7）
 // 開閉はカードを描き直しても保つ（選手をタップするたびに閉じないように）
 const statsOpen = new Set();
 const RMARK = { W: ["○", "w"], L: ["×", "l"], D: ["△", "d"], NC: ["NC", "d"] };
@@ -125,14 +125,9 @@ const recentOf = (x) => [...(x?.history || [])].sort((a, b) => String(b.d).local
 const resMark = (r) => { const [s, c] = RMARK[r] || ["?", "d"]; return `<span class="rm ${c}">${s}</span>`; };
 const histRow = (r) => `<div class="st-row">${resMark(r.r)}<span class="st-body"><span class="st-opp">${esc(r.opp)}</span>
   <span class="st-how">${esc([r.how, r.d].filter(Boolean).join("・"))}</span></span></div>`;
-function streakText(h) {
-  if (!h.length || !["W", "L"].includes(h[0].r)) return "";
-  let n = 0; while (n < h.length && h[n].r === h[0].r) n++;
-  return n >= 2 ? `${n}${h[0].r === "W" ? "連勝" : "連敗"}中` : "";
-}
 // 細かい文字で読ませず形で見せる（Gaku指示11/7「シンプルな中に視認性を。ビジュアルで誘導」）：
-// 勝敗数は大きな数字／勝ち方は3つの枠で一番多いものを光らせる／直近5戦は色の四角で並べる
-// 左右の段（異名・戦績・勝ち方・直近・前戦）は subgrid で高さをそろえる。片側にデータが無くても空の段を置いて行数を合わせる
+// 勝敗数は大きな数字／勝ち方は3つの枠で一番多いものを縁取る。色は使わない・直近の○×並びと連勝表示は置かない（Gaku指示11/7「色多い・情報は少なく」）
+// 左右の段（異名・戦績・勝ち方・前戦）は subgrid で高さをそろえる。片側にデータが無くても空の段を置いて行数を合わせる
 function statsSide(x, cls, withNick) {
   const h = recentOf(x);
   const num = (n, u, c) => `<span class="st-n ${c}"><b>${n}</b>${u}</span>`;
@@ -146,13 +141,10 @@ function statsSide(x, cls, withNick) {
     const top = Math.max(...ws.map(w => w[1]));
     way = ws.map(([l, n]) => `<span class="${n === 0 ? "zero" : n === top ? "top" : ""}"><b>${n}</b>${l}</span>`).join("");
   }
-  const st = streakText(h);
   return `<div class="st-side ${cls}">
     ${withNick ? `<div class="st-nick">${x?.nickname ? `“${esc(x.nickname)}”` : ""}</div>` : ""}
     <div class="st-recn">${rec}</div>
     <div class="st-way">${way}</div>
-    <div class="st-k">${h.length ? `直近${Math.min(5, h.length)}戦${st ? `<span class="st-streak ${h[0].r === "W" ? "w" : "l"}">${st}</span>` : ""}` : ""}</div>
-    <div class="st-form">${h.slice(0, 5).map(r => resMark(r.r)).join("")}</div>
     <div class="st-k">前戦</div>
     ${h[0] ? histRow(h[0]) : `<div class="st-row"><span class="st-how">データなし</span></div>`}
   </div>`;
@@ -165,7 +157,7 @@ function statsBlock(f) {
     while (rows.length < n) rows.push("<div></div>");
     return `<div class="st-side ${cls}">${rows.join("")}</div>`; };
   return `<div class="stats">
-    <div class="st-cols" style="--rows:${withNick ? 7 : 6}">${statsSide(f1, "c1", withNick)}${statsSide(f2, "c2", withNick)}</div>
+    <div class="st-cols" style="--rows:${withNick ? 5 : 4}">${statsSide(f1, "c1", withNick)}${statsSide(f2, "c2", withNick)}</div>
     ${n > 1 ? `<details class="st-more" ${statsOpen.has(f.id) ? "open" : ""} ontoggle="statsOpen[this.open ? 'add' : 'delete']('${f.id}')">
       <summary>直近5試合</summary>
       <div class="st-cols" style="--rows:${n}">${list(f1, "c1")}${list(f2, "c2")}</div>
