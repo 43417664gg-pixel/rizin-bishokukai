@@ -7,7 +7,7 @@
 <title>大会予想｜予想番付</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261108012106">
+<link rel="stylesheet" href="css/style.css?v=20261108012746">
 </head>
 <body>
 <div id="app-header"></div>
@@ -15,15 +15,15 @@
 <div class="wrap" id="main"></div>
 <div class="toast" id="toast"></div>
 <div class="wiz" id="wiz" hidden role="dialog" aria-modal="true" aria-label="勝敗予想"></div>
-<button type="button" class="pick-guide" id="pick-guide" onclick="toMainPick()"><span class="pg-t"><span class="pg-x">予想を入れる</span><span class="pg-y"><i class="pg-up"></i><b>勝つ方をタップ</b><i class="pg-up"></i></span></span><span class="pg-a"><i class="pg-arw"></i></span></button>
+<div class="pg-spot" id="pg-spot" hidden></div><button type="button" class="pick-guide" id="pick-guide" onclick="toMainPick()"><span class="pg-t"><span class="pg-x">予想を入れる</span><span class="pg-y"><i class="pg-up"></i><b>勝つ方をタップ</b><i class="pg-up"></i></span></span><span class="pg-a"><i class="pg-arw"></i></span></button>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261108012106"></script>
-<script src="js/techniques.js?v=20261108012106"></script>
-<script src="js/demo-data.js?v=20261108012106"></script>
-<script src="js/api.js?v=20261108012106"></script>
-<script src="js/app.js?v=20261108012106"></script>
-<script src="js/bishoku_summary.js?v=20261108012106"></script>
+<script src="js/config.js?v=20261108012746"></script>
+<script src="js/techniques.js?v=20261108012746"></script>
+<script src="js/demo-data.js?v=20261108012746"></script>
+<script src="js/api.js?v=20261108012746"></script>
+<script src="js/app.js?v=20261108012746"></script>
+<script src="js/bishoku_summary.js?v=20261108012746"></script>
 <script>
 let EV, PHASE, FIGHTS, FMAP, MEMBERS, myPreds = {}, allPreds = [], ALL_SUPPORTS = [];
 
@@ -590,7 +590,7 @@ function drawProg() {
 // （「予想入れる⇨どっち勝つ？と勝敗予想ボタンにべったり誘導したい」）、2人の札が見える所に着いたら形と字が変わる＝
 // 赤｜青に割れた横長の札「↑ 勝つ方をタップ ↑」になり、2人の札が交互に光る（「ボタン押す箇所まできたら、ボタンの形と中の文字も変化」
 // 「ここだよー、ここを押せば勝敗書き込めるよーってわかるように」）。
-// 一度着いたら（押さなくても）少し見せて消え、そのページではもう出さない＝一度きりの演出（「ボタンまで一度誘導し切ったら消える」）。
+// 一度着いたら（押さなくても）3秒ほど見せて消え、そのページではもう出さない＝一度きりの演出（「ボタンまで一度誘導し切ったら消える」）。
 // 全試合を入れ終えている時は最初から出さない（1-2b 促さない）
 const nextPick = () => { const f = WIZ_FIGHTS().find(f => !myPreds[f.id]?.winner_id); return f ? document.querySelector(`#fc_${f.id} .pick-zone`) : null; };
 const topBar = () => Math.max(...["app-header", "sticky-cd"].map(id => document.getElementById(id)?.getBoundingClientRect().bottom || 0));
@@ -605,12 +605,36 @@ function updateGuide() {
     && !(bs && bs.height > 0 && bs.top < bar + 48 && bs.bottom > H * 0.78);
   g.classList.toggle("show", show);
   if (!show || r.bottom > H - 72 + 8) return;
-  // 着いた＝2人の札が上の帯と浮く札の間に見えている。形を変えて札を呼び、2.6秒見せて消える
-  GUIDE_DONE = true;
+  GUIDE_DONE = true;   // 着いた＝2人の札が上の帯と浮く札の間に見えている
+  arriveGuide(g, row);
+}
+// 着いた時の演出（Gaku 11/8「変化の過程は途切れてない？唐突じゃない？めっちゃデフォルメしていい。他が暗くなってボタンだけがハイライト」）。
+// 画面いっぱいの穴が2人の札まで絞られて周りが暗くなり（アイリス）、浮く札は一度つぶれて札の方へ跳ね、下向きの矢印が上を向き、
+// 青い矢印の札が赤い札に流れ込んで赤｜青の横長の札「↑ 勝つ方をタップ ↑」になる。3.2秒で明かりが戻って消える。
+// 画面に触れたらそこで終える（照明は指を通すので、そのまま札を押せる）
+function arriveGuide(g, row) {
+  const spot = document.getElementById("pg-spot"), pad = 8;
+  const place = () => { const r = row.getBoundingClientRect();
+    Object.assign(spot.style, { left: r.left - pad + "px", top: r.top - pad + "px", width: r.width + pad * 2 + "px", height: r.height + pad * 2 + "px" }); };
+  Object.assign(spot.style, { left: "0px", top: "0px", width: innerWidth + "px", height: innerHeight + "px" });
+  spot.hidden = false;
+  void spot.offsetWidth;
+  spot.classList.add("on", "iris");
+  place();
   g.classList.add("at");
   row.classList.add("beckon");
-  setTimeout(() => g.classList.remove("show"), 2600);
-  setTimeout(() => row.classList.remove("beckon"), 3400);
+  let live = true;
+  const follow = () => { if (live) { place(); requestAnimationFrame(follow); } };   // 絞り終えたらスクロールに付いていく
+  setTimeout(() => { spot.classList.remove("iris"); follow(); }, 520);
+  const end = () => {
+    if (!live) return;
+    live = false;
+    g.classList.remove("show");
+    spot.classList.remove("on");
+    setTimeout(() => { spot.hidden = true; row.classList.remove("beckon"); }, 600);
+  };
+  setTimeout(end, 3200);
+  addEventListener("pointerdown", end, { once: true });
 }
 // 押すと「どっちが勝つ？」を上の帯のすぐ下まで滑らせる（着いた時の演出は updateGuide が出す）
 function toMainPick() {
