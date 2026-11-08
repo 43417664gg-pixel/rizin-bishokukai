@@ -2814,7 +2814,7 @@ window.DEMO_SEED = {
     {
       id: "f_kimkyeongpyo",
       name: "キム・ギョンピョ",
-      nickname: "RED HORSE",
+      nickname: "レッドホース",
       birth_date: "1992-01-29",
       height_cm: 178, reach_cm: 181,
       team: "Redhorse MMA",
@@ -2844,6 +2844,7 @@ window.DEMO_SEED = {
     {
       id: "f_zumagaziev",
       name: "ヌルハン・ズマガジー",
+      nickname: "カザフの新星",
       birth_date: "2001-01-06",
       height_cm: 182,
       backbone: "柔道",
