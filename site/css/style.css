@@ -1247,7 +1247,10 @@ span.mav.tri > i { --k: 50cqw; position: relative; top: 7cqh; }
    入りきらない時は event.html の fitNicks() が字を小さくして収める。左右とも列の中央（Gaku 11/8「異名は中央に」） */
 .st-head { display: flex; flex-direction: column; align-items: center; gap: 3px; min-width: 0; margin-bottom: 8px; text-align: center; }
 .st-nk { position: relative; display: block; max-width: 100%; }
-.st-nick { display: block; flex: none; max-width: 100%; font-size: 14px; font-weight: 900; color: var(--text); line-height: 1.3;
+/* 書体＝明朝の最も太い（Noto Serif JP Black・Gaku 11/8「B2かな？」）。下の数字の表（ゴシック）と役割を分けて、異名を二つ名らしく。
+   明朝の中でこれだけ palt（字詰め）が効く＝今までのゴシックと同じ大きさで1行に入る（Zen Old Mincho 等は間延びして10.5pxまで縮んだ）。
+   読み込みは event.html の Google Fonts（900だけ）。読み込み後に fitNicks が測り直す */
+.st-nick { display: block; flex: none; max-width: 100%; font-family: "Noto Serif JP", "Noto Sans JP", serif; font-size: 14px; font-weight: 900; color: var(--text); line-height: 1.3;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   font-feature-settings: "palt"; }   /* かな・括弧を詰める＝長い異名（足立区のバカストイックマン）も10pxで1行に入る（詰めないと1px足りず「…」で切れていた） */
 .st-nick.wrap { white-space: normal; overflow: visible; }   /* 10pxまで縮めても入らない長い異名だけ折り返す（白鵬女子高等学校…） */

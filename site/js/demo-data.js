@@ -2966,6 +2966,7 @@ window.DEMO_SEED = {
     {
       id: "f_mizoguchi",
       name: "溝口司",
+      nickname: "唯我独尊クラッシャー",
       belt: "K-1甲子園西日本優勝／K-1全日本アマチュア優勝",
       birth_date: "2003-06-07",
       height_cm: 171, reach_cm: 181,
