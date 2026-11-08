@@ -1233,6 +1233,10 @@ span.mav.tri > i { --k: 50cqw; position: relative; top: 7cqh; }
 .tp-k { text-align: center; font: 900 11.5px/1 "Noto Sans JP", sans-serif; letter-spacing: .06em; color: #e4e4ea; }
 .tp-v { display: flex; align-items: center; gap: 6px; min-width: 0; padding: 0 10px; }
 .tp-v.c1 { flex-direction: row-reverse; }   /* 左は真ん中（右端）から外へ並べる＝左右が鏡になる */
+/* 戦績の段は上端そろえ。分・NC の2行目が片方だけにあっても、勝敗の数字と「戦績」は同じ高さに並ぶ
+   （前は段の真ん中そろえで、2行目の無い側が下がって左右の数字がずれた・Gaku 11/8「ノーコンテストとかが入ると崩れる」） */
+.tp-row.rec { align-items: start; }
+.tp-row.rec .tp-k { line-height: 32px; }   /* 32px＝勝敗の数字の高さ */
 .tp-row.rec .tp-v { flex-direction: column; align-items: flex-end; gap: 0; }
 .tp-row.rec .tp-v.c2 { align-items: flex-start; }
 .tp-wl { display: flex; gap: 6px; align-items: baseline; }
@@ -1243,6 +1247,7 @@ span.mav.tri > i { --k: 50cqw; position: relative; top: 7cqh; }
 .tp-v.c2 .st-n.w b { color: var(--blue-hot); }
 .tp-dn { margin-top: 2px; font-size: 11px; line-height: 1.1; font-weight: 700; color: var(--muted); white-space: nowrap; }   /* 分・NC は脇役 */
 .tp-dn b { font: 600 13px/1 var(--num); color: #c8c8d0; margin-right: 1px; }
+.tp-dn b + b { margin-left: 4px; }   /* 「1分 1NC」が「1分1NC」と1語に詰まって見えないように */
 .tp-age { font-size: 12px; font-weight: 700; color: var(--muted); white-space: nowrap; }
 .tp-age b { font: 600 17px/1 var(--num); color: #e8e8ec; margin-right: 2px; }
 .tp-none { font-size: 12px; font-weight: 700; color: var(--muted); white-space: nowrap; }
