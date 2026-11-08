@@ -55,11 +55,11 @@ function statsTape(f1, f2) {
 // 名前の段＝異名だけ。
 // 選手名は出さない（Gaku 11/8「異名だけでいいかも。名前は書かなくていいや。カードに書いてある」＝真上の写真と下の札に名前がある）。
 // 年齢は STATS の表の1段へ（「年齢はSTATSの空きスペースに入れよう。そこは異名だけ」→ 11/8 向かい合わせの表にして段を持たせた）。
-// 異名を囲む “ ” は外した（Gaku 11/8「異名も“”いらないかも」）＝前のコーナー色の斜めの棒で異名の段と分かる。
-// 異名は列の中央（Gaku 11/8「異名は中央に」）。棒は字の外側に付けるので .st-nk で包む（.st-nick は「…」のため overflow:hidden で棒を描けない）
+// 異名を囲む “ ” は外した（Gaku 11/8「異名も“”いらないかも」）。横のコーナー色の棒も外した（Gaku 11/8「異名の横のコーナー色はいらない」）＝左右は列の位置と上の縁の赤青で分かる。
+// 異名は列の中央（Gaku 11/8「異名は中央に」）
 function statsHead(x, cls) {
   return `<div class="st-side ${cls}">
-    <div class="st-head">${x?.nickname ? `<span class="st-nk"><span class="st-nick" title="${esc(x.nickname)}">${esc(x.nickname)}</span></span>` : ""}</div>
+    <div class="st-head">${x?.nickname ? `<span class="st-nick" title="${esc(x.nickname)}">${esc(x.nickname)}</span>` : ""}</div>
   </div>`;
 }
 // 前戦は左右の列のまま（相手の名前が長い）。左右の段は subgrid で高さをそろえる

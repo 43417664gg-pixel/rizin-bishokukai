@@ -1023,7 +1023,7 @@ span.mav.tri > i { --k: 50cqw; position: relative; top: 7cqh; }
 .st-side.c2 { border-left: 1px solid var(--line); text-align: right; }
 /* 名前の段は異名だけ（選手名は写真と札にある・Gaku 11/8「名前は書かなくていいや」）。異名で改行しない（11/7）・切らない（「異名切れてる」11/7）：
    年齢は STATS の表の段へ（「そこは異名だけ」）＝異名は列の幅を丸ごと使う。
-   入りきらない時は event.html の fitNicks() が字を小さくして収める。左右とも列の中央（Gaku 11/8「異名は中央に」） */
+   入りきらない時は js/stats.js の fitNicks() が字を小さくして収める。左右とも列の中央（Gaku 11/8「異名は中央に」） */
 .st-head { display: flex; flex-direction: column; align-items: center; gap: 3px; min-width: 0; margin-bottom: 8px; text-align: center; }
 /* 書体＝明朝の最も太い（Noto Serif JP Black・Gaku 11/8「B2かな？」）。下の数字の表（ゴシック）と役割を分けて、異名を二つ名らしく。
    明朝の中でこれだけ palt（字詰め）が効く＝今までのゴシックと同じ大きさで1行に入る（Zen Old Mincho 等は間延びして10.5pxまで縮んだ）。
@@ -1032,9 +1032,7 @@ span.mav.tri > i { --k: 50cqw; position: relative; top: 7cqh; }
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   font-feature-settings: "palt"; }   /* かな・括弧を詰める＝長い異名（足立区のバカストイックマン）も10pxで1行に入る（詰めないと1px足りず「…」で切れていた） */
 .st-nick.wrap { white-space: normal; overflow: visible; }   /* 10pxまで縮めても入らない長い異名だけ折り返す（白鵬女子高等学校…） */
-/* 異名の横のコーナー色の棒は外した（Gaku 11/8「異名の横のコーナー色はいらない」）＝左右は列の位置と上の縁の赤青で分かる。
-   .st-nk（棒のための包み）が残っていても幅が列に収まるように block＋max-width だけ残す */
-.st-nk { display: block; max-width: 100%; }
+/* 異名の横のコーナー色の棒は外した（Gaku 11/8「異名の横のコーナー色はいらない」）＝左右は列の位置と上の縁の赤青で分かる */
 /* 名前の段（.st-names）と前戦（.st-main）は左右2列の格子。左右の仕切り線は同じ位置に引く＝間の STATS の真ん中の帯とつながって、上から下まで1本の背骨に見える */
 :is(.st-names, .st-main) > .st-side { grid-template-columns: auto minmax(0, 1fr); column-gap: 10px; }
 :is(.st-names, .st-main) > .st-side.c2 { grid-template-columns: minmax(0, 1fr) auto; }
