@@ -127,18 +127,19 @@ const CSS = `
   /* ── 答え合わせ ── */
   /* 3人の成績＝並びは予想まとめと同じ固定（順位の数字は出さない・王冠は一番だけ。Gaku「丸山先生を置いてけぼりにしたくない」） */
   .score { --u:1; display:flex; gap:16px; margin:22px 0 14px; }
-  .score .sc { position:relative; flex:1; min-width:0; display:flex; align-items:center; gap:16px; padding:16px 18px 14px;
+  /* 札の文字はスマホで約1/3に縮む（1080→約350px）＝元の 25/54/30/19px だと名前8px・ピタリ6px相当。丸を小さく・余白を詰めて文字に回す（Gaku 11/8「文字ちっちゃくない？」） */
+  .score .sc { position:relative; flex:1; min-width:0; display:flex; align-items:center; gap:12px; padding:14px 14px 12px;
                background:#15151b; border:2px solid var(--line); border-radius:16px; }
   .score .sc.top { border-color:#8a6d22; background:linear-gradient(160deg, #2a2210, #15151b 70%); }
-  .score .ic { --ic:78px; }
+  .score .ic { --ic:60px; }
   .score .tx { min-width:0; }
-  .score .nm { font-size:25px; font-weight:900; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .score .nm { font-size:33px; font-weight:900; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .score .nm .cr { margin-left:6px; }
-  .score .num { margin-top:4px; display:flex; align-items:baseline; gap:12px; white-space:nowrap; }
-  .score .num b { font:700 54px/1 var(--num, "Oswald"), sans-serif; }
-  .score .num b small { font-size:30px; color:var(--mute); margin-left:2px; }
-  .score .num em { font:700 30px/1 var(--num, "Oswald"), sans-serif; font-style:normal; color:var(--gold); }
-  .score .pt { margin-top:6px; font-size:19px; font-weight:700; color:var(--mute); }
+  .score .num { margin-top:2px; display:flex; align-items:baseline; gap:10px; white-space:nowrap; }
+  .score .num b { font:700 70px/1 var(--num, "Oswald"), sans-serif; }
+  .score .num b small { font-size:42px; color:var(--mute); margin-left:2px; }
+  .score .num em { font:700 42px/1 var(--num, "Oswald"), sans-serif; font-style:normal; color:var(--gold); }
+  .score .pt { margin-top:6px; font-size:27px; font-weight:700; color:var(--mute); }
   .score .pt b { color:var(--ink); }
   .hd.bare + .score { margin-top:0; }
   /* 勝った側＝WIN と決着（写真の下端、丸の少し上）。負けた側の半分は暗く・色を抜く */
