@@ -7,7 +7,7 @@
 <title>大会予想｜予想番付</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261108134251">
+<link rel="stylesheet" href="css/style.css?v=20261108140807">
 </head>
 <body>
 <div id="app-header"></div>
@@ -20,7 +20,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
 <script src="js/config.js?v=20261108041732"></script>
 <script src="js/techniques.js?v=20261108041732"></script>
-<script src="js/demo-data.js?v=20261108041732"></script>
+<script src="js/demo-data.js?v=20261108140441"></script>
 <script src="js/api.js?v=20261108041732"></script>
 <script src="js/app.js?v=20261108041732"></script>
 <script src="js/glyph_fit.js?v=20261108041732"></script>
@@ -158,9 +158,10 @@ const statsOpen = new Set();
 // 結果は記号でなく語で（Gaku 11/8「まるばつじゃなくて WIN LOSE にしよ」）
 const RMARK = { W: ["WIN", "w"], L: ["LOSE", "l"], D: ["DRAW", "d"], NC: ["NC", "d"] };
 const recentOf = (x) => [...(x?.history || [])].sort((a, b) => String(b.d).localeCompare(String(a.d)));
-const resMark = (r) => { const [s, c] = RMARK[r] || ["?", "d"]; return `<span class="rm ${c}">${s}</span>`; };
-const histRow = (r) => `<div class="st-row">${resMark(r.r)}<span class="st-body"><span class="st-opp">${esc(r.opp)}</span>
-  <span class="st-how">${esc([r.how, r.d].filter(Boolean).join("・"))}</span></span></div>`;
+// 日付は WIN／LOSE の下に小さく（11/8）。決着の説明の後ろに付けると説明が1行ぶん伸び、カードがスマホの1画面に収まらなくなる
+const resMark = (r, d) => { const [s, c] = RMARK[r] || ["?", "d"]; return `<span class="rm ${c}">${s}${d ? `<small>${esc(d)}</small>` : ""}</span>`; };
+const histRow = (r) => `<div class="st-row">${resMark(r.r, r.d)}<span class="st-body"><span class="st-opp">${esc(r.opp)}</span>
+  ${r.how ? `<span class="st-how">${esc(r.how)}</span>` : ""}</span></div>`;
 // STATS は向かい合わせの表（Gaku 11/8「情報としては抜け漏れなくていいんだけど配置とかレイアウトデザインに余地あり」）：
 // 項目名（戦績・KO・一本・判定・年齢）を真ん中に1回だけ置き、左右の数字を同じ段で向かい合わせる＝比べたいものが横に並ぶ。
 // 前は左右それぞれに「KO 0 一本 7 判定 16」の凡例と割合入りのバーを持ち、年齢は戦績の横の空きに浮いていた。
@@ -168,26 +169,39 @@ const histRow = (r) => `<div class="st-row">${resMark(r.r)}<span class="st-body"
 // 色はコーナーの赤・青だけ（11/8「赤青の色もそれぞれ刺して」）：勝ち数とフィニッシュ（KO・一本）のバー。判定は灰
 const WAYS = [["KO", "rec_ko", "k"], ["一本", "rec_sub", "s"], ["判定", "rec_dec", "d"]];
 const hasWays = (x) => x?.rec_ko != null && !!x?.rec_w;
+// 母数は勝ち数（反則勝ち等の「その他」は割合の残りになる）。内訳の合計が勝ち数を超える古いデータでもはみ出さない
+const waysBase = (x) => Math.max(x.rec_w, WAYS.reduce((a, [, k]) => a + (x[k] ?? 0), 0));
 function tapeWay(x, key, cls) {
   if (!hasWays(x)) return `<span class="tp-none">—</span>`;
-  // 母数は勝ち数（反則勝ち等の「その他」は割合の残りになる）。内訳の合計が勝ち数を超える古いデータでもはみ出さない
-  const base = Math.max(x.rec_w, WAYS.reduce((a, [, k]) => a + (x[k] ?? 0), 0));
-  const n = x[key] ?? 0, p = n / base;
+  const n = x[key] ?? 0, p = n / waysBase(x);
   return `<b class="tp-c${n ? "" : " zero"}">${n}</b>${n ? `<span class="tp-bar ${cls}"><i style="--p:${p.toFixed(3)}"></i><em>${Math.round(p * 100)}%</em></span>` : ""}`;
 }
 function tapeRec(x) {
   if (x?.rec_w == null) return `<span class="tp-none">戦績なし</span>`;
-  const dn = [x.rec_d && `<b>${x.rec_d}</b>分`, x.rec_nc && `<b>${x.rec_nc}</b>NC`].filter(Boolean).join(" ");   // 分・NC は脇役＝2行目に小さく
-  return `<span class="tp-wl"><span class="st-n w"><b>${x.rec_w}</b>勝</span><span class="st-n l"><b>${x.rec_l ?? 0}</b>敗</span></span>${dn ? `<span class="tp-dn">${dn}</span>` : ""}`;
+  // 分・NC は脇役＝敗の横に小さく（両方あれば縦に2つ）。2行目に置くと、フィニッシュ率の段を足したカードがスマホの1画面に収まらない（11/8）
+  const dn = [x.rec_d && `<span><b>${x.rec_d}</b>分</span>`, x.rec_nc && `<span><b>${x.rec_nc}</b>NC</span>`].filter(Boolean).join("");
+  return `<span class="tp-wl"><span class="st-n w"><b>${x.rec_w}</b>勝</span><span class="st-n l"><b>${x.rec_l ?? 0}</b>敗</span>${dn ? `<span class="tp-dn">${dn}</span>` : ""}</span>`;
 }
-const tapeAge = (x) => { const a = ageText(x?.birth_date).match(/^(\d+)歳/)?.[1];   // 数字だけ（生年月日は名鑑で）
-  return a ? `<span class="tp-age"><b>${a}</b>歳</span>` : `<span class="tp-none">—</span>`; };
+// フィニッシュ率＝勝ちのうち KO・一本の割合（Gaku 11/8「フィニッシュレートの方が大事」）。戦績のすぐ下に、勝ち方の内訳の要約として大きめに出す
+const tapeFin = (x) => hasWays(x)
+  ? `<span class="tp-fin"><b>${Math.round(((x.rec_ko ?? 0) + (x.rec_sub ?? 0)) / waysBase(x) * 100)}</b>%</span>` : `<span class="tp-none">—</span>`;
+// 年齢・身長・リーチは表の一番下に小さく1段（Gaku 11/8「優先度としては低いから表示も小さめでいいよ」）。身長・リーチは RIZIN公式の選手ページ（fetch_profiles.py）。
+// 真ん中寄り＝身長/リーチ（項目名の隣）、外側＝年齢。2人とも身長・リーチが無い試合は年齢だけの段にする
+const cmv = (v) => v != null ? `<b>${v}</b>` : `<b class="na">—</b>`;
+function tapeBody(x, hr) {
+  const a = ageText(x?.birth_date).match(/^(\d+)歳/)?.[1];   // 数字だけ（生年月日は名鑑で）
+  const parts = [hr && `<span class="tp-hr">${cmv(x?.height_cm)}<i>/</i>${cmv(x?.reach_cm)}<small>cm</small></span>`, a && `<span class="tp-age"><b>${a}</b>歳</span>`].filter(Boolean);
+  return parts.length ? parts.join("") : `<span class="tp-none">—</span>`;
+}
 function statsTape(f1, f2) {
   const row = (k, cls, a, b) => `<div class="tp-row ${cls}"><div class="tp-v c1">${a}</div><div class="tp-k">${k}</div><div class="tp-v c2">${b}</div></div>`;
   // 2人とも内訳が無い試合は勝ち方の段ごと出さない（「—」が6つ並ぶだけになる）
-  const ways = hasWays(f1) || hasWays(f2) ? WAYS.map(([l, k, c]) => row(l, "way", tapeWay(f1, k, c), tapeWay(f2, k, c))).join("") : "";
+  const anyWays = hasWays(f1) || hasWays(f2);
+  const ways = anyWays ? WAYS.map(([l, k, c]) => row(l, "way", tapeWay(f1, k, c), tapeWay(f2, k, c))).join("") : "";
+  const hr = [f1, f2].some(x => x?.height_cm != null || x?.reach_cm != null);
   return `<div class="st-tape"><div class="st-sep s1"></div>
-    <div class="tp-rows">${row("戦績", "rec", tapeRec(f1), tapeRec(f2))}${ways}${row("年齢", "age", tapeAge(f1), tapeAge(f2))}</div></div>`;
+    <div class="tp-rows">${row("戦績", "rec", tapeRec(f1), tapeRec(f2))}${anyWays ? row("FINISH", "fin", tapeFin(f1), tapeFin(f2)) : ""}${ways}${
+      row(hr ? "<span>身長</span><span>リーチ</span>" : "年齢", `body${hr ? " hr" : ""}`, tapeBody(f1, hr), tapeBody(f2, hr))}</div></div>`;
 }
 // 名前の段＝異名だけ。
 // 選手名は出さない（Gaku 11/8「異名だけでいいかも。名前は書かなくていいや。カードに書いてある」＝真上の写真と下の札に名前がある）。

@@ -1205,7 +1205,7 @@ span.mav.tri > i { --k: 50cqw; position: relative; top: 7cqh; }
 .st-names > .st-side > .st-head { grid-row: 1; margin-bottom: 0; }
 .st-main > .st-side { padding-top: 0; padding-bottom: 8px; }
 .st-main > .st-side > .g2 { grid-row: 1; }
-.st-main > .st-side > .st-row { grid-row: 2; }
+.st-main > .st-side > .st-row { grid-row: 2; margin-top: 1px; }
 /* 意味のまとまりごとに、うっすらの横線の帯で仕切る：人（異名）／表／前戦（Gaku 11/7「横線うっすら引いてメリハリ」）。
    帯の題（STATS・前戦）は外した（Gaku 11/8「STATS 前戦 の文字ももはやいらないかも」＝表と前戦は見れば分かる）。
    帯は左右の列をまたいで1本（真ん中の縦線もそこで切る）。前戦は左右の列の同じ段（subgrid）に高さだけの空き（.st-gap）を置き、その上に帯を重ねる。
@@ -1230,7 +1230,8 @@ span.mav.tri > i { --k: 50cqw; position: relative; top: 7cqh; }
 .tp-row.rec { padding-bottom: 5px; }
 .tp-row.way { min-height: 16px; }
 .tp-row.way + .tp-row.way { margin-top: 2px; }
-.tp-row.age { margin-top: 5px; }
+.tp-row.fin { margin-bottom: 3px; }
+.tp-row.body { margin-top: 3px; }
 /* 項目名は「小さな灰色の文字」で済ませない（設計哲学の問い9）：太字の白で、真ん中の帯の上に置く */
 .tp-k { text-align: center; font: 900 11.5px/1 "Noto Sans JP", sans-serif; letter-spacing: .06em; color: #e4e4ea; }
 .tp-v { display: flex; align-items: center; gap: 6px; min-width: 0; padding: 0 10px; }
@@ -1247,11 +1248,23 @@ span.mav.tri > i { --k: 50cqw; position: relative; top: 7cqh; }
 .st-n b { font-family: var(--num); font-size: 32px; line-height: 1; margin-right: 2px; color: #fff; }
 .tp-v.c1 .st-n.w b { color: var(--red-hot); }   /* 勝ち数だけコーナー色＝負け数（白）と一目で分かれる */
 .tp-v.c2 .st-n.w b { color: var(--blue-hot); }
-.tp-dn { margin-top: 2px; font-size: 11px; line-height: 1.1; font-weight: 700; color: var(--muted); white-space: nowrap; }   /* 分・NC は脇役 */
-.tp-dn b { font: 600 13px/1 var(--num); color: #c8c8d0; margin-right: 1px; }
-.tp-dn b + b { margin-left: 4px; }   /* 「1分 1NC」が「1分1NC」と1語に詰まって見えないように */
-.tp-age { font-size: 12px; font-weight: 700; color: var(--muted); white-space: nowrap; }
-.tp-age b { font: 600 17px/1 var(--num); color: #e8e8ec; margin-right: 2px; }
+/* 分・NC は脇役＝敗の横に小さく、下端を数字の下にそろえる。両方ある時は縦に2つ（横に並べると「1分1NC」と1語に詰まって見える） */
+.tp-dn { align-self: flex-end; display: flex; flex-direction: column; gap: 2px; font-size: 10.5px; line-height: 1; font-weight: 700; color: var(--muted); white-space: nowrap; }
+.tp-dn b { font: 600 12px/1 var(--num); color: #c8c8d0; margin-right: 1px; }
+/* フィニッシュ率（Gaku 11/8「フィニッシュレートの方が大事」）＝勝ち方の3段の要約。KO の数（15px）より一回り大きく、白で立てる */
+.tp-row.fin .tp-k { font-size: 10.5px; letter-spacing: .03em; }
+.tp-fin { font-size: 12px; font-weight: 700; color: #b4b4be; white-space: nowrap; }
+.tp-fin b { font: 600 22px/1 var(--num); color: #fff; margin-right: 1px; }
+/* 年齢・身長・リーチ（11/8「優先度としては低いから表示も小さめでいいよ」）：表の一番下に、項目名も数字も小さく灰で */
+.tp-row.body .tp-v { gap: 8px; }
+.tp-row.body .tp-k { font-size: 10px; color: var(--muted); }
+.tp-row.body.hr .tp-k { display: flex; flex-direction: column; align-items: center; gap: 1px; font-size: 8.5px; letter-spacing: 0; }
+.tp-age, .tp-hr { font-size: 10.5px; font-weight: 700; color: var(--muted); white-space: nowrap; }
+.tp-age b, .tp-hr b { font: 600 13px/1 var(--num); color: #c8c8d0; }
+.tp-age b { margin-right: 1px; }
+.tp-hr b.na { color: #55555f; }
+.tp-hr i { font-style: normal; margin: 0 2px; color: #6a6a74; }
+.tp-hr small { font-size: 10px; margin-left: 1px; }
 .tp-none { font-size: 12px; font-weight: 700; color: var(--muted); white-space: nowrap; }
 /* 勝ち方：何勝かは真ん中寄り（幅をそろえてバーの根元を縦に揃える）。バーは真ん中から外へ伸び、割合はバーの先。
    バーの長さは「残りの幅－割合の字の分」を100%とする＝100%でも割合の字がはみ出さず、左右・上下で長さが比べられる */
@@ -1283,8 +1296,9 @@ span.mav.tri > i { --k: 50cqw; position: relative; top: 7cqh; }
 }
 /* 前戦の結果は語で WIN／LOSE（Gaku 11/8「まるばつじゃなくて」）。枠は付けない（11/7）。WIN は白・LOSE は灰＝明るさで勝ち負けが分かれる。
    幅をそろえて相手の名前の頭を縦に揃える（左は左寄せ・右は右寄せ＝外側の端に付く） */
-.rm { flex: none; width: 34px; font: 700 13px/1 var(--num); letter-spacing: .04em; color: #fff; }
-.st-side.c2 .rm { text-align: right; }
+.rm { flex: none; width: 34px; display: flex; flex-direction: column; gap: 3px; font: 700 13px/1 var(--num); letter-spacing: .04em; color: #fff; }
+.rm small { font: 500 10px/1 var(--num); letter-spacing: 0; color: var(--muted); white-space: nowrap; }   /* 前戦の日付（34px＝「2026.03」がちょうど入る幅） */
+.st-side.c2 .rm { text-align: right; align-items: flex-end; }
 .rm.l { color: #7c7c88; }
 .rm.d { color: var(--muted); }
 .st-row { display: flex; gap: 7px; align-items: center; margin-top: 3px; min-width: 0; }
@@ -1292,7 +1306,7 @@ span.mav.tri > i { --k: 50cqw; position: relative; top: 7cqh; }
 .st-row + .st-row { margin-top: 8px; }
 .st-body { min-width: 0; flex: 1; }
 .st-opp { display: block; font-size: 13px; font-weight: 700; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.st-how { display: block; font-size: 10.5px; color: var(--muted); line-height: 1.25; }
+.st-how { display: block; font-size: 10.5px; color: var(--muted); line-height: 1.2; }
 /* 直近5試合の札は「前戦」の帯の右端（下に1段置くと1画面に収まらない・Gaku 11/8）。開くと前戦の下に残り4試合が続く */
 .st-tg { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); padding: 4px 7px 4px 8px; border: 1px solid #3e3f4c; border-radius: 3px;
   background: var(--sheet); font: 900 10.5px/1 "Noto Sans JP", sans-serif; letter-spacing: .04em; color: #d4d4dc; cursor: pointer; }
