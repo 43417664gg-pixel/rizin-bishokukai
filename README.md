@@ -51,7 +51,7 @@
 **`event_only`＝MMA以外のルール（キックボクシング等）の試合**。予想は任意で、
 **その大会の的中率には含めるが、通算の的中率には含めない**。`no_score`（体重超過＝どこでも採点しない）とは別概念。
 - `scoreFight(pred, fight, {scope})` ／ `computeLeaderboard(..., {scope})` の scope は `"event"`（既定）と `"career"`
-- ranking.html は**選択中の大会が1つなら event、複数なら career** に自動で切替
+- ranking.html は**直近の大会（表）＝event、通算（裏・RIZIN.54から＝`RANK_FROM`）＝career**（2026-11-08 大会チェック欄を廃止）
 - 列が無くても `fillFromSeed` が demo-data.js から補うのでDDLは任意（`2026-08-21_event_only.sql`）
 
 ### ★予想の抽出は決定的でない（2026-08-21に判明・重要）
@@ -164,7 +164,7 @@ MMAの公式表記は「TKO（パウンド）」が大半で、公式表記に�
 site/
   index.html    プレイヤー選択＋大会一覧（カード0件の大会は自動でCOMING SOON）
   event.html    予想 ⇄ 答え合わせ（締切後はALL PICKSマトリクス）
-  ranking.html  的中／ピタリ／あらます＋大会チェックボックス絞り込み
+  ranking.html  勝敗／ピタリ。表＝直近の大会⇄裏＝通算（RIZIN.54から）を札で切替
   fighter.html  選手名鑑（HIGHLIGHT・フィニッシュ内訳グラフ・戦績履歴）
   admin.html    Gaku専用：結果入力／選手編集／⚡同期／🏁結果発表
   js/config.js  Supabase接続情報（平文。publishable keyはRLS前提の公開キー）

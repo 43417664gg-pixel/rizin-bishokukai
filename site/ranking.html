@@ -7,7 +7,7 @@
 <title>ランキング｜予想番付</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261108204024">
+<link rel="stylesheet" href="css/style.css?v=20261108223932">
 <style>
 /* ランキングを1枚のカードにする（2026-10-20）：スクショ単体でXに貼れるよう、
    ブランド・集計対象・サイトURLをカードの中に入れる。名前をタップ→その人の戦績へ。 */
@@ -63,6 +63,36 @@ a.lb-name:active { color:var(--gold-hot); }
 .rk-logo { display:block; flex:none; height:18px; width:auto; }   /* ヘッダーと同じロゴ画像（11/8） */
 .rk-foot .site { min-width:0; overflow:hidden; text-overflow:ellipsis; font:500 11px/1 var(--num); letter-spacing:.02em; color:#7a7a86; }
 .rk-tap { font-size:11px; color:#6a6a72; text-align:center; margin:6px 0 0; }
+/* 直近⇄通算の切替札（Gaku 11/8「派手に通算ボタン…直近ボタンが裏」）。表＝金の「通算」／裏＝赤の「直近」。押すと縦に裏返る */
+.rk-flip { position:relative; overflow:hidden; display:grid; grid-template-columns:1fr auto; align-items:center; width:100%;
+  margin:4px 0 8px; padding:11px 14px 11px 16px; border-radius:14px; cursor:pointer; text-align:left; font-family:inherit; }
+.rk-flip.recent { color:#1a1205; border:1px solid #ffe08a;
+  background:linear-gradient(115deg,#f9dc7a 0%,#d4af37 48%,#a8811c 100%); box-shadow:0 0 0 1px rgba(0,0,0,.4) inset, 0 6px 26px rgba(212,175,55,.38); }
+.rk-flip.career { color:#fff; border:1px solid #ff6b6b;
+  background:linear-gradient(115deg,#ff4d4d 0%,#e60012 48%,#7a000a 100%); box-shadow:0 0 0 1px rgba(0,0,0,.4) inset, 0 6px 26px rgba(230,0,18,.35); }
+.rk-flip::after { content:""; position:absolute; top:0; left:-50%; width:34%; height:100%; pointer-events:none;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.45),transparent); transform:skewX(-20deg); animation:rkShine 3.2s ease-in-out infinite; }
+@keyframes rkShine { 0%,55% { left:-50%; } 100% { left:130%; } }
+.rk-flip .fl-k { grid-column:1; font:900 21px/1.15 var(--display); font-synthesis:none; letter-spacing:.03em; }
+.rk-flip .fl-s { grid-column:1; margin-top:3px; font:700 11.5px/1.35 "Noto Sans JP", sans-serif; opacity:.85; }
+.rk-flip .fl-go { grid-column:2; grid-row:1 / span 2; padding:8px 13px; border-radius:999px; white-space:nowrap;
+  font:900 14px/1 var(--display); background:rgba(0,0,0,.72); color:#fff; }
+.rk-flip.recent .fl-go { color:var(--gold-hot); }
+.rk-flip.anim { animation:rkFlip .5s cubic-bezier(.2,.8,.3,1.2); }
+@keyframes rkFlip { from { transform:perspective(700px) rotateX(-100deg); } to { transform:perspective(700px) rotateX(0); } }
+.rk-card.anim { animation:rkIn .45s ease-out; }
+@keyframes rkIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
+@media (prefers-reduced-motion: reduce) { .rk-flip::after, .rk-flip.anim, .rk-card.anim { animation:none; } }
+/* ランク外は2列に詰める（Gaku 11/8「縦に列とかにしよう。スペース無駄使いしてる」） */
+.rk-un-grid { display:grid; grid-template-columns:1fr 1fr; column-gap:14px; }
+.rk-un-cell { display:flex; justify-content:space-between; align-items:baseline; gap:6px; min-width:0; padding:4px 0;
+  border-bottom:1px solid #1a1a20; font-size:12px; color:#b9b9c2; }
+.rk-un-cell .nm { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.rk-un-cell .rk-un-n { font-size:11px; }
+.rk-un-cell .rk-un-n b { margin-left:4px; }
+/* 注記は本文の大きさで5段を食っていた（素の文字のまま #main に置かれていた）。小さく1かたまりに */
+.rk-note { margin:6px 2px 0; font-size:11.5px; line-height:1.65; color:var(--muted); }
+.rk-note b { color:#c9c9d2; }
 </style>
 </head>
 <body>
@@ -70,90 +100,64 @@ a.lb-name:active { color:var(--gold-hot); }
 <div class="wrap" id="main"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261108204024"></script>
-<script src="js/techniques.js?v=20261108204024"></script>
-<script src="js/demo-data.js?v=20261108204024"></script>
-<script src="js/api.js?v=20261108204024"></script>
-<script src="js/app.js?v=20261108204024"></script>
-<script src="js/glyph_fit.js?v=20261108204024"></script>
+<script src="js/config.js?v=20261108223932"></script>
+<script src="js/techniques.js?v=20261108223932"></script>
+<script src="js/demo-data.js?v=20261108223932"></script>
+<script src="js/api.js?v=20261108223932"></script>
+<script src="js/app.js?v=20261108223932"></script>
+<script src="js/glyph_fit.js?v=20261108223932"></script>
 <script>
 let EVENTS, MEMBERS, ALL_FIGHTS, ALL_PREDS, FMAP = {};
-let checked = new Set();   // 集計対象の大会ID（＋PAST）
-// サイト開設前の予想動画の遡り採点（data/career）。通算の数字にだけ足す（Gaku指示11/7「過去動画の実績も入れていいよ。数字としてだけ」）。
-// 大会ページの予想一覧には出さない。チェック欄では「サイト開設前の動画」を1つの大会のように扱う
-const PAST = "_past";
-let RETRO = {};            // member_id → 遡り採点の予想
+// 表＝直近の大会のランキング／裏＝通算（Gaku確定・2026-11-08「直近のものだけで一旦はだそう。派手に通算ボタン…直近ボタンが裏」）。
+// 通算は美食会が予想を始めた大会（RANK_FROM）から＝全員同じ大会で比べる（同日「条件揃えよう」）。
+// 11/7 に足したサイト開設前の動画の遡り採点（data/career）はランキングから外し、各予想者の戦績ページの通算でだけ見せる。
+// 大会を選ぶチェック欄は廃止（場所を食っていた）。各大会の順位は大会ページにもある
+let FROM_EVENT = null;     // RANK_FROM の大会
+let RECENT = null;         // 直近の大会＝結果が1つでも入った一番新しい大会（大会中は入力した端から切り替わる）
+let VIEW = qp("view") === "career" ? "career" : "recent";   // recent＝直近（表）／career＝通算（裏）
+let FLIPPED = false;       // 押した直後だけ札を裏返す動きを付ける
 let MODE = "win";          // win＝勝敗ランキング（本体）／pitari＝ピタリランキング（おまけ）
 window.PITARI = {};        // member_id → ピタリの内訳（どこで何が）
 
 async function load() {
   await renderHeader("ranking");
-  let FIGHTERS;
-  [EVENTS, MEMBERS, ALL_FIGHTS, FIGHTERS] = await Promise.all([DB.listEvents(), DB.listMembers(), DB.listFights(), DB.listFighters()]);
+  let FIGHTERS, ALL_EVENTS;
+  [ALL_EVENTS, MEMBERS, ALL_FIGHTS, FIGHTERS] = await Promise.all([DB.listEvents(), DB.listMembers(), DB.listFights(), DB.listFighters()]);
+  FROM_EVENT = ALL_EVENTS.find(e => e.id === window.RANK_FROM);
+  const done = new Set(ALL_FIGHTS.filter(f => f.winner_id || f.result_method).map(f => f.event_id));
+  EVENTS = ALL_EVENTS.filter(e => done.has(e.id) && (!FROM_EVENT || e.event_date >= FROM_EVENT.event_date))
+    .sort((a, b) => String(a.event_date).localeCompare(String(b.event_date)));
+  RECENT = EVENTS[EVENTS.length - 1] || null;
   FMAP = fighterMap(FIGHTERS);
-  [ALL_PREDS, RETRO] = await Promise.all([DB.listPredictions({}), loadRetro()]);
-  checked = new Set([...EVENTS.map(e => e.id), PAST]);  // 初期状態＝全選択
+  ALL_PREDS = await DB.listPredictions({});
   await window.AVATARS_READY;
   render();
 }
 
-function toggleEvent(id) {
-  if (checked.has(id)) checked.delete(id); else checked.add(id);
-  render();
-}
 function setMode(m) { MODE = m; render(); }
-function toggleAll(on) {
-  checked = on ? new Set([...EVENTS.map(e => e.id), PAST]) : new Set();
+function flipView() {
+  VIEW = VIEW === "recent" ? "career" : "recent";
+  const u = new URL(location.href);
+  if (VIEW === "career") u.searchParams.set("view", "career"); else u.searchParams.delete("view");
+  history.replaceState(null, "", u);
+  FLIPPED = true;
   render();
-}
-async function loadRetro() {
-  try {
-    const ids = await (await fetch("data/career/index.json", { cache: "no-cache" })).json();
-    const out = {};
-    await Promise.all(ids.map(async id => {
-      const r = await fetch(`data/career/${encodeURIComponent(id)}.json`, { cache: "no-cache" });
-      if (r.ok) out[id] = (await r.json()).picks || [];
-    }));
-    return out;
-  } catch (e) { return {}; }
-}
-// 遡り採点のうち、いま集計に入れる分を数える。サイトに載っている大会（portal_event）は、
-// その人のDBの予想がその大会で1件でも採点されていればDBが正＝遡り分は数えない（戦績ページと同じ規則・二重に数えない）。
-// DBに無い大会（広島＝サイト公開前）だけ遡り分を使う。サイト以前の大会は「サイト開設前の動画」のチェックで出し入れ
-function retroExtra() {
-  const fById = Object.fromEntries(ALL_FIGHTS.map(f => [f.id, f]));
-  const live = {};
-  for (const p of ALL_PREDS) {
-    const f = fById[p.fight_id]; if (!f) continue;
-    const s = scoreFight(p, f, { scope: "career" });
-    if (s && s.counted) (live[p.member_id] ||= new Set()).add(f.event_id);
-  }
-  const out = {};
-  for (const [mid, picks] of Object.entries(RETRO)) {
-    const x = { answered: 0, decided: 0, hits: 0 };
-    for (const k of picks) {
-      const ev = k.portal_event;
-      if (ev ? (!checked.has(ev) || live[mid]?.has(ev)) : !checked.has(PAST)) continue;
-      x.answered += 1; x.decided += 1; if (k.hit) x.hits += 1;
-    }
-    if (x.decided) out[mid] = x;
-  }
-  return out;
+  FLIPPED = false;
 }
 
 function render() {
-  const fights = ALL_FIGHTS.filter(f => checked.has(f.event_id));
+  const single = VIEW === "recent" ? RECENT : null;   // 直近＝その大会の成績
+  const evIds = new Set(single ? [single.id] : EVENTS.map(e => e.id));
+  const fights = ALL_FIGHTS.filter(f => evIds.has(f.event_id));
   const fightIds = new Set(fights.map(f => f.id));
   const preds = ALL_PREDS.filter(p => fightIds.has(p.fight_id));
-  // 大会が1つだけ選ばれていれば「その大会の的中率」＝event、複数なら通算＝career。
+  // 直近は「その大会の的中数」＝event、通算は的中率＝career。
   // event_only（キック等）は career では数えない（Gaku確定・2026-08-21）。
-  const evOn = EVENTS.filter(e => checked.has(e.id));
-  const single = evOn.length === 1 && !checked.has(PAST) ? evOn[0] : null;   // 大会1つだけ＝その大会の成績
   const scope = single ? "event" : "career";
-  const extra = retroExtra();
-  const allRows = computeLeaderboard(MEMBERS.filter(m => !window.RANK_HIDDEN.includes(m.id)), fights, preds, { scope, extra });
+  const allRows = computeLeaderboard(MEMBERS.filter(m => !window.RANK_HIDDEN.includes(m.id)), fights, preds, { scope });
   // 通算は確定8試合以上でランクイン。未満は下に「ランク外」として出す（除外はしない）。
-  const rows = allRows.filter(r => window.isRanked(r, scope));
+  // 直近はその大会を予想した人だけ（美食会の3人はいつでも載せる）
+  const rows = allRows.filter(r => window.isRanked(r, scope) && (r.answered > 0 || window.ALWAYS_RANKED.includes(r.member.id)));
   const unranked = allRows.filter(r => !window.isRanked(r, scope) && r.answered > 0);
   // ピタリの内訳（どの試合で・誰を・何で当てたか）をメンバー別に用意
   const fById = Object.fromEntries(fights.map(f => [f.id, f]));
@@ -167,56 +171,45 @@ function render() {
     const kr = [kim, (p.method !== "DEC" && p.round) ? `${p.round}R` : ""].filter(Boolean).join(" ");
     (window.PITARI[p.member_id] ||= []).push(`第${f.order_no} ◎ ${esc(w?.name || "")}　${esc(kr)}`);
   }
-  const allOn = evOn.length === EVENTS.length && checked.has(PAST);
+  const fromName = esc(FROM_EVENT ? FROM_EVENT.name : "");
   document.getElementById("main").innerHTML = `
+    <button class="rk-flip ${VIEW}${FLIPPED ? " anim" : ""}" onclick="flipView()">
+      ${VIEW === "recent"
+        ? `<span class="fl-k">🏆 通算ランキング</span><span class="fl-s">${fromName}から${EVENTS.length}大会・全員同じ大会で</span><span class="fl-go">見る ▶</span>`
+        : `<span class="fl-k">⚡ 直近の大会</span><span class="fl-s">${esc(RECENT ? RECENT.name : "")}のランキングへ</span><span class="fl-go">◀ 戻る</span>`}
+    </button>
     <div class="rk-mode">
       <button class="${MODE === "win" ? "on" : ""}" onclick="setMode('win')">勝敗</button>
       <button class="${MODE === "pitari" ? "on" : ""}" onclick="setMode('pitari')">🎯 ピタリ</button>
     </div>
-    <div class="rk-card">
+    <div class="rk-card${FLIPPED ? " anim" : ""}">
       <div class="rk-head">
-        <div class="rk-ttl">${single ? esc(single.name) : MODE === "win" ? "勝敗予想ランキング" : "ピタリランキング"}</div>
-        <p class="rk-scope">${allOn ? "全大会・通算"
-          : single ? `${esc(fmtDate(single.event_date))}・この大会の成績`
-          : [...evOn.map(e => esc(e.name)), ...(checked.has(PAST) ? ["サイト開設前の動画"] : [])].join("・") || "なし"}</p>
+        <div class="rk-ttl">${single ? esc(single.name) : MODE === "win" ? "通算ランキング" : "通算ピタリ"}</div>
+        <p class="rk-scope">${single ? `${esc(fmtDate(single.event_date))}・直近の大会の成績`
+          : `${fromName}〜${esc(RECENT ? RECENT.name : "")}・${EVENTS.length}大会の通算`}</p>
       </div>
       ${MODE === "win"
         ? `${winTable(rows)}<p class="rk-rule">勝敗の的中${single ? "数" : "率"}で順位。決まり手・ラウンドは関係なし</p>`
         : `${pitariTable(allRows)}<p class="rk-rule">勝ち方・ラウンドまで当てた数。順位には関係なし</p>`}
       <div class="rk-foot"><img class="rk-logo" src="assets/logo/yosou_banzuke.png" alt="予想番付" width="360" height="82"><span class="site">${esc(window.SITE_URL)}</span></div>
     </div>
-    <p class="rk-tap">名前をタップすると、その人の戦績が見られます。</p>
+    <p class="rk-tap">名前をタップすると、その人の通算の戦績が見られます。</p>
 
-    <div class="section-label">集計する大会</div>
-    <div class="ev-checks">
-      <label class="ev-check all ${allOn ? "on" : ""}">
-        <input type="checkbox" ${allOn ? "checked" : ""} onchange="toggleAll(this.checked)">全大会
-      </label>
-      ${EVENTS.map(e => `
-        <label class="ev-check ${checked.has(e.id) ? "on" : ""}">
-          <input type="checkbox" ${checked.has(e.id) ? "checked" : ""} onchange="toggleEvent('${e.id}')">${esc(e.name)}
-        </label>`).join("")}
-      ${Object.keys(RETRO).length ? `
-        <label class="ev-check ${checked.has(PAST) ? "on" : ""}">
-          <input type="checkbox" ${checked.has(PAST) ? "checked" : ""} onchange="toggleEvent('${PAST}')">サイト開設前の動画
-        </label>` : ""}
-    </div>
-
-      ${unranked.length ? `
+      ${unranked.length && MODE === "win" ? `
       <div class="rk-unranked">
         <div class="rk-un-ttl">ランク外（通算${window.CAREER_MIN}試合からランクイン）</div>
-        ${unranked.map(r => `<div class="rk-un-row"><span>${esc(r.member.name)}</span>
-          <span class="rk-un-n">${r.hits}的中・確定${r.decided}試合<b>（あと${window.CAREER_MIN - r.decided}）</b></span></div>`).join("")}
+        <div class="rk-un-grid">${unranked.map(r => `<div class="rk-un-cell"><span class="nm">${esc(r.member.name)}</span>
+          <span class="rk-un-n">${r.hits}/${r.decided}<b>あと${window.CAREER_MIN - r.decided}</b></span></div>`).join("")}</div>
       </div>` : ""}
       <div class="rk-share">${window.shareButton(
-        (single ? single.name + "の" : "") +
-        "勝敗予想ランキング" + (rows[0] && rows[0].rate !== null ? `　1位 ${rows[0].member.name}（${rows[0].hits}/${rows[0].decided}的中）` : "") +
+        (single ? single.name + "の勝敗予想ランキング" : "通算の勝敗予想ランキング") +
+        (rows[0] && rows[0].rate !== null ? `　1位 ${rows[0].member.name}（${rows[0].hits}/${rows[0].decided}的中）` : "") +
         " #予想番付", location.href, "ランキングをポスト")}</div>
-      通算は<b>的中率</b>で並べる。同じ率なら当てた数が多い方が上。1大会だけの表示は<b>当てた数</b>で並べる（1試合で1的中＝100%が1位にならないように）。<br>
+      <p class="rk-note">直近は<b>当てた数</b>で並べる（1試合で1的中＝100%が1位にならないように）。通算は<b>的中率</b>で並べ、同じ率なら当てた数が多い方が上。<br>
       <b>ピタリ</b>（KO・一本の決まり手＋ラウンドまで一致・判定決着は対象外）は上の「🎯 ピタリ」タブで。<br>
-      通算は結果の出た予想8試合からランクイン（美食会の3人はいつでも掲載）。<br>
-      通算には、サイト開設前のYouTube予想動画の採点結果（${Object.keys(RETRO).length}人）も数字だけ含む（勝敗のみ・大会ページには出さない）。<br>
-      予想しなかった試合・中止・体重超過・ドロー・無効試合は数えない。`;
+      通算は美食会が予想を始めた<b>${fromName}から</b>（全員同じ大会で比べる）。結果の出た予想8試合からランクイン（美食会の3人はいつでも掲載）。<br>
+      それより前の大会やサイト開設前のYouTube予想動画を含む通算は、名前をタップした戦績ページで見られる。<br>
+      予想しなかった試合・中止・体重超過・ドロー・無効試合は数えない。</p>`;
 }
 
 // 同じ成績は同じ順位（1,1,3…）
