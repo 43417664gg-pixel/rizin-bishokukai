@@ -588,12 +588,20 @@ function drawProg() {
 // 本来は「この下にある」の合図（「右の青いボタン押さないといけない感じじゃなくて」）。ただし押されたら、一番上の試合の「どっちが勝つ？」と
 // 2人の札まで飛ぶ（Gaku 11/8「「予想を入れる」ボタン押したら一番上のカードの選択ボタンに飛ぶ」）＝jumpToPick。前は指が素通りして何も起きなかった。
 // 美食会予想まとめは写真に撮る面なので、まとめの頭が上の帯の下まで来て画面を占めている間（下の端が画面の8割より下にある間）は引っ込む。
+// カードも同じ（Gaku 11/8「写真のスクショでカードの上から判断材料まで写り切ってるのが理想…まずそこが外せない条件」）。
+// 第〇試合の段から判断材料の下の端までが上の帯の下に全部入っていて、浮く札がその下の端に重なる間は引っ込む＝framedCard。
+// 出たままだと一番上の試合の前戦の段を隠していた
 // 上から順にスクロールしてメインイベント（一番上の試合）の「どっちが勝つ？」と2人の札が浮く札の上まで来たら、勝手に照らす＝arriveGuide
 // （「行ったら勝手に背景黒くしてハイライトする感じ。流れるように繋がってるの、しかも一度きりの出現」）。照らしたら、そのページではもう出さない。
 // 全試合を入れ終えている時は最初から出さない（1-2b 促さない）
 const mainPick = () => document.querySelector(".fight-card .pick-zone");
 const topBar = () => Math.max(...["app-header", "sticky-cd"].map(id => document.getElementById(id)?.getBoundingClientRect().bottom || 0));
-let GUIDE_DONE = false, JUMP_T = 0;   // JUMP_T＝押して飛んでいる最中（まとめの上を通り過ぎる間も引っ込めない）
+// 浮く札の上端は offsetTop で取る（fixed なので画面からの位置・出入りの transform を含まない＝出し入れで揺れない）。札が判断材料に重ならない縦長の画面では引っ込まない
+const framedCard = (bar, H, g) => [...document.querySelectorAll(".fight-card")].some(c => {
+  const t = c.querySelector(".fight-label.top")?.getBoundingClientRect(), s = c.querySelector(".stats")?.getBoundingClientRect();
+  return t && s && t.top >= bar - 4 && s.bottom <= H && s.bottom > g.offsetTop;
+});
+let GUIDE_DONE = false, JUMP_T = 0;   // JUMP_T＝押して飛んでいる最中（まとめやカードの上を通り過ぎる間も引っ込めない）
 function updateGuide() {
   const g = document.getElementById("pick-guide");
   if (!g || !Array.isArray(FIGHTS) || GUIDE_DONE) return;   // 読み込み前・照らし終えた後は何もしない
@@ -602,7 +610,7 @@ function updateGuide() {
   const show = PHASE === "open" && document.getElementById("wiz").hidden && !!r
     && r.top >= bar - 8   // もう通り過ぎている（戻るで下から開いた等）なら下向きの矢印は嘘になるので出さない
     && FIGHTS.some(f => !f.cancelled && !f.event_only && !myPreds[f.id]?.winner_id)
-    && (JUMP_T || !(bs && bs.height > 0 && bs.top < bar + 48 && bs.bottom > H * 0.78));
+    && (JUMP_T || !(bs && bs.height > 0 && bs.top < bar + 48 && bs.bottom > H * 0.78) && !framedCard(bar, H, g));
   g.classList.toggle("show", show);
   if (!show || r.bottom > g.getBoundingClientRect().top - 8) return;
   GUIDE_DONE = true;   // 2人の札が浮く札より上に出きった
