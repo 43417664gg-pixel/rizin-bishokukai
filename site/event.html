@@ -24,7 +24,7 @@
 <script src="js/api.js?v=20261108041732"></script>
 <script src="js/app.js?v=20261108041732"></script>
 <script src="js/glyph_fit.js?v=20261108041732"></script>
-<script src="js/bishoku_summary.js?v=20261108041732"></script>
+<script src="js/bishoku_summary.js?v=20261108124007"></script>
 <script>
 let EV, PHASE, FIGHTS, FMAP, MEMBERS, myPreds = {}, allPreds = [], ALL_SUPPORTS = [];
 
@@ -523,12 +523,15 @@ async function drawBishokuSummary() {
     preds: allPreds.filter(p => ids.includes(p.member_id)),
     supports: ALL_SUPPORTS.filter(s => ids.includes(s.member_id)),
     zones: BSUM_ZONES,
+    // オッズのバー＝その試合の全員の予想（外部の予想者も含む・各カードの得票率バー voteBar と同じ数え方）。[左の選手, 右の選手] の人数
+    odds: Object.fromEntries(FIGHTS.map(f => { const ps = allPreds.filter(p => p.fight_id === f.id);
+      return [f.id, [ps.filter(p => p.winner_id === f.fighter1_id).length, ps.filter(p => p.winner_id === f.fighter2_id).length]]; })),
     built_at: `${now.getMonth() + 1}/${now.getDate()} ${now.getHours()}:${String(now.getMinutes()).padStart(2, "0")}`,
   };
   const fights = FIGHTS.filter(f => !f.cancelled).sort((a, b) => b.order_no - a.order_no);
   const root = host.shadowRoot || host.attachShadow({ mode: "open" });
   root.innerHTML = `<style>:host{display:block} .fit{transform-origin:0 0}${BishokuSummary.CSS}</style>
-    <div class="fit"><div class="sheet">${BishokuSummary.render(D, { ev: EV, fights, fname: id => FMAP[id]?.name, img: u => u, bare: true })}</div></div>`;
+    <div class="fit"><div class="sheet bare">${BishokuSummary.render(D, { ev: EV, fights, fname: id => FMAP[id]?.name, img: u => u, bare: true })}</div></div>`;
   window.fitGlyphs?.(root);
   const fit = () => {
     const el = root.querySelector(".fit"), k = host.clientWidth / 1080;

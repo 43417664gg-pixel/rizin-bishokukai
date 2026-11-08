@@ -13,7 +13,8 @@ const CSS = `
   .hd { border-left:10px solid #e60012; padding-left:18px; }
   .hd .ttl { font-size:70px; font-weight:900; line-height:1.1; letter-spacing:.02em; }
   .hd .ttl b { color:var(--gold); }
-  .hd.bare { margin-bottom:30px; }   /* 大会ページ：下の文字を外した分、絵との間をあける */
+  .hd.bare { margin-bottom:18px; }   /* 大会ページ：下の文字を外した分、絵との間をあける（オッズのバーを足した分を 30→18 で吸う・下の .odds） */
+  .sheet.bare { padding-top:28px; }
   .hd .sub { margin-top:6px; font-size:27px; font-weight:700; color:var(--mute); }
   .hd .sub em { font-style:normal; color:var(--ink); }
   .who { display:flex; gap:24px; flex-wrap:wrap; margin:20px 0 8px; }
@@ -38,6 +39,20 @@ const CSS = `
              border-radius:999px; border:2px solid; }
   .lab .bd.split { color:#ffcf66; border-color:#6b5420; }
   .lab .bd.same  { color:#7fe0a0; border-color:#25553a; }
+  /* オッズのバー＝その試合の全員の予想の割合（大会ページの各カードの得票率バーと同じ・赤＝写真の左・青＝右）。大会ページだけ・写真の上
+     （Gaku 11/8「オッズのバーも入れられる？うまくサイズは変えずに」「「第12試合 o vs o」小さいしいらないんじゃない？」）。
+     試合名の段を外した場所に入れ、まとめ全体の高さは変えない：3列の段は試合名24px→バー19.5px、浮いた分と上の余白（30→18・40→28）でメインのバー42pxを賄う */
+  .odds { --cut:calc(10px * var(--u) + 2px); --gap:calc(4px * var(--u) + 1px); display:flex; height:calc(30px * var(--u));
+          margin-bottom:calc(15px * var(--u) - 3px); }
+  .odds > i { display:flex; align-items:center; min-width:0; overflow:hidden; white-space:nowrap; font-style:normal;
+              font:600 calc(21px * var(--u))/1 var(--num, "Oswald"), sans-serif; letter-spacing:.05em; color:rgba(255,255,255,.92);
+              box-shadow:inset 0 1px 0 rgba(255,255,255,.1); }
+  .odds > .r { background:linear-gradient(90deg, #2b0609, #7d0d16 55%, #c4111f); padding-left:calc(12px * var(--u));
+               clip-path:polygon(0 0, 100% 0, calc(100% - var(--cut)) 100%, 0 100%); }
+  .odds > .b { background:linear-gradient(270deg, #061328, #123a74 55%, #1f5fbf); padding-right:calc(12px * var(--u)); justify-content:flex-end;
+               clip-path:polygon(var(--cut) 0, 100% 0, 100% 100%, 0 100%); }
+  .odds > .r + .b { margin-left:calc(var(--gap) - var(--cut)); }
+  .odds > .n { flex:1; background:#1a1a20; }   /* まだ誰も予想していない */
   .ph { position:relative; margin-bottom:calc(var(--ic) / 2 + 34px * var(--u)); }
   .ph .banner { width:100%; aspect-ratio:16/9; object-fit:cover; display:block; border-radius:calc(8px * var(--u)); }
   /* 下端の影＝丸が乗る帯を絵から一段下げる。濃さ（--scrim）は大会ごとのバナーのうるささで決まる。顔のある上半分には掛けない */
@@ -142,6 +157,13 @@ const scrimOf = f => { const c = D.zones?.[f.id]?.chroma; return c == null ? .45
 const predOf = (m, f) => D.preds.find(p => p.member_id === m.id && p.fight_id === f.id);
 const supOf = (m, f) => D.supports.find(s => s.member_id === m.id && s.fight_id === f.id);
 
+// オッズのバー（大会ページだけ・D.odds＝{fight_id:[左の人数, 右の人数]}）。割合の数字は15%以上の側だけ（細い側に字は入らない）
+function odds(f) {
+  const [a, b] = D.odds[f.id] || [0, 0], n = a + b;
+  if (!n) return `<div class="odds"><i class="n"></i></div>`;
+  const p1 = Math.round(a / n * 100), p2 = 100 - p1;
+  return `<div class="odds">${p1 ? `<i class="r" style="flex:${p1}">${p1 >= 15 ? p1 + "%" : ""}</i>` : ""}${p2 ? `<i class="b" style="flex:${p2}">${p2 >= 15 ? p2 + "%" : ""}</i>` : ""}</div>`;
+}
 function fightCard(f) {
   const picks = D.members.map(m => ({ m, p: predOf(m, f) })).filter(x => x.p);
   const side = fid => picks.filter(x => x.p.winner_id === fid).map(({ m, p }) => {
@@ -156,7 +178,7 @@ function fightCard(f) {
   const badge = BARE || picks.length < 2 ? "" : winners.size === 1 ? `<span class="bd same">一致</span>` : `<span class="bd split">割れた</span>`;
   const title = f.title_label || `${fname(f.fighter1_id)} vs ${fname(f.fighter2_id)}`;
   return `<div class="fc">
-    ${BARE && f === fights[0] ? "" : `<div class="lab"><span class="no">第${f.order_no}試合</span><span class="tt">${esc(title)}</span>${badge}</div>`}
+    ${BARE ? (D.odds ? odds(f) : "") : `<div class="lab"><span class="no">第${f.order_no}試合</span><span class="tt">${esc(title)}</span>${badge}</div>`}
     <div class="ph">
       <img class="banner" src="${esc(o.img(f.image_url))}"><div class="scrim" style="--scrim:${scrimOf(f)}"></div>
       <div class="cheer l">${cheer(f.fighter1_id)}</div><div class="cheer r">${cheer(f.fighter2_id)}</div>
