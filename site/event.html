@@ -7,7 +7,7 @@
 <title>大会予想｜予想番付</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261108131017">
+<link rel="stylesheet" href="css/style.css?v=20261108131828">
 </head>
 <body>
 <div id="app-header"></div>
@@ -205,23 +205,29 @@ function lastSide(x, cls) {
     ${h[0] ? histRow(h[0]) : `<div class="st-row"><span class="st-how">データなし</span></div>`}
   </div>`;
 }
+// 直近5試合の開閉。札は「前戦」の帯の右端（下に1段置くと、カードの頭から判断材料までがスマホの1画面に収まらない・Gaku 11/8「まずそこが外せない条件」）。
+// 開くと前戦の下に残りの4試合が続く（前戦は出したまま＝同じ試合を2回並べない）
+function toggleStats(b, id) {
+  const on = b.closest(".stats").classList.toggle("open");
+  statsOpen[on ? "add" : "delete"](id);
+  b.setAttribute("aria-expanded", on);
+}
 function statsBlock(f) {
   const f1 = FMAP[f.fighter1_id], f2 = FMAP[f.fighter2_id];
   const n = Math.min(5, Math.max(recentOf(f1).length, recentOf(f2).length));
-  const list = (x, cls) => { const rows = recentOf(x).slice(0, 5).map(histRow);
-    while (rows.length < n) rows.push("<div></div>");
+  const list = (x, cls) => { const rows = recentOf(x).slice(1, 5).map(histRow);
+    while (rows.length < n - 1) rows.push("<div></div>");
     return `<div class="st-side ${cls}">${rows.join("")}</div>`; };
+  const open = statsOpen.has(f.id);
   // STATS・前戦は最初から開いたまま（11/8 の「スクロールで飛び出して開く」は Gaku 11/8「飛び出て引っ込む仕組みはもう終わり。解除」で廃止）。
   // 2人とも異名が無ければ名前の段は出さない（空の帯になる）
   const nonick = !f1?.nickname && !f2?.nickname;
-  return `<div class="stats${nonick ? " nonick" : ""}" data-f="${f.id}">
+  return `<div class="stats${nonick ? " nonick" : ""}${open ? " open" : ""}" data-f="${f.id}">
     <div class="st-cols st-names" style="--rows:1">${statsHead(f1, "c1")}${statsHead(f2, "c2")}</div>
     ${statsTape(f1, f2)}
-    <div class="st-cols st-main" style="--rows:2">${lastSide(f1, "c1")}${lastSide(f2, "c2")}<div class="st-sep s2"><span>前戦</span></div></div>
-    ${n > 1 ? `<details class="st-more" ${statsOpen.has(f.id) ? "open" : ""} ontoggle="statsOpen[this.open ? 'add' : 'delete']('${f.id}')">
-      <summary>直近5試合</summary>
-      <div class="st-cols" style="--rows:${n}">${list(f1, "c1")}${list(f2, "c2")}</div>
-    </details>` : ""}
+    <div class="st-cols st-main" style="--rows:2">${lastSide(f1, "c1")}${lastSide(f2, "c2")}<div class="st-sep s2"><span>前戦</span>${n > 1
+      ? `<button type="button" class="st-tg" aria-expanded="${open}" onclick="toggleStats(this, '${f.id}')">直近5試合</button>` : ""}</div></div>
+    ${n > 1 ? `<div class="st-cols st-list" style="--rows:${n - 1}">${list(f1, "c1")}${list(f2, "c2")}</div>` : ""}
   </div>`;
 }
 
@@ -441,7 +447,7 @@ function voteBar(f) {
   const n1 = picks.filter(p => p.winner_id === f.fighter1_id).length;
   const p1 = Math.round(n1 / n * 100), p2 = 100 - p1;
   return `
-    <div class="votebar" style="margin:8px 0 4px">
+    <div class="votebar" style="margin:6px 0 4px">
       <div class="vb">${p1 ? `<i class="r" style="flex:${p1}">${p1 >= 12 ? p1 + "%" : ""}</i>` : ""}${p2 ? `<i class="b" style="flex:${p2}">${p2 >= 12 ? p2 + "%" : ""}</i>` : ""}</div>
     </div>`;
 }
