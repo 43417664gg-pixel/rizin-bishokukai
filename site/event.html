@@ -7,7 +7,7 @@
 <title>大会予想｜予想番付</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261108132600">
+<link rel="stylesheet" href="css/style.css?v=20261108134251">
 </head>
 <body>
 <div id="app-header"></div>
@@ -186,7 +186,7 @@ function statsTape(f1, f2) {
   const row = (k, cls, a, b) => `<div class="tp-row ${cls}"><div class="tp-v c1">${a}</div><div class="tp-k">${k}</div><div class="tp-v c2">${b}</div></div>`;
   // 2人とも内訳が無い試合は勝ち方の段ごと出さない（「—」が6つ並ぶだけになる）
   const ways = hasWays(f1) || hasWays(f2) ? WAYS.map(([l, k, c]) => row(l, "way", tapeWay(f1, k, c), tapeWay(f2, k, c))).join("") : "";
-  return `<div class="st-tape"><div class="st-sep s1"><span>STATS</span></div>
+  return `<div class="st-tape"><div class="st-sep s1"></div>
     <div class="tp-rows">${row("戦績", "rec", tapeRec(f1), tapeRec(f2))}${ways}${row("年齢", "age", tapeAge(f1), tapeAge(f2))}</div></div>`;
 }
 // 名前の段＝異名だけ。
@@ -225,7 +225,7 @@ function statsBlock(f) {
   return `<div class="stats${nonick ? " nonick" : ""}${open ? " open" : ""}" data-f="${f.id}">
     <div class="st-cols st-names" style="--rows:1">${statsHead(f1, "c1")}${statsHead(f2, "c2")}</div>
     ${statsTape(f1, f2)}
-    <div class="st-cols st-main" style="--rows:2">${lastSide(f1, "c1")}${lastSide(f2, "c2")}<div class="st-sep s2"><span>前戦</span>${n > 1
+    <div class="st-cols st-main" style="--rows:2">${lastSide(f1, "c1")}${lastSide(f2, "c2")}<div class="st-sep s2">${n > 1
       ? `<button type="button" class="st-tg" aria-expanded="${open}" onclick="toggleStats(this, '${f.id}')">直近5試合</button>` : ""}</div></div>
     ${n > 1 ? `<div class="st-cols st-list" style="--rows:${n - 1}">${list(f1, "c1")}${list(f2, "c2")}</div>` : ""}
   </div>`;
