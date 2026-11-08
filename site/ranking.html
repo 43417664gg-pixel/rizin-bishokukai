@@ -7,7 +7,7 @@
 <title>ランキング｜予想番付</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261108203332">
+<link rel="stylesheet" href="css/style.css?v=20261108203503">
 <style>
 /* ランキングを1枚のカードにする（2026-10-20）：スクショ単体でXに貼れるよう、
    ブランド・集計対象・サイトURLをカードの中に入れる。名前をタップ→その人の戦績へ。 */
@@ -70,12 +70,12 @@ a.lb-name:active { color:var(--gold-hot); }
 <div class="wrap" id="main"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261108203332"></script>
-<script src="js/techniques.js?v=20261108203332"></script>
-<script src="js/demo-data.js?v=20261108203332"></script>
-<script src="js/api.js?v=20261108203332"></script>
-<script src="js/app.js?v=20261108203332"></script>
-<script src="js/glyph_fit.js?v=20261108203332"></script>
+<script src="js/config.js?v=20261108203503"></script>
+<script src="js/techniques.js?v=20261108203503"></script>
+<script src="js/demo-data.js?v=20261108203503"></script>
+<script src="js/api.js?v=20261108203503"></script>
+<script src="js/app.js?v=20261108203503"></script>
+<script src="js/glyph_fit.js?v=20261108203503"></script>
 <script>
 let EVENTS, MEMBERS, ALL_FIGHTS, ALL_PREDS, FMAP = {};
 let checked = new Set();   // 集計対象の大会ID（＋PAST）
@@ -213,7 +213,7 @@ function render() {
         "勝敗予想ランキング" + (rows[0] && rows[0].rate !== null ? `　1位 ${rows[0].member.name}（${rows[0].hits}/${rows[0].decided}的中）` : "") +
         " #予想番付", location.href, "ランキングをポスト")}</div>
       通算は<b>的中率</b>で並べる。同じ率なら当てた数が多い方が上。1大会だけの表示は<b>当てた数</b>で並べる（1試合で1的中＝100%が1位にならないように）。<br>
-      <b>ピタリ</b>（決まり手＋ラウンドまで一致・判定は「判定」で一致）は上の「🎯 ピタリ」タブで。<br>
+      <b>ピタリ</b>（KO・一本の決まり手＋ラウンドまで一致・判定決着は対象外）は上の「🎯 ピタリ」タブで。<br>
       通算は結果の出た予想8試合からランクイン（美食会の3人はいつでも掲載）。<br>
       通算には、サイト開設前のYouTube予想動画の採点結果（${Object.keys(RETRO).length}人）も数字だけ含む（勝敗のみ・大会ページには出さない）。<br>
       予想しなかった試合・中止・体重超過・ドロー・無効試合は数えない。`;

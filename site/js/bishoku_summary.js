@@ -171,7 +171,7 @@ const CSS = `
            display:flex; align-items:center; justify-content:center; border-radius:50%; background:#16161b; border:calc(2px * var(--u) + 1px) solid #f4f4f6;
            box-shadow:0 1px 6px rgba(0,0,0,.7); font-size:calc(var(--ic) * .3); font-weight:900; line-height:1; color:#ff4a5a; }
   .pk.miss .mt { color:#9a9aa2; }
-  /* ピタリ＝決まり手まで当てた（判定／KO・一本はラウンドも）。数えるのは勝敗だけ、これは印 */
+  /* ピタリ＝KO・一本の決まり手とラウンドまで当てた（判定決着はピタリなし・11/8）。数えるのは勝敗だけ、これは印 */
   .pk .mt.pt { margin-top:calc(6px * var(--u) + 2px); padding:calc(2px * var(--u) + 1px) calc(10px * var(--u) + 2px); border-radius:999px;
                background:#ffd34d; color:#1a1408; }
   .lab .bd.hit { color:#ffd34d; border-color:#6b5420; }
@@ -302,7 +302,7 @@ return `
     ${BARE ? "" : `<div class="sub"><em>${esc(ev.name)}</em>　${d.getFullYear()}.${d.getMonth() + 1}.${d.getDate()}（${WD[d.getDay()]}）${lock ? `　締切 ${lock.getMonth() + 1}/${lock.getDate()} ${lock.getHours()}:${String(lock.getMinutes()).padStart(2, "0")}` : ""}${RES ? `　${nFin === fights.length ? "全試合終了" : `決着 ${nFin}/${fights.length}試合`}` : ""}</div>`}
   </div>
   ${score}
-  ${BARE ? "" : RES ? `<div class="legend"><b>金の輪</b>＝勝敗的中　<b class="x">✕</b>＝外れ　<b>ピタリ</b>＝決まり手まで的中（数えるのは勝敗だけ）　<b>📣</b>＝応援</div>`
+  ${BARE ? "" : RES ? `<div class="legend"><b>金の輪</b>＝勝敗的中　<b class="x">✕</b>＝外れ　<b>ピタリ</b>＝KO・一本の決まり手とラウンドまで的中（数えるのは勝敗だけ）　<b>📣</b>＝応援</div>`
     : `<div class="who">${counts}</div>
   <div class="legend"><b>下の丸</b>＝その選手が勝つと予想　<b>上の「📣応援」の丸</b>＝その選手を応援（勝敗とは別）</div>`}
   ${grids}

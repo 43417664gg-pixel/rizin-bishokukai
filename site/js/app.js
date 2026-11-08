@@ -26,9 +26,9 @@
 
   // ---------- スコアリング（ルールの正本・2段に簡素化 2026-08-05） ----------
   // 二段梯子：的中（勝者）→ ピタリ（勝者＋決まり手まで一致）。勝者を外したら不成立。
-  // 決まり手＝「判定」or 具体的な決定打（右フック／リアネイキドチョーク等）を1つ。
-  //   ・判定決着 → 予想が「判定」でピタリ
-  //   ・KO/一本決着 → 予想の決定打(technique)が結果の決定打と一致でピタリ
+  // 決まり手＝具体的な決定打（右フック／リアネイキドチョーク等）を1つ。
+  //   ・KO/一本決着 → 予想の決定打(technique)とラウンドが結果と一致でピタリ
+  //   ・判定決着 → ピタリなし（Gaku確定 2026-11-08「判定はピタリの概念から外そう」）
   // ラウンド・あらます（旧3段目）は廃止。ドロー・無効試合は集計から除外。
   window.kimarite = function (method, technique) {
     // 採点用の「決まり手」キー。判定は"DEC"、それ以外は具体的な決定打(technique)。
@@ -54,13 +54,11 @@
     }
     const winnerHit = pred.winner_id === fight.winner_id;
     let pitari = false;
-    if (winnerHit) {
+    if (winnerHit && fight.result_method !== "DEC") {   // 判定決着はピタリの対象外（2026-11-08）
       const pk = window.kimarite(pred.method, pred.technique);
       const rk = window.kimarite(fight.result_method, fight.result_technique);
-      const kimOk = !!(pk && rk && pk === rk);       // 決まり手（判定 or 決定打）一致
-      // ラウンド：判定はラウンド無し＝免除。KO/一本は予想ラウンドと一致が必要。
-      const roundOk = fight.result_method === "DEC" ? true
-        : !!(pred.round && fight.result_round && Number(pred.round) === Number(fight.result_round));
+      const kimOk = !!(pk && rk && pk === rk);       // 決まり手（決定打）一致
+      const roundOk = !!(pred.round && fight.result_round && Number(pred.round) === Number(fight.result_round));
       pitari = kimOk && roundOk;                       // ピタリ＝決まり手＋ラウンド
     }
     return { counted: true, winnerHit, pitari };
