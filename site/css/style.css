@@ -344,6 +344,15 @@ img { max-width: 100%; display: block; }
     linear-gradient(0deg, rgba(var(--sm3), calc(.18 * var(--k))), transparent 36px);
 }
 .ev-unit.s-cho > .event-card::after { animation: goldBreath 5s ease-in-out infinite alternate; }
+/* 枠内の強調色も系統の色に（Gaku 11/8「枠内強調色も変えよう」）：年と曜日・予想の目盛り・残り時間の縁と下地とコロン。
+   ナンバーは従来の赤のまま。大きな数字は白のまま（金/黄で塗らない）。残り1時間を切った赤（.hot）は急ぎの合図なので系統に関わらず赤 */
+.ev-unit.s-lm  { --ac: #5fae80; --ac-rgb: 30, 120, 74; --ac-bar: linear-gradient(180deg, #4b9e70, #1d6440); }
+.ev-unit.s-cho { --ac: var(--gold); --ac-rgb: 212, 175, 55; --ac-bar: linear-gradient(180deg, #f0d67c, #b8892a); }
+.ev-unit:is(.s-lm, .s-cho) .edate small { color: var(--ac); }
+.ev-unit:is(.s-lm, .s-cho) .ep-bar i.on { background: var(--ac-bar); box-shadow: 0 0 6px rgba(var(--ac-rgb), .3); }
+.ev-unit:is(.s-lm, .s-cho) .cd-big { border-top-color: rgba(var(--ac-rgb), .4);
+  background: linear-gradient(90deg, rgba(var(--ac-rgb), .16), rgba(var(--ac-rgb), .03) 70%), var(--panel); }
+.ev-unit:is(.s-lm, .s-cho) .cdb + .cdb::before { color: var(--ac); opacity: .6; }
 /* 大会名の系統の差し色（app.js の evNameHTML）。ナンバーの数字＝RIZINの赤／LANDMARK＝深い緑／超＝金。
    金と緑は平らに塗ると黄・若草に見えて安っぽいので、上から下へ沈む金属の階調にする（金は1字だけの差し色） */
 .evn.num { color: var(--red-hot); }
