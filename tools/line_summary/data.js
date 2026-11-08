@@ -292,106 +292,106 @@ window.LDATA = {
   }
  ],
  "results": {
-  "r55_11": {
-   "winner_id": null,
-   "result_method": null,
-   "result_round": null,
-   "result_technique": null,
-   "no_score": false,
-   "cancelled": false
-  },
   "r55_12": {
-   "winner_id": null,
-   "result_method": null,
-   "result_round": null,
+   "winner_id": "f_hamada",
+   "result_method": "KO",
+   "result_round": 3,
+   "result_technique": "gnp",
+   "no_score": false,
+   "cancelled": false
+  },
+  "r55_06": {
+   "winner_id": "f_chiharu",
+   "result_method": "KO",
+   "result_round": 2,
+   "result_technique": "elbow",
+   "no_score": false,
+   "cancelled": false
+  },
+  "r55_04": {
+   "winner_id": "f_zumagaziev",
+   "result_method": "KO",
+   "result_round": 1,
    "result_technique": null,
    "no_score": false,
    "cancelled": false
   },
-  "r55_10": {
-   "winner_id": null,
-   "result_method": null,
-   "result_round": null,
-   "result_technique": null,
-   "no_score": false,
-   "cancelled": false
-  },
-  "r55_09": {
-   "winner_id": null,
-   "result_method": null,
-   "result_round": null,
-   "result_technique": null,
-   "no_score": false,
-   "cancelled": false
-  },
-  "r55_08": {
-   "winner_id": null,
-   "result_method": null,
+  "r55_05": {
+   "winner_id": "f_ushiku",
+   "result_method": "DEC",
    "result_round": null,
    "result_technique": null,
    "no_score": false,
    "cancelled": false
   },
   "r55_07": {
-   "winner_id": null,
-   "result_method": null,
+   "winner_id": "f_meheula",
+   "result_method": "NC",
+   "result_round": 2,
+   "result_technique": null,
+   "no_score": true,
+   "cancelled": false
+  },
+  "r55_08": {
+   "winner_id": "f_kashimura",
+   "result_method": "SUB",
+   "result_round": 3,
+   "result_technique": "sub_other",
+   "no_score": false,
+   "cancelled": false
+  },
+  "r55_09": {
+   "winner_id": "f_fukuda",
+   "result_method": "DEC",
    "result_round": null,
    "result_technique": null,
    "no_score": false,
    "cancelled": false
   },
-  "r55_06": {
-   "winner_id": null,
-   "result_method": null,
+  "r55_11": {
+   "winner_id": "f_tilenov",
+   "result_method": "DEC",
    "result_round": null,
    "result_technique": null,
    "no_score": false,
    "cancelled": false
   },
-  "r55_05": {
-   "winner_id": null,
-   "result_method": null,
-   "result_round": null,
-   "result_technique": null,
-   "no_score": false,
-   "cancelled": false
-  },
-  "r55_04": {
-   "winner_id": null,
-   "result_method": null,
-   "result_round": null,
-   "result_technique": null,
-   "no_score": false,
-   "cancelled": false
-  },
-  "r55_03": {
-   "winner_id": null,
-   "result_method": null,
-   "result_round": null,
-   "result_technique": null,
-   "no_score": false,
-   "cancelled": false
-  },
-  "r55_02": {
-   "winner_id": null,
-   "result_method": null,
+  "r55_10": {
+   "winner_id": "f_laramie",
+   "result_method": "DEC",
    "result_round": null,
    "result_technique": null,
    "no_score": false,
    "cancelled": false
   },
   "r55_01": {
-   "winner_id": null,
-   "result_method": null,
+   "winner_id": "f_rikiya",
+   "result_method": "DEC",
    "result_round": null,
    "result_technique": null,
    "no_score": false,
    "cancelled": false
   },
+  "r55_03": {
+   "winner_id": "f_saiga",
+   "result_method": "KO",
+   "result_round": 1,
+   "result_technique": "left_hook",
+   "no_score": false,
+   "cancelled": false
+  },
+  "r55_02": {
+   "winner_id": "f_mizoguchi",
+   "result_method": "SUB",
+   "result_round": 1,
+   "result_technique": "rnc",
+   "no_score": false,
+   "cancelled": false
+  },
   "r55_13": {
-   "winner_id": null,
-   "result_method": null,
-   "result_round": null,
+   "winner_id": "f_papalii",
+   "result_method": "KO",
+   "result_round": 2,
    "result_technique": null,
    "no_score": false,
    "cancelled": false
@@ -410,41 +410,6 @@ window.LDATA = {
   }
  ],
  "zones": {
-  "r55_11": {
-   "chroma": 39,
-   "bl": {
-    "L": 24,
-    "sim": {
-     "m_hame": 0.03,
-     "m_nuki": 0.0,
-     "m_maruyama": 0.02
-    }
-   },
-   "br": {
-    "L": 28,
-    "sim": {
-     "m_hame": 0.05,
-     "m_nuki": 0.0,
-     "m_maruyama": 0.05
-    }
-   },
-   "tl": {
-    "L": 40,
-    "sim": {
-     "m_hame": 0.22,
-     "m_nuki": 0.0,
-     "m_maruyama": 0.14
-    }
-   },
-   "tr": {
-    "L": 41,
-    "sim": {
-     "m_hame": 0.01,
-     "m_nuki": 0.0,
-     "m_maruyama": 0.2
-    }
-   }
-  },
   "r55_12": {
    "chroma": 37,
    "bl": {
@@ -477,146 +442,6 @@ window.LDATA = {
      "m_hame": 0.01,
      "m_nuki": 0.01,
      "m_maruyama": 0.26
-    }
-   }
-  },
-  "r55_10": {
-   "chroma": 35,
-   "bl": {
-    "L": 19,
-    "sim": {
-     "m_hame": 0.03,
-     "m_nuki": 0.0,
-     "m_maruyama": 0.0
-    }
-   },
-   "br": {
-    "L": 25,
-    "sim": {
-     "m_hame": 0.06,
-     "m_nuki": 0.0,
-     "m_maruyama": 0.04
-    }
-   },
-   "tl": {
-    "L": 51,
-    "sim": {
-     "m_hame": 0.21,
-     "m_nuki": 0.01,
-     "m_maruyama": 0.11
-    }
-   },
-   "tr": {
-    "L": 43,
-    "sim": {
-     "m_hame": 0.02,
-     "m_nuki": 0.0,
-     "m_maruyama": 0.25
-    }
-   }
-  },
-  "r55_09": {
-   "chroma": 40,
-   "bl": {
-    "L": 25,
-    "sim": {
-     "m_hame": 0.02,
-     "m_nuki": 0.0,
-     "m_maruyama": 0.01
-    }
-   },
-   "br": {
-    "L": 24,
-    "sim": {
-     "m_hame": 0.05,
-     "m_nuki": 0.0,
-     "m_maruyama": 0.01
-    }
-   },
-   "tl": {
-    "L": 56,
-    "sim": {
-     "m_hame": 0.22,
-     "m_nuki": 0.0,
-     "m_maruyama": 0.18
-    }
-   },
-   "tr": {
-    "L": 59,
-    "sim": {
-     "m_hame": 0.03,
-     "m_nuki": 0.0,
-     "m_maruyama": 0.25
-    }
-   }
-  },
-  "r55_08": {
-   "chroma": 40,
-   "bl": {
-    "L": 23,
-    "sim": {
-     "m_hame": 0.02,
-     "m_nuki": 0.0,
-     "m_maruyama": 0.0
-    }
-   },
-   "br": {
-    "L": 26,
-    "sim": {
-     "m_hame": 0.06,
-     "m_nuki": 0.0,
-     "m_maruyama": 0.03
-    }
-   },
-   "tl": {
-    "L": 46,
-    "sim": {
-     "m_hame": 0.22,
-     "m_nuki": 0.0,
-     "m_maruyama": 0.14
-    }
-   },
-   "tr": {
-    "L": 50,
-    "sim": {
-     "m_hame": 0.01,
-     "m_nuki": 0.0,
-     "m_maruyama": 0.24
-    }
-   }
-  },
-  "r55_07": {
-   "chroma": 39,
-   "bl": {
-    "L": 22,
-    "sim": {
-     "m_hame": 0.02,
-     "m_nuki": 0.0,
-     "m_maruyama": 0.0
-    }
-   },
-   "br": {
-    "L": 24,
-    "sim": {
-     "m_hame": 0.06,
-     "m_nuki": 0.0,
-     "m_maruyama": 0.03
-    }
-   },
-   "tl": {
-    "L": 52,
-    "sim": {
-     "m_hame": 0.22,
-     "m_nuki": 0.0,
-     "m_maruyama": 0.21
-    }
-   },
-   "tr": {
-    "L": 57,
-    "sim": {
-     "m_hame": 0.02,
-     "m_nuki": 0.0,
-     "m_maruyama": 0.24
     }
    }
   },
@@ -655,6 +480,41 @@ window.LDATA = {
     }
    }
   },
+  "r55_04": {
+   "chroma": 40,
+   "bl": {
+    "L": 28,
+    "sim": {
+     "m_hame": 0.02,
+     "m_nuki": 0.0,
+     "m_maruyama": 0.03
+    }
+   },
+   "br": {
+    "L": 25,
+    "sim": {
+     "m_hame": 0.05,
+     "m_nuki": 0.0,
+     "m_maruyama": 0.02
+    }
+   },
+   "tl": {
+    "L": 51,
+    "sim": {
+     "m_hame": 0.22,
+     "m_nuki": 0.0,
+     "m_maruyama": 0.19
+    }
+   },
+   "tr": {
+    "L": 48,
+    "sim": {
+     "m_hame": 0.02,
+     "m_nuki": 0.0,
+     "m_maruyama": 0.25
+    }
+   }
+  },
   "r55_05": {
    "chroma": 39,
    "bl": {
@@ -690,38 +550,213 @@ window.LDATA = {
     }
    }
   },
-  "r55_04": {
-   "chroma": 40,
+  "r55_07": {
+   "chroma": 39,
    "bl": {
-    "L": 28,
+    "L": 22,
     "sim": {
      "m_hame": 0.02,
      "m_nuki": 0.0,
+     "m_maruyama": 0.0
+    }
+   },
+   "br": {
+    "L": 24,
+    "sim": {
+     "m_hame": 0.06,
+     "m_nuki": 0.0,
      "m_maruyama": 0.03
+    }
+   },
+   "tl": {
+    "L": 52,
+    "sim": {
+     "m_hame": 0.22,
+     "m_nuki": 0.0,
+     "m_maruyama": 0.21
+    }
+   },
+   "tr": {
+    "L": 57,
+    "sim": {
+     "m_hame": 0.02,
+     "m_nuki": 0.0,
+     "m_maruyama": 0.24
+    }
+   }
+  },
+  "r55_08": {
+   "chroma": 40,
+   "bl": {
+    "L": 23,
+    "sim": {
+     "m_hame": 0.02,
+     "m_nuki": 0.0,
+     "m_maruyama": 0.0
+    }
+   },
+   "br": {
+    "L": 26,
+    "sim": {
+     "m_hame": 0.06,
+     "m_nuki": 0.0,
+     "m_maruyama": 0.03
+    }
+   },
+   "tl": {
+    "L": 46,
+    "sim": {
+     "m_hame": 0.22,
+     "m_nuki": 0.0,
+     "m_maruyama": 0.14
+    }
+   },
+   "tr": {
+    "L": 50,
+    "sim": {
+     "m_hame": 0.01,
+     "m_nuki": 0.0,
+     "m_maruyama": 0.24
+    }
+   }
+  },
+  "r55_09": {
+   "chroma": 40,
+   "bl": {
+    "L": 25,
+    "sim": {
+     "m_hame": 0.02,
+     "m_nuki": 0.0,
+     "m_maruyama": 0.01
+    }
+   },
+   "br": {
+    "L": 24,
+    "sim": {
+     "m_hame": 0.05,
+     "m_nuki": 0.0,
+     "m_maruyama": 0.01
+    }
+   },
+   "tl": {
+    "L": 56,
+    "sim": {
+     "m_hame": 0.22,
+     "m_nuki": 0.0,
+     "m_maruyama": 0.18
+    }
+   },
+   "tr": {
+    "L": 59,
+    "sim": {
+     "m_hame": 0.03,
+     "m_nuki": 0.0,
+     "m_maruyama": 0.25
+    }
+   }
+  },
+  "r55_11": {
+   "chroma": 39,
+   "bl": {
+    "L": 24,
+    "sim": {
+     "m_hame": 0.03,
+     "m_nuki": 0.0,
+     "m_maruyama": 0.02
+    }
+   },
+   "br": {
+    "L": 28,
+    "sim": {
+     "m_hame": 0.05,
+     "m_nuki": 0.0,
+     "m_maruyama": 0.05
+    }
+   },
+   "tl": {
+    "L": 40,
+    "sim": {
+     "m_hame": 0.22,
+     "m_nuki": 0.0,
+     "m_maruyama": 0.14
+    }
+   },
+   "tr": {
+    "L": 41,
+    "sim": {
+     "m_hame": 0.01,
+     "m_nuki": 0.0,
+     "m_maruyama": 0.2
+    }
+   }
+  },
+  "r55_10": {
+   "chroma": 35,
+   "bl": {
+    "L": 19,
+    "sim": {
+     "m_hame": 0.03,
+     "m_nuki": 0.0,
+     "m_maruyama": 0.0
     }
    },
    "br": {
     "L": 25,
     "sim": {
-     "m_hame": 0.05,
+     "m_hame": 0.06,
      "m_nuki": 0.0,
-     "m_maruyama": 0.02
+     "m_maruyama": 0.04
     }
    },
    "tl": {
     "L": 51,
     "sim": {
-     "m_hame": 0.22,
-     "m_nuki": 0.0,
-     "m_maruyama": 0.19
+     "m_hame": 0.21,
+     "m_nuki": 0.01,
+     "m_maruyama": 0.11
     }
    },
    "tr": {
-    "L": 48,
+    "L": 43,
     "sim": {
      "m_hame": 0.02,
      "m_nuki": 0.0,
      "m_maruyama": 0.25
+    }
+   }
+  },
+  "r55_01": {
+   "chroma": 42,
+   "bl": {
+    "L": 23,
+    "sim": {
+     "m_hame": 0.06,
+     "m_nuki": 0.0,
+     "m_maruyama": 0.01
+    }
+   },
+   "br": {
+    "L": 25,
+    "sim": {
+     "m_hame": 0.08,
+     "m_nuki": 0.0,
+     "m_maruyama": 0.03
+    }
+   },
+   "tl": {
+    "L": 49,
+    "sim": {
+     "m_hame": 0.22,
+     "m_nuki": 0.0,
+     "m_maruyama": 0.16
+    }
+   },
+   "tr": {
+    "L": 56,
+    "sim": {
+     "m_hame": 0.01,
+     "m_nuki": 0.0,
+     "m_maruyama": 0.26
     }
    }
   },
@@ -795,41 +830,6 @@ window.LDATA = {
     }
    }
   },
-  "r55_01": {
-   "chroma": 42,
-   "bl": {
-    "L": 23,
-    "sim": {
-     "m_hame": 0.06,
-     "m_nuki": 0.0,
-     "m_maruyama": 0.01
-    }
-   },
-   "br": {
-    "L": 25,
-    "sim": {
-     "m_hame": 0.08,
-     "m_nuki": 0.0,
-     "m_maruyama": 0.03
-    }
-   },
-   "tl": {
-    "L": 49,
-    "sim": {
-     "m_hame": 0.22,
-     "m_nuki": 0.0,
-     "m_maruyama": 0.16
-    }
-   },
-   "tr": {
-    "L": 56,
-    "sim": {
-     "m_hame": 0.01,
-     "m_nuki": 0.0,
-     "m_maruyama": 0.26
-    }
-   }
-  },
   "r55_13": {
    "chroma": 40,
    "bl": {
@@ -866,5 +866,5 @@ window.LDATA = {
    }
   }
  },
- "built_at": "11/8 14:23"
+ "built_at": "11/8 20:38"
 };
