@@ -7,7 +7,7 @@
 <title>大会予想｜予想番付</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261108042020">
+<link rel="stylesheet" href="css/style.css?v=20261108115313">
 </head>
 <body>
 <div id="app-header"></div>
@@ -104,7 +104,7 @@ async function toggleSupport(fightId, fighterId) {
 // タイトルマッチの印＝金のプレート（Gaku 11/8 の画像）。見出しの段（第〇試合と同じ高さ）の右端に置き、カード写真には被せない。
 // 前は右上から垂れるベルト（SVG）だったが、写真に掛かっていた（Gaku 11/8「カード写真に被せるのではなく、13試合目とおんなじレベル」）。
 // height は属性でも持つ＝CSSが古いまま読まれても大きく出ない
-const TITLE_PLATE = `<img class="t-plate" src="assets/title_plate.webp" alt="" aria-hidden="true" height="36">`;
+const TITLE_PLATE = `<img class="t-plate" src="assets/title_plate.webp" alt="" aria-hidden="true" height="28">`;
 
 // 試合の見出し：1行（Gaku 11/7「2段になってる・文字ダサい」）。大きい番号 → 題（あれば赤）／階級（体重）
 // 体重は階級の直後に括弧でくっつける（Gaku 11/8「バンタム級（61.0kg）くっつけて欲しい。はなさず」。前は右端に離していた）

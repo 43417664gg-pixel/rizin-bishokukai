@@ -916,8 +916,8 @@ tr.top .lb-rate { color: var(--gold-hot); }
 /* 王座戦の印＝金のプレート（event.html の TITLE_PLATE）。見出しの段の右端・第〇試合の数字と同じ高さ（Gaku 11/8「13試合目とおんなじレベル」）。
    写真には被せない。題がプレートの下に潜らないよう見出しの右を空ける（狭い画面では題が2段目へ回り、プレートは1段目の右に残る） */
 .fight-label.top { position: relative; }
-.fight-unit.title .fight-label.top { padding-right: 76px; }
-.fight-label.top > .t-plate { position: absolute; top: 10px; right: 12px; height: 36px; width: auto; pointer-events: none;
+.fight-unit.title .fight-label.top { padding-right: 64px; }
+.fight-label.top > .t-plate { position: absolute; top: 10px; right: 12px; height: 28px; width: auto; pointer-events: none;   /* Gaku 11/8「もう少し小さく」36→28px */
   filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .65)); }
 
 /* ===== 予想の一致／割れ を瞬間で視認 ===== */
