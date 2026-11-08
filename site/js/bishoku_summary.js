@@ -39,11 +39,11 @@ const CSS = `
              border-radius:999px; border:2px solid; }
   .lab .bd.split { color:#ffcf66; border-color:#6b5420; }
   .lab .bd.same  { color:#7fe0a0; border-color:#25553a; }
-  /* オッズのバー＝その試合の全員の予想の割合（大会ページの各カードの得票率バーと同じ・赤＝写真の左・青＝右）。大会ページだけ・写真の上
-     （Gaku 11/8「オッズのバーも入れられる？うまくサイズは変えずに」「「第12試合 o vs o」小さいしいらないんじゃない？」）。
-     試合名の段を外した場所に入れ、まとめ全体の高さは変えない：3列の段は試合名24px→バー19.5px、浮いた分と上の余白（30→18・40→28）でメインのバー42pxを賄う */
+  /* オッズのバー＝その試合の全員の予想の割合（大会ページの各カードの得票率バーと同じ・赤＝写真の左・青＝右）。大会ページだけ・各カードの一番下
+     （Gaku 11/8「オッズのバーも入れられる？うまくサイズは変えずに」「「第12試合 o vs o」小さいしいらないんじゃない？」→「オッズのバーは上部じゃなくて下部」）。
+     写真の下に垂れる予想の丸と決まり手の、さらに下。試合名の段を外した分で賄い、まとめ全体の高さは変えない：3列の段は試合名24px→バー19.5px、浮いた分と上の余白（30→18・40→28）でメインのバー42pxを賄う */
   .odds { --cut:calc(10px * var(--u) + 2px); --gap:calc(4px * var(--u) + 1px); display:flex; height:calc(30px * var(--u));
-          margin-bottom:calc(15px * var(--u) - 3px); }
+          margin-top:calc(15px * var(--u) - 3px); }
   .odds > i { display:flex; align-items:center; min-width:0; overflow:hidden; white-space:nowrap; font-style:normal;
               font:600 calc(21px * var(--u))/1 var(--num, "Oswald"), sans-serif; letter-spacing:.05em; color:rgba(255,255,255,.92);
               box-shadow:inset 0 1px 0 rgba(255,255,255,.1); }
@@ -53,6 +53,7 @@ const CSS = `
                clip-path:polygon(var(--cut) 0, 100% 0, 100% 100%, 0 100%); }
   .odds > .r + .b { margin-left:calc(var(--gap) - var(--cut)); }
   .odds > .n { flex:1; background:#1a1a20; }   /* まだ誰も予想していない */
+  .sheet.bare .fc { display:flex; flex-direction:column; }   /* 写真の下の余白（垂れる丸の分）とバーの上の余白を足し算にする（縦に積むだけだと大きい方に呑まれて、バーが決まり手に寄りすぎた） */
   .ph { position:relative; margin-bottom:calc(var(--ic) / 2 + 34px * var(--u)); }
   .ph .banner { width:100%; aspect-ratio:16/9; object-fit:cover; display:block; border-radius:calc(8px * var(--u)); }
   /* 下端の影＝丸が乗る帯を絵から一段下げる。濃さ（--scrim）は大会ごとのバナーのうるささで決まる。顔のある上半分には掛けない */
@@ -178,13 +179,14 @@ function fightCard(f) {
   const badge = BARE || picks.length < 2 ? "" : winners.size === 1 ? `<span class="bd same">一致</span>` : `<span class="bd split">割れた</span>`;
   const title = f.title_label || `${fname(f.fighter1_id)} vs ${fname(f.fighter2_id)}`;
   return `<div class="fc">
-    ${BARE ? (D.odds ? odds(f) : "") : `<div class="lab"><span class="no">第${f.order_no}試合</span><span class="tt">${esc(title)}</span>${badge}</div>`}
+    ${BARE ? "" : `<div class="lab"><span class="no">第${f.order_no}試合</span><span class="tt">${esc(title)}</span>${badge}</div>`}
     <div class="ph">
       <img class="banner" src="${esc(o.img(f.image_url))}"><div class="scrim" style="--scrim:${scrimOf(f)}"></div>
       <div class="cheer l">${cheer(f.fighter1_id)}</div><div class="cheer r">${cheer(f.fighter2_id)}</div>
       <div class="side l">${side(f.fighter1_id)}</div><div class="side r">${side(f.fighter2_id)}</div>
       ${yet.length ? `<div class="yet">まだ ${yet.map(icon).join("")}</div>` : ""}
     </div>
+    ${BARE && D.odds ? odds(f) : ""}
   </div>`;
 }
 
