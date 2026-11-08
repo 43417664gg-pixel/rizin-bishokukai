@@ -18,7 +18,9 @@ def rest(path):
     req = urllib.request.Request(f"{URL}/rest/v1/{path}", headers={"apikey": KEY, "Authorization": f"Bearer {KEY}"})
     return json.load(urllib.request.urlopen(req, timeout=30))
 
-fights = rest(f"fights?select=id,image_url&event_id=eq.{ev}")
+# 結果はDBから（大会当日は結果をDBへ直接入れ、demo-data.js は後追い＝seedの結果は古い）。答え合わせの描き分けに使う
+RES = ["winner_id", "result_method", "result_round", "result_technique", "no_score", "cancelled"]
+fights = rest(f"fights?select=id,image_url,{','.join(RES)}&event_id=eq.{ev}")
 fids = ",".join(f["id"] for f in fights)
 who = ",".join(BISHOKU)
 members = {m["id"]: m for m in rest(f"members?select=id,name,color&id=in.({who})")}
@@ -54,7 +56,8 @@ def measure(path, colors):
 out = {
     "event": ev,
     "members": [members[m] for m in BISHOKU if m in members],
-    "preds": rest(f"predictions?select=member_id,fight_id,winner_id,method,round&member_id=in.({who})&fight_id=in.({fids})"),
+    "preds": rest(f"predictions?select=member_id,fight_id,winner_id,method,round,technique&member_id=in.({who})&fight_id=in.({fids})"),
+    "results": {f["id"]: {k: f.get(k) for k in RES} for f in fights},
     "supports": rest(f"supports?select=member_id,fight_id,fighter_id&member_id=in.({who})&fight_id=in.({fids})"),
     "zones": {f["id"]: measure(os.path.join(SITE, f["image_url"]), {m: members[m]["color"] for m in BISHOKU if m in members})
               for f in fights if f.get("image_url")},
@@ -69,3 +72,5 @@ for m in out["members"]:
     n = sum(1 for p in out["preds"] if p["member_id"] == m["id"])
     s = sum(1 for p in out["supports"] if p["member_id"] == m["id"])
     print(f"{m['name']}: 予想 {n}件／応援 {s}件")
+done = [f for f in fights if f.get("no_score") or (f.get("winner_id") and f.get("result_method"))]
+print(f"結果あり {len(done)}/{len(fights)}試合")

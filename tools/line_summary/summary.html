@@ -10,8 +10,9 @@
        wide3 … メイン＋残りを3列（★採用・Gaku確定2026-11-07「サイズ感がちょうどいい」）
        tier  … メイン＋セミ以下6試合を2列＋残りを3列（上ほど大きい）
        wide2 … メイン＋残りを2列
-     ?demo=1 … 見本（ダミーの予想で配色を確かめる。予想の無い大会でも絵との相性が見られる）。LINEには送らない -->
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=Noto+Sans+JP:wght@500;700;900&display=swap" rel="stylesheet">
+     ?demo=1 … 見本（ダミーの予想で配色を確かめる。予想の無い大会でも絵との相性が見られる）。LINEには送らない
+     ?res=demo … 答え合わせの見本（ダミーの結果）。結果が1試合でも入っていれば、何も付けなくても答え合わせの描き方になる -->
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@500;700;900&display=swap" rel="stylesheet">
 <style>
   html, body { background:#0b0b0e; width:1080px; overflow:hidden; margin:0; }
 </style>
@@ -20,6 +21,7 @@
 <body>
 <div id="sheet" class="sheet"></div>
 <script src="../../site/js/demo-data.js"></script>
+<script src="../../site/js/app.js"></script>   <!-- 採点（scoreFight／computeLeaderboard）の正本をそのまま使う -->
 <script src="../../site/js/bishoku_summary.js"></script>
 <script src="../../site/js/glyph_fit.js"></script>
 <script src="data.js"></script>
@@ -28,10 +30,12 @@ const S = window.DEMO_SEED, D = window.LDATA;
 const q = new URLSearchParams(location.search);
 document.getElementById("bsum-css").textContent = BishokuSummary.CSS;
 const ev = S.events.find(e => e.id === D.event);
-const fights = S.fights.filter(f => f.event_id === D.event && !f.cancelled).sort((a, b) => b.order_no - a.order_no);
+// 結果はDBの値（build_data.py の results）で上書きする。大会当日はDBが先に正しくなる
+const fights = S.fights.filter(f => f.event_id === D.event).map(f => ({ ...f, ...(D.results?.[f.id] || {}) }))
+  .filter(f => !f.cancelled).sort((a, b) => b.order_no - a.order_no);
 document.getElementById("sheet").innerHTML = BishokuSummary.render(D, {
   ev, fights, fname: id => S.fighters.find(x => x.id === id)?.name, img: u => "../../site/" + u,
-  layout: q.get("layout"), demo: q.get("demo"),
+  layout: q.get("layout"), demo: q.get("demo"), results: q.get("res"),
 });
 
 // render.sh が高さを読む（縦の長さは試合数と並べ方で変わる）

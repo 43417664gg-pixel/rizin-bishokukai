@@ -2,7 +2,9 @@
 // LINE画像（tools/line_summary/summary.html → render.sh）と大会ページ（ALL PICKSの上・Gaku指示11/7）で同じ描き方を使う。
 // 幅1080pxの1枚として組む。ページでは Shadow DOM に入れて縮小表示する（サイトのCSSと class 名がぶつからないように）。
 //   render(D, o) … D = { members, preds, supports, zones, built_at }（zones＝build_data.py が測ったバナーの明るさ・色）
-//                  o = { ev, fights（中止を除き番号の大きい順）, fname(id), img(url), layout, demo }
+//                  o = { ev, fights（中止を除き番号の大きい順）, fname(id), img(url), layout, demo, results }
+// 結果が1試合でも入ると「答え合わせ」の描き方になる（Gaku 11/8「うん」）：上に3人の成績、勝った側に WIN＋決着、負けた側の絵は暗く、
+// 当たった丸は金の輪・外れた丸は灰色。採点は app.js の scoreFight／computeLeaderboard（ルールの正本）をそのまま使う＝勝敗だけで数える
 (function () {
 const CSS = `
   .sheet { --gold:#c9a84a; --ink:#f4f4f6; --mute:#9a9aa2; --bg:#0b0b0e; --line:#26262e;
@@ -22,6 +24,7 @@ const CSS = `
   .who .m .ic { --ic:52px; border-width:3px; }
   .who .m small { font-size:21px; color:var(--mute); font-weight:700; }
   .legend { font-size:20px; color:var(--mute); font-weight:700; margin-bottom:26px; }
+  .legend .x { color:#ff4a5a; }
   .legend b { color:var(--ink); }
 
   /* ── 試合カード（列数ごとにアイコンと文字の大きさを決める。写真ほどは縮めない） ── */
@@ -53,6 +56,10 @@ const CSS = `
                clip-path:polygon(var(--cut) 0, 100% 0, 100% 100%, 0 100%); }
   .odds > .r + .b { margin-left:calc(var(--gap) - var(--cut)); }
   .odds > .n { flex:1; background:#1a1a20; }   /* まだ誰も予想していない */
+  /* 真ん中に薄く「ODDS」（Gaku 11/8「邪魔しないけど、見たら、あ、オッズかと分かる感じ」・各カードの .vb と同じ） */
+  .odds { position:relative; }
+  .odds::after { content:"ODDS"; position:absolute; left:50%; top:50%; transform:translate(-50%, -50%); pointer-events:none;
+                 font:600 calc(15px * var(--u) + 2px)/1 var(--num, "Oswald"), sans-serif; letter-spacing:.32em; margin-left:.16em; color:rgba(255,255,255,.3); }
   .sheet.bare .fc { display:flex; flex-direction:column; }   /* 写真の下の余白（垂れる丸の分）とバーの上の余白を足し算にする（縦に積むだけだと大きい方に呑まれて、バーが決まり手に寄りすぎた） */
   .ph { position:relative; margin-bottom:calc(var(--ic) / 2 + 34px * var(--u)); }
   .ph .banner { width:100%; aspect-ratio:16/9; object-fit:cover; display:block; border-radius:calc(8px * var(--u)); }
@@ -117,6 +124,57 @@ const CSS = `
   .yet .ic { --ic:calc(42px * var(--u) + 4px); border-width:2px; opacity:.45; box-shadow:none; }
   .yet .ic.tri { filter:none; }
 
+  /* ── 答え合わせ ── */
+  /* 3人の成績＝並びは予想まとめと同じ固定（順位の数字は出さない・王冠は一番だけ。Gaku「丸山先生を置いてけぼりにしたくない」） */
+  .score { --u:1; display:flex; gap:16px; margin:22px 0 14px; }
+  .score .sc { position:relative; flex:1; min-width:0; display:flex; align-items:center; gap:16px; padding:16px 18px 14px;
+               background:#15151b; border:2px solid var(--line); border-radius:16px; }
+  .score .sc.top { border-color:#8a6d22; background:linear-gradient(160deg, #2a2210, #15151b 70%); }
+  .score .ic { --ic:78px; }
+  .score .tx { min-width:0; }
+  .score .nm { font-size:25px; font-weight:900; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .score .nm .cr { margin-left:6px; }
+  .score .num { margin-top:4px; display:flex; align-items:baseline; gap:12px; white-space:nowrap; }
+  .score .num b { font:700 54px/1 var(--num, "Oswald"), sans-serif; }
+  .score .num b small { font-size:30px; color:var(--mute); margin-left:2px; }
+  .score .num em { font:700 30px/1 var(--num, "Oswald"), sans-serif; font-style:normal; color:var(--gold); }
+  .score .pt { margin-top:6px; font-size:19px; font-weight:700; color:var(--mute); }
+  .score .pt b { color:var(--ink); }
+  .hd.bare + .score { margin-top:0; }
+  /* 勝った側＝WIN と決着（写真の下端、丸の少し上）。負けた側の半分は暗く・色を抜く */
+  .ph .lose { position:absolute; top:0; bottom:0; width:50%; background:rgba(6,6,8,.55); -webkit-backdrop-filter:grayscale(1); backdrop-filter:grayscale(1); }
+  .ph .lose.l { left:0; border-radius:calc(8px * var(--u)) 0 0 calc(8px * var(--u)); }
+  .ph .lose.r { right:0; border-radius:0 calc(8px * var(--u)) calc(8px * var(--u)) 0; }
+  .win { position:absolute; bottom:calc(var(--ic) / 2 + 20px * var(--u) + 4px); display:flex; align-items:center; gap:calc(10px * var(--u));
+         padding:calc(6px * var(--u) + 1px) calc(14px * var(--u) + 2px); border-radius:calc(8px * var(--u) + 2px);
+         background:#e60012; box-shadow:0 0 0 calc(2px * var(--u) + 1px) #08080a, 0 3px 12px rgba(0,0,0,.6); white-space:nowrap; }
+  .win.l { left:calc(16px * var(--u)); } .win.r { right:calc(16px * var(--u)); }
+  .win b { font:700 calc(40px * var(--u) + 2px)/1 "Anton", var(--num, "Oswald"), sans-serif; letter-spacing:.04em; color:#fff; }
+  .win span { font-size:calc(28px * var(--u) + 2px); font-weight:900; line-height:1; color:#fff; }
+  /* 対象外（体重超過・無効試合・ドロー）＝真ん中に札。丸は薄く */
+  .ph .void { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:calc(6px * var(--u));
+              background:rgba(6,6,8,.55); border-radius:calc(8px * var(--u)); }
+  .ph .void b { padding:calc(6px * var(--u) + 1px) calc(18px * var(--u) + 2px); border-radius:999px; background:#2a2a32; border:2px solid #55555f;
+                font-size:calc(34px * var(--u) + 2px); font-weight:900; line-height:1.1; color:#e8e8ee; }
+  .ph .void span { font-size:calc(24px * var(--u) + 2px); font-weight:700; color:#c8c8d0; text-shadow:0 1px 4px #000; }
+  .ph.off .side, .ph.off .yet { opacity:.45; }
+  /* 当たり＝黒いシールの外にもう1本、金の輪。外れ＝色を抜いて沈める */
+  .pk.hit .ic { box-shadow:0 0 0 calc(3px * var(--u) + 1px) #08080a, 0 0 0 calc(7px * var(--u) + 3px) #ffd34d, 0 0 calc(18px * var(--u) + 6px) calc(6px * var(--u) + 2px) rgba(255,211,77,.5); }
+  .pk.hit .ic.tri { box-shadow:none; filter:drop-shadow(3px 0 0 #08080a) drop-shadow(-3px 0 0 #08080a) drop-shadow(0 3px 0 #08080a) drop-shadow(0 -3px 0 #08080a)
+        drop-shadow(3px 0 0 #ffd34d) drop-shadow(-3px 0 0 #ffd34d) drop-shadow(0 3px 0 #ffd34d) drop-shadow(0 -3px 0 #ffd34d) drop-shadow(0 0 10px rgba(255,211,77,.6)); }
+  /* 外れ＝誰の丸かは分かるまま（色はやや落とすだけ）、右肩に ✕ の札（Gaku 11/8「負けた方の選択したアイコンが全く消えるのはわかりにくい」） */
+  .pk { position:relative; }
+  .pk.miss .ic { filter:saturate(.55) brightness(.82); }
+  .pk.miss .ic.tri { filter:saturate(.55) brightness(.82) drop-shadow(3px 0 0 #08080a) drop-shadow(-3px 0 0 #08080a) drop-shadow(0 3px 0 #08080a) drop-shadow(0 -3px 0 #08080a); }
+  .pk .x { position:absolute; top:calc(var(--ic) * -.1); right:calc(var(--ic) * -.14); width:calc(var(--ic) * .44); height:calc(var(--ic) * .44);
+           display:flex; align-items:center; justify-content:center; border-radius:50%; background:#16161b; border:calc(2px * var(--u) + 1px) solid #f4f4f6;
+           box-shadow:0 1px 6px rgba(0,0,0,.7); font-size:calc(var(--ic) * .3); font-weight:900; line-height:1; color:#ff4a5a; }
+  .pk.miss .mt { color:#9a9aa2; }
+  /* ピタリ＝決まり手まで当てた（判定／KO・一本はラウンドも）。数えるのは勝敗だけ、これは印 */
+  .pk .mt.pt { margin-top:calc(6px * var(--u) + 2px); padding:calc(2px * var(--u) + 1px) calc(10px * var(--u) + 2px); border-radius:999px;
+               background:#ffd34d; color:#1a1408; }
+  .lab .bd.hit { color:#ffd34d; border-color:#6b5420; }
+  .lab .bd.off { color:var(--mute); border-color:#3a3a44; }
   .ft { display:flex; justify-content:space-between; font-size:20px; color:var(--mute); font-weight:700; }
   .ft b { color:var(--ink); } .ft b span { color:var(--gold); }
 `;
@@ -126,7 +184,8 @@ const METHOD = { KO:"KO", SUB:"一本", DEC:"判定" };
 const WD = "日月火水木金土";
 
 function render(D, o) {
-const { ev, fights, fname } = o;
+const { ev, fname } = o;
+let fights = o.fights;
 const rows = LAYOUTS[o.layout] || LAYOUTS.wide3;
 const DEMO = !!o.demo;
 // 大会ページに埋める時（Gaku指示11/7）：見出しの下の日付・締切・人数・凡例、一番上の試合名、「一致」「割れた」を出さない。LINE画像はそのまま
@@ -140,6 +199,22 @@ if (DEMO) {   // 勝敗・決まり手・応援・未予想が一通り出るよ
     if ((i + j) % 3 === 0) D.supports.push({ member_id: m.id, fight_id: f.id, fighter_id: j % 2 ? f.fighter1_id : f.fighter2_id });
   }));
 }
+// 答え合わせの見本（?res=demo）：ダミーの結果。体重超過と無効試合も1つずつ混ぜる
+const DEMO_RES = o.results === "demo";
+if (DEMO_RES) fights = fights.map((f, i) => {
+  if (i === 5) return { ...f, no_score: true, winner_id: null, result_method: null };
+  if (i === 8) return { ...f, no_score: false, winner_id: f.fighter1_id, result_method: "NC", result_round: 1 };
+  const m = ["KO", "DEC", "SUB", "DEC"][i % 4];
+  return { ...f, no_score: false, winner_id: i % 3 === 1 ? f.fighter2_id : f.fighter1_id, result_method: m,
+           result_round: m === "DEC" ? null : i % 3 + 1, result_technique: null };
+});
+// 試合ごとの決着：fin＝結果が入った（採点できる・対象外と決まった）／off＝対象外（体重超過・無効試合・ドロー）
+const fin = f => !!(f.no_score || (f.winner_id && f.result_method));
+const off = f => !!(f.no_score || f.result_method === "NC" || f.result_method === "DRAW");
+const RES = fights.some(fin);
+const judge = (p, f) => fin(f) && !off(f) && window.scoreFight ? window.scoreFight(p, f, { scope: "event" }) : null;
+const result = f => f.result_method === "DEC" ? "判定" : `${f.result_round ? f.result_round + "R " : ""}${METHOD[f.result_method] || ""}`;
+const offText = f => f.no_score ? "体重超過" : f.result_method === "NC" ? "無効試合" : "ドロー";
 const ini = m => esc(String(m.name).trim().slice(0, 1));
 const seedOf = m => ((window.DEMO_SEED && window.DEMO_SEED.members) || []).find(x => x.id === m.id) || {};
 const trimOf = m => seedOf(m).trim || "";
@@ -168,23 +243,31 @@ function odds(f) {
 function fightCard(f) {
   const picks = D.members.map(m => ({ m, p: predOf(m, f) })).filter(x => x.p);
   const side = fid => picks.filter(x => x.p.winner_id === fid).map(({ m, p }) => {
-    const mt = p.method ? METHOD[p.method] + (p.method !== "DEC" && p.round ? ` ${p.round}R` : "") : "";
-    return `<div class="pk">${icon(m, f, fid === f.fighter1_id ? "bl" : "br")}${mt ? `<div class="mt">${mt}</div>` : ""}</div>`;
+    const s = judge(p, f);
+    const mt = s?.pitari ? `<div class="mt pt">ピタリ</div>`
+      : p.method ? `<div class="mt">${METHOD[p.method] + (p.method !== "DEC" && p.round ? ` ${p.round}R` : "")}</div>` : "";
+    return `<div class="pk${s ? s.winnerHit ? " hit" : " miss" : ""}">${icon(m, f, fid === f.fighter1_id ? "bl" : "br")}${s && !s.winnerHit ? `<span class="x">✕</span>` : ""}${mt}</div>`;
   }).join("");
   const cheer = fid => D.members.filter(m => supOf(m, f)?.fighter_id === fid)
     .map(m => { const z = fid === f.fighter1_id ? "tl" : "tr";
       return `<span class="ci${sq(m)}${light(m.color) ? " lt" : ""}${sinks(f, z, m) ? " pop" : ""}" style="${paint(m)}">${face(m)}<span class="mg">📣応援</span></span>`; }).join("");
   const yet = D.members.filter(m => !predOf(m, f));
   const winners = new Set(picks.map(x => x.p.winner_id));
-  const badge = BARE || picks.length < 2 ? "" : winners.size === 1 ? `<span class="bd same">一致</span>` : `<span class="bd split">割れた</span>`;
+  const scored = picks.map(x => judge(x.p, f)).filter(s => s?.counted), nHit = scored.filter(s => s.winnerHit).length;
+  const badge = BARE ? "" : off(f) ? `<span class="bd off">対象外</span>`
+    : scored.length ? `<span class="bd ${nHit ? "hit" : "off"}">${nHit === scored.length ? "全員的中" : nHit ? `的中 ${nHit}/${scored.length}` : "全員外れ"}</span>`
+    : picks.length < 2 ? "" : winners.size === 1 ? `<span class="bd same">一致</span>` : `<span class="bd split">割れた</span>`;
+  const won = fin(f) && !off(f) ? (f.winner_id === f.fighter1_id ? "l" : "r") : "";
   const title = f.title_label || `${fname(f.fighter1_id)} vs ${fname(f.fighter2_id)}`;
   return `<div class="fc">
     ${BARE ? "" : `<div class="lab"><span class="no">第${f.order_no}試合</span><span class="tt">${esc(title)}</span>${badge}</div>`}
-    <div class="ph">
+    <div class="ph${off(f) ? " off" : ""}">
       <img class="banner" src="${esc(o.img(f.image_url))}"><div class="scrim" style="--scrim:${scrimOf(f)}"></div>
+      ${won ? `<div class="lose ${won === "l" ? "r" : "l"}"></div><div class="win ${won}"><b>WIN</b><span>${esc(result(f))}</span></div>` : ""}
+      ${off(f) ? `<div class="void"><b>対象外</b><span>${offText(f)}</span></div>` : ""}
       <div class="cheer l">${cheer(f.fighter1_id)}</div><div class="cheer r">${cheer(f.fighter2_id)}</div>
       <div class="side l">${side(f.fighter1_id)}</div><div class="side r">${side(f.fighter2_id)}</div>
-      ${yet.length ? `<div class="yet">まだ ${yet.map(icon).join("")}</div>` : ""}
+      ${yet.length ? `<div class="yet">${fin(f) ? "予想なし" : "まだ"} ${yet.map(m => icon(m)).join("")}</div>` : ""}
     </div>
     ${BARE && D.odds ? odds(f) : ""}
   </div>`;
@@ -199,12 +282,27 @@ for (const [n, cols] of rows) {
 const d = new Date(ev.event_date + "T00:00:00+09:00");
 const lock = ev.lock_at ? new Date(ev.lock_at) : null;
 const counts = D.members.map(m => `<span class="m">${icon(m)}${esc(m.name)}<small>${D.preds.filter(p => p.member_id === m.id).length}/${fights.length}</small></span>`).join("");
+// 成績は computeLeaderboard の並び（的中数→的中率）で一番を決め、表示は固定の並びのまま
+let score = "";
+if (RES && window.computeLeaderboard) {
+  const rows = window.computeLeaderboard(D.members, fights, D.preds, { scope: "event" });
+  const top = rows[0], by = Object.fromEntries(rows.map(r => [r.member.id, r]));
+  const crown = r => top && top.hits > 0 && r.hits === top.hits && r.rate === top.rate;
+  score = `<div class="score">${D.members.map(m => { const r = by[m.id];
+    return `<div class="sc${crown(r) ? " top" : ""}">${icon(m)}<div class="tx">
+      <div class="nm">${esc(m.name)}${crown(r) ? `<span class="cr">👑</span>` : ""}</div>
+      <div class="num"><b>${r.hits}<small>/${r.decided}</small></b>${r.rate != null ? `<em>${Math.round(r.rate * 100)}%</em>` : ""}</div>
+      <div class="pt">ピタリ <b>${r.pitari}</b></div></div></div>`; }).join("")}</div>`;
+}
+const nFin = fights.filter(fin).length;
 return `
   <div class="hd${BARE ? " bare" : ""}">
-    <div class="ttl">美食会<b>予想まとめ</b>${DEMO ? `<span style="font-size:30px;color:#ff5a67;margin-left:16px">見本（ダミー）</span>` : ""}</div>
-    ${BARE ? "" : `<div class="sub"><em>${esc(ev.name)}</em>　${d.getFullYear()}.${d.getMonth() + 1}.${d.getDate()}（${WD[d.getDay()]}）${lock ? `　締切 ${lock.getMonth() + 1}/${lock.getDate()} ${lock.getHours()}:${String(lock.getMinutes()).padStart(2, "0")}` : ""}</div>`}
+    <div class="ttl">美食会<b>${RES ? "答え合わせ" : "予想まとめ"}</b>${DEMO || DEMO_RES ? `<span style="font-size:30px;color:#ff5a67;margin-left:16px">見本（ダミー）</span>` : ""}</div>
+    ${BARE ? "" : `<div class="sub"><em>${esc(ev.name)}</em>　${d.getFullYear()}.${d.getMonth() + 1}.${d.getDate()}（${WD[d.getDay()]}）${lock ? `　締切 ${lock.getMonth() + 1}/${lock.getDate()} ${lock.getHours()}:${String(lock.getMinutes()).padStart(2, "0")}` : ""}${RES ? `　${nFin === fights.length ? "全試合終了" : `決着 ${nFin}/${fights.length}試合`}` : ""}</div>`}
   </div>
-  ${BARE ? "" : `<div class="who">${counts}</div>
+  ${score}
+  ${BARE ? "" : RES ? `<div class="legend"><b>金の輪</b>＝勝敗的中　<b class="x">✕</b>＝外れ　<b>ピタリ</b>＝決まり手まで的中（数えるのは勝敗だけ）　<b>📣</b>＝応援</div>`
+    : `<div class="who">${counts}</div>
   <div class="legend"><b>下の丸</b>＝その選手が勝つと予想　<b>上の「📣応援」の丸</b>＝その選手を応援（勝敗とは別）</div>`}
   ${grids}
   <div class="ft"><span>${esc(D.built_at)}時点</span><b>予想<span>番付</span>　43417664gg-pixel.github.io/rizin-bishokukai</b></div>`;

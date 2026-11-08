@@ -23,240 +23,380 @@ window.LDATA = {
    "fight_id": "r55_05",
    "winner_id": "f_ushiku",
    "method": null,
-   "round": null
+   "round": null,
+   "technique": null
   },
   {
    "member_id": "m_hame",
    "fight_id": "r55_02",
    "winner_id": "f_mizoguchi",
    "method": "KO",
-   "round": 1
+   "round": 1,
+   "technique": "right_straight"
   },
   {
    "member_id": "m_hame",
    "fight_id": "r55_11",
    "winner_id": "f_inoue_naoki",
    "method": "DEC",
-   "round": null
+   "round": null,
+   "technique": null
   },
   {
    "member_id": "m_hame",
    "fight_id": "r55_08",
    "winner_id": "f_ota",
    "method": "KO",
-   "round": 2
+   "round": 2,
+   "technique": "gnp"
   },
   {
    "member_id": "m_hame",
    "fight_id": "r55_07",
    "winner_id": "f_aimoto",
    "method": "KO",
-   "round": 2
+   "round": 2,
+   "technique": "right_hook"
   },
   {
    "member_id": "m_hame",
    "fight_id": "r55_06",
    "winner_id": "f_chiharu",
    "method": "DEC",
-   "round": null
+   "round": null,
+   "technique": null
   },
   {
    "member_id": "m_hame",
    "fight_id": "r55_12",
    "winner_id": "f_hamada",
    "method": null,
-   "round": null
+   "round": null,
+   "technique": null
   },
   {
    "member_id": "m_hame",
    "fight_id": "r55_09",
    "winner_id": "f_fukuda",
    "method": "KO",
-   "round": 2
+   "round": 2,
+   "technique": "left_straight"
   },
   {
    "member_id": "m_hame",
    "fight_id": "r55_10",
    "winner_id": "f_laramie",
    "method": "DEC",
-   "round": null
+   "round": null,
+   "technique": null
   },
   {
    "member_id": "m_hame",
    "fight_id": "r55_03",
    "winner_id": "f_kuramoto",
    "method": "KO",
-   "round": 3
+   "round": 3,
+   "technique": "knee"
   },
   {
    "member_id": "m_maruyama",
    "fight_id": "r55_10",
    "winner_id": "f_sinryu",
    "method": null,
-   "round": null
+   "round": null,
+   "technique": null
   },
   {
    "member_id": "m_maruyama",
    "fight_id": "r55_11",
    "winner_id": "f_inoue_naoki",
    "method": null,
-   "round": null
+   "round": null,
+   "technique": null
   },
   {
    "member_id": "m_maruyama",
    "fight_id": "r55_09",
    "winner_id": "f_fukuda",
    "method": null,
-   "round": null
+   "round": null,
+   "technique": null
   },
   {
    "member_id": "m_maruyama",
    "fight_id": "r55_08",
    "winner_id": "f_kashimura",
    "method": null,
-   "round": null
+   "round": null,
+   "technique": null
   },
   {
    "member_id": "m_maruyama",
    "fight_id": "r55_07",
    "winner_id": "f_aimoto",
    "method": null,
-   "round": null
+   "round": null,
+   "technique": null
   },
   {
    "member_id": "m_maruyama",
    "fight_id": "r55_05",
    "winner_id": "f_ushiku",
    "method": null,
-   "round": null
+   "round": null,
+   "technique": null
   },
   {
    "member_id": "m_maruyama",
    "fight_id": "r55_04",
    "winner_id": "f_zumagaziev",
    "method": null,
-   "round": null
+   "round": null,
+   "technique": null
   },
   {
    "member_id": "m_maruyama",
    "fight_id": "r55_13",
    "winner_id": "f_papalii",
    "method": null,
-   "round": null
+   "round": null,
+   "technique": null
   },
   {
    "member_id": "m_maruyama",
    "fight_id": "r55_06",
    "winner_id": "f_suzuki",
    "method": null,
-   "round": null
+   "round": null,
+   "technique": null
   },
   {
    "member_id": "m_maruyama",
    "fight_id": "r55_02",
    "winner_id": "f_mizoguchi",
    "method": null,
-   "round": null
+   "round": null,
+   "technique": null
   },
   {
    "member_id": "m_maruyama",
    "fight_id": "r55_03",
    "winner_id": "f_kuramoto",
    "method": null,
-   "round": null
+   "round": null,
+   "technique": null
   },
   {
    "member_id": "m_maruyama",
    "fight_id": "r55_12",
    "winner_id": "f_sekihara",
    "method": null,
-   "round": null
+   "round": null,
+   "technique": null
   },
   {
    "member_id": "m_maruyama",
    "fight_id": "r55_01",
    "winner_id": "f_kimura_ruon",
    "method": null,
-   "round": null
+   "round": null,
+   "technique": null
   },
   {
    "member_id": "m_hame",
    "fight_id": "r55_04",
    "winner_id": "f_zumagaziev",
    "method": "DEC",
-   "round": null
+   "round": null,
+   "technique": null
   },
   {
    "member_id": "m_nuki",
    "fight_id": "r55_05",
    "winner_id": "f_leekaiwen",
    "method": "DEC",
-   "round": null
+   "round": null,
+   "technique": null
   },
   {
    "member_id": "m_nuki",
    "fight_id": "r55_10",
    "winner_id": "f_sinryu",
    "method": "SUB",
-   "round": 2
+   "round": 2,
+   "technique": "kata_gatame"
   },
   {
    "member_id": "m_nuki",
    "fight_id": "r55_11",
    "winner_id": "f_tilenov",
    "method": "KO",
-   "round": 3
+   "round": 3,
+   "technique": "right_straight"
   },
   {
    "member_id": "m_nuki",
    "fight_id": "r55_09",
    "winner_id": "f_kimsuchol",
    "method": "DEC",
-   "round": null
+   "round": null,
+   "technique": null
   },
   {
    "member_id": "m_nuki",
    "fight_id": "r55_08",
    "winner_id": "f_ota",
    "method": "DEC",
-   "round": null
+   "round": null,
+   "technique": null
   },
   {
    "member_id": "m_nuki",
    "fight_id": "r55_07",
    "winner_id": "f_aimoto",
    "method": "KO",
-   "round": 3
+   "round": 3,
+   "technique": "right_hook"
   },
   {
    "member_id": "m_nuki",
    "fight_id": "r55_06",
    "winner_id": "f_chiharu",
    "method": "KO",
-   "round": 2
+   "round": 2,
+   "technique": "right_hook"
   },
   {
    "member_id": "m_nuki",
    "fight_id": "r55_02",
    "winner_id": "f_mizoguchi",
    "method": "DEC",
-   "round": null
+   "round": null,
+   "technique": null
   },
   {
    "member_id": "m_nuki",
    "fight_id": "r55_03",
    "winner_id": "f_saiga",
    "method": "KO",
-   "round": 2
+   "round": 2,
+   "technique": "high_kick"
   },
   {
    "member_id": "m_nuki",
    "fight_id": "r55_12",
    "winner_id": "f_hamada",
    "method": "SUB",
-   "round": 2
+   "round": 2,
+   "technique": "guillotine"
   }
  ],
+ "results": {
+  "r55_11": {
+   "winner_id": null,
+   "result_method": null,
+   "result_round": null,
+   "result_technique": null,
+   "no_score": false,
+   "cancelled": false
+  },
+  "r55_12": {
+   "winner_id": null,
+   "result_method": null,
+   "result_round": null,
+   "result_technique": null,
+   "no_score": false,
+   "cancelled": false
+  },
+  "r55_10": {
+   "winner_id": null,
+   "result_method": null,
+   "result_round": null,
+   "result_technique": null,
+   "no_score": false,
+   "cancelled": false
+  },
+  "r55_09": {
+   "winner_id": null,
+   "result_method": null,
+   "result_round": null,
+   "result_technique": null,
+   "no_score": false,
+   "cancelled": false
+  },
+  "r55_08": {
+   "winner_id": null,
+   "result_method": null,
+   "result_round": null,
+   "result_technique": null,
+   "no_score": false,
+   "cancelled": false
+  },
+  "r55_07": {
+   "winner_id": null,
+   "result_method": null,
+   "result_round": null,
+   "result_technique": null,
+   "no_score": false,
+   "cancelled": false
+  },
+  "r55_06": {
+   "winner_id": null,
+   "result_method": null,
+   "result_round": null,
+   "result_technique": null,
+   "no_score": false,
+   "cancelled": false
+  },
+  "r55_05": {
+   "winner_id": null,
+   "result_method": null,
+   "result_round": null,
+   "result_technique": null,
+   "no_score": false,
+   "cancelled": false
+  },
+  "r55_04": {
+   "winner_id": null,
+   "result_method": null,
+   "result_round": null,
+   "result_technique": null,
+   "no_score": false,
+   "cancelled": false
+  },
+  "r55_03": {
+   "winner_id": null,
+   "result_method": null,
+   "result_round": null,
+   "result_technique": null,
+   "no_score": false,
+   "cancelled": false
+  },
+  "r55_02": {
+   "winner_id": null,
+   "result_method": null,
+   "result_round": null,
+   "result_technique": null,
+   "no_score": false,
+   "cancelled": false
+  },
+  "r55_01": {
+   "winner_id": null,
+   "result_method": null,
+   "result_round": null,
+   "result_technique": null,
+   "no_score": false,
+   "cancelled": false
+  },
+  "r55_13": {
+   "winner_id": null,
+   "result_method": null,
+   "result_round": null,
+   "result_technique": null,
+   "no_score": false,
+   "cancelled": false
+  }
+ },
  "supports": [
   {
    "member_id": "m_hame",
@@ -726,5 +866,5 @@ window.LDATA = {
    }
   }
  },
- "built_at": "11/8 04:10"
+ "built_at": "11/8 14:23"
 };

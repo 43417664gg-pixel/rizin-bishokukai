@@ -873,48 +873,52 @@ tr.top .lb-rate { color: var(--gold-hot); }
    ::before＝外の金の煙。縁のまわりに濃淡のある金の靄をぼかして置き、ゆっくり揺らす。横は画面の余白（14px）の内側に収める＝横スクロールを生まない
    ::after ＝金の細い縁（ごく淡く）。かたまりより1px大きい金の札を後ろに敷き、はみ出た1pxが縁に見える（切り欠きは中の札＋0.6px＝斜めも1pxの太さ）
    .aura   ＝カードの縁にかかる靄（screen で重ねる＝暗い所だけ金に光る）。上の題の段と四辺の際だけ・真ん中は塗らない＝予想のアイコンがくすまない */
-.fight-unit.title { --cut: 10.6px; position: relative; isolation: isolate; }
-.fight-unit.title:not(:has(> .ob-picks)) { --cut: 12.6px; }
-.fight-unit.title > :where(.fight-card, .ob-picks) { border-color: transparent; }
-.fight-unit.title::after {
+/* 煙の色は3階調（--sm1 明・--sm2 中・--sm3 深）と濃さ --k。タイトルマッチ＝金（揺れる）／それ以外＝RIZINの赤（揺らさない・少し淡く）
+   （Gaku 11/8「タイトル戦は金の煙で囲ってたけど、他の試合も何かしらの色で囲もう」）。中止のカードは囲まない（.glow を付けない） */
+.fight-unit.glow { --sm1: 255, 128, 128; --sm2: 236, 44, 60; --sm3: 176, 12, 28; --k: .62;
+  --cut: 10.6px; position: relative; isolation: isolate; }
+.fight-unit.title { --sm1: 255, 236, 170; --sm2: 240, 205, 90; --sm3: 212, 175, 55; --k: 1; }
+.fight-unit.glow:not(:has(> .ob-picks)) { --cut: 12.6px; }
+.fight-unit.glow > :where(.fight-card, .ob-picks) { border-color: transparent; }
+.fight-unit.glow::after {
   content: ""; position: absolute; inset: -1px; z-index: -1; pointer-events: none;
-  background: linear-gradient(160deg, rgba(240, 205, 90, .34), rgba(212, 175, 55, .16) 45%, rgba(240, 205, 90, .28));   /* 線は目立たせない＝煙が主役（Gaku 11/8「外囲みの枠線の金線は目立たないようにしたい」） */
+  background: linear-gradient(160deg, rgba(var(--sm2), .34), rgba(var(--sm3), .16) 45%, rgba(var(--sm2), .28));   /* 線は目立たせない＝煙が主役（Gaku 11/8「外囲みの枠線の金線は目立たないようにしたい」） */
   clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%);
 }
-.fight-unit.title::before {
+.fight-unit.glow::before {
   content: ""; position: absolute; inset: -34px -12px; z-index: -2; pointer-events: none;
   background:
-    radial-gradient(170px 44px at 16% 26px, rgba(255, 236, 170, 1), transparent 72%),
-    radial-gradient(210px 38px at 62% 24px, rgba(232, 193, 88, .8), transparent 72%),
-    radial-gradient(120px 40px at 94% 30px, rgba(255, 240, 180, 1), transparent 72%),
-    radial-gradient(22px 220px at 8px 16%, rgba(246, 210, 100, .8), transparent 72%),
-    radial-gradient(20px 300px at 7px 52%, rgba(212, 175, 55, .6), transparent 72%),
-    radial-gradient(22px 200px at 9px 84%, rgba(240, 205, 90, .7), transparent 72%),
-    radial-gradient(22px 260px at calc(100% - 8px) 30%, rgba(240, 205, 90, .75), transparent 72%),
-    radial-gradient(20px 240px at calc(100% - 7px) 68%, rgba(212, 175, 55, .6), transparent 72%),
-    radial-gradient(180px 40px at 30% calc(100% - 28px), rgba(246, 210, 100, .85), transparent 72%),
-    radial-gradient(140px 36px at 80% calc(100% - 30px), rgba(212, 175, 55, .7), transparent 72%),
-    linear-gradient(rgba(240, 205, 90, .5), rgba(240, 205, 90, .5)) center / calc(100% - 6px) calc(100% - 52px) no-repeat;   /* 光の芯＝カードの外へ8〜9pxの帯。ぼかすと四辺を包む後光になる */
-  filter: blur(9px); will-change: transform, opacity;
-  animation: goldSmoke 5s ease-in-out infinite alternate;
+    radial-gradient(170px 44px at 16% 26px, rgba(var(--sm1), var(--k)), transparent 72%),
+    radial-gradient(210px 38px at 62% 24px, rgba(var(--sm2), calc(.8 * var(--k))), transparent 72%),
+    radial-gradient(120px 40px at 94% 30px, rgba(var(--sm1), var(--k)), transparent 72%),
+    radial-gradient(22px 220px at 8px 16%, rgba(var(--sm2), calc(.8 * var(--k))), transparent 72%),
+    radial-gradient(20px 300px at 7px 52%, rgba(var(--sm3), calc(.6 * var(--k))), transparent 72%),
+    radial-gradient(22px 200px at 9px 84%, rgba(var(--sm2), calc(.7 * var(--k))), transparent 72%),
+    radial-gradient(22px 260px at calc(100% - 8px) 30%, rgba(var(--sm2), calc(.75 * var(--k))), transparent 72%),
+    radial-gradient(20px 240px at calc(100% - 7px) 68%, rgba(var(--sm3), calc(.6 * var(--k))), transparent 72%),
+    radial-gradient(180px 40px at 30% calc(100% - 28px), rgba(var(--sm2), calc(.85 * var(--k))), transparent 72%),
+    radial-gradient(140px 36px at 80% calc(100% - 30px), rgba(var(--sm3), calc(.7 * var(--k))), transparent 72%),
+    linear-gradient(rgba(var(--sm2), calc(.5 * var(--k))), rgba(var(--sm2), calc(.5 * var(--k)))) center / calc(100% - 6px) calc(100% - 52px) no-repeat;   /* 光の芯＝カードの外へ8〜9pxの帯。ぼかすと四辺を包む後光になる */
+  filter: blur(9px); opacity: .85;
 }
+.fight-unit.title::before { will-change: transform, opacity; animation: goldSmoke 5s ease-in-out infinite alternate; }
 @keyframes goldSmoke {
   0%   { opacity: .6; transform: translateY(4px); }
   50%  { opacity: 1; }
   100% { opacity: .75; transform: translateY(-6px); }
 }
-.fight-unit.title > .aura {
+.fight-unit.glow > .aura {
   position: absolute; inset: 0; z-index: 3; pointer-events: none; mix-blend-mode: screen;
   clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--cut) + .6px), calc(100% - var(--cut) + .6px) 100%, 0 100%);
   background:
-    radial-gradient(150px 40px at 14% 0, rgba(255, 220, 120, .42), transparent 75%),
-    radial-gradient(170px 34px at 72% 0, rgba(240, 200, 90, .32), transparent 75%),
-    linear-gradient(180deg, rgba(212, 175, 55, .2), transparent 64px),
-    linear-gradient(90deg, rgba(240, 205, 90, .2), transparent 14px),
-    linear-gradient(270deg, rgba(240, 205, 90, .2), transparent 14px),
-    linear-gradient(0deg, rgba(212, 175, 55, .18), transparent 36px);
-  animation: goldBreath 5s ease-in-out infinite alternate;
+    radial-gradient(150px 40px at 14% 0, rgba(var(--sm1), calc(.42 * var(--k))), transparent 75%),
+    radial-gradient(170px 34px at 72% 0, rgba(var(--sm2), calc(.32 * var(--k))), transparent 75%),
+    linear-gradient(180deg, rgba(var(--sm3), calc(.2 * var(--k))), transparent 64px),
+    linear-gradient(90deg, rgba(var(--sm2), calc(.2 * var(--k))), transparent 14px),
+    linear-gradient(270deg, rgba(var(--sm2), calc(.2 * var(--k))), transparent 14px),
+    linear-gradient(0deg, rgba(var(--sm3), calc(.18 * var(--k))), transparent 36px);
 }
+.fight-unit.title > .aura { animation: goldBreath 5s ease-in-out infinite alternate; }
 @keyframes goldBreath { 0% { opacity: .55; } 100% { opacity: 1; } }
 /* 王座戦の印＝「TITLE MATCH」の金のプレート（event.html の TITLE_PLATE）。見出しの段の右端・第〇試合の数字と真ん中の高さを揃える
    （Gaku 11/8「13試合目とおんなじレベル」「タイトルMATCHはこんな感じで。右側に。」）。大きさは Gaku の画像の比率（数字「13」の約1.6倍の高さ）＝34px。
@@ -1373,6 +1377,10 @@ span.mav.tri > i { --k: 50cqw; position: relative; top: 7cqh; }
 .vb > .b { background: linear-gradient(270deg, #061328, #123a74 55%, #1f5fbf); padding-right: 8px; justify-content: flex-end;
   clip-path: polygon(var(--cut) 0, 100% 0, 100% 100%, 0 100%); }
 .vb > .r + .b { margin-left: calc(var(--gap) - var(--cut)); }
+/* 真ん中に薄く「ODDS」（Gaku 11/8「邪魔しないけど、見たら、あ、オッズかと分かる感じ」）。割合の数字は両端に寄るので真ん中は空いている */
+.vb { position: relative; }
+.vb:not(.mini)::after { content: "ODDS"; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); pointer-events: none;
+  font: 600 10px/1 var(--num); letter-spacing: .32em; margin-left: .16em; color: rgba(255, 255, 255, .3); }
 .vb.mini { --cut: 3px; --gap: 2px; height: 7px; margin-top: 4px; }
 .vb.mini > i { padding: 0; }
 
