@@ -600,208 +600,6 @@ tr.top .lb-rate { color: var(--gold-hot); }
 .mx-cell.hit { background: rgba(43, 168, 74, .12); }
 .mx-cell.miss { opacity: .5; }
 
-/* ===== 選手名鑑 ===== */
-.meikan-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-.meikan-card {
-  background: var(--panel); border: 1px solid var(--line); overflow: hidden;
-  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%);
-  animation: rise .45s both; animation-delay: var(--d, 0ms);
-  transition: transform .12s;
-}
-.meikan-card:active { transform: scale(.97); }
-.mphoto {
-  aspect-ratio: 1 / 1; background-repeat: no-repeat;
-  background-size: 290% auto; background-color: var(--panel2);
-  border-bottom: 2px solid var(--red);
-}
-.mphoto.left { background-position: left 8% top 18%; }
-.mphoto.right { background-position: right 8% top 18%; }
-/* 生写真（勝者単独カット）：全体を素直に見せる（切り分け不要） */
-.mphoto.solo { background-size: cover; background-position: center 22%; }
-.mphoto.none {
-  display: flex; align-items: center; justify-content: center;
-  font-family: var(--display); font-size: 56px; color: rgba(255, 255, 255, .12);
-}
-.meikan-card .mbody { padding: 9px 12px 12px; }
-.meikan-card .mname { font-weight: 900; font-size: 13px; line-height: 1.35; }
-.meikan-card .mmeta { display: flex; gap: 8px; color: var(--muted); font-size: 11px; margin-top: 2px; flex-wrap: wrap; }
-.meikan-card .mtags { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 6px; }
-.meikan-card .mbackbone {
-  display: inline-block; padding: 1px 8px;
-  font-size: 10px; color: var(--gold); border: 1px solid rgba(212, 175, 55, .45);
-  clip-path: polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%);
-}
-.meikan-card .mstance {
-  display: inline-block; padding: 1px 8px;
-  font-size: 10px; color: var(--blue-hot); border: 1px solid rgba(61, 139, 255, .45);
-  clip-path: polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%);
-}
-
-.profile-table { margin: 4px 0 14px; border-top: 1px solid var(--line); }
-.pt-row { display: flex; gap: 12px; padding: 9px 2px; border-bottom: 1px solid var(--line); font-size: 13px; }
-.pt-row .pt-k { color: var(--muted); min-width: 96px; font-size: 12px; letter-spacing: .04em; flex-shrink: 0; }
-.pt-row .pt-v { flex: 1; }
-
-/* ハイライト（象徴的なシーン） */
-.fhero-portrait {
-  border: 1px solid var(--line); border-bottom: 2px solid var(--red);
-  background: var(--panel2); overflow: hidden;
-  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0 100%);
-}
-.fhero-portrait { position: relative; }
-.fhero-portrait img {
-  width: 100%; height: 300px; object-fit: cover; object-position: center 15%; display: block;
-}
-.photo-toggle {
-  position: absolute; right: 10px; bottom: 10px; display: flex; gap: 4px;
-}
-.photo-toggle button {
-  background: rgba(8, 8, 11, .78); border: 1px solid var(--line); color: var(--muted);
-  font-family: var(--num); font-weight: 700; font-size: 11px; letter-spacing: .1em;
-  padding: 5px 12px; backdrop-filter: blur(4px);
-  clip-path: polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%);
-}
-.photo-toggle button.on { background: var(--red); border-color: var(--red); color: #fff; }
-.mphoto.portrait { aspect-ratio: 1 / 1; overflow: hidden; background: var(--panel2); }
-.mphoto.portrait img { width: 100%; height: 100%; object-fit: cover; object-position: center 18%; }
-.highlight-box {
-  background: var(--panel); border: 1px solid var(--line); border-left: 3px solid var(--gold);
-  overflow: hidden; margin-bottom: 18px;
-}
-.hl-scene {
-  aspect-ratio: 16 / 9; background-repeat: no-repeat;
-  background-size: 200% auto; background-color: var(--panel2);
-  border-bottom: 1px solid var(--line);
-}
-.hl-scene.left { background-position: left 12% top 26%; }
-.hl-scene.right { background-position: right 12% top 26%; }
-.hl-caption { padding: 12px 14px; font-size: 13px; line-height: 1.7; }
-
-.fhero { position: relative; margin-top: 14px; }
-.fhero-photo {
-  aspect-ratio: 16 / 10; background-repeat: no-repeat;
-  background-size: 200% auto; background-color: var(--panel2);
-  border: 1px solid var(--line); border-bottom: 2px solid var(--red);
-  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0 100%);
-}
-.fhero-photo.left { background-position: left 12% top 24%; }
-.fhero-photo.right { background-position: right 12% top 24%; }
-/* 手で選定した生写真（solo）は片側に寄せて切らない。200%ズームのままだと左上だけが写り、
-   被写体が右側にいる写真で本人が枠外に出る（堀口恭司で発生・2026-08-17） */
-.fhero-photo.solo { background-size: cover; background-position: center 25%; }
-.fhero-body .en-label { margin-top: 14px; }
-.rec-badge.fresh span { letter-spacing: .04em; }
-.rec-badge.career b { font-size: 20px; letter-spacing: .04em; }
-
-/* 異名・選手名（大きく） */
-.falias {
-  font-size: 20px; font-weight: 700; color: var(--gold-hot);
-  transform: skewX(-6deg); letter-spacing: .04em; margin: 16px 0 2px;
-  text-shadow: 0 0 16px rgba(212, 175, 55, .35);
-}
-.fname-big {
-  font-family: var(--display); font-weight: 400; font-size: 46px; line-height: 1.03;
-  letter-spacing: .02em; margin: 0; text-transform: none;
-}
-.fbelt {
-  display: inline-block; margin-top: 8px; padding: 3px 12px; font-size: 12px; font-weight: 700;
-  background: rgba(212, 175, 55, .12); border: 1px solid rgba(212, 175, 55, .5); color: var(--gold-hot);
-  clip-path: polygon(5px 0, 100% 0, calc(100% - 5px) 100%, 0 100%);
-}
-.fbelt.ex {
-  background: rgba(154, 160, 166, .12); border-color: rgba(154, 160, 166, .5); color: #c3c8cd;
-  margin-left: 6px;
-}
-.malias {
-  color: var(--gold-hot); font-size: 11px; font-weight: 700; margin-top: 3px;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-
-/* フィニッシュ内訳グラフ */
-.fin-graph { margin: 4px 0 16px; }
-.fin-head {
-  display: flex; justify-content: space-between; align-items: baseline;
-  font-size: 12px; color: var(--muted); margin-bottom: 6px;
-}
-.fin-rate b { font-family: var(--num); font-size: 18px; color: var(--gold-hot); }
-.fin-bar {
-  display: flex; height: 14px; overflow: hidden;
-  clip-path: polygon(0 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
-  background: var(--panel2);
-}
-.fin-seg.ko  { background: linear-gradient(90deg, var(--red), var(--red-hot)); }
-.fin-seg.sub { background: linear-gradient(90deg, #1e6fd9, #3d8bff); }
-.fin-seg.dec { background: linear-gradient(90deg, #6a6a78, #8a8a98); }
-/* 通算戦績バッジ＋円グラフを横一列に収める（スマホ幅でも折り返さない） */
-.rec-row { display: flex; align-items: center; gap: 12px; margin: 10px 0 16px; }
-.rec-row .fin-graph { margin: 0; flex: 1; min-width: 0; }
-.rec-row .fin-head { margin-bottom: 4px; }
-.rec-row .rec-badge { flex: none; padding: 8px 12px; }
-.rec-row .rec-badge.career b { font-size: 17px; white-space: nowrap; }
-/* 円グラフ（ドーナツ）：中央にフィニッシュ率 */
-.fin-pie-wrap { display: flex; align-items: center; gap: 10px; }
-.fin-pie {
-  width: 78px; height: 78px; border-radius: 50%; flex: none;
-  display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, .45);
-}
-.fin-pie-hole {
-  width: 48px; height: 48px; border-radius: 50%; background: var(--bg);
-  display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.05;
-}
-.fin-pie-hole b { font-family: var(--num); font-size: 18px; color: var(--gold-hot); }
-.fin-pie-hole span { font-size: 6px; color: var(--muted); letter-spacing: 0; transform: scale(.92); white-space: nowrap; }
-.fin-pie-wrap .fin-legend { flex-direction: column; gap: 4px; margin-top: 0; font-size: 10px; }
-.fin-legend { display: flex; gap: 14px; margin-top: 6px; font-size: 11px; color: var(--muted); }
-.fin-leg { white-space: nowrap; }
-.fin-leg b { color: var(--text); font-family: var(--num); font-size: 12px; }
-.fin-leg::before {
-  content: ""; display: inline-block; width: 8px; height: 8px; margin-right: 5px;
-  transform: skewX(-8deg);
-}
-.fin-leg.ko::before  { background: var(--red-hot); }
-.fin-leg.sub::before { background: #3d8bff; }
-.fin-leg.dec::before { background: #8a8a98; }
-.fin-leg.oth::before { background: #4a4a52; }
-
-/* キャリア戦績リスト（直近3＋開閉） */
-.career-list { border-top: 1px solid var(--line); }
-.cr-row {
-  display: flex; align-items: baseline; gap: 10px;
-  padding: 8px 2px; border-bottom: 1px solid var(--line); font-size: 13px;
-}
-.cr-row .cr-res { font-weight: 900; width: 18px; }
-.cr-row.w .cr-res { color: var(--gold-hot); }
-.cr-row.l .cr-res { color: var(--red-hot); }
-.cr-row.n .cr-res { color: var(--muted); }
-.cr-row .cr-date { font-family: var(--num); color: var(--muted); font-size: 12px; width: 58px; flex-shrink: 0; }
-.cr-row .cr-opp { font-weight: 700; flex: 1; min-width: 0; }
-.cr-row .cr-how { color: var(--muted); font-size: 12px; text-align: right; }
-.career-more summary {
-  cursor: pointer; padding: 10px 2px; font-size: 12px; color: var(--gold);
-  border-bottom: 1px solid var(--line); list-style: none; user-select: none;
-}
-.career-more summary::before { content: "▼ "; font-size: 10px; }
-.career-more[open] summary::before { content: "▲ "; }
-.record-badges { display: flex; gap: 8px; margin: 12px 0 20px; }
-.rec-badge {
-  background: var(--panel); border: 1px solid var(--line);
-  padding: 8px 16px; text-align: center;
-  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%);
-}
-.rec-badge b { font-family: var(--display); font-size: 22px; display: block; font-weight: 400; }
-.rec-badge span { font-size: 10px; color: var(--muted); }
-.history-item {
-  background: var(--panel); border: 1px solid var(--line);
-  overflow: hidden; margin-bottom: 12px;
-  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
-}
-.history-item .hbody { padding: 10px 14px; font-size: 13px; }
-.history-item .hresult { font-family: var(--num); font-weight: 700; letter-spacing: .08em; }
-.history-item .hresult.win { color: var(--gold-hot); }
-.history-item .hresult.lose { color: var(--muted); }
-.history-item .hmeta { color: var(--muted); font-size: 11px; }
-
 /* ===== admin ===== */
 .admin-section {
   background: var(--panel); border: 1px solid var(--line);
@@ -878,10 +676,8 @@ tr.top .lb-rate { color: var(--gold-hot); }
 
 @media (min-width: 560px) {
   .player-grid { grid-template-columns: repeat(3, 1fr); }
-  .fighter-grid { grid-template-columns: repeat(3, 1fr); }
   .page-title { font-size: 36px; }
   .title-row .page-title { font-size: 44px; }
-  .fname-big { font-size: 54px; }
 }
 
 /* admin：入力欄に添える補足（年齢の自動計算など） */
@@ -896,25 +692,6 @@ tr.top .lb-rate { color: var(--gold-hot); }
 }
 .fi-search input::placeholder { color: var(--muted); }
 .fi-search input:focus { outline: none; border-color: var(--red); }
-/* 階級名の右に人数 */
-.section-label .sec-count {
-  font: 500 16px/1 var(--num); color: var(--muted); letter-spacing: .06em;
-}
-/* 王者ブロックは金で立てる */
-.section-label.champ { color: var(--gold-hot); }
-.section-label.champ::before { background: var(--gold); }
-/* 元王者セクションは銀（現役の金と一目で区別） */
-.section-label.exchamp { color: #c3c8cd; }
-.section-label.exchamp::before { background: #9aa0a6; }
-.mchamp {
-  background: var(--gold); color: #131007; font-weight: 900;
-  font-size: 9px; letter-spacing: .14em; padding: 1px 6px;
-}
-/* 元王者は銀。現役王者（金）と一目で区別する */
-.mexchamp {
-  background: #9aa0a6; color: #14161a; font-weight: 900;
-  font-size: 9px; letter-spacing: .1em; padding: 1px 6px;
-}
 
 /* オープンブック：各カード下の「みんなの予想」併記 */
 .ob-picks {
@@ -1063,7 +840,7 @@ tr.top .lb-rate { color: var(--gold-hot); }
 .mteam { display: inline-block; font-size: 10px; font-weight: 700; color: #8ec7ff; background: #12202e;
   border: 1px solid #24455e; border-radius: 4px; padding: 1px 6px; cursor: pointer; }
 .mteam:hover { background: #1a3448; }
-.mbackbone { cursor: pointer; }
+
 .pt-link { color: #8ec7ff; text-decoration: none; font-weight: 700; }
 .pt-link:hover { text-decoration: underline; }
 /* ランキングのピタリ＝金色で強調＋クリックで内訳 */
@@ -1571,3 +1348,182 @@ body.wiz-open { overflow: hidden; }
 .wiz-nav.ask { align-items: center; }
 @keyframes wiz-ok-in { from { transform: translateY(8px); opacity: 0; } }
 body.wiz-open .toast { bottom: 84px; }   /* 予想の画面では「戻る/次へ」に重ねない */
+
+/* ===== 選手名鑑（11/8 作り直し）＝一覧はキャラ選び・詳細は上がウェット（人）／下がドライ（数字） =====
+   体験の手本は格闘ゲームのキャラ選びの「気持ち」（Gaku 11/8「ワクワクする感じ」）。見た目はこのサイトの意匠（黒・赤い斜めの印・極太の字）で作る */
+/* 上に残る大きな枠＝選んだ選手。格子をスクロールしても残す（キャラ選びの芯）。高さは格子の見える範囲を残すように抑える */
+.cs-stage { position: sticky; top: var(--hdr-h, 57px); z-index: 40; height: 236px; margin: 0 -14px; overflow: hidden;
+  background: linear-gradient(180deg, #131318, #0b0b0f); border-bottom: 1px solid var(--line); box-shadow: 0 10px 22px rgba(0, 0, 0, .5); }
+.cs-stage::before { content: ""; position: absolute; top: -20%; right: 6%; width: 46%; height: 140%; transform: skewX(-14deg);
+  background: linear-gradient(180deg, rgba(230, 0, 18, .2), rgba(230, 0, 18, .03)); }
+.cs-pic { position: absolute; top: 0; right: 0; bottom: 0; width: 56%; background: center 12% / cover no-repeat;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 34%); mask-image: linear-gradient(90deg, transparent 0, #000 34%); }
+.cs-pic.act { width: 66%; background-position: center 30%; opacity: .8; }   /* 公式ポートレートの無い人は試合写真を薄く */
+.cs-pic.none { display: none; }
+.cs-txt { position: relative; z-index: 1; display: flex; flex-direction: column; justify-content: flex-end; width: 64%; height: 100%; padding: 12px 0 14px 14px;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, .8); }
+.cs-nick { font: 900 15px/1.3 "Noto Serif JP", "Noto Sans JP", serif; font-feature-settings: "palt"; color: #e8e8ee; white-space: nowrap; overflow: hidden; }
+.cs-name { margin-top: 2px; font: 900 26px/1.12 "Noto Sans JP", sans-serif; letter-spacing: .01em; color: #fff; }
+.cs-name .fnm, .fd-name .fnm, .cs-nm .fnm { overflow-wrap: normal; }   /* 語の途中で割らずに字を小さくする（fitText） */
+.cs-meta { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; margin-top: 7px; font-size: 11.5px; font-weight: 700; color: #b9b9c4; }
+.cs-rec { color: #b9b9c4; }
+.cs-rec b { font: 600 16px/1 var(--num); color: #fff; margin: 0 1px 0 0; }
+.cs-rec b + b { margin-left: 4px; }
+/* 王座は金の線の札（面は塗らない＝「黄色やめよ」） */
+.cs-tag { padding: 2px 6px 1px; border: 1px solid var(--gold); font: 700 10px/1.3 var(--num); letter-spacing: .14em; color: var(--gold-hot); }
+.cs-roots { display: flex; flex-direction: column; gap: 1px; margin-top: 7px; font-size: 11px; line-height: 1.45; font-weight: 700; color: #d2d2da; }
+.cs-roots span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cs-word { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-top: 8px;
+  font: 900 12.5px/1.5 "Noto Serif JP", "Noto Sans JP", serif; color: #fff; quotes: "「" "」"; }
+.cs-go { align-self: flex-start; display: inline-flex; align-items: center; margin-top: 10px; padding: 7px 14px 7px 10px; background: var(--red);
+  clip-path: polygon(0 0, 100% 0, calc(100% - 8px) 100%, 0 100%); font: 900 12px/1 "Noto Sans JP", sans-serif; letter-spacing: .04em; color: #fff; text-decoration: none; text-shadow: none; }
+.cs-go i { font-style: normal; margin-left: 6px; font-size: 14px; }
+/* 切り替わる瞬間：写真が横から入り、字が下から順に出る */
+.cs-stage.in .cs-pic { animation: cs-pic .42s cubic-bezier(.2, .8, .2, 1); }
+.cs-stage.in .cs-txt > * { animation: cs-up .34s cubic-bezier(.2, .8, .2, 1) both; }
+.cs-stage.in .cs-txt > :nth-child(2) { animation-delay: .03s; }
+.cs-stage.in .cs-txt > :nth-child(3) { animation-delay: .06s; }
+.cs-stage.in .cs-txt > :nth-child(n+4) { animation-delay: .09s; }
+@keyframes cs-pic { from { opacity: 0; transform: translateX(22px); } }
+@keyframes cs-up { from { opacity: 0; transform: translateY(8px); } }
+/* 束ね方の切替（階級｜バックボーン｜ジム｜出身） */
+.cs-lens { display: flex; margin: 14px 0 10px; border-bottom: 1px solid var(--line); }
+.cs-lens button { position: relative; flex: 1; min-width: 0; padding: 11px 0 10px; border: 0; background: none; cursor: pointer;
+  font: 900 13px/1 "Noto Sans JP", sans-serif; letter-spacing: .04em; color: var(--muted); white-space: nowrap; }
+.cs-lens button[aria-selected="true"] { color: var(--text); }
+.cs-lens button[aria-selected="true"]::after { content: ""; position: absolute; left: 18%; right: 18%; bottom: -1px; height: 3px; background: var(--red); transform: skewX(-24deg); }
+/* 群の見出し＝節の見出しの小さい版＋人数 */
+.cs-gh { display: flex; align-items: center; gap: 8px; margin: 22px 0 9px; font: 900 15px/1.2 "Noto Sans JP", sans-serif; letter-spacing: .06em; color: var(--text); }
+.cs-gh::before { content: ""; flex: none; width: 5px; height: 15px; background: var(--red); transform: skewX(-18deg); }
+.cs-gh.champ::before { background: var(--gold); }
+.cs-gh.ex::before { background: #9aa0a6; }
+.cs-gh b { font: 500 14px/1 var(--num); color: var(--muted); letter-spacing: .04em; }
+.cs-gh::after { content: ""; flex: 1 1 16px; min-width: 16px; height: 1px; background: linear-gradient(90deg, rgba(255, 255, 255, .2), rgba(255, 255, 255, .03)); }
+/* 顔の格子。選んだ顔は金の線で囲み（大会ページの勝敗予想の札と同じ「選ぶ」の言葉）、他は少し沈む */
+.cs-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+.cs-face { display: block; min-width: 0; padding: 2px; color: inherit; text-decoration: none; -webkit-tap-highlight-color: transparent; }
+.cs-face.sel { background: linear-gradient(115deg, #9a7522 0%, #e9c552 18%, #fff2bf 26%, #e9c552 34%, #a8822a 56%, #d9b547 100%); }
+.cs-img { position: relative; display: block; aspect-ratio: 4 / 5; overflow: hidden; background: #16161c; }
+.cs-img img { width: 100%; height: 100%; object-fit: cover; object-position: center 10%; transition: filter .2s; }
+.cs-grid .cs-face:not(.sel) .cs-img img { filter: brightness(.7) saturate(.85); }
+@media (hover: hover) { .cs-grid .cs-face:hover .cs-img img { filter: none; } }
+/* 公式ポートレートの無い人＝サイトの意匠の札（写真のふりをした絵は作らない） */
+.cs-img.none { background: linear-gradient(160deg, #20202a, #111116); }
+.cs-img.none i { position: absolute; left: 50%; top: 50%; width: 9px; height: 34%; margin: -17% 0 0 -4px; background: var(--red); opacity: .5; transform: skewX(-18deg); }
+.cs-nm { display: block; padding: 4px 2px 5px; background: #121217; font: 700 10.5px/1.25 "Noto Sans JP", sans-serif; text-align: center; color: #c4c4ce; overflow: hidden; }
+.cs-face.sel .cs-nm { color: #fff; background: #1d1d25; }
+.cs-empty { padding: 34px 0; text-align: center; font-size: 13px; color: var(--muted); }
+.cs-empty a { color: var(--text); }
+@media (min-width: 600px) {
+  .cs-stage { height: 280px; }
+  .cs-txt { padding-left: 22px; }
+  .cs-name { font-size: 32px; }
+  .cs-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; }
+}
+@media (prefers-reduced-motion: reduce) { .cs-stage.in .cs-pic, .cs-stage.in .cs-txt > * { animation: none; } }
+
+/* ----- 詳細：頭 ----- */
+.fd-hero { position: relative; height: min(112vw, 560px); margin: 0 -14px; overflow: hidden; background: linear-gradient(180deg, #131318, var(--bg)); }
+.fd-hero:has(.fd-pic.act) { height: min(72vw, 420px); }
+.fd-hero.nopic { height: auto; padding-top: 40px; }
+.fd-pic { position: absolute; inset: 0; background: center 12% / cover no-repeat; }
+.fd-hero::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, var(--bg) 0%, rgba(8, 8, 11, .82) 24%, transparent 58%); }
+.fd-id { position: absolute; z-index: 1; left: 14px; right: 14px; bottom: 14px; text-shadow: 0 1px 10px rgba(0, 0, 0, .85); }
+.fd-hero.nopic .fd-id { position: relative; inset: auto; padding: 0 14px 6px; }
+.fd-nick { font: 900 18px/1.3 "Noto Serif JP", "Noto Sans JP", serif; font-feature-settings: "palt"; color: #ececf2; white-space: nowrap; overflow: hidden; }
+.fd-name { margin: 3px 0 0; font: 900 36px/1.1 "Noto Sans JP", sans-serif; letter-spacing: .01em; color: #fff; }
+.fd-wc { margin-top: 8px; font-size: 12px; font-weight: 700; letter-spacing: .1em; color: #b9b9c4; }
+.fd-credit { margin-top: 4px; text-align: right; font-size: 10px; color: var(--muted); }
+/* 王座＝金の線の印だけ（面を塗らない）。元王座は銀 */
+.fd-belts { display: flex; flex-direction: column; gap: 6px; margin-top: 14px; }
+.fd-belt { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; line-height: 1.4; color: #ece6cf; }
+.fd-belt::before { content: ""; flex: none; width: 4px; height: 14px; background: var(--gold); transform: skewX(-18deg); }
+.fd-belt.ex { color: #b9b9c4; }
+.fd-belt.ex::before { background: #9aa0a6; }
+/* 戦う理由＝本人の言葉（原文のまま・出典付き） */
+.fd-word { position: relative; margin: 0; padding: 20px 18px 14px 24px; background: var(--panel); border: 1px solid var(--line); }
+.fd-word::before { content: "“"; position: absolute; left: 8px; top: -6px; font: 400 64px/1 var(--display); color: var(--red); opacity: .55; }
+.fd-word p { margin: 0; font: 900 17px/1.7 "Noto Serif JP", "Noto Sans JP", serif; color: #fff; }
+.fd-word cite { display: block; margin-top: 10px; text-align: right; font-size: 11px; font-style: normal; color: var(--muted); }
+.fd-word cite a { color: inherit; }
+/* どんな人：どこから来たか（押すと一覧がその束ね方で開く） */
+.fd-roots { border-top: 1px solid var(--line); }
+.fd-root { display: grid; grid-template-columns: 92px minmax(0, 1fr) auto; align-items: center; gap: 8px; padding: 12px 2px; border-bottom: 1px solid var(--line);
+  color: var(--text); text-decoration: none; }
+.fd-rk { font-size: 11.5px; font-weight: 700; color: var(--muted); }
+.fd-rv { font-size: 14px; font-weight: 700; line-height: 1.45; }
+.fd-root i { font-style: normal; font-size: 18px; color: var(--muted); }
+.fd-tx { margin-top: 18px; }
+.fd-tk { display: flex; align-items: center; gap: 7px; margin-bottom: 5px; font: 900 12.5px/1.2 "Noto Sans JP", sans-serif; letter-spacing: .08em; color: #d0d0d8; }
+.fd-tk::before { content: ""; flex: none; width: 4px; height: 12px; background: var(--red); transform: skewX(-18deg); }
+.fd-tx p { margin: 0; font-size: 14px; line-height: 1.8; color: #d9d9e0; }
+.fd-hl { overflow: hidden; background: var(--panel); border: 1px solid var(--line); }
+.fd-hl-pic { height: 200px; background: center 30% / cover no-repeat; }
+.fd-hl p { margin: 0; padding: 12px 14px 14px; font-size: 13.5px; line-height: 1.75; color: #d9d9e0; }
+/* つながり＝同じジム・同じバックボーンの顔が横一列（押すとその人） */
+.fd-lh { display: flex; align-items: baseline; gap: 8px; margin: 18px 0 8px; }
+.fd-lk { flex: none; font-size: 11px; font-weight: 700; color: var(--muted); }
+.fd-lv { min-width: 0; font-size: 14px; font-weight: 900; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fd-lh b { margin-left: auto; font: 500 13px/1 var(--num); color: var(--muted); }
+.fd-faces { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+.fd-faces::-webkit-scrollbar { display: none; }
+.cs-face.mini { flex: none; width: 70px; padding: 0; }
+.cs-face.mini .cs-nm { font-size: 9.5px; }
+/* ----- 詳細：ドライ（数字）。ウェットとの間は大きく空ける ----- */
+.fd-dry { margin-top: 56px; }
+/* STATS＝大会ページの表の片側。項目名は左の帯、数字とバーは右へ伸びる。色は白と灰（赤青はコーナーの意味なので使わない） */
+.st-solo { --sheet: #1f2029; --line: #32333f; position: relative; padding: 12px 0; background: var(--sheet); border: 1px solid var(--line); border-top: 0;
+  container-type: inline-size; box-shadow: 0 8px 18px rgba(0, 0, 0, .35), inset 0 1px 0 rgba(255, 255, 255, .04); }
+.st-solo::before { content: ""; position: absolute; left: -1px; right: -1px; top: -2px; height: 2px; background: linear-gradient(90deg, rgba(255, 255, 255, .5), rgba(255, 255, 255, .1)); }
+.st-solo .tp-rows::before { left: 0; width: 64px; margin-left: 0; }
+.st-solo .tp-row { grid-template-columns: 64px minmax(0, 1fr); }
+.st-solo .tp-row.way { min-height: 20px; }
+.st-solo .tp-row.way + .tp-row.way { margin-top: 4px; }
+.st-solo .tp-row.fin { margin: 4px 0 8px; }
+.st-solo .tp-row.body { margin-top: 8px; }
+.tp-v.solo { flex-direction: row; padding: 0 14px; }
+.tp-row.rec .tp-v.solo { align-items: flex-start; }
+.tp-v.solo .st-n.w b { color: #fff; }
+.tp-v.solo .st-n.l b { color: #9a9aa6; }
+.tp-v.solo > .tp-bar { max-width: none; }
+.tp-v.solo > .tp-bar i { clip-path: polygon(0 0, 100% 0, calc(100% - 4px) 100%, 0 100%); }
+.tp-v.solo > .tp-bar.k i { background: linear-gradient(90deg, #3a3a44, #fff); }
+.tp-v.solo > .tp-bar.s i { background: linear-gradient(90deg, #2c2c35, #c8c8d0); }
+.tp-v.solo > .tp-bar.d i { background: linear-gradient(90deg, #2a2a32, #74747f); }
+.tp-born { font: 500 11px/1 var(--num); color: var(--muted); letter-spacing: .02em; }
+/* NEXT FIGHT＝大会ページと同じ向かい合わせ（ここだけコーナーがあるので赤青を使う） */
+.nf { margin-bottom: 16px; padding-bottom: 14px; background: var(--panel); border: 1px solid var(--line); }
+.nf-ev { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; padding: 11px 12px; color: var(--text); text-decoration: none; }
+.nf-en { min-width: 0; font: 900 15px/1.3 "Noto Sans JP", sans-serif; word-break: keep-all; overflow-wrap: anywhere; }   /* 大会名は空白の所でだけ折る（「下｜剋上祭り」と割れた） */
+.nf-d { flex: none; font: 600 12px/1 var(--num); color: var(--muted); }
+.nf-banner { display: block; width: 100%; }
+.nf-names { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 8px; padding: 12px 12px 2px;
+  font: 900 15px/1.3 "Noto Sans JP", sans-serif; }
+.nf-names .c1 { color: var(--red-hot); }
+.nf-names .c2 { color: var(--blue-hot); text-align: right; }
+.nf-names b { font: 400 14px/1 var(--display); color: var(--muted); letter-spacing: .06em; }
+.nf .stats { margin: 10px 12px 0; }
+.nf-memo { margin: 12px 12px 0; font-size: 12.5px; line-height: 1.75; color: #c8c8d0; }
+.nf-go { display: flex; align-items: center; justify-content: center; margin: 14px 12px 0; padding: 12px; background: var(--red);
+  clip-path: polygon(0 0, 100% 0, calc(100% - 10px) 100%, 0 100%); font: 900 14px/1 "Noto Sans JP", sans-serif; letter-spacing: .06em; color: #fff; text-decoration: none; }
+.nf-go i { font-style: normal; margin-left: 8px; font-size: 16px; }
+/* FIGHT RECORD・予想番付での記録＝大会ページの前戦と同じ WIN／LOSE の行。相手が名鑑にいれば押せる */
+.fd-record, .fd-site { border-top: 1px solid var(--line); }
+:is(.fd-record, .fd-site) .st-row { margin: 0; padding: 11px 2px; border-bottom: 1px solid var(--line); }
+:is(.fd-record, .fd-site) .rm { width: 42px; }
+.st-opp.lk { color: var(--text); text-decoration: none; }
+.st-opp.lk i { font-style: normal; margin-left: 5px; color: var(--muted); }
+.st-ev { display: flex; gap: 8px; margin-top: 3px; font-size: 10.5px; color: var(--muted); text-decoration: none; white-space: nowrap; }
+.st-ev span:first-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; }   /* 大会名が長ければ名前だけ詰める（日付は切らない） */
+.st-ev span:last-child { flex: none; font-family: var(--num); }
+.fd-sup { flex: none; display: flex; flex-direction: column; align-items: flex-end; gap: 2px; min-width: 58px; }
+.fd-sup small { font-size: 9.5px; font-weight: 700; color: var(--muted); white-space: nowrap; }
+.fd-sup b { font: 600 20px/1 var(--num); color: #fff; }
+.fd-sup b i { font-style: normal; font-size: 12px; margin-left: 1px; }
+.fd-note { margin: 8px 0 0; font-size: 10px; color: var(--muted); }
+.fd-foot { display: flex; flex-direction: column; gap: 10px; margin: 44px 0 34px; }
+.fd-foot a { display: block; padding: 13px 14px; border: 1px solid var(--line); text-align: center; font-size: 13px; font-weight: 700; color: #d0d0d8; text-decoration: none; }
+@media (min-width: 600px) {
+  .fd-name { font-size: 46px; }
+  .fd-nick { font-size: 21px; }
+}

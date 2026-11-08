@@ -6,76 +6,123 @@
 <meta name="robots" content="noindex">
 <title>選手名鑑｜予想番付</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261108153950">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&family=Noto+Serif+JP:wght@900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=20261108155519">
 </head>
 <body>
 <div id="app-header"></div>
 <div class="wrap" id="main"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261108153950"></script>
-<script src="js/techniques.js?v=20261108153950"></script>
-<script src="js/demo-data.js?v=20261108153950"></script>
-<script src="js/api.js?v=20261108153950"></script>
-<script src="js/app.js?v=20261108153950"></script>
-<script src="js/glyph_fit.js?v=20261108153950"></script>
+<script src="js/config.js?v=20261108155519"></script>
+<script src="js/techniques.js?v=20261108155519"></script>
+<script src="js/demo-data.js?v=20261108155519"></script>
+<script src="js/api.js?v=20261108155519"></script>
+<script src="js/app.js?v=20261108155519"></script>
+<script src="js/glyph_fit.js?v=20261108155519"></script>
+<script src="js/stats.js?v=20261108155519"></script>
 <script>
-// このポータルで扱った試合から選手ごとの戦績を組み立てる（サイト内完結STATS）
-function buildStats(fighterId, fights) {
-  const mine = fights.filter(f =>
-    (f.fighter1_id === fighterId || f.fighter2_id === fighterId) && f.winner_id && f.result_method);
-  let w = 0, l = 0, d = 0, finishes = {};
-  for (const f of mine) {
-    if (f.result_method === "DRAW" || f.result_method === "NC") { d++; continue; }
-    if (f.winner_id === fighterId) {
-      w++;
-      const key = f.result_technique ? (TECH_LABEL[f.result_technique] || f.result_technique)
-        : METHOD_LABEL[f.result_method];
-      finishes[key] = (finishes[key] || 0) + 1;
-    } else l++;
-  }
-  return { w, l, d, finishes, fights: mine };
-}
+// 選手名鑑（11/8 作り直し・設計＝リポジトリ外の Projects/RIZIN/名鑑_設計.md）。
+// 大会ページはドライ（この試合どっちが勝つ？の判断材料）、名鑑はウェット（この人は誰で、何のために戦うのか）
+// （Gaku 11/8「予想だけだとドライに寄っちゃうから、ウェットな部分を見せたいページ」）。
+// 一覧はキャラ選び（「気持ち的にねワクワクする感じ」）：上に選んだ選手の大きな枠、下に顔の格子。
+// 押すと上が切り替わり、選んでいる顔をもう一度押すとその選手の画面へ。見た目はこのサイトの意匠で作る（特定のゲームの画面は真似ない）
+let FMAP = {};   // stats.js の statsBlock が引く
+
+// 名鑑に出さない選手（Gaku指定）。試合データと詳細ページは残すので、大会ページの対戦カードや過去の結果からは今までどおり辿れる
+const HIDDEN_FIGHTERS = new Set(["f_mizuno", "f_leejaehoon"]);   // 水野新太／イ・ジェフン（2026-08-17）
+// ウェルター級は名鑑に出さない（Gaku指定・2026-08-13）。該当選手と試合データは保持する
+const HIDDEN_WEIGHTS = new Set(["ウェルター級"]);
 
 // 「直近」の判定は必ず event_date（実際の開催日）で行う。event_id の文字列比較
 // （"ev_cho5" vs "ev_r54"）は開催順にならない——過去に直近試合の写真/階級を取り違えた事故あり。
-function latestFight(fighterId, fights, EMAP, filterKey) {
-  return fights.filter(x => (!filterKey || x[filterKey]) &&
-    (x.fighter1_id === fighterId || x.fighter2_id === fighterId))
-    .sort((a, b) => (EMAP[b.event_id]?.event_date || "").localeCompare(EMAP[a.event_id]?.event_date || ""))[0];
-}
-// 選手写真＝直近の試合の生写真。ただし「その選手だけが写っているカット」に限る。
-// 「勝利の雄叫び」（勝利者コメント）は勝者が単独で写る構図なので、勝った選手はこれを使える。
-// ※立ち合い等の両者が写るカットを左右で切り分けるのは不可：カメラアングル次第で左右が
-//   入れ替わり、別人が出る（秋元のカードにクレベルが出た・2026-08-12）。
-// 生写真が使えない場合は公式VSバナー（fighter1=左が構図として保証）に落とす。
-function photoOf(fighterId, fights, EMAP, fighter) {
-  // ①手で選定した生写真（action_photo）が最優先。試合中/試合後の熱量があり顔が見えるカットを
-  //   人が1枚ずつ見て選んである（機械では「顔がよく見えるか」を判定できないため）。
-  if (fighter && fighter.action_photo) return { img: fighter.action_photo, solo: true };
-  const f = latestFight(fighterId, fights, EMAP, "image_url");
-  if (!f) return null;
-  return { img: f.image_url, side: f.fighter1_id === fighterId ? "left" : "right" };
-}
-function photoDiv(ph, cls) {
-  if (!ph) return "";
-  if (ph.solo) return `<div class="${cls} solo" style="background-image:url('${esc(ph.img)}')"></div>`;
-  return `<div class="${cls} ${ph.side}" style="background-image:url('${esc(ph.img)}')"></div>`;
+const byEventDate = (EMAP) => (a, b) => (EMAP[b.event_id]?.event_date || "").localeCompare(EMAP[a.event_id]?.event_date || "");
+const decided = (x) => !!(x.winner_id && x.result_method) || x.result_method === "DRAW" || x.result_method === "NC";
+const mineOf = (id, fights) => fights.filter(x => x.fighter1_id === id || x.fighter2_id === id);
+
+// 階級は「選手側の固定値」を最優先。試合のkg表記から引くと契約体重で誤った階級に出るため
+// （冨澤=フライ級/梅野・昇侍=バンタム級/直樹=フェザー級/細川=ライト級・Gaku指定 2026-08-13）。出場歴が無い王者は belt から取る
+function weightOf(f, fights, EMAP) {
+  if (f.weight_class_fixed) return f.weight_class_fixed;
+  const x = mineOf(f.id, fights).filter(x => x.weight_class).sort(byEventDate(EMAP))[0];
+  return x ? weightClassName(x.weight_class) : (weightFromBelt(f) || "階級未設定");
 }
 
-// 階級＝直近の試合の表記を使う
-function weightOf(fighterId, fights, EMAP) {
-  const f = latestFight(fighterId, fights, EMAP, "weight_class");
-  return f ? f.weight_class : "";
+// ---------- ルーツ（バックボーン・ジム・出身）の束ね方 ----------
+// バックボーンは区切りで分けて系統名に寄せる（極真空手・剛柔流空手→空手、ブラジリアン柔術→柔術 等）。複数持ちは各系統に出る
+function bbCats(b) {
+  const out = [];
+  for (let p of String(b || "").split(/[・/／、,]/)) {
+    p = p.replace(/（.*?）|\(.*?\)/g, "").trim();
+    if (!p) continue;
+    if (p.includes("空手")) p = "空手";
+    else if (p.includes("柔術")) p = "柔術";
+    else if (/^(総合格闘技|MMA|修斗)$/.test(p)) p = "MMA";
+    else if (p.includes("レスリング") || p.includes("グレコ")) p = "レスリング";
+    if (!out.includes(p)) out.push(p);
+  }
+  return out;
+}
+// ジムは表記の揺れ（FIGHTER'S FLOW の ’ と '・KRAZY BEE と KRAZYBEE・アメリカン・トップチーム と アメリカントップチーム）を無視して束ねる
+const teamsOf = (f) => String(f.team || "").split(/[／/]/).map(t => t.trim()).filter(Boolean);
+const teamKey = (t) => t.normalize("NFKC").replace(/[\s・’'‘`\-]/g, "").toLowerCase();
+// 出身は国で束ねる（「アメリカ合衆国」と「アメリカ」等の揺れを寄せる。県名だけの人は日本。ダゲスタンは国旗と同じくロシア）
+const COUNTRY = { "アメリカ合衆国": "アメリカ", "キルギス共和国": "キルギス", "チェコ共和国": "チェコ", "サモア独立国": "サモア", "ダゲスタン共和国": "ロシア" };
+function countryOf(origin) {
+  const t = String(origin || "").trim().split(/\s+/)[0];
+  if (!t) return "";
+  return /[都道府県]$/.test(t) ? "日本" : (COUNTRY[t] || t);
+}
+
+const LENSES = [["wc", "階級"], ["bb", "バックボーン"], ["gym", "ジム"], ["from", "出身"]];
+const byRank = (a, b) => (isChampion(b.f) - isChampion(a.f)) || a.f.name.localeCompare(b.f.name, "ja");
+function groupsFor(lens, rows) {
+  if (lens === "wc") {
+    // 王者は階級を問わず最上段（Gaku方針）。その次に元王者（RIZINの歴史を担った面々が埋もれないように・2026-08-17）
+    const champs = rows.filter(r => isChampion(r.f));
+    const ex = rows.filter(r => !isChampion(r.f) && r.f.former_belt);
+    const rest = rows.filter(r => !isChampion(r.f) && !r.f.former_belt);
+    const named = WEIGHT_ORDER.filter(w => !HIDDEN_WEIGHTS.has(w));
+    const other = rest.filter(r => !named.includes(r.f._wc));
+    return [{ label: "CHAMPION", rows: champs }, { label: "EX-CHAMPION", rows: ex },
+      ...named.map(w => ({ label: w, rows: rest.filter(r => r.f._wc === w) })), { label: "階級未設定", rows: other }]
+      .filter(g => g.rows.length).map(g => ({ ...g, rows: g.rows.sort(byRank) }));
+  }
+  const m = new Map(), none = [];
+  for (const r of rows) {
+    const keys = lens === "bb" ? bbCats(r.f.backbone).map(c => [c, c])
+      : lens === "gym" ? teamsOf(r.f).map(t => [teamKey(t), t])
+      : [countryOf(r.f.origin)].filter(Boolean).map(c => [c, c]);
+    if (!keys.length) none.push(r);
+    for (const [k, label] of keys) {
+      if (!m.has(k)) m.set(k, { rows: [], names: {} });
+      const g = m.get(k);
+      if (!g.rows.includes(r)) g.rows.push(r);
+      g.names[label] = (g.names[label] || 0) + 1;
+    }
+  }
+  // 表記が揺れていれば多い方の書き方を見出しにする
+  let gs = [...m.values()].map(g => ({ label: Object.entries(g.names).sort((a, b) => b[1] - a[1])[0][0], rows: g.rows }))
+    .sort((a, b) => b.rows.length - a.rows.length || a.label.localeCompare(b.label, "ja"));
+  if (lens === "gym" || lens === "bb") {
+    // 1人だけのジム・バックボーンは最後に1つの群へまとめる（見出しが1人ずつ並ぶと格子が間延びする）。フリーはジムではないので2人以上のジムの後ろへ
+    const free = gs.filter(g => g.label === "フリー"), real = gs.filter(g => g.label !== "フリー");
+    const solo = [...new Set(real.filter(g => g.rows.length === 1).flatMap(g => g.rows))];
+    gs = [...real.filter(g => g.rows.length > 1), ...free, ...(solo.length ? [{ label: lens === "gym" ? "その他のジム" : "その他", rows: solo }] : [])];
+  }
+  if (none.length) gs.push({ label: "記載なし", rows: none });
+  return gs.map(g => ({ ...g, rows: g.rows.sort(byRank) }));
 }
 
 async function load() {
   await renderHeader("fighter");
   const [fighters, fights, events] = await Promise.all([DB.listFighters(), DB.listFights(), DB.listEvents()]);
+  FMAP = fighterMap(fighters);
+  const EMAP = Object.fromEntries(events.map(e => [e.id, e]));
+  fighters.forEach(f => { f._wc = weightOf(f, fights, EMAP); });
   const id = qp("id");
-  if (id) { renderDetail(fighters.find(f => f.id === id), fighters, fights, events); if (fighters.some(f => f.id === id)) countView(id); }
-  else renderList(fighters, fights, events);
+  if (id) { renderDetail(FMAP[id], fighters, fights, EMAP); if (FMAP[id]) countView(id); }
+  else renderList(fighters);
 }
 // 選手名鑑の閲覧を裏で数える（Gaku 11/8「選手名鑑閲覧ランキングは裏でとっておきたい」）。表には出さない。
 // 同じタブで同じ選手を開き直しても1回。どこから来たか（大会ページ・名鑑の一覧・ランキング等）も残す
@@ -85,300 +132,300 @@ function countView(id) {
   try { const u = new URL(document.referrer); src = u.origin === location.origin ? (u.pathname.split("/").pop().replace(".html", "") || "index") : "external"; } catch (e) { /* 直接開いた */ }
   DB.logFighterView?.(id, src);
 }
+const ss = { get: (k) => { try { return sessionStorage.getItem(k); } catch (e) { return null; } },
+  set: (k, v) => { try { sessionStorage.setItem(k, v); } catch (e) { /* 覚えられなくても動く */ } } };
 
-let LIST_ROWS = [];   // 検索で絞り込む元データ
-
-function cardHtml({ f, s, ph }, i) {
-  const wc = f._wc;
-  return `
-    <a class="meikan-card" href="fighter.html?id=${f.id}" style="--d:${Math.min(i, 11) * 40}ms">
-      ${ph ? photoDiv(ph, "mphoto")
-        : (f.highlight_url
-          ? `<div class="mphoto portrait"><img src="${esc(f.highlight_url)}" alt="${esc(f.name)}" loading="lazy"></div>`
-          : `<div class="mphoto none">${esc(f.name.slice(0, 1))}</div>`)}
-      <div class="mbody">
-        <div class="mname">${flagOf(f.origin) ? `<span class="mflag">${flagOf(f.origin)}</span>` : ""}${esc(f.name)}</div>
-        <div class="mmeta">
-          ${wc ? `<span>${esc(wc)}</span>` : ""}
-          <span>${f.rec_w != null
-            ? `${f.rec_w}勝${f.rec_l != null ? f.rec_l + "敗" : ""}${f.rec_d ? f.rec_d + "分" : ""}`
-            : (s.w + s.l + s.d ? `${s.w}勝${s.l}敗${s.d ? s.d + "分" : ""}` : "")}</span>
-        </div>
-        ${f.nickname ? `<div class="malias">${esc(f.nickname)}</div>` : ""}
-        <div class="mtags">
-          ${isChampion(f) ? `<span class="mchamp">CHAMPION</span>` : ""}
-          ${!isChampion(f) && f.former_belt ? `<span class="mexchamp" title="${esc(f.former_belt)}">EX-CHAMPION</span>` : ""}
-          ${f.team ? f.team.split(/[／/]/).map(t => t.trim()).filter(Boolean).map(t => `<span class="mteam" data-q="${esc(t)}" onclick="filterChip(event,this)" title="この所属で絞り込み">${esc(t)}</span>`).join("") : ""}
-          ${f.backbone ? `<span class="mbackbone" data-q="${esc(f.backbone)}" onclick="filterChip(event,this)" title="このバックボーンで絞り込み">${esc(f.backbone)}</span>` : ""}
-          ${f.stance ? `<span class="mstance">${esc(f.stance)}</span>` : ""}
-        </div>
-      </div>
-    </a>`;
+// ---------- 字を枠に収める ----------
+// 名前・異名は語の途中で折らない（.fnm は「・」と姓名の境目だけで折れる）。入らない時は字を小さくする（「異名で改行はないなあ」）
+function fitText(el, min) {
+  if (!el) return;
+  el.style.fontSize = "";
+  let fs = parseFloat(getComputedStyle(el).fontSize);
+  while (el.scrollWidth > el.clientWidth + .5 && fs > min) { fs -= .5; el.style.fontSize = fs + "px"; }
 }
 
-// 検索：名前・異名・所属・バックボーン・階級のどれかに引っかかれば表示
-function matchQuery(row, q) {
+// ---------- 一覧＝キャラ選び ----------
+let ROWS = [], LENS = "wc", SEL = null;
+const rowOf = (id) => ROWS.find(r => r.f.id === id);
+
+function renderList(fighters) {
+  // 顔は公式ポートレートだけ（キャラ選びは顔の大きさが揃っていないと成立しない）。無い人はサイトの意匠の札
+  ROWS = fighters.filter(f => !HIDDEN_FIGHTERS.has(f.id) && !HIDDEN_WEIGHTS.has(f._wc))
+    .map(f => ({ f, img: f.highlight_url || null }));
+  LENS = LENSES.some(([k]) => k === qp("by")) ? qp("by") : (ss.get("meikan_by") || "wc");
+  const want = qp("pick") || ss.get("meikan_sel");
+  SEL = rowOf(want) ? want : (groupsFor(LENS, ROWS)[0]?.rows[0]?.f.id || null);
+  document.getElementById("main").innerHTML = `
+    <div class="title-row"><h1 class="page-title">選手名鑑</h1><span class="en-label">FIGHTERS</span></div>
+    <div class="cs-stage" id="cs-stage"></div>
+    <div class="cs-lens" role="tablist">${LENSES.map(([k, l]) =>
+      `<button type="button" role="tab" data-k="${k}" aria-selected="${k === LENS}" onclick="setLens('${k}')">${l}</button>`).join("")}</div>
+    <div class="fi-search">
+      <input id="fi_search" type="search" placeholder="選手名・異名・ジム・バックボーン・出身で探す"
+             value="${esc(qp('q') || '')}" oninput="renderGrid()" autocomplete="off">
+    </div>
+    <div id="cs-grid"></div>`;
+  renderStage();
+  renderGrid();
+  if (qp("pick")) requestAnimationFrame(() => {
+    const el = document.querySelector(`#cs-grid .cs-face[data-id="${SEL}"]`);
+    if (el) scrollTo({ top: el.getBoundingClientRect().top + scrollY - innerHeight * .62 });
+  });
+}
+
+function matchQuery(f, q) {
   if (!q) return true;
-  const f = row.f;
-  const hay = [f.name, f.nickname, f.team, f.backbone, f.origin, f._wc]
+  const hay = [f.name, f.nickname, f.team, f.backbone, f.origin, f._wc, ...bbCats(f.backbone), countryOf(f.origin)]
     .filter(Boolean).join(" ").toLowerCase();
   return q.toLowerCase().split(/\s+/).filter(Boolean).every(t => hay.includes(t));
 }
 
-function renderMeikan() {
+// 顔の札。一覧では押す＝選ぶ（pickFace）。詳細の「つながり」の札（mini）は押す＝その人の画面へ
+function faceTile(r, mini = false) {
+  const f = r.f;
+  return `<a class="cs-face${mini ? " mini" : ""}${!mini && f.id === SEL ? " sel" : ""}" href="fighter.html?id=${f.id}" data-id="${f.id}"${mini ? "" : ` onclick="return pickFace(event,'${f.id}')"`}>
+    <span class="cs-img${r.img ? "" : " none"}">${r.img ? `<img src="${esc(r.img)}" alt="" loading="lazy">` : "<i></i>"}</span>
+    <span class="cs-nm">${fnm(f.name)}</span></a>`;
+}
+
+window.renderGrid = function () {
   const q = (document.getElementById("fi_search")?.value || "").trim();
-  const hit = LIST_ROWS.filter(r => matchQuery(r, q));
-
-  // 王者は階級を問わず最上段（Gaku方針）。その次に元王者をまとめる——階級グループに散ると
-  // RIZINの歴史を担った面々が埋もれるため（Gaku指定・2026-08-17）
-  const champs = hit.filter(r => isChampion(r.f));
-  const exChamps = hit.filter(r => !isChampion(r.f) && r.f.former_belt);
-  const rest = hit.filter(r => !isChampion(r.f) && !r.f.former_belt);
-
-  // ウェルター級は名鑑に出さない（Gaku指定・2026-08-13）。該当選手と試合データは保持する
-  const HIDDEN_WEIGHTS = new Set(["ウェルター級"]);
-  const groups = WEIGHT_ORDER
-    .filter(name => !HIDDEN_WEIGHTS.has(name))
-    .map(name => ({ name, rows: rest.filter(r => r.f._wc === name) }))
-    .filter(g => g.rows.length);
-
-  const section = (label, rows, cls = "") => `
-    <div class="section-label ${cls}">${esc(label)}<span class="sec-count">${rows.length}</span></div>
-    <div class="meikan-grid">${rows.map(cardHtml).join("")}</div>`;
-
-  const body = !hit.length
-    ? `<p class="page-sub" style="margin-top:20px">「${esc(q)}」に一致する選手はいません。</p>`
-    : (champs.length ? section("CHAMPION", champs, "champ") : "") +
-      (exChamps.length ? section("EX-CHAMPION", exChamps, "exchamp") : "") +
-      groups.map(g => section(g.name, g.rows)).join("");
-
-  document.getElementById("meikan-body").innerHTML = body;
-}
-
-// ジム名・バックボーンのチップを押したら、その語で名鑑を絞り込む（＝所属ジムの選手一覧）
-window.filterBy = function (term) {
-  const el = document.getElementById("fi_search");
-  if (!el) { location.href = "fighter.html?q=" + encodeURIComponent(term); return; }
-  el.value = term; renderMeikan(); window.scrollTo({ top: 0, behavior: "smooth" });
-};
-window.filterChip = function (ev, el) {
-  ev.preventDefault(); ev.stopPropagation(); filterBy(el.dataset.q || "");
+  const hit = ROWS.filter(r => matchQuery(r.f, q));
+  const el = document.getElementById("cs-grid");
+  el.innerHTML = !hit.length
+    ? `<p class="cs-empty">「${esc(q)}」に当てはまる選手はいません。</p>`
+    : groupsFor(LENS, hit).map(g => `
+      <div class="cs-gh${g.label === "CHAMPION" ? " champ" : g.label === "EX-CHAMPION" ? " ex" : ""}"><span>${esc(g.label)}</span><b>${g.rows.length}</b></div>
+      <div class="cs-grid">${g.rows.map(r => faceTile(r)).join("")}</div>`).join("");
+  el.querySelectorAll(".cs-nm").forEach(n => fitText(n, 8));
 };
 
-// 名鑑に出さない選手（Gaku指定）。試合データと詳細ページは残すので、
-// event.html の対戦カードや過去の結果からは今までどおり辿れる
-const HIDDEN_FIGHTERS = new Set(["f_mizuno", "f_leejaehoon"]);   // 水野新太／イ・ジェフン（2026-08-17）
+window.setLens = function (k) {
+  LENS = k; ss.set("meikan_by", k);
+  document.querySelectorAll(".cs-lens button").forEach(b => b.setAttribute("aria-selected", b.dataset.k === k));
+  const u = new URL(location.href); u.searchParams.set("by", k); u.searchParams.delete("pick"); history.replaceState(null, "", u);
+  renderGrid();
+};
 
-function renderList(fighters, fights, events) {
-  const EMAP = Object.fromEntries(events.map(e => [e.id, e]));
-  LIST_ROWS = fighters.filter(f => !HIDDEN_FIGHTERS.has(f.id)).map(f => {
-    // 試合から階級を引く。出場歴が無い王者は belt から取る
-    // 階級は「選手側の固定値」を最優先。試合のkg表記から引くと契約体重で誤った階級に出るため
-    // （冨澤=フライ級/梅野・昇侍=バンタム級/直樹=フェザー級/細川=ライト級・Gaku指定 2026-08-13）
-    const wc = weightOf(f.id, fights, EMAP);
-    f._wc = f.weight_class_fixed || (wc ? weightClassName(wc) : (weightFromBelt(f) || "階級未設定"));
-    return { f, s: buildStats(f.id, fights), ph: photoOf(f.id, fights, EMAP, f) };
-  });
-  // 階級内は 王者 → 名前順
-  LIST_ROWS.sort((a, b) => (isChampion(b.f) - isChampion(a.f)) ||
-    a.f.name.localeCompare(b.f.name, "ja"));
+// 1回目の押下＝選ぶ（上の枠が切り替わる）。選んでいる顔をもう一度押す＝その選手の画面へ（キャラ選びの「決定」）
+window.pickFace = function (ev, id) {
+  if (id === SEL) return true;
+  ev.preventDefault();
+  SEL = id; ss.set("meikan_sel", id);
+  document.querySelectorAll("#cs-grid .cs-face.sel").forEach(e => e.classList.remove("sel"));
+  document.querySelectorAll(`#cs-grid .cs-face[data-id="${id}"]`).forEach(e => e.classList.add("sel"));
+  renderStage();
+  return false;
+};
 
-  document.getElementById("main").innerHTML = `
-    <div class="title-row"><h1 class="page-title">選手名鑑</h1><span class="en-label">FIGHTERS</span></div>
-    <p class="page-sub">このポータルで扱った大会の戦績を蓄積。大会を重ねるほど名鑑が濃くなる。</p>
-    <div class="fi-search">
-      <input id="fi_search" type="search" placeholder="選手名・異名・所属・階級で検索"
-             value="${esc(qp('q') || '')}" oninput="renderMeikan()" autocomplete="off">
-    </div>
-    <div id="meikan-body"></div>`;
-  renderMeikan();
+const recText = (f) => f.rec_w == null ? "" : `<b>${f.rec_w}</b>勝<b>${f.rec_l ?? 0}</b>敗${f.rec_d ? `<b>${f.rec_d}</b>分` : ""}`;
+function rootsLine(f) {
+  const c = countryOf(f.origin);
+  return [c && `${flagOf(f.origin)} ${esc(c)}`, bbCats(f.backbone).map(esc).join("・"), teamsOf(f).map(esc).join("／")].filter(Boolean);
 }
-
-// FIGHT / 普段着 の写真切替
-function switchPhoto(btn) {
-  document.getElementById("hero-photo").src = btn.dataset.src;
-  btn.parentElement.querySelectorAll("button").forEach(b => b.classList.toggle("on", b === btn));
-}
-
-// キャリア戦績：直近3試合は常時表示、残りは開閉式
-function careerHistoryHtml(fighter) {
-  const h = fighter.history || [];
-  if (!h.length) return "";
-  const row = (x) => `
-    <div class="cr-row ${x.r === "W" ? "w" : x.r === "L" ? "l" : "n"}">
-      <span class="cr-res">${x.r === "W" ? "○" : x.r === "L" ? "×" : x.r === "D" ? "△" : "−"}</span>
-      <span class="cr-date">${esc(x.d || "")}</span>
-      <span class="cr-opp">vs ${esc(x.opp)}</span>
-      <span class="cr-how">${esc(x.how || "")}</span>
+function renderStage() {
+  const el = document.getElementById("cs-stage"), r = rowOf(SEL);
+  if (!el || !r) return;
+  const f = r.f, pic = r.img || f.action_photo;
+  const tag = isChampion(f) ? `<span class="cs-tag">CHAMPION</span>` : f.former_belt ? `<span class="cs-tag">EX-CHAMPION</span>` : "";
+  const roots = rootsLine(f);
+  el.innerHTML = `
+    <div class="cs-pic${pic ? (r.img ? "" : " act") : " none"}"${pic ? ` style="background-image:url('${esc(pic)}')"` : ""}></div>
+    <div class="cs-txt">
+      ${f.nickname ? `<div class="cs-nick">${esc(f.nickname)}</div>` : ""}
+      <div class="cs-name">${fnm(f.name)}</div>
+      <div class="cs-meta">${tag}<span>${esc(f._wc)}</span>${f.rec_w != null ? `<span class="cs-rec">${recText(f)}</span>` : ""}</div>
+      ${roots.length ? `<div class="cs-roots">${roots.map(x => `<span>${x}</span>`).join("")}</div>` : ""}
+      ${f.fight_for?.q ? `<q class="cs-word">${esc(f.fight_for.q)}</q>` : ""}
+      <a class="cs-go" href="fighter.html?id=${f.id}">この選手を見る<i>›</i></a>
     </div>`;
-  const first = h.slice(0, 3), rest = h.slice(3);
-  return `
-    <div class="section-label">戦績（直近）</div>
-    <div class="career-list">
-      ${first.map(row).join("")}
-      ${rest.length ? `
-      <details class="career-more">
-        <summary>過去の戦績も見る（あと${rest.length}試合）</summary>
-        ${rest.map(row).join("")}
-      </details>` : ""}
-    </div>`;
+  el.classList.remove("in"); void el.offsetWidth; el.classList.add("in");
+  fitText(el.querySelector(".cs-nick"), 10);
+  fitText(el.querySelector(".cs-name"), 16);
 }
 
-// 出場試合の生写真（RIZIN公式の試合結果記事から機械抽出：立ち合い/ROUND中/勝利の雄叫び）。
-// 写真は「試合」に紐づく（両者が写るため片方だけの所有物にしない）。直近の試合から新しい順。
-function actionGalleryHtml(fighter, fights, EMAP) {
-  const mine = fights.filter(f =>
-    (f.fighter1_id === fighter.id || f.fighter2_id === fighter.id) && (f.gallery || []).length)
-    .sort((a, b) => (EMAP[b.event_id]?.event_date || "").localeCompare(EMAP[a.event_id]?.event_date || ""));
-  if (!mine.length) return "";
-  const block = (f) => {
-    const opp = f.fighter1_id === fighter.id ? f.fighter2_id : f.fighter1_id;
-    const ev = EMAP[f.event_id];
-    return `
-      <div class="gal-event">${esc(ev?.name || "")}${ev?.event_date ? "　" + fmtDate(ev.event_date) : ""}</div>
-      <div class="gal-row">
-        ${f.gallery.map(p => `
-          <div class="gal-item">
-            <img src="${esc(p.url)}" alt="${esc(p.label)}" loading="lazy">
-            <span class="gal-label">${esc(p.label)}</span>
-          </div>`).join("")}
-      </div>`;
-  };
+// ---------- 詳細＝選んだ後の画面 ----------
+// 頭：大きな写真・異名・名前・階級。王座は金の線の印だけ（面を塗らない＝「黄色やめよ」）。絵文字（🏆🥈）は使わない
+function heroHtml(f) {
+  const pic = f.highlight_url || f.action_photo;
+  const belts = [[f.belt, ""], ...String(f.former_belt || "").split("／").map(b => [b, " ex"])]
+    .map(([b, c]) => [(b || "").trim(), c]).filter(([b]) => b);
   return `
-    <div class="section-label">試合の生写真</div>
-    ${mine.map(block).join("")}
-    <p class="page-sub" style="margin-top:4px">RIZIN公式の試合結果記事より（© RIZIN FF）</p>`;
-}
-
-function renderDetail(fighter, fighters, fights, events) {
-  if (!fighter) { document.getElementById("main").innerHTML = "<p class='page-sub'>選手が見つかりません。</p>"; return; }
-  const FMAP = fighterMap(fighters);
-  const EMAP = Object.fromEntries(events.map(e => [e.id, e]));
-  const s = buildStats(fighter.id, fights);
-  const ph = photoOf(fighter.id, fights, EMAP, fighter);
-  const wc = weightOf(fighter.id, fights, EMAP);
-  const upcoming = fights.filter(f =>
-    (f.fighter1_id === fighter.id || f.fighter2_id === fighter.id) && !(f.winner_id && f.result_method));
-  const historyHtml = (list, decided) => list
-    .sort((a, b) => (EMAP[b.event_id]?.event_date || "").localeCompare(EMAP[a.event_id]?.event_date || ""))
-    .map(f => {
-      const opp = FMAP[f.fighter1_id === fighter.id ? f.fighter2_id : f.fighter1_id];
-      const ev = EMAP[f.event_id];
-      let resLine = `<span class="hmeta">結果待ち</span>`;
-      if (decided) {
-        const isDraw = f.result_method === "DRAW" || f.result_method === "NC";
-        const won = f.winner_id === fighter.id;
-        resLine = `<span class="hresult ${won ? "win" : "lose"}">${isDraw ? METHOD_LABEL[f.result_method] : won ? "WIN" : "LOSE"}</span>
-          <span class="hmeta">${METHOD_LABEL[f.result_method] || ""}${f.result_method !== "DEC" && f.result_round ? ` ${f.result_round}R` : ""}${f.result_technique ? `／${TECH_LABEL[f.result_technique] || esc(f.result_technique)}` : ""}</span>`;
-      }
-      return `
-      <div class="history-item">
-        ${f.image_url ? `<img src="${esc(f.image_url)}" alt="" loading="lazy">` : ""}
-        <div class="hbody">
-          <div>vs ${esc(opp?.name)}　<span class="hmeta">${esc(f.weight_class || "")}</span></div>
-          <div>${resLine}</div>
-          <div class="hmeta">${esc(ev?.name || "")}　${fmtDate(ev?.event_date)}</div>
-        </div>
-      </div>`;
-    }).join("");
-  const finishList = Object.entries(s.finishes).sort((a, b) => b[1] - a[1])
-    .map(([k, v]) => `${k}×${v}`).join("、");
-  // 通算戦績（報道ベース）とフィニッシュ内訳グラフ
-  const hasRec = fighter.rec_w != null;
-  const recText = hasRec
-    ? `${fighter.rec_w}勝${fighter.rec_l != null ? fighter.rec_l + "敗" : ""}${fighter.rec_d ? fighter.rec_d + "分" : ""}`
-    : null;
-  let finBars = "";
-  const ko = fighter.rec_ko, sub = fighter.rec_sub, dec = fighter.rec_dec;
-  // 反則勝ち・ドクターストップ等は KO でも一本でも判定でもない＝「その他」として持つ。
-  // これが無いと、その他勝ちがある選手（青木真也・ケラモフ）で内訳が勝数に届かずグラフが出ない。
-  const oth = fighter.rec_other;
-  // 内訳が勝数と一致する（＝完全に判明している）場合だけグラフを出す。中途半端な内訳は出さない
-  if (hasRec && ((ko || 0) + (sub || 0) + (dec || 0) + (oth || 0)) === fighter.rec_w && fighter.rec_w > 0) {
-    const parts = [
-      { label: "KO/TKO", n: ko || 0, cls: "ko" },
-      { label: "一本", n: sub || 0, cls: "sub" },
-      { label: "判定", n: dec || 0, cls: "dec" },
-      { label: "その他", n: oth || 0, cls: "oth" },
-    ].filter(p => p.n > 0);
-    const total = parts.reduce((a, p) => a + p.n, 0);
-    const finRate = Math.round(((ko || 0) + (sub || 0)) / fighter.rec_w * 100);
-    if (total > 0) {
-      // 円グラフ（ドーナツ）：conic-gradient で KO/一本/判定 の比率を描き、中央にフィニッシュ率を置く
-      const COLOR = { ko: "#e60012", sub: "#1e6fd9", dec: "#8a8a92", oth: "#4a4a52" };
-      let acc = 0;
-      const stops = parts.map(p => {
-        const from = acc / total * 360;
-        acc += p.n;
-        const to = acc / total * 360;
-        return `${COLOR[p.cls]} ${from.toFixed(1)}deg ${to.toFixed(1)}deg`;
-      }).join(", ");
-      finBars = `
-      <div class="fin-graph">
-        <div class="fin-head"><span>勝利の内訳</span></div>
-        <div class="fin-pie-wrap">
-          <div class="fin-pie" style="background:conic-gradient(${stops})">
-            <div class="fin-pie-hole">
-              <b>${finRate}%</b>
-              <span>フィニッシュ率</span>
-            </div>
-          </div>
-          <div class="fin-legend">
-            ${parts.map(p => `<span class="fin-leg ${p.cls}">${p.label} <b>${p.n}</b>（${Math.round(p.n / total * 100)}%）</span>`).join("")}
-          </div>
-        </div>
-      </div>`;
-    }
-  }
-  document.getElementById("main").innerHTML = `
-    <div class="fhero">
-      ${fighter.highlight_url
-        ? `<div class="fhero-portrait">
-             <img id="hero-photo" src="${esc(fighter.highlight_url)}" alt="${esc(fighter.name)}">
-             ${fighter.photo_casual ? `
-             <div class="photo-toggle">
-               <button class="on" data-src="${esc(fighter.highlight_url)}" onclick="switchPhoto(this)">FIGHT</button>
-               <button data-src="${esc(fighter.photo_casual)}" onclick="switchPhoto(this)">普段着</button>
-             </div>` : ""}
-           </div>`
-        : (ph ? photoDiv(ph, "fhero-photo") : "")}
-      ${fighter.action_photo_credit ? `<div class="photo-credit">${esc(fighter.action_photo_credit)}</div>` : ""}
-      <div class="fhero-body">
-        ${fighter.nickname ? `<div class="falias">“${esc(fighter.nickname)}”</div>` : `<div class="en-label">FIGHTER</div>`}
-        <h1 class="fname-big">${esc(fighter.name)}</h1>
-        ${fighter.belt ? `<div class="fbelt">🏆 ${esc(fighter.belt)}</div>` : ""}
-        ${fighter.former_belt ? `<div class="fbelt ex">🥈 ${esc(fighter.former_belt)}</div>` : ""}
-        <div class="page-sub" style="margin-top:6px">${wc ? esc(wc) : ""}</div>
+    <div class="fd-hero${pic ? "" : " nopic"}">
+      ${pic ? `<div class="fd-pic${f.highlight_url ? "" : " act"}" style="background-image:url('${esc(pic)}')"></div>` : ""}
+      <div class="fd-id">
+        ${f.nickname ? `<div class="fd-nick">${esc(f.nickname)}</div>` : ""}
+        <h1 class="fd-name">${fnm(f.name)}</h1>
+        <div class="fd-wc">${esc(f._wc)}</div>
       </div>
     </div>
-    ${hasRec ? `
-    <div class="rec-row">
-      <div class="rec-badge career"><b>${esc(recText)}</b><span>通算戦績</span></div>
-      ${finBars}
-    </div>` : ""}
-    <div class="profile-table">
-      ${ageText(fighter.birth_date) ? `<div class="pt-row"><span class="pt-k">年齢</span><span class="pt-v">${esc(ageText(fighter.birth_date))}</span></div>` : ""}
-      ${fighter.backbone ? `<div class="pt-row"><span class="pt-k">バックボーン</span><span class="pt-v"><a class="pt-link" href="fighter.html?q=${encodeURIComponent(fighter.backbone)}">${esc(fighter.backbone)} ›</a></span></div>` : ""}
-      ${fighter.stance ? `<div class="pt-row"><span class="pt-k">構え</span><span class="pt-v">${esc(fighter.stance)}</span></div>` : ""}
-      ${fighter.team ? `<div class="pt-row"><span class="pt-k">所属ジム</span><span class="pt-v">${fighter.team.split(/[／/]/).map(t => t.trim()).filter(Boolean).map(t => `<a class="pt-link" href="fighter.html?q=${encodeURIComponent(t)}">${esc(t)} ›</a>`).join("　")}</span></div>` : ""}
-      ${fighter.origin ? `<div class="pt-row"><span class="pt-k">出身</span><span class="pt-v">${flagOf(fighter.origin)} ${esc(fighter.origin)}</span></div>` : ""}
-      ${fighter.style ? `<div class="pt-row"><span class="pt-k">ファイトスタイル</span><span class="pt-v">${esc(fighter.style)}</span></div>` : ""}
-      ${fighter.career ? `<div class="pt-row"><span class="pt-k">来歴</span><span class="pt-v">${esc(fighter.career)}</span></div>` : ""}
-      ${fighter.memo ? `<div class="pt-row"><span class="pt-k">今大会</span><span class="pt-v">${esc(fighter.memo)}</span></div>` : ""}
-    </div>
-    ${fighter.highlight_caption ? `
-    <div class="section-label">HIGHLIGHT</div>
-    <div class="highlight-box">
-      ${ph ? photoDiv(ph, "hl-scene") : ""}
-      <p class="hl-caption">${esc(fighter.highlight_caption)}</p>
-    </div>` : ""}
-    ${upcoming.length ? `<div class="section-label">NEXT FIGHT</div>${historyHtml(upcoming, false)}` : ""}
-    ${careerHistoryHtml(fighter)}
-    ${actionGalleryHtml(fighter, fights, EMAP)}
-    ${s.fights.length ? `<div class="section-label">予想アーカイブ</div>${historyHtml(s.fights, true)}` : ""}
-    ${fighter.rizin_url ? `<p class="page-sub" style="margin-top:16px"><a href="${esc(fighter.rizin_url)}" target="_blank" rel="noopener" style="text-decoration:underline">RIZIN公式の関連記事 ↗</a></p>` : ""}
-    <p style="margin-top:20px"><a href="fighter.html" style="color:var(--muted);font-size:13px;text-decoration:underline">← 選手名鑑に戻る</a></p>`;
+    ${!f.highlight_url && f.action_photo && f.action_photo_credit ? `<div class="fd-credit">${esc(f.action_photo_credit)}</div>` : ""}
+    ${belts.length ? `<div class="fd-belts">${belts.map(([b, c]) => `<div class="fd-belt${c}">${esc(b)}</div>`).join("")}</div>` : ""}`;
 }
+
+// 戦う理由＝本人の言葉だけ（原文のまま・出典付き。TONYが紹介文を書き足さない＝Gaku 11/8 確定）。材料が無い人は段ごと出さない
+function wordHtml(f) {
+  const w = f.fight_for;
+  if (!w?.q) return "";
+  const src = [w.src, w.d && fmtDate(w.d)].filter(Boolean).map(esc).join("　");
+  return `<div class="section-label">戦う理由</div>
+    <blockquote class="fd-word"><p>${esc(w.q)}</p>
+      ${src ? `<cite>${w.url ? `<a href="${esc(w.url)}" target="_blank" rel="noopener">${src} ↗</a>` : src}</cite>` : ""}</blockquote>`;
+}
+
+// どんな人＝どこから来たか（押すと一覧がその束ね方で開く）＋来歴・ファイトスタイル・異名の由来・入場曲
+function personHtml(f) {
+  const link = (by, label, val) => `<a class="fd-root" href="fighter.html?by=${by}&pick=${f.id}"><span class="fd-rk">${label}</span><span class="fd-rv">${val}</span><i>›</i></a>`;
+  const roots = [
+    f.origin && link("from", "出身", `${flagOf(f.origin)} ${esc(f.origin)}`),
+    f.backbone && link("bb", "バックボーン", esc(f.backbone)),
+    teamsOf(f).length && link("gym", "所属ジム", teamsOf(f).map(esc).join("／")),
+  ].filter(Boolean);
+  const text = [["来歴", f.career], ["ファイトスタイル", f.style], ["異名の由来", f.nickname_origin], ["入場曲", f.entrance_song]]
+    .filter(([, v]) => v).map(([k, v]) => `<div class="fd-tx"><div class="fd-tk">${k}</div><p>${esc(v)}</p></div>`);
+  if (!roots.length && !text.length) return "";
+  return `<div class="section-label">どんな人</div>
+    ${roots.length ? `<div class="fd-roots">${roots.join("")}</div>` : ""}
+    ${text.join("")}`;
+}
+
+// HIGHLIGHT は書いてある選手だけ（新しく書く作業は当面しない・Gaku 2026-07-20）
+function highlightHtml(f) {
+  if (!f.highlight_caption) return "";
+  return `<div class="section-label">HIGHLIGHT</div>
+    <div class="fd-hl">${f.action_photo ? `<div class="fd-hl-pic" style="background-image:url('${esc(f.action_photo)}')"></div>` : ""}
+      <p>${esc(f.highlight_caption)}</p></div>`;
+}
+
+// つながり＝同じジム・同じバックボーンの選手（フリーはジムではないので出さない）。押すとその人の画面へ
+function linksHtml(f, fighters) {
+  const pool = fighters.filter(x => x.id !== f.id && !HIDDEN_FIGHTERS.has(x.id) && !HIDDEN_WEIGHTS.has(x._wc));
+  const rows = [];
+  for (const t of teamsOf(f)) {
+    if (t === "フリー") continue;
+    const k = teamKey(t), xs = pool.filter(x => teamsOf(x).some(u => teamKey(u) === k));
+    if (xs.length) rows.push(["同じジム", t, xs]);
+  }
+  for (const c of bbCats(f.backbone)) {
+    const xs = pool.filter(x => bbCats(x.backbone).includes(c));
+    if (xs.length) rows.push(["同じバックボーン", c, xs]);
+  }
+  if (!rows.length) return "";
+  const rk = (a, b) => (isChampion(b) - isChampion(a)) || a.name.localeCompare(b.name, "ja");
+  return `<div class="section-label">つながり</div>` + rows.map(([k, v, xs]) => `
+    <div class="fd-lh"><span class="fd-lk">${k}</span><span class="fd-lv">${esc(v)}</span><b>${xs.length}</b></div>
+    <div class="fd-faces">${xs.sort(rk).map(x => faceTile({ f: x, img: x.highlight_url || null }, true)).join("")}</div>`).join("");
+}
+
+// 次の試合＝大会ページと同じ向かい合わせの STATS（相手と並べる）。名鑑は見る所、予想を入れるのは大会ページ
+function nextHtml(f, fights, EMAP) {
+  const up = mineOf(f.id, fights).filter(x => !decided(x) && !x.cancelled && EMAP[x.event_id] && EMAP[x.event_id].status !== "finished")
+    .sort(byEventDate(EMAP)).reverse();
+  if (!up.length) return "";
+  return `<div class="section-label">NEXT FIGHT</div>` + up.map(x => {
+    const ev = EMAP[x.event_id];
+    return `<div class="nf">
+      <a class="nf-ev" href="event.html?id=${ev.id}"><span class="nf-en">${evNameHTML(ev.name)}</span><span class="nf-d">${fmtDate(ev.event_date)}</span></a>
+      ${x.image_url ? `<img class="nf-banner" src="${esc(x.image_url)}" alt="" loading="lazy">` : ""}
+      <div class="nf-names"><span class="c1">${fnm(FMAP[x.fighter1_id]?.name || "")}</span><b>VS</b><span class="c2">${fnm(FMAP[x.fighter2_id]?.name || "")}</span></div>
+      ${statsBlock(x)}
+      ${f.memo && up.length === 1 ? `<p class="nf-memo">${esc(f.memo)}</p>` : ""}
+      <a class="nf-go" href="event.html?id=${ev.id}">${isLocked(ev) ? "大会ページで見る" : "予想する"}<i>›</i></a>
+    </div>`;
+  }).join("");
+}
+
+function recordHtml(f, fighters) {
+  const h = recentOf(f);
+  if (!h.length) return "";
+  const byName = Object.fromEntries(fighters.map(x => [x.name, x]));
+  return `<div class="section-label">FIGHT RECORD</div>
+    <div class="fd-record">${h.map(r => recordRow(r, byName)).join("")}</div>`;
+}
+
+// 予想番付での記録＝このサイトの試合ごとに「予想の何%がこの選手を選んだか → 結果」。予想番付だけが持っている数字
+function siteHtml(f, fights, EMAP) {
+  const xs = mineOf(f.id, fights).filter(decided).sort(byEventDate(EMAP));
+  if (!xs.length) return "";
+  return `<div class="section-label">予想番付での記録</div>
+    <div class="fd-site">${xs.map(x => {
+      const ev = EMAP[x.event_id], opp = FMAP[x.fighter1_id === f.id ? x.fighter2_id : x.fighter1_id];
+      const r = x.result_method === "NC" ? "NC" : x.result_method === "DRAW" ? "D" : x.winner_id === f.id ? "W" : "L";
+      const how = [METHOD_LABEL[x.result_method], x.result_method !== "DEC" && x.result_round && `${x.result_round}R`,
+        x.result_technique && (TECH_LABEL[x.result_technique] || x.result_technique)].filter(Boolean).join("・");
+      return `<div class="st-row" data-fight="${x.id}">${resMark(r)}
+        <span class="st-body">${opp ? `<a class="st-opp lk" href="fighter.html?id=${opp.id}">${esc(opp.name)}<i>›</i></a>` : ""}
+          <span class="st-how">${esc(how)}</span>
+          <a class="st-ev" href="event.html?id=${ev?.id}"><span>${esc(ev?.name || "")}</span><span>${fmtDate(ev?.event_date)}</span></a></span>
+        <span class="fd-sup"></span></div>`;
+    }).join("")}</div>`;
+}
+async function fillSupport(f, fights) {
+  const xs = mineOf(f.id, fights).filter(decided);
+  if (!xs.length) return;
+  let preds = [];
+  try { preds = await DB.listPredictions({ fightIds: xs.map(x => x.id) }); } catch (e) { return; }
+  for (const x of xs) {
+    const ps = preds.filter(p => p.fight_id === x.id && p.winner_id), n = ps.filter(p => p.winner_id === f.id).length;
+    const el = document.querySelector(`.fd-site [data-fight="${x.id}"] .fd-sup`);
+    if (el && ps.length) el.innerHTML = `<small>予想の支持</small><b>${Math.round(n / ps.length * 100)}<i>%</i></b><small>${n}/${ps.length}人</small>`;
+  }
+}
+
+// 出場試合の生写真（RIZIN公式の試合結果記事から機械抽出）。写真は「試合」に紐づく（両者が写るため片方だけの所有物にしない）
+function galleryHtml(f, fights, EMAP) {
+  const mine = mineOf(f.id, fights).filter(x => (x.gallery || []).length).sort(byEventDate(EMAP));
+  if (!mine.length) return "";
+  return `<div class="section-label">写真</div>` + mine.map(x => {
+    const ev = EMAP[x.event_id];
+    return `<div class="gal-event">${esc(ev?.name || "")}${ev?.event_date ? "　" + fmtDate(ev.event_date) : ""}</div>
+      <div class="gal-row">${x.gallery.map(p => `<div class="gal-item"><img src="${esc(p.url)}" alt="${esc(p.label)}" loading="lazy"><span class="gal-label">${esc(p.label)}</span></div>`).join("")}</div>`;
+  }).join("") + `<p class="fd-note">RIZIN公式の試合結果記事より（© RIZIN FF）</p>`;
+}
+
+function renderDetail(f, fighters, fights, EMAP) {
+  if (!f) { document.getElementById("main").innerHTML = `<p class="cs-empty">選手が見つかりません。<a href="fighter.html">選手名鑑へ</a></p>`; return; }
+  const hasStats = f.rec_w != null || f.birth_date || f.height_cm != null || f.reach_cm != null;
+  // 上半分がウェット（人）、間を大きく空けて、下半分がドライ（数字）
+  document.getElementById("main").innerHTML = `
+    ${heroHtml(f)}
+    ${wordHtml(f)}
+    ${personHtml(f)}
+    ${highlightHtml(f)}
+    ${linksHtml(f, fighters)}
+    <div class="fd-dry">
+      ${hasStats ? `<div class="section-label">STATS</div>${soloTape(f)}` : ""}
+      ${nextHtml(f, fights, EMAP)}
+      ${recordHtml(f, fighters)}
+      ${siteHtml(f, fights, EMAP)}
+      ${galleryHtml(f, fights, EMAP)}
+    </div>
+    <div class="fd-foot">
+      ${f.rizin_url ? `<a href="${esc(f.rizin_url)}" target="_blank" rel="noopener">RIZIN公式の選手ページ ↗</a>` : ""}
+      <a href="fighter.html?pick=${f.id}">← 選手名鑑へ</a>
+    </div>`;
+  document.title = `${f.name}｜選手名鑑｜予想番付`;
+  fitAll();
+  fillSupport(f, fights);
+}
+
+// 字の大きさ合わせ（読み込み後・画面の幅が変わった時にも測り直す）
+function fitAll() {
+  fitText(document.querySelector(".cs-nick"), 10);
+  fitText(document.querySelector(".cs-name"), 16);
+  fitText(document.querySelector(".fd-nick"), 11);
+  fitText(document.querySelector(".fd-name"), 20);
+  document.querySelectorAll(".cs-nm").forEach(n => fitText(n, n.closest(".mini") ? 7.5 : 8));
+  if (document.querySelector(".nf")) fitNicks();
+}
+// 上に残る大きな枠は、ヘッダーの真下に付ける
+new ResizeObserver(([e]) => document.documentElement.style.setProperty("--hdr-h", e.target.offsetHeight + "px"))
+  .observe(document.getElementById("app-header"));
+let FIT_T = 0;
+const refit = () => { clearTimeout(FIT_T); FIT_T = setTimeout(fitAll, 60); };
+addEventListener("resize", refit);
+document.fonts?.ready.then(refit);
+document.fonts?.addEventListener?.("loadingdone", refit);
 
 load();
 </script>
