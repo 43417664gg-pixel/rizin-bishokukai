@@ -302,7 +302,7 @@ return `
     ${BARE ? "" : `<div class="sub"><em>${esc(ev.name)}</em>　${d.getFullYear()}.${d.getMonth() + 1}.${d.getDate()}（${WD[d.getDay()]}）${lock ? `　締切 ${lock.getMonth() + 1}/${lock.getDate()} ${lock.getHours()}:${String(lock.getMinutes()).padStart(2, "0")}` : ""}${RES ? `　${nFin === fights.length ? "全試合終了" : `決着 ${nFin}/${fights.length}試合`}` : ""}</div>`}
   </div>
   ${score}
-  ${BARE ? "" : RES ? `<div class="legend"><b>金の輪</b>＝勝敗的中　<b class="x">✕</b>＝外れ　<b>ピタリ</b>＝KO・一本の決まり手とラウンドまで的中（数えるのは勝敗だけ）　<b>📣</b>＝応援</div>`
+  ${BARE ? "" : RES ? `<div class="legend"><b>金の輪</b>＝勝敗的中　<b class="x">✕</b>＝外れ　<b>ピタリ</b>＝KO・一本の技とラウンドまで的中（順位は勝敗だけ）　<b>📣</b>＝応援</div>`
     : `<div class="who">${counts}</div>
   <div class="legend"><b>下の丸</b>＝その選手が勝つと予想　<b>上の「📣応援」の丸</b>＝その選手を応援（勝敗とは別）</div>`}
   ${grids}
