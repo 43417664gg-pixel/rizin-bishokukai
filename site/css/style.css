@@ -1342,7 +1342,8 @@ span.mav.tri > i { --k: 50cqw; position: relative; top: 7cqh; }
 /* 浮いて追いかけてくる「予想を入れる ↓」（Gaku 11/8）。ロゴの斬り札と同じ斜めの札を真ん中で2枚に斬った形＝左半分が赤・右半分が青
    （Gaku 11/8「赤青真ん中半分にしたい」。前は赤い札に字・右端の細い青い札に矢印）。字と矢印は2枚の上に1つにまとめて真ん中に置く
    （1枚の赤い札＋左端の斬り跡3本も試したが「赤青の方が良かった」「左の三本線もキモい」で戻した）。
-   押す物ではなく「この下にある」の合図（「右の青いボタン押さないといけない感じじゃなくて」）＝指は素通り。
+   本来は「この下にある」の合図（「右の青いボタン押さないといけない感じじゃなくて」）。押されたら一番上の試合の選択ボタンへ飛ぶ
+   （Gaku 11/8「「予想を入れる」ボタン押したら一番上のカードの選択ボタンに飛ぶ」・動きは event.html の jumpToPick）。飛んで光になる間（.fly）は指を通す。
    字は Noto Sans JP の900（--display の Anton は和字を持たず、細い既定の太さに落ちてチープだった＝「字がチープ」）。
    影は札の形に沿わせる（drop-shadow）。トーストが出ている間はその上へ逃げる */
 .pick-guide { position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom)); z-index: 90; pointer-events: none;
@@ -1351,6 +1352,9 @@ span.mav.tri > i { --k: 50cqw; position: relative; top: 7cqh; }
   opacity: 0; transform: translate(-50%, 14px); transition: opacity .25s, transform .25s; }
 .pick-guide.show { opacity: 1; transform: translate(-50%, 0); }
 .toast.show ~ .pick-guide.show { transform: translate(-50%, -54px); }
+.pick-guide.show:not(.fly) { pointer-events: auto; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.pick-guide.show:not(.fly):active { transform: translate(-50%, 2px) scale(.97); transition-duration: .08s; }
+.toast.show ~ .pick-guide.show:not(.fly):active { transform: translate(-50%, -52px) scale(.97); }
 body.wiz-open .pick-guide { display: none; }
 .pg-t, .pg-a { flex: 1; position: relative; overflow: hidden; clip-path: polygon(14px 0, 100% 0, calc(100% - 14px) 100%, 0 100%); }
 .pg-t { background: linear-gradient(180deg, #ff2a3c, #d4000f 52%, #9e000b); }
