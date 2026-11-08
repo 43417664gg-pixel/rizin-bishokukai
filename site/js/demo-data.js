@@ -2737,7 +2737,7 @@ window.DEMO_SEED = {
       rec_w: 6,
       rec_l: 4,
       rec_d: 0,
-      rec_nc: 0,
+      rec_nc: 1,
       rec_ko: 4,
       rec_sub: 1,
       rec_dec: 1,
@@ -2747,6 +2747,7 @@ window.DEMO_SEED = {
       highlight_url: "assets/fighters/f_meheula.jpg",
       rizin_url: "https://jp.rizinff.com/_tags/アバイジャ・カレオ・メヘウラ",
       history: [
+        { d: "2026.11", opp: "相本宗輝", r: "NC", how: "2R TKO（バックからパウンド）※メヘウラの計量超過により公式記録はノーコンテスト" },
         { d: "2025.09", opp: "オーウェン・ロビネット", r: "W", how: "2R TKO（パウンド）" },
         { d: "2025.08", opp: "ケビン・ボーム", r: "L", how: "判定 (全会一致)" },
         { d: "2025.01", opp: "ジュリアン・ルイス", r: "W", how: "2R リアネイキッドチョーク" },
@@ -2768,7 +2769,7 @@ window.DEMO_SEED = {
       rec_w: 10,
       rec_l: 0,
       rec_d: 0,
-      rec_nc: 0,
+      rec_nc: 1,
       rec_ko: 8,
       rec_sub: 0,
       rec_dec: 2,
@@ -2778,6 +2779,7 @@ window.DEMO_SEED = {
       highlight_url: "assets/fighters/f_aimoto.jpg",
       rizin_url: "https://jp.rizinff.com/_tags/相本宗輝",
       history: [
+        { d: "2026.11", opp: "アバイジャ・カレオ・メヘウラ", r: "NC", how: "2R TKO（バックからパウンド）※メヘウラの計量超過により公式記録はノーコンテスト" },
         { d: "2026.07", opp: "山田聖真", r: "W", how: "3R KO（右ストレート→パウンド）" },
         { d: "2025.12", opp: "高橋遼伍", r: "W", how: "1R KO（右フック→パウンド）" },
         { d: "2025.09", opp: "木下カラテ", r: "W", how: "1R TKO（右フック→パウンド）" },
