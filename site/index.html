@@ -7,19 +7,19 @@
 <title>予想番付｜格闘技の勝敗予想</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261108153314">
+<link rel="stylesheet" href="css/style.css?v=20261108153950">
 </head>
 <body>
 <div id="app-header"></div>
 <div class="wrap" id="main"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261108153314"></script>
-<script src="js/techniques.js?v=20261108153314"></script>
-<script src="js/demo-data.js?v=20261108153314"></script>
-<script src="js/api.js?v=20261108153314"></script>
-<script src="js/app.js?v=20261108153314"></script>
-<script src="js/glyph_fit.js?v=20261108153314"></script>
+<script src="js/config.js?v=20261108153950"></script>
+<script src="js/techniques.js?v=20261108153950"></script>
+<script src="js/demo-data.js?v=20261108153950"></script>
+<script src="js/api.js?v=20261108153950"></script>
+<script src="js/app.js?v=20261108153950"></script>
+<script src="js/glyph_fit.js?v=20261108153950"></script>
 <script>
 // Xから来た人に「いま何をやっているか」を最初に見せる。
 // 監査（2026-08-31）で、入口に大会情報がゼロのまま登録を求めていて離脱する形だったため追加。
@@ -203,13 +203,13 @@ async function renderHome() {
 
   const recentHtml = (await Promise.all(recentFinished.map(compactCard))).join("");
   const liveCards = await Promise.all(live.map(fullCard));
-  // 先頭の未来大会＝次大会。NEXTで匂わせる。
+  // 先頭の未来大会＝次大会。札は「NEXT EVENT」（Gaku 11/8「NEXT EVENT で」）。
   const liveHtml = liveCards.map((html, i) =>
-    i === 0 ? `<div class="next-flag"><i></i>NEXT</div>${html}` : html).join("");
+    i === 0 ? `<div class="next-flag"><i></i>NEXT EVENT</div>${html}` : html).join("");
   const pastHtml = (await Promise.all(pastFinished.map(fullCard))).join("");
 
+  // 頭の「大会 / EVENTS」の見出しは外した（Gaku 11/8「上部の大会－EVENT取りだな」）＝ヘッダーのロゴの真下から次の大会の札で始める
   document.getElementById("main").innerHTML = `
-    <div class="title-row"><h1 class="page-title">大会</h1><span class="en-label">EVENTS</span></div>
     ${recentHtml ? `<div class="section-label">直近の結果</div>${recentHtml}` : ""}
     ${liveHtml}
     ${pastHtml ? `<div class="section-label">これまでの大会</div>${pastHtml}` : ""}`;

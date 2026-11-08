@@ -288,6 +288,8 @@ img { max-width: 100%; display: block; }
   background: linear-gradient(90deg, var(--red), #7a0a12); padding: 6px 18px 6px 12px;
   clip-path: polygon(0 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
 }
+/* 頭の「大会 / EVENTS」を外したので（11/8）、ページの先頭に来たときだけヘッダーとの間を空ける＝2pxだと貼り付いて見えた */
+#main > .next-flag:first-child { margin-top: 16px; }
 .next-flag i { width: 13px; height: 10px; transform: skewX(-24deg);
   background: repeating-linear-gradient(90deg, #fff 0 2.5px, transparent 2.5px 5px); }
 .cm-w { margin-right: 7px; padding: 1px 6px; font: 700 10px/1.4 var(--num); letter-spacing: .14em; color: #fff; background: var(--red); vertical-align: 1px; }
@@ -1246,7 +1248,6 @@ span.mav.tri > i { --k: 50cqw; position: relative; top: 7cqh; }
    年齢は STATS の表の段へ（「そこは異名だけ」）＝異名は列の幅を丸ごと使う。
    入りきらない時は event.html の fitNicks() が字を小さくして収める。左右とも列の中央（Gaku 11/8「異名は中央に」） */
 .st-head { display: flex; flex-direction: column; align-items: center; gap: 3px; min-width: 0; margin-bottom: 8px; text-align: center; }
-.st-nk { position: relative; display: block; max-width: 100%; }
 /* 書体＝明朝の最も太い（Noto Serif JP Black・Gaku 11/8「B2かな？」）。下の数字の表（ゴシック）と役割を分けて、異名を二つ名らしく。
    明朝の中でこれだけ palt（字詰め）が効く＝今までのゴシックと同じ大きさで1行に入る（Zen Old Mincho 等は間延びして10.5pxまで縮んだ）。
    読み込みは event.html の Google Fonts（900だけ）。読み込み後に fitNicks が測り直す */
@@ -1254,11 +1255,9 @@ span.mav.tri > i { --k: 50cqw; position: relative; top: 7cqh; }
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   font-feature-settings: "palt"; }   /* かな・括弧を詰める＝長い異名（足立区のバカストイックマン）も10pxで1行に入る（詰めないと1px足りず「…」で切れていた） */
 .st-nick.wrap { white-space: normal; overflow: visible; }   /* 10pxまで縮めても入らない長い異名だけ折り返す（白鵬女子高等学校…） */
-/* 異名の前にコーナー色の斜めの棒＝下の「選手DATA 詳しく」と同じ印。異名の段だけでも左右の人が分かる。
-   棒は字の外側（左の人＝字の左・右の人＝字の右）に絶対配置＝異名の幅を食わない（幅を取ったら長い異名が改行した・「異名で改行はないなあ」）。
-   列いっぱいの長い異名では棒が列の余白（10px）に出る */
-.st-nk::before { content: ""; position: absolute; top: 3px; bottom: 3px; right: 100%; margin-right: 4px; width: 3px; background: var(--red); transform: skewX(-18deg); }
-.st-side.c2 .st-nk::before { right: auto; left: 100%; margin: 0 0 0 4px; background: var(--blue); }
+/* 異名の横のコーナー色の棒は外した（Gaku 11/8「異名の横のコーナー色はいらない」）＝左右は列の位置と上の縁の赤青で分かる。
+   .st-nk（棒のための包み）が残っていても幅が列に収まるように block＋max-width だけ残す */
+.st-nk { display: block; max-width: 100%; }
 /* 名前の段（.st-names）と前戦（.st-main）は左右2列の格子。左右の仕切り線は同じ位置に引く＝間の STATS の真ん中の帯とつながって、上から下まで1本の背骨に見える */
 :is(.st-names, .st-main) > .st-side { grid-template-columns: auto minmax(0, 1fr); column-gap: 10px; }
 :is(.st-names, .st-main) > .st-side.c2 { grid-template-columns: minmax(0, 1fr) auto; }
