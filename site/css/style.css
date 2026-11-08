@@ -913,12 +913,21 @@ tr.top .lb-rate { color: var(--gold-hot); }
   animation: goldBreath 5s ease-in-out infinite alternate;
 }
 @keyframes goldBreath { 0% { opacity: .55; } 100% { opacity: 1; } }
-/* 王座戦の印＝金のプレート（event.html の TITLE_PLATE）。見出しの段の右端・第〇試合の数字と同じ高さ（Gaku 11/8「13試合目とおんなじレベル」）。
+/* 王座戦の印＝「TITLE MATCH」の金のプレート（event.html の TITLE_PLATE）。見出しの段の右端・第〇試合の数字と真ん中の高さを揃える
+   （Gaku 11/8「13試合目とおんなじレベル」「タイトルMATCHはこんな感じで。右側に。」）。大きさは Gaku の画像の比率（数字「13」の約1.6倍の高さ）＝34px。
    写真には被せない。題がプレートの下に潜らないよう見出しの右を空ける（狭い画面では題が2段目へ回り、プレートは1段目の右に残る） */
 .fight-label.top { position: relative; }
-.fight-unit.title .fight-label.top { padding-right: 64px; }
-.fight-label.top > .t-plate { position: absolute; top: 10px; right: 12px; height: 28px; width: auto; pointer-events: none;   /* Gaku 11/8「もう少し小さく」36→28px */
+.fight-unit.title .fight-label.top { padding-right: 140px; }
+.fight-label.top > .t-plate { position: absolute; top: 7px; right: 12px; line-height: 0; pointer-events: none;
   filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .65)); }
+.t-plate img { display: block; height: 34px; width: auto; }
+/* キラッ（Gaku 11/8「キラッとね」）：光の筋が左から右へ横切り、通る間だけ少し明るむ。光はプレートの絵で型を抜く（mask）＝外の暗い所には出ない */
+.t-plate::after { content: ""; position: absolute; inset: 0;
+  background: linear-gradient(105deg, transparent 38%, rgba(255, 253, 240, .95) 50%, transparent 62%) 250% 0 / 220% 100% no-repeat;
+  -webkit-mask: url(../assets/title_match.webp) 0 0 / 100% 100% no-repeat; mask: url(../assets/title_match.webp) 0 0 / 100% 100% no-repeat;
+  mix-blend-mode: screen; animation: plateShine 4.8s ease-in-out 1s infinite; }
+@keyframes plateShine { 0%, 62% { background-position: 250% 0; } 100% { background-position: -150% 0; } }
+@media (prefers-reduced-motion: reduce) { .t-plate::after { animation: none; display: none; } }
 
 /* ===== 予想の一致／割れ を瞬間で視認 ===== */
 /* 併記ブロック：一致は金の左帯、割れは赤の左帯 */

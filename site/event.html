@@ -7,7 +7,7 @@
 <title>大会予想｜予想番付</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261108122749">
+<link rel="stylesheet" href="css/style.css?v=20261108123422">
 </head>
 <body>
 <div id="app-header"></div>
@@ -101,10 +101,12 @@ async function toggleSupport(fightId, fighterId) {
   } catch (e) { toast("応援テーブルが未作成かも（要SQL）"); }
 }
 
-// タイトルマッチの印＝金のプレート（Gaku 11/8 の画像）。見出しの段（第〇試合と同じ高さ）の右端に置き、カード写真には被せない。
-// 前は右上から垂れるベルト（SVG）だったが、写真に掛かっていた（Gaku 11/8「カード写真に被せるのではなく、13試合目とおんなじレベル」）。
+// タイトルマッチの印＝「TITLE MATCH」と刻んだ金のプレート（Gaku 11/8 の画像「タイトルMATCHはこんな感じで。右側に。」）。
+// 見出しの段（第〇試合と同じ高さ）の右端に置き、カード写真には被せない。プレートが「TITLE MATCH」を言うので、見出しの金の英字は外して「フライ級」だけにする。
+// 前は無地の金のプレート（28px）＋金の英字だった。その前は右上から垂れるベルト（SVG）で写真に掛かっていた（「カード写真に被せるのではなく、13試合目とおんなじレベル」）。
+// ときどき光の筋が横切ってキラッと光る（Gaku 11/8「キラッとね」）＝光はプレートの形の内側だけ（style.css の .t-plate::after）。
 // height は属性でも持つ＝CSSが古いまま読まれても大きく出ない
-const TITLE_PLATE = `<img class="t-plate" src="assets/title_plate.webp" alt="" aria-hidden="true" height="28">`;
+const TITLE_PLATE = `<span class="t-plate" role="img" aria-label="TITLE MATCH"><img src="assets/title_match.webp" alt="" height="34"></span>`;
 
 // 試合の見出し：1行（Gaku 11/7「2段になってる・文字ダサい」）。大きい番号 → 題（あれば赤）／階級（体重）
 // 体重は階級の直後に括弧でくっつける（Gaku 11/8「バンタム級（61.0kg）くっつけて欲しい。はなさず」。前は右端に離していた）
@@ -113,17 +115,18 @@ const TITLE_PLATE = `<img class="t-plate" src="assets/title_plate.webp" alt="" a
 // 金の演出とベルトは王座が懸かる試合だけ＝題に「タイトルマッチ」か「王座」があるもの
 const isTitleFight = (f) => /タイトルマッチ|王座/.test(f.title_label || "");
 // 王座戦の題は「フライ級」＋金の「TITLE MATCH」に組み直す（Gaku 11/8「RIZINフライ級タイトルマッチの文字部分がダサい」＝和文の長い金字をやめた）。
-// 「RIZIN〇〇級タイトルマッチ」の形でない題（王座決定戦の併記など）はそのまま金の字
-function titleText(f) {
+// 「RIZIN〇〇級タイトルマッチ」の形でない題（王座決定戦の併記など）はそのまま金の字。
+// plate＝右端に「TITLE MATCH」のプレートが付く段（カードの頭）。英字はプレートと重なるので階級だけにする（予想の画面の見出しは英字のまま）
+function titleText(f, plate) {
   const m = f.title_label.match(/^(?:RIZIN\s*)?(.+?級)タイトルマッチ$/);
-  return m ? `<span class="fl-t tl-ttl"><span class="tl-wc">${esc(m[1])}</span><span class="tl-en">TITLE MATCH</span></span>`
+  return m ? `<span class="fl-t tl-ttl"><span class="tl-wc">${esc(m[1])}</span>${plate ? "" : `<span class="tl-en">TITLE MATCH</span>`}</span>`
     : `<span class="fl-t title-label gold">${esc(f.title_label)}</span>`;
 }
-function fightLabel(f) {
+function fightLabel(f, plate) {
   const wc = f.weight_class ? weightClassName(f.weight_class) : "";
   const kg = f.weight_class && f.weight_class !== wc ? `<span class="fl-kg">（${esc(f.weight_class)}）</span>` : "";
   const cls = wc ? `<span class="fl-t">${esc(wc)}${kg}</span>` : "";
-  const t = f.title_label ? `${isTitleFight(f) ? titleText(f) : `<span class="fl-t title-label">${esc(f.title_label)}</span>`}${f.title_label.includes(wc) ? "" : cls}` : cls;
+  const t = f.title_label ? `${isTitleFight(f) ? titleText(f, plate) : `<span class="fl-t title-label">${esc(f.title_label)}</span>`}${f.title_label.includes(wc) ? "" : cls}` : cls;
   return `<span class="fno">${f.segment === "opening" ? "OP " : ""}第<b>${f.order_no}</b>試合</span>${t}`;
 }
 // 体重超過・MMA以外の注意書き。読ませたいので写真には重ねず、写真の下に段で出す
@@ -133,7 +136,7 @@ const fightWarn = (f) => `${f.no_score ? `<span class="ns-badge">⚠️ ${esc(f.
 // 写真の下は予想の割合バー、注意書きはその下
 function cardHead(f) {
   const warn = fightWarn(f);
-  return `<div class="fight-label top">${fightLabel(f)}${isTitleFight(f) ? TITLE_PLATE : ""}</div>
+  return `<div class="fight-label top">${fightLabel(f, true)}${isTitleFight(f) ? TITLE_PLATE : ""}</div>
       ${f.image_url ? `<div class="banner"><img src="${esc(f.image_url)}" alt="" loading="lazy"></div>` : ""}
       ${voteBar(f)}${warn ? `<div class="fight-label">${warn}</div>` : ""}`;
 }
