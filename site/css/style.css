@@ -303,6 +303,56 @@ img { max-width: 100%; display: block; }
 }
 .event-card.soon .ename { color: var(--muted); }
 
+/* 大会の系統の煙（Gaku 11/8「大会選択画面もナンバーシリーズ赤煙背景、LANDMARK緑煙背景、超RIZIN金煙にしよう」）。
+   試合の煙（.fight-unit.glow）と同じ作り・同じ色の3階調。カードは clip-path で外が切れるので、包み .ev-unit に煙を置く。
+   金（超RIZIN）だけ揺らす＝試合のタイトル戦と同じ決まり。上端のバーも系統の色にする（ナンバーは従来の赤のまま）。
+   カードは試合より縦に長い（縦長ポスター）ので、横の帯の長さはカードの高さに対する％で持つ */
+.ev-unit { position: relative; isolation: isolate; margin-bottom: 52px; animation: rise .45s both; }
+.ev-unit > .event-card { margin-bottom: 0; animation: none; border-color: rgba(var(--sm2), .28); }
+.ev-unit.compact { margin-bottom: 40px; }   /* 下の煙が次の見出しにかからない間隔 */
+.ev-unit.s-num { --sm1: 255, 128, 128; --sm2: 236, 44, 60; --sm3: 176, 12, 28; --k: .62; --bar: var(--red); }
+/* 緑は明るくしない（Gaku 11/8「明るいとダサくなる」）＝深いエメラルド。暗い色なので濃さで出す */
+.ev-unit.s-lm  { --sm1: 70, 150, 104; --sm2: 30, 120, 74; --sm3: 10, 74, 44; --k: 1; --bar: #1f7a4b; }
+.ev-unit.s-cho { --sm1: 255, 236, 170; --sm2: 240, 205, 90; --sm3: 212, 175, 55; --k: 1; --bar: var(--gold); }
+.ev-unit.soon { --k: .3; }   /* カード未発表は淡く */
+.ev-unit::before {
+  content: ""; position: absolute; inset: -34px -12px; z-index: -2; pointer-events: none;
+  background:
+    radial-gradient(170px 44px at 16% 26px, rgba(var(--sm1), var(--k)), transparent 72%),
+    radial-gradient(210px 38px at 62% 24px, rgba(var(--sm2), calc(.8 * var(--k))), transparent 72%),
+    radial-gradient(120px 40px at 94% 30px, rgba(var(--sm1), var(--k)), transparent 72%),
+    radial-gradient(22px 34% at 8px 18%, rgba(var(--sm2), calc(.8 * var(--k))), transparent 72%),
+    radial-gradient(20px 46% at 7px 52%, rgba(var(--sm3), calc(.6 * var(--k))), transparent 72%),
+    radial-gradient(22px 32% at 9px 84%, rgba(var(--sm2), calc(.7 * var(--k))), transparent 72%),
+    radial-gradient(22px 40% at calc(100% - 8px) 30%, rgba(var(--sm2), calc(.75 * var(--k))), transparent 72%),
+    radial-gradient(20px 38% at calc(100% - 7px) 70%, rgba(var(--sm3), calc(.6 * var(--k))), transparent 72%),
+    radial-gradient(180px 40px at 30% calc(100% - 28px), rgba(var(--sm2), calc(.85 * var(--k))), transparent 72%),
+    radial-gradient(140px 36px at 80% calc(100% - 30px), rgba(var(--sm3), calc(.7 * var(--k))), transparent 72%),
+    linear-gradient(rgba(var(--sm2), calc(.5 * var(--k))), rgba(var(--sm2), calc(.5 * var(--k)))) center / calc(100% - 6px) calc(100% - 52px) no-repeat;
+  filter: blur(9px); opacity: .85;
+}
+.ev-unit.s-cho::before { will-change: transform, opacity; animation: goldSmoke 5s ease-in-out infinite alternate; }
+.ev-unit > .event-card:not(.compact):not(.soon)::before { background: var(--bar); }
+/* カードの縁にかかる靄（screen＝暗い所だけ色に光る）。四辺の際だけ・真ん中は塗らない＝ポスターと大会名がくすまない */
+.ev-unit > .event-card::after {
+  content: ""; position: absolute; inset: 0; z-index: 3; pointer-events: none; mix-blend-mode: screen;
+  background:
+    radial-gradient(150px 40px at 14% 0, rgba(var(--sm1), calc(.42 * var(--k))), transparent 75%),
+    radial-gradient(170px 34px at 72% 0, rgba(var(--sm2), calc(.32 * var(--k))), transparent 75%),
+    linear-gradient(90deg, rgba(var(--sm2), calc(.2 * var(--k))), transparent 14px),
+    linear-gradient(270deg, rgba(var(--sm2), calc(.2 * var(--k))), transparent 14px),
+    linear-gradient(0deg, rgba(var(--sm3), calc(.18 * var(--k))), transparent 36px);
+}
+.ev-unit.s-cho > .event-card::after { animation: goldBreath 5s ease-in-out infinite alternate; }
+/* 大会名の系統の差し色（app.js の evNameHTML）。ナンバーの数字＝RIZINの赤／LANDMARK＝深い緑／超＝金。
+   金と緑は平らに塗ると黄・若草に見えて安っぽいので、上から下へ沈む金属の階調にする（金は1字だけの差し色） */
+.evn.num { color: var(--red-hot); }
+.evn.lm, .evn.cho { -webkit-background-clip: text; background-clip: text; color: transparent; }
+.evn.lm  { background-image: linear-gradient(180deg, #6fb98c, #2f8a5a 55%, #1b5e3b); }
+.evn.cho { background-image: linear-gradient(180deg, #fff0b0, #e2bd4f 50%, #a87b1f); }
+/* 煙は後ろの見出し・NEXT の札にかぶさらない（後に描かれる包みより前へ出す） */
+.next-flag, .section-label { position: relative; z-index: 1; }
+
 /* ===== 試合カード ===== */
 .fight-card {
   background: var(--panel); border: 1px solid var(--line);

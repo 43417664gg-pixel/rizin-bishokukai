@@ -7,7 +7,7 @@
 <title>大会予想｜予想番付</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261108142938">
+<link rel="stylesheet" href="css/style.css?v=20261108150118">
 </head>
 <body>
 <div id="app-header"></div>
@@ -18,13 +18,13 @@
 <div class="pg-spot" id="pg-spot" hidden></div><div class="pick-guide" id="pick-guide" aria-hidden="true"><span class="pg-t"></span><span class="pg-a"></span><span class="pg-x">予想を入れる<i class="pg-arw"></i></span></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261108041732"></script>
-<script src="js/techniques.js?v=20261108041732"></script>
-<script src="js/demo-data.js?v=20261108141055"></script>
-<script src="js/api.js?v=20261108041732"></script>
-<script src="js/app.js?v=20261108041732"></script>
-<script src="js/glyph_fit.js?v=20261108041732"></script>
-<script src="js/bishoku_summary.js?v=20261108142938"></script>
+<script src="js/config.js?v=20261108150118"></script>
+<script src="js/techniques.js?v=20261108150118"></script>
+<script src="js/demo-data.js?v=20261108150118"></script>
+<script src="js/api.js?v=20261108150118"></script>
+<script src="js/app.js?v=20261108150118"></script>
+<script src="js/glyph_fit.js?v=20261108150118"></script>
+<script src="js/bishoku_summary.js?v=20261108150118"></script>
 <script>
 let EV, PHASE, FIGHTS, FMAP, MEMBERS, myPreds = {}, allPreds = [], ALL_SUPPORTS = [];
 
@@ -507,7 +507,7 @@ function render() {
     : base === predictCard ? base(f) + othersBlock(f) : base(f)}${f.cancelled ? "" : `<i class="aura" aria-hidden="true"></i>`}</section>`;
   const openBook = isOpenBook(EV);
   document.getElementById("main").innerHTML = `
-    <div class="title-row"><h1 class="page-title">${esc(evParts(EV.name)[0])}${evParts(EV.name)[1] ? `<small class="ev-sub">${esc(evParts(EV.name)[1])}</small>` : ""}</h1>${dateBlock(EV.event_date)}</div>
+    <div class="title-row"><h1 class="page-title">${evNameHTML(evParts(EV.name)[0])}${evParts(EV.name)[1] ? `<small class="ev-sub">${esc(evParts(EV.name)[1])}</small>` : ""}</h1>${dateBlock(EV.event_date)}</div>
     ${PHASE === "finished" ? eventSummary() : ""}
     <!-- 日付と案内文・ALL PICKS（全員の予想の一覧表）は撤去（Gaku指示11/7「これ削除」「ALLPICKS削除」）。
          みんなの予想は各カードの下と美食会予想まとめで見える -->

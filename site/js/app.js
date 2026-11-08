@@ -169,6 +169,16 @@
   // 大会名を「主題｜副題」に分ける＝番号の後ろの空白で切る（超RIZIN.6 師走の尾張名古屋下剋上祭り → 超RIZIN.6｜師走の…）。
   // 主題だけ大きく、副題は小さく添える（Gaku 11/8「超RIZIN.6だけ大きくてサブタイトルは小さく」）。番号の無い名前は切らない
   window.evParts = (name) => { const m = /^(.*?\d+)\s+(.+)$/.exec(name || ""); return m ? [m[1], m[2]] : [name || "", ""]; };
+  // 大会の系統（Gaku 11/8）：ナンバーシリーズ＝赤／LANDMARK＝緑／超RIZIN＝金。大会カードの煙と大会名の差し色に使う。
+  // 名前で分ける＝id は当てにしない（RIZIN.55 の id は ev_lm17）
+  window.evSeries = (name) => /超RIZIN/.test(name || "") ? "cho" : /LANDMARK/i.test(name || "") ? "lm" : "num";
+  // 大会名に系統の差し色（Gaku 11/8「ナンバー部分は赤、LANDMARKの文字は緑、超の文字は金」）。番号を赤くするのはナンバーシリーズだけ
+  window.evNameHTML = (name) => {
+    const s = esc(name), k = evSeries(name);
+    if (k === "cho") return s.replace("超", `<span class="evn cho">超</span>`);
+    if (k === "lm") return s.replace(/LANDMARK/i, (w) => `<span class="evn lm">${w}</span>`);
+    return s.replace(/(\d+)(?!.*\d)/, `<span class="evn num">$1</span>`);
+  };
   // 選手名は「・」の所でだけ折り返す（「ラジャブアリ・シェ｜イドゥラエフ」と語の途中で割れた・Gaku指摘11/7）。
   // .fnm が仮名・漢字の途中での改行を止め、<wbr> が「・」の後ろにだけ改行の候補を置く。1語が欄より長い時だけ最後の手段で割る
   // 「・」の無い名前（松尾クリスチャンアキラ）は漢字とカタカナの境目を候補にする＝姓と名の間で折れる

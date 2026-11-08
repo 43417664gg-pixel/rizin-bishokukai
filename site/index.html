@@ -7,19 +7,19 @@
 <title>予想番付｜格闘技の勝敗予想</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261108142938">
+<link rel="stylesheet" href="css/style.css?v=20261108150118">
 </head>
 <body>
 <div id="app-header"></div>
 <div class="wrap" id="main"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261108041732"></script>
-<script src="js/techniques.js?v=20261108041732"></script>
-<script src="js/demo-data.js?v=20261108141055"></script>
-<script src="js/api.js?v=20261108041732"></script>
-<script src="js/app.js?v=20261108041732"></script>
-<script src="js/glyph_fit.js?v=20261108041732"></script>
+<script src="js/config.js?v=20261108150118"></script>
+<script src="js/techniques.js?v=20261108150118"></script>
+<script src="js/demo-data.js?v=20261108150118"></script>
+<script src="js/api.js?v=20261108150118"></script>
+<script src="js/app.js?v=20261108150118"></script>
+<script src="js/glyph_fit.js?v=20261108150118"></script>
 <script>
 // Xから来た人に「いま何をやっているか」を最初に見せる。
 // 監査（2026-08-31）で、入口に大会情報がゼロのまま登録を求めていて離脱する形だったため追加。
@@ -134,6 +134,10 @@ async function renderHome() {
   const live = all.filter(e => !isFin(e)).sort((a, b) => (a.event_date || "").localeCompare(b.event_date || ""));
   const pastFinished = finishedDesc.filter(e => !recentIds.has(e.id));
 
+  // 大会の系統で煙の色を変える（Gaku 11/8「ナンバーシリーズ赤煙背景、LANDMARK緑煙背景、超RIZIN金煙にしよう」・系統は app.js の evSeries）。
+  // 煙はカードの外に出るので、clip-path のあるカードを .ev-unit で包む
+  const unit = (ev, html, cls = "") => `<div class="ev-unit s-${evSeries(ev.name)}${cls}">${html}</div>`;
+
   // 半分サイズの結果ダイジェスト（メイン結果を匂わせて「結果＆ランキングを見る」へ誘導）
   const compactCard = async (ev) => {
     const fights = await DB.listFights(ev.id);
@@ -143,15 +147,15 @@ async function renderHome() {
     const mainTxt = main
       ? `<span class="cm-w">WIN</span>${esc(FMAP[main.winner_id]?.name || "")}　${METHOD_LABEL[main.result_method] || ""}`
       : "結果発表";
-    return `
+    return unit(ev, `
       <a class="event-card compact result" href="event.html?id=${ev.id}">
         ${ev.poster_url ? `<div class="eposter mini" style="background-image:url('${esc(ev.poster_url)}')"></div>` : ""}
         <div class="ebody">
-          <div class="ename small">${esc(ev.name)}<span class="result-flag">結果発表</span></div>
+          <div class="ename small">${evNameHTML(ev.name)}<span class="result-flag">結果発表</span></div>
           <div class="compact-main">${mainTxt}</div>
           <div class="compact-hook">全結果＆ランキングを見る ›</div>
         </div>
-      </a>`;
+      </a>`, " compact");
   };
 
   // 大会カードの名前の段（Gaku 11/7「ここも手抜き」）：日付・何試合入れたかを文で並べず、数字と形で見せる。
@@ -161,21 +165,21 @@ async function renderHome() {
   const nameBlock = (name, tag) => {
     const m = String(name).match(/^(.+?)\s+((?:in\s|[^\x00-\x7F]).*)$/);
     const main = m ? m[1] : name, sub = m ? m[2] : "";
-    return `<div class="ename${main.length > 12 ? " long" : ""}"><span class="en-m">${esc(main)}</span>${tag}${sub ? `<small class="en-s">${esc(sub)}</small>` : ""}</div>`;
+    return `<div class="ename${main.length > 12 ? " long" : ""}"><span class="en-m">${evNameHTML(main)}</span>${tag}${sub ? `<small class="en-s">${esc(sub)}</small>` : ""}</div>`;
   };
   // 通常サイズ（受付中・COMING SOON・過去）
   const fullCard = async (ev) => {
     const fights = await DB.listFights(ev.id);
     const myPreds = await DB.listPredictions({ fightIds: fights.map(f => f.id), memberId: getMemberId() });
     if (!fights.length) {
-      return `
+      return unit(ev, `
         <div class="event-card soon">
           <div class="ebody">
             <div class="soon-label">COMING SOON</div>
-            <div class="ename">${esc(ev.name)}</div>
+            <div class="ename">${evNameHTML(ev.name)}</div>
             <div class="emeta"><span>${fmtDate(ev.event_date)}</span><span class="tag before_open">対戦カード発表待ち</span></div>
           </div>
-        </div>`;
+        </div>`, " soon");
     }
     const phase = eventPhase(ev), openBook = isOpenBook(ev);
     const tag = openBook ? `<span class="tag open">予想受付中・締切なし</span>` : `<span class="tag ${phase}">${PHASE_LABEL[phase]}</span>`;
@@ -183,7 +187,7 @@ async function renderHome() {
     // 締切＝大会の開始時刻（11/7〜）なので、締切と大会までの2つは1つにまとまる
     const countdown = (phase === "open" && !openBook) ? `
       <div class="cd-big" data-target="${ev.lock_at}" role="timer" aria-label="予想締切までの残り時間"></div>` : "";
-    return `
+    return unit(ev, `
       <a class="event-card" href="event.html?id=${ev.id}">
         ${ev.poster_url ? `<div class="eposter" style="background-image:url('${esc(ev.poster_url)}')"><img src="${esc(ev.poster_url)}" alt=""></div>` : ""}
         <div class="ebody">
@@ -194,7 +198,7 @@ async function renderHome() {
           ${progBlock(myPreds.length, fights.filter(f => !f.cancelled).length)}
         </div>
         ${countdown}
-      </a>`;
+      </a>`);
   };
 
   const recentHtml = (await Promise.all(recentFinished.map(compactCard))).join("");
