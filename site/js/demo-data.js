@@ -2662,7 +2662,7 @@ window.DEMO_SEED = {
     {
       id: "f_kimsuchol",
       name: "キム・スーチョル",
-      nickname: "韓国軽量級最強の男",
+      nickname: "韓流お茶目ゾンビ",
       birth_date: "1991-12-10",
       backbone: "ブラジリアン柔術",
       team: "ROAD GYM WONJU MMA",
