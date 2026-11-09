@@ -283,7 +283,7 @@ for (const [n, cols] of rows) {
 const d = new Date(ev.event_date + "T00:00:00+09:00");
 const lock = ev.lock_at ? new Date(ev.lock_at) : null;
 const counts = D.members.map(m => `<span class="m">${icon(m)}${esc(m.name)}<small>${D.preds.filter(p => p.member_id === m.id).length}/${fights.length}</small></span>`).join("");
-// 成績は computeLeaderboard の並び（的中数→的中率）で一番を決め、表示は固定の並びのまま
+// 成績は computeLeaderboard の並び（的中率→的中数・11/9から）で一番を決め、表示は固定の並びのまま
 let score = "";
 if (RES && window.computeLeaderboard) {
   const rows = window.computeLeaderboard(D.members, fights, D.preds, { scope: "event" });

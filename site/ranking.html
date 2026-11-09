@@ -7,7 +7,7 @@
 <title>ランキング｜予想番付</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261108224226">
+<link rel="stylesheet" href="css/style.css?v=20261109122535">
 <style>
 /* ランキングを1枚のカードにする（2026-10-20）：スクショ単体でXに貼れるよう、
    ブランド・集計対象・サイトURLをカードの中に入れる。名前をタップ→その人の戦績へ。 */
@@ -43,8 +43,6 @@
 /* 2026-11-07 勝敗だけのランキングへ：数字は大きく2つ（的中数・的中率）だけ。小さい字を減らす */
 .rk-card .lb-table td { padding-top:9px !important; padding-bottom:9px !important; }
 .rk-card .lb-table th { font-size:11px; }
-.lb-hit { font-family:var(--num); font-size:26px; font-weight:700; font-variant-numeric:tabular-nums; }
-.lb-of { font-family:var(--num); font-size:14px; color:var(--muted); margin-left:2px; }
 tr.top .lb-hit { color:var(--gold-hot); }
 .rk-card .lb-table .lb-rate { font-size:17px !important; color:#c9c9d2; }
 .rk-card .lb-table .lb-rate.thin { color:var(--muted); }
@@ -83,30 +81,6 @@ a.lb-name:active { color:var(--gold-hot); }
 .rk-card.anim { animation:rkIn .45s ease-out; }
 @keyframes rkIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
 @media (prefers-reduced-motion: reduce) { .rk-flip::after, .rk-flip.anim, .rk-card.anim { animation:none; } }
-/* 順位表は2列×5段の塊（Gaku 11/8）。左＝1〜5位・右＝6〜10位／下の塊＝11〜20位。1マス＝順位・顔・名前の下に的中数と的中率 */
-.rk-grid { position:relative; padding:0 7px 2px; }
-.rk-blk { display:grid; grid-template-columns:1fr 1fr; grid-template-rows:repeat(5, auto); grid-auto-flow:column; column-gap:6px; }
-.rk-blk + .rk-blk { margin-top:10px; padding-top:10px; border-top:1px solid rgba(255,255,255,.10); }
-.rk-cell { display:grid; grid-template-columns:auto auto 1fr; align-items:center; gap:5px; min-width:0;
-  padding:7px 4px; border-bottom:1px solid rgba(255,255,255,.06); }
-.rk-cell.top { background:linear-gradient(90deg, rgba(212,175,55,.18), rgba(212,175,55,.03)); border-radius:8px; border-bottom-color:transparent; }
-.rk-cell .lb-rank { width:auto; min-width:17px; font-size:18px; text-align:center; }
-.rk-cell.top .lb-rank, .rk-cell.top .lb-hit { color:var(--gold-hot); }
-.rk-cell .lb-ava { width:24px; height:24px; }
-.rk-body { min-width:0; display:flex; flex-direction:column; gap:1px; }
-.rk-cell a.lb-name { display:block; font-size:12.5px; line-height:1.3; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; border-bottom:none; }
-.rk-nums { display:flex; align-items:baseline; justify-content:space-between; gap:4px; }
-.rk-cell .lb-hit { font-size:20px; line-height:1; }
-.rk-cell .lb-of { font-size:11px; }
-.rk-cell .lb-rate { font-size:12.5px; color:#c9c9d2; }
-.rk-cell .lb-rate.thin { color:var(--muted); }
-/* ランク外は2列に詰める（Gaku 11/8「縦に列とかにしよう。スペース無駄使いしてる」） */
-.rk-un-grid { display:grid; grid-template-columns:1fr 1fr; column-gap:14px; }
-.rk-un-cell { display:flex; justify-content:space-between; align-items:baseline; gap:6px; min-width:0; padding:4px 0;
-  border-bottom:1px solid #1a1a20; font-size:12px; color:#b9b9c2; }
-.rk-un-cell .nm { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.rk-un-cell .rk-un-n { font-size:11px; }
-.rk-un-cell .rk-un-n b { margin-left:4px; }
 /* 注記は本文の大きさで5段を食っていた（素の文字のまま #main に置かれていた）。小さく1かたまりに */
 .rk-note { margin:6px 2px 0; font-size:11.5px; line-height:1.65; color:var(--muted); }
 .rk-note b { color:#c9c9d2; }
@@ -117,12 +91,12 @@ a.lb-name:active { color:var(--gold-hot); }
 <div class="wrap" id="main"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261108224226"></script>
-<script src="js/techniques.js?v=20261108224226"></script>
-<script src="js/demo-data.js?v=20261108224226"></script>
-<script src="js/api.js?v=20261108224226"></script>
-<script src="js/app.js?v=20261108224226"></script>
-<script src="js/glyph_fit.js?v=20261108224226"></script>
+<script src="js/config.js?v=20261109122535"></script>
+<script src="js/techniques.js?v=20261109122535"></script>
+<script src="js/demo-data.js?v=20261109122535"></script>
+<script src="js/api.js?v=20261109122535"></script>
+<script src="js/app.js?v=20261109122535"></script>
+<script src="js/glyph_fit.js?v=20261109122535"></script>
 <script>
 let EVENTS, MEMBERS, ALL_FIGHTS, ALL_PREDS, FMAP = {};
 // 表＝直近の大会のランキング／裏＝通算（Gaku確定・2026-11-08「直近のものだけで一旦はだそう。派手に通算ボタン…直近ボタンが裏」）。
@@ -172,7 +146,7 @@ function render() {
   // event_only（キック等）は career では数えない（Gaku確定・2026-08-21）。
   const scope = single ? "event" : "career";
   const allRows = computeLeaderboard(MEMBERS.filter(m => !window.RANK_HIDDEN.includes(m.id)), fights, preds, { scope });
-  // 通算は確定8試合以上でランクイン。未満は下に「ランク外」として出す（除外はしない）。
+  // 規定数（集計範囲で結果の出た試合の半分）に届いた人からランクイン。未満は下に「ランク外」（除外はしない）。
   // 直近はその大会を予想した人だけ（美食会の3人はいつでも載せる）
   const rows = allRows.filter(r => window.isRanked(r, scope) && (r.answered > 0 || window.ALWAYS_RANKED.includes(r.member.id)));
   const unranked = allRows.filter(r => !window.isRanked(r, scope) && r.answered > 0);
@@ -206,84 +180,23 @@ function render() {
           : `${fromName}〜${esc(RECENT ? RECENT.name : "")}・${EVENTS.length}大会の通算`}</p>
       </div>
       ${MODE === "win"
-        ? `${winTable(rows)}<p class="rk-rule">勝敗の的中${single ? "数" : "率"}で順位。決まり手・ラウンドは関係なし</p>`
+        ? `${rankGrid(rows)}<p class="rk-rule">勝敗の的中率で順位（同じ率なら当てた数）。決まり手・ラウンドは関係なし</p>`
         : `${pitariTable(allRows)}<p class="rk-rule">勝ち方・ラウンドまで当てた数。順位には関係なし</p>`}
       <div class="rk-foot"><img class="rk-logo" src="assets/logo/yosou_banzuke.png" alt="予想番付" width="360" height="82"><span class="site">${esc(window.SITE_URL)}</span></div>
     </div>
     <p class="rk-tap">名前をタップすると、その人の通算の戦績が見られます。</p>
 
-      ${unranked.length && MODE === "win" ? `
-      <div class="rk-unranked">
-        <div class="rk-un-ttl">ランク外（通算${window.CAREER_MIN}試合からランクイン）</div>
-        <div class="rk-un-grid">${unranked.map(r => `<div class="rk-un-cell"><span class="nm">${esc(r.member.name)}</span>
-          <span class="rk-un-n">${r.hits}/${r.decided}<b>あと${window.CAREER_MIN - r.decided}</b></span></div>`).join("")}</div>
-      </div>` : ""}
+      ${MODE === "win" ? unrankedGrid(unranked, rankMin(fights, scope), single ? "この大会で" : "通算") : ""}
       <div class="rk-share">${window.shareButton(
         (single ? single.name + "の勝敗予想ランキング" : "通算の勝敗予想ランキング") +
         (rows[0] && rows[0].rate !== null ? `　1位 ${rows[0].member.name}（${rows[0].hits}/${rows[0].decided}的中）` : "") +
         " #予想番付", location.href, "ランキングをポスト")}</div>
-      <p class="rk-note">直近は<b>当てた数</b>で並べる（1試合で1的中＝100%が1位にならないように）。通算は<b>的中率</b>で並べ、同じ率なら当てた数が多い方が上。<br>
+      <p class="rk-note">直近も通算も<b>的中率</b>で並べ、同じ率なら当てた数が多い方が上。少ない予想で率が跳ねないよう、直近はその大会、通算は${fromName}からの全大会で、結果の出た試合の<b>半分以上</b>を予想した人からランクイン（美食会の3人はいつでも掲載）。<br>
       <b>ピタリ</b>（KO・一本の決まり手＋ラウンドまで一致・判定決着は対象外）は上の「🎯 ピタリ」タブで。<br>
-      通算は美食会が予想を始めた<b>${fromName}から</b>（全員同じ大会で比べる）。結果の出た予想8試合からランクイン（美食会の3人はいつでも掲載）。<br>
+      通算は美食会が予想を始めた<b>${fromName}から</b>（全員同じ大会で比べる）。<br>
       それより前の大会やサイト開設前のYouTube予想動画を含む通算は、名前をタップした戦績ページで見られる。<br>
       予想しなかった試合・中止・体重超過・ドロー・無効試合は数えない。</p>`;
-  fitNames();
-  document.fonts.ready.then(fitNames);
-}
-
-// 長い名前は欄に収まるまで字を小さくする（…で切らない・最小10px）。2列にして名前の幅が約100pxになった
-function fitNames() {
-  document.querySelectorAll(".rk-cell .lb-name").forEach(a => {
-    a.style.fontSize = "";
-    for (let px = 12; a.scrollWidth > a.clientWidth && px >= 10; px -= .5) a.style.fontSize = `${px}px`;
-  });
-}
-
-// 同じ成績は同じ順位（1,1,3…）
-function rankOf(list, i, same) {
-  let j = i;
-  while (j > 0 && same(list[j - 1], list[i])) j--;
-  return j + 1;
-}
-
-// 的中率が競ったら小数点まで出す（Gaku指示・2026-11-07「せったときは小数点まで」）。
-// 隣り合う行が同じ整数の%に丸まるのに率は違う、という並びだけ、違いが見える桁（最大2桁）まで出す
-function rateLabels(rows) {
-  const pct = r => r.rate === null ? null : Math.round(r.rate * 100);
-  const out = rows.map(r => fmtRate(r.rate));
-  for (let i = 0; i < rows.length; ) {
-    let j = i + 1;
-    while (j < rows.length && pct(rows[i]) !== null && pct(rows[j]) === pct(rows[i])) j++;
-    const grp = rows.slice(i, j);
-    const n = new Set(grp.map(r => r.rate)).size;
-    if (n > 1) {
-      let d = 1;
-      while (d < 2 && new Set(grp.map(r => (r.rate * 100).toFixed(d))).size < n) d++;
-      grp.forEach((r, k) => { out[i + k] = `${(r.rate * 100).toFixed(d)}%`; });
-    }
-    i = j;
-  }
-  return out;
-}
-
-// 2列×5段の塊で並べる（Gaku 11/8「1−5、6−10位で上部2列／11−15、16−20位で下部2列」）。
-// 塊の中は縦に流す（左＝1〜5位・右＝6〜10位）。21位からは次の塊。1行の表だと1人1段で縦に長く、横が空いていた
-function winTable(rows) {
-  if (!rows.length) return `<div class="rk-empty">まだ結果の出た予想がありません</div>`;
-  const same = (a, b) => a.hits === b.hits && a.decided === b.decided;
-  const rl = rateLabels(rows);
-  const cell = (r, i) => {
-    const rk = r.rate === null ? "—" : rankOf(rows, i, same);
-    return `<div class="rk-cell${rk === 1 ? " top" : ""}">
-            <span class="lb-rank">${rk}</span>${avatarHTML(r.member, "lb-ava")}
-            <span class="rk-body"><a class="lb-name" href="predictor.html?id=${esc(r.member.id)}">${esc(r.member.name)}</a>
-              <span class="rk-nums"><span><span class="lb-hit">${r.hits}</span><span class="lb-of">/${r.decided}</span></span><span class="lb-rate${r.decided < window.RATE_MIN ? " thin" : ""}">${rl[i]}</span></span></span>
-          </div>`;
-  };
-  const blocks = [];
-  for (let i = 0; i < rows.length; i += 10)
-    blocks.push(`<div class="rk-blk">${rows.slice(i, i + 10).map((r, k) => cell(r, i + k)).join("")}</div>`);
-  return `<div class="rk-grid">${blocks.join("")}</div>`;
+  fitRankNames(document.getElementById("main"));
 }
 
 function pitariTable(allRows) {

@@ -7,7 +7,7 @@
 <title>大会予想｜予想番付</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&family=Noto+Serif+JP:wght@900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261108224226">
+<link rel="stylesheet" href="css/style.css?v=20261109122535">
 </head>
 <body>
 <div id="app-header"></div>
@@ -18,14 +18,14 @@
 <div class="pg-spot" id="pg-spot" hidden></div><div class="pick-guide" id="pick-guide" aria-hidden="true"><span class="pg-t"></span><span class="pg-a"></span><span class="pg-x">予想を入れる<i class="pg-arw"></i></span></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261108224226"></script>
-<script src="js/techniques.js?v=20261108224226"></script>
-<script src="js/demo-data.js?v=20261108224226"></script>
-<script src="js/api.js?v=20261108224226"></script>
-<script src="js/app.js?v=20261108224226"></script>
-<script src="js/glyph_fit.js?v=20261108224226"></script>
-<script src="js/stats.js?v=20261108224226"></script>
-<script src="js/bishoku_summary.js?v=20261108224226"></script>
+<script src="js/config.js?v=20261109122535"></script>
+<script src="js/techniques.js?v=20261109122535"></script>
+<script src="js/demo-data.js?v=20261109122535"></script>
+<script src="js/api.js?v=20261109122535"></script>
+<script src="js/app.js?v=20261109122535"></script>
+<script src="js/glyph_fit.js?v=20261109122535"></script>
+<script src="js/stats.js?v=20261109122535"></script>
+<script src="js/bishoku_summary.js?v=20261109122535"></script>
 <script>
 let EV, PHASE, FIGHTS, FMAP, MEMBERS, myPreds = {}, allPreds = [], ALL_SUPPORTS = [];
 
@@ -386,18 +386,17 @@ function othersBlock(f) {
 
 // ---------- 結果発表（finished時の大会サマリー） ----------
 function eventSummary() {
-  const rows = computeLeaderboard(MEMBERS, FIGHTS, allPreds, { scope: "event" }).filter(r => r.answered > 0);
-  if (!rows.length) return "";
+  // ランキングの「直近」と同じ表（11/9「ランキングの出し方変わってない」）：的中率の順・2列×5段・ランクインはこの大会で結果の出た試合の半分から。
+  // ランキングにだけ出さない予想者（RANK_HIDDEN）もランキングと揃えて外す（予想は各カードの下に残る）
+  const all = computeLeaderboard(MEMBERS.filter(m => !window.RANK_HIDDEN.includes(m.id)), FIGHTS, allPreds, { scope: "event" }).filter(r => r.answered > 0);
+  if (!all.length) return "";
+  const rows = all.filter(r => isRanked(r, "event")), out = all.filter(r => !isRanked(r, "event"));
   return `
     <div class="summary-box">
       <div class="summary-title">この大会の成績</div>
-      ${rows.map((r, i) => `
-        <div class="summary-row ${i === 0 ? "champ" : ""}">
-          <span class="srank">${i + 1}</span>
-          <span class="sname">${avatarHTML(r.member, "pava")}${esc(r.member.name)}${i === 0 ? "　👑" : ""}</span>
-          <span class="srate">${fmtRate(r.rate)}</span>
-          <span class="ssub">${r.hits}/${r.decided}的中</span>
-        </div>`).join("")}
+      ${rankGrid(rows)}
+      ${unrankedGrid(out, rankMin(FIGHTS, "event"), "この大会で")}
+      <p class="summary-rule">勝敗の的中率で順位（同じ率なら当てた数）。名前をタップするとその人の戦績へ</p>
     </div>`;
 }
 
@@ -436,6 +435,7 @@ function render() {
     startCountdown(document.getElementById("cd_main"), EV.lock_at, () => location.reload());
     drawProg();
   } else sc.innerHTML = "";
+  if (PHASE === "finished") fitRankNames(document.querySelector(".summary-box"));
   drawBishokuSummary();
 }
 

@@ -89,21 +89,28 @@
     });
     // 勝敗だけで並べる（Gaku確定・2026-11-07「ピタリを外そう。勝敗だけでランキングを並べたい」）。
     // 旧ポイント制（的中1点＋ピタリ+2点・2026-09-11）は廃止。ピタリは別タブで見る。
-    // 通算は的中率で並べる（Gaku指示・2026-11-07「パーセンテージで並べ替えて」）。過去動画の分を足したら
-    // 的中数の順は予想した量の順になったため。小標本はランクインの基準（CAREER_MIN）が防ぐ。
-    // 1大会の表示はその基準が無く「1試合で1的中＝100%」が1位になるので、的中数を主にしたまま。
+    // 大会でも通算でも的中率で並べる（通算＝11/7「パーセンテージで並べ替えて」／大会＝11/9「丸山先生上すぎない？」）。
+    // 1大会を当てた数で並べていた頃は、全試合を予想した人が予想した量で上に来ていた（RIZIN.55：丸山先生6/12＝50%が、5/9＝56%の2人より上）。
+    // 少ない予想で率が跳ねる人（1試合で1的中＝100%）は、規定数（rankMin）に届いた人の後ろに回す＝ランク外。
+    // 美食会の3人は規定数に関わらず載せ、率のとおりの位置に置く（Gaku指示・2026-11-07「丸山先生は必ず入れて」）
+    const min = window.rankMin(fights, scope);
+    rows.forEach(r => { r.qualified = r.decided >= min || window.ALWAYS_RANKED.includes(r.member.id); });
     const byRate = (a, b) => (b.rate ?? -1) - (a.rate ?? -1) || b.hits - a.hits;
-    const byHits = (a, b) => b.hits - a.hits || (b.rate ?? -1) - (a.rate ?? -1);
     rows.sort((a, b) =>
-      (scope === "career" ? byRate : byHits)(a, b) ||
+      (b.qualified - a.qualified) || byRate(a, b) ||
       String(a.member.name).localeCompare(String(b.member.name), "ja"));
     return rows;
   };
+  // ランクインに要る確定数＝集計範囲で結果の出た試合の半分（切り上げ）。直近（1大会）も通算も同じ決まり
+  // （Gaku 11/9「少ないのにランキング上に行かれても。10試合以上？20試合？いい塩梅へ」）。
+  // 固定の数（旧 CAREER_MIN＝8）だと、大会が増えるほど少数の予想で上に来やすくなる。半分なら大会が増えても釣り合う。
+  // RIZIN.54〜55 の通算＝36試合→18試合から（2大会だけのストラッサー起一 11/17 は届かない）。大会中は入力した分で数える
+  window.rankMin = function (fights, scope) {
+    const n = fights.filter(f => { const s = window.scoreFight({}, f, { scope }); return s && s.counted; }).length;
+    return Math.max(1, Math.ceil(n / 2));
+  };
   // 的中率を「参考値」として小さく扱う基準。確定した予想がこれ未満なら母数が薄い。
   window.RATE_MIN = 4;
-  // 通算ランキングにランクインする最低確定数（Gaku確定・2026-09-11）。
-  // 1大会だけ少数当てた人が通算上位に居座るのを防ぐ。単一大会の表示では適用しない。
-  window.CAREER_MIN = 8;
   // 美食会の3人は母数に関わらず通算でもランクインさせる（Gaku指示・2026-11-07「丸山先生も入れてあげて」）。
   // 基準は外部の予想者が少数的中で居座るのを防ぐためのもので、仲間をはじくためのものではない。
   // 美食会の3人。予想を書ける条件（LINEの固定リンクで開いたブラウザ）も同じ3人＝SQLの owns_member() と揃える
@@ -118,10 +125,76 @@
   //  - 久保優太：「久保はずそう」＝自分の勝敗予想はLANDMARK 15（2026-07）が最後で、以降は直前解説だけ
   window.RANK_HIDDEN = ["m_yt_tsuruya", "m_yt_yutakasaito", "m_yt_69bc9bd4"];
   window.ALWAYS_RANKED = window.BISHOKU;
-  window.isRanked = function (row, scope) {
-    // 美食会は予想0件の範囲でも必ず載せる（Gaku指示・2026-11-07「丸山先生は必ず入れて」）
-    if (row.member && window.ALWAYS_RANKED.includes(row.member.id)) return true;
-    return scope !== "career" || row.decided >= window.CAREER_MIN;
+  // 美食会は予想0件の範囲でも必ず載せる（Gaku指示・2026-11-07「丸山先生は必ず入れて」）。qualified は computeLeaderboard が付ける
+  window.isRanked = function (row) {
+    return !!row.qualified || !!(row.member && window.ALWAYS_RANKED.includes(row.member.id));
+  };
+
+  // ---------- 順位表（2列×5段の塊・ranking.html と event.html の「この大会の成績」で共用） ----------
+  // Gaku 11/8「1−5、6−10位で上部2列／11−15、16−20位で下部2列」。塊の中は縦に流す（左＝1〜5位・右＝6〜10位）。
+  // 1段1人の表は横が空いて縦に長かった。11/9 大会ページも同じ形に（「ランキングの出し方変わってない」）
+  // 同じ成績は同じ順位（1,1,3…）
+  window.rankOf = function (list, i, same) {
+    let j = i;
+    while (j > 0 && same(list[j - 1], list[i])) j--;
+    return j + 1;
+  };
+  // 的中率が競ったら小数点まで出す（Gaku指示・2026-11-07「せったときは小数点まで」）。
+  // 隣り合う行が同じ整数の%に丸まるのに率は違う、という並びだけ、違いが見える桁（最大2桁）まで出す
+  window.rateLabels = function (rows) {
+    const pct = r => r.rate === null ? null : Math.round(r.rate * 100);
+    const out = rows.map(r => window.fmtRate(r.rate));
+    for (let i = 0; i < rows.length; ) {
+      let j = i + 1;
+      while (j < rows.length && pct(rows[i]) !== null && pct(rows[j]) === pct(rows[i])) j++;
+      const grp = rows.slice(i, j);
+      const n = new Set(grp.map(r => r.rate)).size;
+      if (n > 1) {
+        let d = 1;
+        while (d < 2 && new Set(grp.map(r => (r.rate * 100).toFixed(d))).size < n) d++;
+        grp.forEach((r, k) => { out[i + k] = `${(r.rate * 100).toFixed(d)}%`; });
+      }
+      i = j;
+    }
+    return out;
+  };
+  window.rankGrid = function (rows) {
+    if (!rows.length) return `<div class="rk-empty">まだ結果の出た予想がありません</div>`;
+    const same = (a, b) => a.hits === b.hits && a.decided === b.decided;
+    const rl = window.rateLabels(rows);
+    const cell = (r, i) => {
+      const rk = r.rate === null ? "—" : window.rankOf(rows, i, same);
+      return `<div class="rk-cell${rk === 1 ? " top" : ""}">
+            <span class="lb-rank">${rk}</span>${window.avatarHTML(r.member, "lb-ava")}
+            <span class="rk-body"><a class="lb-name" href="predictor.html?id=${esc(r.member.id)}">${esc(r.member.name)}</a>
+              <span class="rk-nums"><span><span class="lb-hit">${r.hits}</span><span class="lb-of">/${r.decided}</span></span><span class="lb-rate${r.decided < window.RATE_MIN ? " thin" : ""}">${rl[i]}</span></span></span>
+          </div>`;
+    };
+    const blocks = [];
+    for (let i = 0; i < rows.length; i += 10)
+      blocks.push(`<div class="rk-blk">${rows.slice(i, i + 10).map((r, k) => cell(r, i + k)).join("")}</div>`);
+    return `<div class="rk-grid">${blocks.join("")}</div>`;
+  };
+  // ランク外（規定数に届かない人）も2列に詰める
+  window.unrankedGrid = function (rows, min, label) {
+    if (!rows.length) return "";
+    // ランクインに近い順（あと何試合が少ない順）。率の順だと1試合1的中の人が先頭に来て、あと1試合の人が埋もれる
+    const near = [...rows].sort((a, b) => b.decided - a.decided || (b.rate ?? -1) - (a.rate ?? -1) ||
+      String(a.member.name).localeCompare(String(b.member.name), "ja"));
+    return `<div class="rk-unranked">
+        <div class="rk-un-ttl">ランク外（${esc(label)}${min}試合からランクイン）</div>
+        <div class="rk-un-grid">${near.map(r => `<div class="rk-un-cell"><span class="nm">${esc(r.member.name)}</span>
+          <span class="rk-un-n">${r.hits}/${r.decided}<b>あと${min - r.decided}</b></span></div>`).join("")}</div>
+      </div>`;
+  };
+  // 長い名前は欄に収まるまで字を小さくする（…で切らない・最小10px）。2列にして名前の幅が約100pxになった
+  window.fitRankNames = function (root) {
+    const run = () => (root || document).querySelectorAll(".rk-cell .lb-name").forEach(a => {
+      a.style.fontSize = "";
+      for (let px = 12; a.scrollWidth > a.clientWidth && px >= 10; px -= .5) a.style.fontSize = `${px}px`;
+    });
+    run();
+    document.fonts.ready.then(run);
   };
 
   // ---------- 共通ヘッダー ----------
