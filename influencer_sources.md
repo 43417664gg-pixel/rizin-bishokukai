@@ -600,3 +600,17 @@ LM16に**出場する選手本人**が全8試合を予想した回（09-29）。
 | 2026-11-05 | ヌルの格闘技ラジオ | ev_lm17 | 13件 | https://www.youtube.com/watch?v=Myf3BXwvSyE | m_yt_e1ff8ceb | ※2026-11-07 Gaku判断で掲載取り下げ（DBから削除・member_map の blocked へ）
 | 2026-11-04 | RIZIN公式【事前番組】伊藤裕樹／安藤達也／井上雄策（abc presents RIZIN.55） | ev_lm17 | 31件（伊藤11・安藤10・井上10） | https://www.youtube.com/watch?v=ekBr5Jvwgzo | m_yt_ito_hiroki / m_yt_ando_tatsuya / m_yt_inoue_yusaku | ※2026-11-08 取込。帰属は字幕を試合ごとに読み「司会の呼びかけ→本人の答え」で確定（自動判定は6件しか通らず、残りを手で確認）。予想を出していない所は入れない（安藤＝相本戦、井上＝鹿志村vs太田「どっちかわかんない」）。名前が字幕で欠けたもの2件は文脈で確定：井上→牛久（「く選手」「縮選手」＝牛久の話で通す）、安藤→リー（「牛君が判定で勝つのもあり得るが今回は〇〇選手に…すいません」） |
 | 2024-06〜2026-09 | RIZIN公式【事前番組】過去11本の井上雄策の番（遡り採点・数字のみ） | career | 33試合 | https://www.youtube.com/watch?v=8zXzeTMWPQ8 https://www.youtube.com/watch?v=FFLSzKj-6T4 https://www.youtube.com/watch?v=KP6oJnFYCeM https://www.youtube.com/watch?v=RfF2950EtgY https://www.youtube.com/watch?v=S5NSJdaOJLM https://www.youtube.com/watch?v=drczZAJUqAI https://www.youtube.com/watch?v=j7nocazvNxw https://www.youtube.com/watch?v=kSIpb4Km59I https://www.youtube.com/watch?v=lkzaQL8a_0U https://www.youtube.com/watch?v=oXQNLtHuc9s https://www.youtube.com/watch?v=sCU8dMcFcHs | m_yt_inoue_yusaku | ※2026-11-08 retro/panel.py で採点。司会の呼びかけで本人の番を決め、長短2通りの独立判定で勝者を確認。抜き取り10件を字幕で確認（どちらとも取れる1件は除外）。予想者ページの通算に入る（site/data/career/m_yt_inoue_yusaku.json） |
+| 2026-09-06 | MMA言語化挑戦中 Voyage GI | ev_cho5 | 4件 | https://www.youtube.com/watch?v=PCRpuuM5TF8 | m_yt_mmavoyagegi | ※2026-11-09 上位再点検で追加（「超RIZIN.5 勝敗予想 前編」・台帳に無かった） |
+| 2026-08-10 | 青木真也  [ SHINYA AOKI ] チャンネル | ev_r54 | 1件 | https://www.youtube.com/watch?v=7DGz42a1ljc | m_yt_shinyaaoki | ※2026-11-09 上位再点検で追加（メイン＝秋元） |
+| 2026-09-05 | 青木真也  [ SHINYA AOKI ] チャンネル | ev_cho5 | 1件 | https://www.youtube.com/watch?v=AELu6hl7SIg | m_yt_shinyaaoki | ※2026-11-09 上位再点検で追加（「平本予想です」） |
+| 2026-11-02 | 青木真也  [ SHINYA AOKI ] チャンネル | ev_lm17 | 4件 | https://www.youtube.com/watch?v=7BWdaoid04c | m_yt_shinyaaoki | ※2026-11-09 上位再点検で追加（「残りのカード」） |
+| 2026-08-06 | 石渡伸太郎 Shintaro Ishiwatari | ev_r54 | 4件 | https://www.youtube.com/watch?v=MRi1T9EdLTY | m_yt_shintaroishiwatari | ※2026-11-09 上位再点検で追加（【後編】） |
+| 2026-10-27 | 石渡伸太郎 Shintaro Ishiwatari | ev_lm17 | 1件 | https://www.youtube.com/watch?v=5ZgTs55J5X4 | m_yt_shintaroishiwatari | ※2026-11-09 上位再点検で追加（井上直樹・判定） |
+| 2026-06-18 | ストラッサー起一 [ストチャンネル] | ev_r54 | 1件 | https://www.youtube.com/watch?v=XpCnJZZLLUg | m_yt_b91a384d | ※2026-11-09 上位再点検で追加（メインのみ・2R KO） |
+| 2026-10-01 | ストラッサー起一 [ストチャンネル] | ev_lm16 | 7件 | https://www.youtube.com/watch?v=bdxy25neOOw | m_yt_b91a384d | ※2026-11-09 上位再点検で追加（「全試合を選手目線で徹底予想」。荒東戦・メインは本人が「展開予想」と断っているので採らない） |
+| 2026-10-26 | 伊澤星花SEIKA IZAWAと時々COROさん | ev_lm17 | 3件 | https://www.youtube.com/watch?v=3-maqSQ617w | m_yt_seikaizawacoro | ※2026-11-09 Gaku判断「割れた試合は外す」により、せーのの答えが2人一致した試合だけ（関原・相本〔採点外〕・ララミー） |
+
+> ※2026-11-09 ランキング上位11人の再点検（詳細＝`../_audit/2026-11-09_上位再点検.md`）。
+> - **訂正4件**：井上雄策 超5 マッキー→シェイドゥラエフ（sCU8dMcFcHs）／扇久保 LM16 荒東→長谷川賢（7KNohU_8iHU）／伊澤 LM16 荒東→長谷川賢（lbG52J_JiNc）／伊澤 R54 クレベル→秋元（jAFbgJIrJ5k）。
+> - **台帳済みの動画から1試合だけ落ちていた分**：ジョビン R55 リー・カイウェン（bV2Mq6IuZ5w）／青木 R55 相本（ZcJgaJUgqNU）・井上直樹（5r9S4-gTKys）／ストラッサー R55 倉本（fzz3D73zsww）。
+> - **伊澤星花チャンネルは「せーの」で2人同時に答える形式**。答えが割れた試合は、字幕からどちらが伊澤さんの答えか分からない。Gaku判断で、割れた5試合（R54 水野戦・細川戦・佐藤将光戦／超5 ダウトベック戦／LM16 杉山戦）をDBから外した（外した行の控え＝`../_audit/2026-11-09_izawa_removed_backup.json`）。今後この形式は、2人一致の試合だけを取り込む。
