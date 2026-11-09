@@ -1554,3 +1554,11 @@ body.wiz-open .toast { bottom: 84px; }   /* 予想の画面では「戻る/次�
   .fd-name { font-size: 46px; }
   .fd-nick { font-size: 21px; }
 }
+
+/* ===== 運用哲学への入口（TOPの最後・Gaku 11/9） ===== */
+.ph-link { display:flex; flex-direction:column; gap:6px; margin:56px 0 8px; padding:18px 16px; border-left:4px solid var(--red);
+  background:linear-gradient(90deg, rgba(230,0,18,.10), transparent 70%); }
+.ph-link b { font:900 20px/1.2 var(--display); font-synthesis:none; letter-spacing:.02em; color:var(--text); }
+.ph-link span { font-size:13px; font-weight:700; color:#b9b9c4; }
+.ph-link.small { display:block; margin:-6px auto 16px; padding:0; border:0; background:none; text-align:center;
+  font-size:12px; font-weight:700; color:#9d9daa; text-decoration:underline; text-underline-offset:3px; }

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>運用哲学｜予想番付</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=20261109130835">
+<style>
+/* 運用哲学（Gaku 2026-11-09「タブにしてHP TOPか『運用哲学』とまとめておきたい」）。
+   中身の正本は Projects/RIZIN/予想番付_設計哲学.md §0（公開リポジトリの外）。ここはその公開版。
+   見出しは節の題の型（赤い斜めの印→極太）、揃えは左1列、かたまりの間は大きく空ける（2-6・2-8c・2-8e） */
+.ph-hero { padding:44px 0 8px; }
+.ph-tag { font:900 34px/1.2 var(--display); font-synthesis:none; letter-spacing:.02em; color:var(--text); }
+.ph-sub { display:flex; align-items:center; gap:10px; margin-top:14px; font:900 15px/1 "Noto Sans JP",sans-serif; letter-spacing:.12em; color:#9d9daa; }
+.ph-sub::before { content:""; flex:none; width:8px; height:16px; background:var(--red); transform:skewX(-18deg); }
+.ph-sec { margin-top:56px; }
+.ph-no { font:500 15px/1 var(--num); letter-spacing:.12em; color:var(--red-hot); }
+.ph-ttl { margin-top:8px; font:900 22px/1.35 "Noto Sans JP",sans-serif; color:var(--text); }
+.ph-body { margin-top:12px; font-size:15px; line-height:1.95; color:#d6d6de; }
+.ph-body p + p { margin-top:10px; }
+.ph-body b { color:var(--text); }
+.ph-note { margin-top:10px; font-size:12px; line-height:1.7; color:#8a8a96; }
+.ph-cta { display:block; margin:64px 0 8px; padding:16px; text-align:center; border-radius:10px; background:var(--red);
+  font:900 16px/1 "Noto Sans JP",sans-serif; color:#fff; }
+</style>
+</head>
+<body>
+<div id="app-header"></div>
+<div class="wrap" id="main">
+  <div class="ph-hero">
+    <div class="ph-tag">熱狂は、予想から。</div>
+    <div class="ph-sub">予想番付の運用哲学</div>
+  </div>
+
+  <section class="ph-sec">
+    <div class="ph-no">01</div>
+    <h2 class="ph-ttl">この残酷で美しい格闘技を、世に広めたい</h2>
+    <div class="ph-body">
+      <p>熱は、リングの上と興行だけが作るものではありません。観る側の「どっちが勝つか」からも、熱は生まれます。</p>
+      <p>予想番付は、外から観る人の側からも熱を作り、この残酷で美しい、素晴らしい格闘技を世に広めるために運営しています。</p>
+    </div>
+  </section>
+
+  <section class="ph-sec">
+    <div class="ph-no">02</div>
+    <h2 class="ph-ttl">「今度の試合、どっち勝つと思う？」</h2>
+    <div class="ph-body">
+      <p>予想は、一人で当てて終わるものではありません。職場で、飲み会で、LINEで。「どっち勝つと思う？」から会話が始まり、割れた試合で言い合い、試合が終われば答え合わせをする。</p>
+      <p>その会話を、至る所で生み出したいと思っています。</p>
+    </div>
+  </section>
+
+  <section class="ph-sec">
+    <div class="ph-no">03</div>
+    <h2 class="ph-ttl">よかたには、よかたの楽しみ方がある</h2>
+    <div class="ph-body">
+      <p>プロの世界には、予想を良しとしない空気もあるようです。それはプロの領分として尊重します。</p>
+      <p>けれど、外から観るよかたにとっては、予想こそが入口です。考えるうちに試合が自分ごとになり、のめり込み、誰かに話したくなる。<b>その楽しみ方まで、押しつぶされてほしくはありません。</b></p>
+    </div>
+    <p class="ph-note">よかた：業界の外の人を指す言葉。</p>
+  </section>
+
+  <section class="ph-sec">
+    <div class="ph-no">04</div>
+    <h2 class="ph-ttl">賭けではなく、応援</h2>
+    <div class="ph-body">
+      <p>アメリカでは、予想は賭けとして一つのビジネスになっています。日本の格闘技は、そうではありません。</p>
+      <p>だから予想番付には、お金を賭ける仕組みの代わりに「応援」があります。勝つと思う方に予想を、勝ってほしい方に応援を。<b>乗せるのは、お金ではなく気持ちです。</b></p>
+    </div>
+  </section>
+
+  <section class="ph-sec">
+    <div class="ph-no">05</div>
+    <h2 class="ph-ttl">広告による収入は取りません</h2>
+    <div class="ph-body">
+      <p>このサイトで、広告による収入は取りません。お金を賭ける仕組みも、利用者どうしでお金や景品をやりとりする仕組みもありません。目的が、お金儲けではないからです。</p>
+    </div>
+  </section>
+
+  <section class="ph-sec">
+    <div class="ph-no">06</div>
+    <h2 class="ph-ttl">予想は、そう簡単には当たらない</h2>
+    <div class="ph-body">
+      <p>当たらなくていい。予想する行為そのものに価値があります。当てようと考えるうちに想像が膨らみ、試合への集中が深まり、格闘技への理解が進むからです。</p>
+      <p>的中率は、偉さの序列ではありません。予想を続けてきた跡です。</p>
+    </div>
+  </section>
+
+  <section class="ph-sec">
+    <div class="ph-no">07</div>
+    <h2 class="ph-ttl">本人の言葉だけを、出典付きで</h2>
+    <div class="ph-body">
+      <p>YouTuberや選手の予想は、本人が公開している動画から、本人の発言だけを出典付きで載せています。対談や同時のコールは採りません。掲載を望まれない方の予想は外します。</p>
+    </div>
+  </section>
+
+  <section class="ph-sec">
+    <div class="ph-no">08</div>
+    <h2 class="ph-ttl">予想を核に、広げていく</h2>
+    <div class="ph-body">
+      <p>選手を「どっちが勝つか」の対象としてだけでなく、その人となりが見える選手名鑑へ。予想に要る格闘技の知識を、楽しく、たやすく得られる発信へ。</p>
+      <p>予想を核にして、いろんな方向から格闘技を世に広めていきます。</p>
+    </div>
+  </section>
+
+  <a class="ph-cta" href="index.html">予想してみる</a>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
+<script src="js/config.js?v=20261109130835"></script>
+<script src="js/techniques.js?v=20261109130835"></script>
+<script src="js/demo-data.js?v=20261109130835"></script>
+<script src="js/api.js?v=20261109130835"></script>
+<script src="js/app.js?v=20261109130835"></script>
+<script>renderHeader("philosophy");</script>
+</body>
+</html>
