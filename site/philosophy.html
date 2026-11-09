@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex">
-<title>運用哲学｜予想番付</title>
+<title>運用哲学とルール｜予想番付</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261109134117">
+<link rel="stylesheet" href="css/style.css?v=20261109144535">
 <style>
 /* 運用哲学（Gaku 2026-11-09「タブにしてHP TOPか『運用哲学』とまとめておきたい」）。
    中身の正本は Projects/RIZIN/予想番付_設計哲学.md §0（公開リポジトリの外）。ここはその公開版。
@@ -23,6 +23,17 @@
 .ph-body p + p { margin-top:10px; }
 .ph-body b { color:var(--text); }
 .ph-note { margin-top:10px; font-size:12px; line-height:1.7; color:#8a8a96; }
+/* ルール（Gaku 2026-11-09「ルールも書いとかないと」：集計の範囲・全部予想しなくていい／応援も任意・締切＝開演・体重超過は予想対象外）。
+   中身の正本はコード（js/app.js の scoreFight・computeLeaderboard・rankMin・RANK_FROM／eventPhase）。決まりを変えたらここも直す。
+   見出しは他のページと同じ節の型（.section-label）。哲学の文章とは役目が違うので、1つの決まりを「番号・題・2〜3文」に詰め、線で区切る */
+.ph-jump { display:inline-block; margin-top:18px; font-size:13px; font-weight:700; color:#b9b9c4; text-decoration:underline; text-underline-offset:3px; }
+.ph-rules { margin-top:88px; scroll-margin-top:calc(var(--hdr-h, 56px) + 16px); }
+.ru-list { list-style:none; }
+.ru-item { display:grid; grid-template-columns:30px 1fr; gap:0 6px; padding:18px 0; border-top:1px solid var(--line); }
+.ru-item:last-child { border-bottom:1px solid var(--line); }
+.ru-no { font:700 20px/1.25 var(--num); color:var(--red-hot); }
+.ru-ttl { font:900 17px/1.4 "Noto Sans JP",sans-serif; color:var(--text); }
+.ru-body { margin-top:6px; font-size:14px; line-height:1.85; color:#d6d6de; }
 .ph-cta { display:block; margin:64px 0 8px; padding:16px; text-align:center; border-radius:10px; background:var(--red);
   font:900 16px/1 "Noto Sans JP",sans-serif; color:#fff; }
 </style>
@@ -33,6 +44,7 @@
   <div class="ph-hero">
     <div class="ph-tag">熱狂は、予想から。</div>
     <div class="ph-sub">予想番付の運用哲学</div>
+    <a class="ph-jump" href="#rules">ルールを見る ↓</a>
   </div>
 
   <section class="ph-sec">
@@ -107,15 +119,53 @@
     </div>
   </section>
 
+  <h2 class="section-label ph-rules" id="rules">ルール</h2>
+  <ol class="ru-list">
+    <li class="ru-item"><span class="ru-no">1</span><div>
+      <h3 class="ru-ttl">予想は、計量のあとから開演まで</h3>
+      <p class="ru-body">受付は前日の計量が終わってから。締切は大会の開始時刻（開演）です。締切までは何度でも直せて、取り消せます。みんなの予想は受付中から見えます。</p>
+    </div></li>
+    <li class="ru-item"><span class="ru-no">2</span><div>
+      <h3 class="ru-ttl">全部予想しなくていい。応援も自由</h3>
+      <p class="ru-body">予想したい試合だけで大丈夫です。予想しなかった試合は数えません。応援（勝ってほしい方）は予想とは別のもので、しなくても、応援だけでも構いません。締切に関係なくいつでも押せて、順位には関係しません。</p>
+    </div></li>
+    <li class="ru-item"><span class="ru-no">3</span><div>
+      <h3 class="ru-ttl">体重超過の試合は、予想対象外</h3>
+      <p class="ru-body">計量で体重超過が出た試合（超過した側が勝つと無効試合になる、ノーコンテストルールの試合など）は、どちらが勝っても採点しません。カードに「予想対象外」と出ます。</p>
+    </div></li>
+    <li class="ru-item"><span class="ru-no">4</span><div>
+      <h3 class="ru-ttl">ほかに数えない試合</h3>
+      <p class="ru-body">中止・ドロー・無効試合（NC）も数えません。キックボクシングルールなどMMA以外の試合は、その大会の成績にだけ入り、通算には入りません。</p>
+    </div></li>
+    <li class="ru-item"><span class="ru-no">5</span><div>
+      <h3 class="ru-ttl">順位は、勝敗の的中率</h3>
+      <p class="ru-body">同じ率なら、当てた数が多い方が上です。決まり手とラウンドは順位に関係しません（そこまで当てた「ピタリ」は別の表）。少ない予想で率が跳ねないよう、結果の出た試合の半分以上を予想した人からランクインします（美食会の3人はいつでも載ります）。</p>
+    </div></li>
+    <li class="ru-item"><span class="ru-no">6</span><div>
+      <h3 class="ru-ttl">通算は、<span data-rank-from-name>RIZIN.54</span>から</h3>
+      <p class="ru-body">通算ランキングは、美食会が予想を始めた<span data-rank-from>RIZIN.54（2026.8.11）</span>以降の結果で比べます。全員を同じ大会で比べるためです。それより前の大会や、サイト開設前のYouTube予想を含む通算は、ランキングで名前をタップした戦績ページで見られます。</p>
+    </div></li>
+  </ol>
+
   <a class="ph-cta" href="index.html">予想してみる</a>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261109134117"></script>
-<script src="js/techniques.js?v=20261109134117"></script>
-<script src="js/demo-data.js?v=20261109134117"></script>
-<script src="js/api.js?v=20261109134117"></script>
-<script src="js/app.js?v=20261109134117"></script>
-<script>renderHeader("philosophy");</script>
+<script src="js/config.js?v=20261109144535"></script>
+<script src="js/techniques.js?v=20261109144535"></script>
+<script src="js/demo-data.js?v=20261109144535"></script>
+<script src="js/api.js?v=20261109144535"></script>
+<script src="js/app.js?v=20261109144535"></script>
+<script>
+renderHeader("philosophy");
+// 通算の起点の大会は app.js の RANK_FROM から引く（起点を動かしたら文面も自動でついてくる）
+(() => {
+  const ev = ((window.DEMO_SEED && DEMO_SEED.events) || []).find(e => e.id === window.RANK_FROM);
+  if (!ev) return;
+  const d = new Date(ev.event_date + "T00:00:00+09:00");
+  document.querySelectorAll("[data-rank-from-name]").forEach(el => { el.textContent = ev.name; });
+  document.querySelectorAll("[data-rank-from]").forEach(el => { el.textContent = `${ev.name}（${d.getFullYear()}.${d.getMonth() + 1}.${d.getDate()}）`; });
+})();
+</script>
 </body>
 </html>
