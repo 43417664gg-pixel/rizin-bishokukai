@@ -8,7 +8,7 @@
 <title>戦績｜予想番付</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261109132050">
+<link rel="stylesheet" href="css/style.css?v=20261109134117">
 <style>
 /* 予想者の「通算成績カード」。過去大会まで遡って採点した結果を、1スクショでXに貼れる形にする。
    上半分＝カード（スクショ範囲）、下＝大会ごとの明細（検証用。出典の動画へ飛べる）。 */
@@ -70,6 +70,9 @@ body { padding-bottom: 40px; }
 .cr-foot .site { font-family:var(--num); font-size:11px; color:var(--gold); }
 .cr-actions { max-width:440px; margin:12px auto 0; padding:0 10px; display:flex; gap:8px; justify-content:center; flex-wrap:wrap; }
 .cr-actions button, .cr-actions a { background:#1a1a20; color:#eee; border:1px solid #33333a; border-radius:8px; padding:9px 14px; font-size:12.5px; cursor:pointer; }
+/* フォロー（2026-11-09）：まだ＝赤い面／フォロー中＝赤い縁だけ */
+.cr-actions .cr-follow { min-width:118px; border-color:var(--red); background:var(--red); color:#fff; font-weight:900; font-size:13.5px; }
+.cr-actions .cr-follow.on { background:#1a0709; color:#ffd9dc; }
 .cr-hint { max-width:440px; margin:8px auto 0; text-align:center; font-size:10.5px; color:#6a6a72; }
 /* 明細（スクショ範囲外） */
 .cr-detail { max-width:440px; margin:22px auto 0; padding:0 10px; }
@@ -99,12 +102,12 @@ body { padding-bottom: 40px; }
 <div class="cr-detail" id="detail"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261109132050"></script>
-<script src="js/techniques.js?v=20261109132050"></script>
-<script src="js/demo-data.js?v=20261109132050"></script>
-<script src="js/api.js?v=20261109132050"></script>
-<script src="js/app.js?v=20261109132050"></script>
-<script src="js/glyph_fit.js?v=20261109132050"></script>
+<script src="js/config.js?v=20261109134117"></script>
+<script src="js/techniques.js?v=20261109134117"></script>
+<script src="js/demo-data.js?v=20261109134117"></script>
+<script src="js/api.js?v=20261109134117"></script>
+<script src="js/app.js?v=20261109134117"></script>
+<script src="js/glyph_fit.js?v=20261109134117"></script>
 <script>
 // 戦績は「的中（勝者を当てたか）」だけで見せる。シンプル優先（Gaku・2026-10-20）。
 // 勝ち方（KO/一本/判定）の一致はデータには持っているが、ピタリの定義が決まるまで表に出さない。
@@ -138,6 +141,20 @@ async function livePicks(memId) {
     }
   }
   return out;
+}
+
+function paintFollow() {
+  const on = RankLists.isFollowing(qp("id"));
+  const b = document.getElementById("follow");
+  b.classList.toggle("on", on);
+  b.textContent = on ? "✓ フォロー中" : "＋ フォロー";
+  document.getElementById("to-rank").setAttribute("href", on ? "ranking.html?who=follow" : "ranking.html");
+}
+function toggleFollow() {
+  const r = RankLists.toggleFollow(qp("id"));
+  if (r === null) { flashMsg("この端末に保存できません（プライベートブラウズ等）"); return; }
+  paintFollow();
+  flashMsg(r ? "フォローしました。ランキングの「★ フォロー中」に出ます" : "フォローを外しました");
 }
 
 async function load() {
@@ -204,8 +221,14 @@ async function load() {
     <div class="cr-foot"><span class="site">${esc(window.SITE_URL)}</span><span>#予想番付</span></div>`;
 
   const share = `${C.name}の通算予想成績：的中率${pct(hit, n)}%（${n}試合・${evs.length}大会） #予想番付`;
-  document.getElementById("acts").innerHTML = window.shareButton(share, location.href, "この成績カードをポスト") +
-    ` <a href="ranking.html">ランキングへ</a>`;
+  // フォロー（2026-11-09）：フォローした人＋自分だけの順位表が ranking.html の「★ フォロー中」に出る。
+  // 自分のページと、ランキングに出さない人（RANK_HIDDEN）には出さない
+  const canFollow = me && id !== getMemberId() && !window.RANK_HIDDEN.includes(id);
+  document.getElementById("acts").innerHTML =
+    (canFollow ? `<button class="cr-follow" id="follow" onclick="toggleFollow()"></button>` : "") +
+    window.shareButton(share, location.href, "この成績カードをポスト") +
+    ` <a href="ranking.html${canFollow && RankLists.isFollowing(id) ? "?who=follow" : ""}" id="to-rank">ランキングへ</a>`;
+  if (canFollow) paintFollow();
 
   // 明細
   const vids = C.event_videos || {};

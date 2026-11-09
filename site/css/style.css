@@ -1562,3 +1562,9 @@ body.wiz-open .toast { bottom: 84px; }   /* 予想の画面では「戻る/次�
 .ph-link span { font-size:13px; font-weight:700; color:#b9b9c4; }
 .ph-link.small { display:block; margin:-6px auto 16px; padding:0; border:0; background:none; text-align:center;
   font-size:12px; font-weight:700; color:#9d9daa; text-decoration:underline; text-underline-offset:3px; }
+
+/* 画面下に一言だけ出す（リンクをコピーした等・app.js flashMsg・2026-11-09） */
+.flash-msg { position:fixed; left:50%; bottom:calc(22px + env(safe-area-inset-bottom)); z-index:10002; width:max-content; max-width:calc(100vw - 32px); box-sizing:border-box; text-align:center;
+  padding:10px 16px; border-radius:999px; background:#1d1d24; border:1px solid #3a3a44; color:#f4f4f6; font:700 13px/1.4 "Noto Sans JP", sans-serif;
+  box-shadow:0 8px 30px rgba(0,0,0,.6); opacity:0; pointer-events:none; transform:translate(-50%, 10px); transition:opacity .2s, transform .2s; }
+.flash-msg.on { opacity:1; transform:translate(-50%, 0); }

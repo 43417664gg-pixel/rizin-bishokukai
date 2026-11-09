@@ -7,7 +7,7 @@
 <title>ランキング｜予想番付</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261109132050">
+<link rel="stylesheet" href="css/style.css?v=20261109134117">
 <style>
 /* ランキングを1枚のカードにする（2026-10-20）：スクショ単体でXに貼れるよう、
    ブランド・集計対象・サイトURLをカードの中に入れる。名前をタップ→その人の戦績へ。 */
@@ -84,6 +84,63 @@ a.lb-name:active { color:var(--gold-hot); }
 /* 注記は本文の大きさで5段を食っていた（素の文字のまま #main に置かれていた）。小さく1かたまりに */
 .rk-note { margin:6px 2px 0; font-size:11.5px; line-height:1.65; color:var(--muted); }
 .rk-note b { color:#c9c9d2; }
+/* 顔ぶれの札（2026-11-09）：総合／★フォロー中／自分で作った顔ぶれ／＋作る。横に流れる1段。面は塗らない（選んだ札だけ赤の縁） */
+.rk-who { display:flex; gap:6px; overflow-x:auto; margin:0 -14px 6px; padding:2px 14px 4px; scrollbar-width:none; -webkit-overflow-scrolling:touch; }
+.rk-who::-webkit-scrollbar { display:none; }
+.rk-chip { flex:none; display:inline-flex; align-items:center; gap:5px; max-width:62vw; padding:7px 13px; border-radius:999px;
+  border:1px solid #2a2a33; background:#121217; color:#a9a9b2; font:900 13px/1.2 "Noto Sans JP", sans-serif; cursor:pointer;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.rk-chip small { font:500 11px/1 var(--num); opacity:.8; }
+.rk-chip.on { border-color:var(--red); color:#fff; background:linear-gradient(180deg,#2a0c10,#1a0709); box-shadow:0 0 0 1px rgba(230,0,18,.25) inset; }
+.rk-chip.add { border-style:dashed; color:#c9c9d2; }
+.rk-who-bar { display:flex; align-items:center; gap:6px; margin:0 0 8px; font-size:12px; color:#9a9aa2; }
+.rk-who-bar span { flex:1; min-width:0; }
+.rk-who-bar button { flex:none; padding:6px 10px; border-radius:8px; border:1px solid #2f2f38; background:#16161c; color:#e4e4ea;
+  font:700 12px/1.2 "Noto Sans JP", sans-serif; cursor:pointer; }
+.rk-who-tag { display:inline-flex; align-items:center; gap:6px; max-width:100%; margin:0 0 9px; padding:3px 11px; border-radius:999px;
+  border:1px solid rgba(255,36,54,.5); background:rgba(230,0,18,.12); color:#ffd9dc; font:900 12px/1.35 "Noto Sans JP", sans-serif; }
+.rk-who-tag small { font:500 11px/1 var(--num); color:#d99aa0; }
+.rk-blank { margin:6px 0; padding:26px 16px; text-align:center; border:1px dashed #2f2f38; border-radius:14px; background:#0e0e12; }
+.rk-blank b { display:block; font-size:15px; margin-bottom:6px; }
+.rk-blank p { margin:0 0 14px; font-size:12.5px; color:var(--muted); line-height:1.6; }
+.rk-blank button { padding:11px 18px; border-radius:10px; border:none; background:var(--red); color:#fff; font:900 14px/1 "Noto Sans JP", sans-serif; cursor:pointer; }
+.rk-absent { margin:8px 2px 0; font-size:11.5px; line-height:1.6; color:var(--muted); }
+/* 顔ぶれを選ぶ画面（下から出るシート） */
+.ed-wrap { position:fixed; inset:0; z-index:10001; display:flex; align-items:flex-end; justify-content:center; background:rgba(0,0,0,.62); }
+.ed-sheet { display:flex; flex-direction:column; width:100%; max-width:560px; max-height:92vh; max-height:92dvh; background:#0f0f13;
+  border:1px solid #2a2a33; border-bottom:none; border-radius:16px 16px 0 0; box-shadow:0 -10px 40px rgba(0,0,0,.6); animation:edUp .22s ease-out; }
+@keyframes edUp { from { transform:translateY(24px); opacity:0; } to { transform:none; opacity:1; } }
+.ed-head { display:flex; align-items:center; justify-content:space-between; padding:14px 14px 8px; }
+.ed-head b { display:flex; align-items:center; gap:9px; font:900 18px/1.2 var(--display); font-synthesis:none; }
+.ed-head b::before { content:""; width:6px; height:18px; background:var(--red); transform:skewX(-18deg); }
+.ed-x { background:none; border:none; color:#9a9aa2; font-size:20px; padding:4px 8px; cursor:pointer; }
+.ed-top { padding:0 14px; }
+.ed-in { display:block; width:100%; box-sizing:border-box; margin:0 0 8px; padding:10px 12px; border-radius:10px; border:1px solid #2a2a33;
+  background:#16161c; color:var(--text); font-size:16px; font-family:inherit; }   /* 16px＝iPhoneで勝手に拡大しない */
+.ed-in:focus { outline:none; border-color:#55555f; }
+.ed-body { flex:1; min-height:0; overflow-y:auto; padding:0 14px 12px; overscroll-behavior:contain; }
+.ed-grp { display:flex; justify-content:space-between; gap:8px; margin:12px 0 6px; font:700 11.5px/1.3 "Noto Sans JP", sans-serif; letter-spacing:.05em; color:#8a8a92; }
+.ed-grp span:last-child { font-weight:500; letter-spacing:0; color:#5f5f69; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.ed-grid { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+.ed-tile { position:relative; display:grid; grid-template-columns:auto minmax(0,1fr); align-items:center; column-gap:7px; min-width:0;
+  padding:8px 28px 8px 8px; border-radius:10px; border:1px solid #26262c; background:#141419; color:var(--text); text-align:left; cursor:pointer; font-family:inherit; }
+.ed-tile .lb-ava { grid-row:1 / span 2; width:28px; height:28px; }
+.ed-nm { min-width:0; overflow:hidden; white-space:nowrap; font-weight:700; font-size:12.5px; line-height:1.25; }   /* 長い名前は edFit が字を小さくする（…で切らない） */
+.ed-nm.two { white-space:normal; }   /* .wrap は全体の外枠クラス（padding 14px）と衝突するので使わない */
+.ed-nm small { margin-left:4px; font-size:10px; color:var(--gold-hot); }
+.ed-n { font:500 11px/1.3 var(--num); color:#7a7a86; }
+.ed-ck { position:absolute; top:50%; right:8px; width:16px; height:16px; margin-top:-8px; border-radius:50%; border:1.5px solid #3a3a44; box-sizing:border-box; }
+.ed-tile.on { border-color:var(--red); background:linear-gradient(180deg,#22090c,#160709); }
+.ed-tile.on .ed-ck { border-color:var(--red-hot); background:var(--red); }
+.ed-tile.on .ed-ck::after { content:"✓"; position:absolute; inset:0; display:grid; place-items:center; font-size:10px; font-weight:900; color:#fff; }
+.ed-tile.hide, .ed-sec.hide { display:none; }
+.ed-note { margin:6px 0 8px; font-size:11.5px; line-height:1.6; color:#7a7a86; }
+.ed-foot { display:flex; align-items:center; gap:8px; padding:10px 14px calc(10px + env(safe-area-inset-bottom)); border-top:1px solid #22222a; background:#0c0c10; }
+.ed-cnt { flex:1; min-width:0; font-size:12.5px; color:#b9b9c2; }
+.ed-save { padding:11px 20px; border-radius:10px; border:none; background:var(--red); color:#fff; font:900 15px/1 "Noto Sans JP", sans-serif; cursor:pointer; }
+.ed-save:disabled { opacity:.35; cursor:default; }
+.ed-cancel { padding:11px 10px; border:none; background:none; color:#9a9aa2; font:700 13px/1 "Noto Sans JP", sans-serif; cursor:pointer; }
+.ed-del { padding:10px 11px; border-radius:10px; border:1px solid #3a2a2c; background:none; color:#e08a8a; font:700 12.5px/1 "Noto Sans JP", sans-serif; cursor:pointer; }
 </style>
 </head>
 <body>
@@ -91,12 +148,12 @@ a.lb-name:active { color:var(--gold-hot); }
 <div class="wrap" id="main"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261109132050"></script>
-<script src="js/techniques.js?v=20261109132050"></script>
-<script src="js/demo-data.js?v=20261109132050"></script>
-<script src="js/api.js?v=20261109132050"></script>
-<script src="js/app.js?v=20261109132050"></script>
-<script src="js/glyph_fit.js?v=20261109132050"></script>
+<script src="js/config.js?v=20261109134117"></script>
+<script src="js/techniques.js?v=20261109134117"></script>
+<script src="js/demo-data.js?v=20261109134117"></script>
+<script src="js/api.js?v=20261109134117"></script>
+<script src="js/app.js?v=20261109134117"></script>
+<script src="js/glyph_fit.js?v=20261109134117"></script>
 <script>
 let EVENTS, MEMBERS, ALL_FIGHTS, ALL_PREDS, FMAP = {};
 // 表＝直近の大会のランキング／裏＝通算（Gaku確定・2026-11-08「直近のものだけで一旦はだそう。派手に通算ボタン…直近ボタンが裏」）。
@@ -109,6 +166,12 @@ let VIEW = qp("view") === "career" ? "career" : "recent";   // recent＝直近�
 let FLIPPED = false;       // 押した直後だけ札を裏返す動きを付ける
 let MODE = "win";          // win＝勝敗ランキング（本体）／pitari＝ピタリランキング（おまけ）
 window.PITARI = {};        // member_id → ピタリの内訳（どこで何が）
+// 誰で比べるか（2026-11-09・Gaku「ランキングを載せられる人を自分で選べる仕組み…初めは総合」）。
+// all＝総合（最初はいつもこれ）／follow＝フォロー中＋自分／l…＝自分で作った顔ぶれ／shared＝送られてきたリンクの顔ぶれ
+let WHO = "all";
+let SHARED = null;         // 送られてきた顔ぶれ { name, m:[id] }（保存するまでこの画面だけ）
+let CAREER = {};           // 選ぶ画面に添える通算の数字（member_id → 行）
+let ED = null;             // 選ぶ画面の状態 { mode: follow|new|edit, id, sel:Set }
 
 async function load() {
   await renderHeader("ranking");
@@ -122,7 +185,169 @@ async function load() {
   FMAP = fighterMap(FIGHTERS);
   ALL_PREDS = await DB.listPredictions({});
   await window.AVATARS_READY;
+  // 選ぶ画面の数字＝ランキングの通算と同じ範囲（RANK_FROM〜）
+  const evAll = new Set(EVENTS.map(e => e.id)), fAll = ALL_FIGHTS.filter(f => evAll.has(f.event_id)), fIds = new Set(fAll.map(f => f.id));
+  CAREER = Object.fromEntries(computeLeaderboard(MEMBERS, fAll, ALL_PREDS.filter(p => fIds.has(p.fight_id)), { scope: "career" }).map(r => [r.member.id, r]));
+  // 送られてきたリンク（?l=&m=）。同じ顔ぶれを保存済みならそれを開く
+  SHARED = RankLists.fromQuery();
+  const w = qp("who");
+  if (SHARED && !w) {
+    const same = RankLists.load().lists.find(l => l.m.length === SHARED.m.length && l.m.every(id => SHARED.m.includes(id)));
+    if (same) { WHO = same.id; SHARED = null; setUrl(); } else WHO = "shared";
+  } else if (w === "follow" || /^l[a-z0-9]{1,16}$/.test(w || "")) WHO = w;
   render();
+}
+
+// 今の顔ぶれ。総合なら null
+function whoNow() {
+  const d = RankLists.load();
+  const ok = new Set(MEMBERS.filter(m => !window.RANK_HIDDEN.includes(m.id)).map(m => m.id));
+  const meId = getMemberId(), me = MEMBERS.find(m => m.id === meId && ok.has(m.id));
+  if (WHO === "follow") {
+    const ids = d.follow.filter(id => ok.has(id));
+    return { kind: "follow", name: me ? `${me.name}のフォロー` : "フォロー中", ids: me && !ids.includes(me.id) ? [...ids, me.id] : ids, n: ids.length, me };
+  }
+  if (WHO === "shared" && SHARED) return { kind: "shared", name: SHARED.name, ids: SHARED.m.filter(id => ok.has(id)) };
+  const l = d.lists.find(x => x.id === WHO);
+  if (l) return { kind: "list", name: l.name, ids: l.m.filter(id => ok.has(id)), list: l };
+  WHO = "all";
+  return null;
+}
+function setUrl() {
+  // 送られてきた顔ぶれ（l・m）は保存するまでURLに残す。who が無ければ開いた時にそちらを出す
+  const u = new URL(location.href);
+  if (WHO === "shared" || (WHO === "all" && !SHARED)) u.searchParams.delete("who"); else u.searchParams.set("who", WHO);
+  if (!SHARED) { u.searchParams.delete("l"); u.searchParams.delete("m"); }
+  history.replaceState(null, "", u.toString().replace(/%2C/g, ","));
+}
+function setWho(k) { WHO = k; setUrl(); render(); }
+function sendWho() {
+  const W = whoNow(); if (!W) return;
+  sendLink(RankLists.link(W.name, W.ids, VIEW === "career" ? { view: "career" } : null), `${W.name}のランキング｜予想番付`);
+}
+function saveShared() {
+  if (!SHARED) return;
+  const id = RankLists.saveList({ name: SHARED.name, m: SHARED.m });
+  if (!id) { flashMsg("この端末に保存できません（プライベートブラウズ等）"); return; }
+  SHARED = null; WHO = id; setUrl(); render();
+  flashMsg("この端末に保存しました");
+}
+
+// ---------- 顔ぶれを選ぶ画面 ----------
+function openEditor(mode) {
+  const d = RankLists.load();
+  const l = mode === "edit" ? d.lists.find(x => x.id === WHO) : null;
+  ED = { mode, id: l ? l.id : null, sel: new Set(mode === "follow" ? d.follow : l ? l.m : []) };
+  const meId = getMemberId();
+  // ランキングに出さない人（RANK_HIDDEN）は候補にも出さない。フォローでは自分は選ばなくても入る
+  const pool = MEMBERS.filter(m => !window.RANK_HIDDEN.includes(m.id) && !(mode === "follow" && m.id === meId));
+  const byN = (a, b) => (CAREER[b.id]?.decided || 0) - (CAREER[a.id]?.decided || 0) || String(a.name).localeCompare(String(b.name), "ja");
+  const groups = [
+    ["美食会", pool.filter(m => window.BISHOKU.includes(m.id))],
+    ["登録した人", pool.filter(m => !window.BISHOKU.includes(m.id) && !/^m_yt_/.test(m.id)).sort(byN)],
+    ["YouTube・SNSの予想者", pool.filter(m => /^m_yt_/.test(m.id)).sort(byN)],
+  ].filter(g => g[1].length);
+  const tile = (m) => {
+    const c = CAREER[m.id];
+    return `<button type="button" class="ed-tile${ED.sel.has(m.id) ? " on" : ""}" data-id="${esc(m.id)}" data-q="${esc(String(m.name).toLowerCase())}" onclick="edToggle(this)">
+      ${avatarHTML(m, "lb-ava")}<span class="ed-nm">${esc(m.name)}${m.id === meId ? "<small>自分</small>" : ""}</span>
+      <span class="ed-n">${c && c.decided ? `${c.hits}/${c.decided} 的中` : "通算の結果なし"}</span><i class="ed-ck"></i></button>`;
+  };
+  const ttl = mode === "follow" ? "フォローする人を選ぶ" : mode === "edit" ? "顔ぶれを編集" : "自分のランキングを作る";
+  const el = document.createElement("div");
+  el.className = "ed-wrap"; el.id = "ed";
+  el.onclick = (e) => { if (e.target === el) closeEditor(); };
+  el.innerHTML = `<div class="ed-sheet" role="dialog" aria-label="${ttl}">
+    <div class="ed-head"><b>${ttl}</b><button class="ed-x" onclick="closeEditor()" aria-label="閉じる">✕</button></div>
+    <div class="ed-top">
+      ${mode === "follow" ? `<p class="ed-note">フォローした人＋自分（名前を選んでいれば）だけの順位表が「★ フォロー中」に出ます。</p>`
+        : `<input class="ed-in" id="ed-name" maxlength="20" placeholder="名前（例：会社の格オタ・推しのYouTuber）" value="${esc(l ? l.name : "")}">`}
+      <input class="ed-in" id="ed-q" type="search" placeholder="名前で探す" oninput="edFilter(this.value)">
+    </div>
+    <div class="ed-body">
+      ${groups.map(([g, ms]) => `<div class="ed-sec"><div class="ed-grp"><span>${g}</span><span>${esc(FROM_EVENT ? FROM_EVENT.name : "")}からの通算</span></div>
+        <div class="ed-grid">${ms.map(tile).join("")}</div></div>`).join("")}
+      <p class="ed-note">選んだ顔ぶれはこの端末に保存します。「🔗 送る」のリンクなら、どの端末・誰に送っても同じ順位表が開きます。</p>
+    </div>
+    <div class="ed-foot">
+      ${mode === "edit" ? `<button class="ed-del" onclick="edDelete()">削除</button>` : ""}
+      <span class="ed-cnt" id="ed-cnt"></span>
+      <button class="ed-cancel" onclick="closeEditor()">やめる</button>
+      <button class="ed-save" id="ed-save" onclick="edSave()">保存</button>
+    </div></div>`;
+  document.body.appendChild(el);
+  document.body.style.overflow = "hidden";
+  edCount();
+  edFit();
+}
+// 名前は1行に収まるまで字を小さく（最小10px）。それでも入らなければ2行に折る
+function edFit() {
+  const run = () => document.querySelectorAll("#ed .ed-nm").forEach(n => {
+    n.style.fontSize = ""; n.classList.remove("two");
+    let px = 12.5;
+    while (n.scrollWidth > n.clientWidth && px > 10) { px -= .5; n.style.fontSize = `${px}px`; }
+    if (n.scrollWidth > n.clientWidth) { n.classList.add("two"); n.style.fontSize = "11px"; }
+  });
+  run();
+  document.fonts.ready.then(run);
+}
+function closeEditor() { const el = document.getElementById("ed"); if (el) el.remove(); document.body.style.overflow = ""; ED = null; }
+document.addEventListener("keydown", (e) => { if (e.key === "Escape" && ED) closeEditor(); });
+function edToggle(b) {
+  const id = b.dataset.id;
+  if (ED.sel.has(id)) ED.sel.delete(id); else ED.sel.add(id);
+  b.classList.toggle("on", ED.sel.has(id));
+  edCount();
+}
+function edCount() {
+  const n = ED.sel.size;
+  document.getElementById("ed-cnt").textContent = ED.mode === "follow" ? `${n}人をフォロー` : `${n}人を選択中`;
+  document.getElementById("ed-save").disabled = ED.mode !== "follow" && n === 0;
+}
+function edFilter(q) {
+  q = String(q || "").trim().toLowerCase();
+  document.querySelectorAll("#ed .ed-tile").forEach(t => t.classList.toggle("hide", !!q && !t.dataset.q.includes(q)));
+  document.querySelectorAll("#ed .ed-sec").forEach(s => s.classList.toggle("hide", !s.querySelector(".ed-tile:not(.hide)")));
+}
+function edSave() {
+  const ids = [...ED.sel];
+  if (ED.mode === "follow") {
+    if (!RankLists.setFollow(ids)) { flashMsg("この端末に保存できません（プライベートブラウズ等）"); return; }
+    closeEditor(); setWho("follow"); return;
+  }
+  const name = RankLists.cleanName(document.getElementById("ed-name").value);
+  const id = RankLists.saveList({ id: ED.id, name, m: ids });
+  closeEditor();
+  if (!id) {   // 保存できない端末でも、その場で見てリンクで残せるようにする
+    SHARED = { name, m: ids }; WHO = "shared"; setUrl(); render();
+    flashMsg("この端末に保存できません。「🔗 送る」でリンクに残してください");
+    return;
+  }
+  setWho(id);
+}
+function edDelete() {
+  const l = RankLists.load().lists.find(x => x.id === ED.id);
+  if (!l || !confirm(`「${l.name}」を消しますか？`)) return;
+  RankLists.removeList(l.id);
+  closeEditor(); setWho("all");
+}
+
+// 顔ぶれの札（総合／★フォロー中／自分で作った顔ぶれ／＋作る）
+function whoBar(W) {
+  const d = RankLists.load();
+  const chip = (k, label) => `<button class="rk-chip${WHO === k ? " on" : ""}" onclick="setWho('${k}')">${label}</button>`;
+  const bar = !W || (W.kind === "follow" && !W.n) ? "" : W.kind === "follow"
+      ? `<div class="rk-who-bar"><span>${W.n}人をフォロー${W.me ? "＋自分" : ""}</span><button onclick="openEditor('follow')">✎ 選ぶ</button><button onclick="sendWho()">🔗 送る</button></div>`
+    : W.kind === "list"
+      ? `<div class="rk-who-bar"><span>${W.ids.length}人・この端末に保存</span><button onclick="openEditor('edit')">✎ 編集</button><button onclick="sendWho()">🔗 送る</button></div>`
+      : `<div class="rk-who-bar"><span>送られてきた顔ぶれ・${W.ids.length}人</span><button onclick="saveShared()">＋ 保存する</button></div>`;
+  return `<div class="rk-who">
+      ${chip("all", "総合")}
+      ${chip("follow", `★ フォロー中${d.follow.length ? `<small>${d.follow.length}</small>` : ""}`)}
+      ${d.lists.map(l => chip(l.id, esc(l.name))).join("")}
+      ${SHARED ? chip("shared", `🔗 ${esc(SHARED.name)}`) : ""}
+      <button class="rk-chip add" onclick="openEditor('new')">＋ 作る</button>
+    </div>${bar}`;
 }
 
 function setMode(m) { MODE = m; render(); }
@@ -145,11 +370,17 @@ function render() {
   // 直近は「その大会の的中数」＝event、通算は的中率＝career。
   // event_only（キック等）は career では数えない（Gaku確定・2026-08-21）。
   const scope = single ? "event" : "career";
-  const allRows = computeLeaderboard(MEMBERS.filter(m => !window.RANK_HIDDEN.includes(m.id)), fights, preds, { scope });
+  // 顔ぶれ（フォロー中・自分で作った顔ぶれ）を選んでいたら、その人たちだけで同じ決まりのまま並べる
+  const W = whoNow();
+  const pool = W ? MEMBERS.filter(m => W.ids.includes(m.id)) : MEMBERS.filter(m => !window.RANK_HIDDEN.includes(m.id));
+  const allRows = computeLeaderboard(pool, fights, preds, { scope });
   // 規定数（集計範囲で結果の出た試合の半分）に届いた人からランクイン。未満は下に「ランク外」（除外はしない）。
   // 直近はその大会を予想した人だけ（美食会の3人はいつでも載せる）
   const rows = allRows.filter(r => window.isRanked(r, scope) && (r.answered > 0 || window.ALWAYS_RANKED.includes(r.member.id)));
   const unranked = allRows.filter(r => !window.isRanked(r, scope) && r.answered > 0);
+  // 選んだのに載らない人（この範囲で予想していない）は名前だけ出す。黙って消えると「選び損ねた？」になる
+  const absent = W ? allRows.filter(r => !rows.includes(r) && !unranked.includes(r)) : [];
+  const blank = W && (W.kind === "follow" ? !W.n : !W.ids.length);
   // ピタリの内訳（どの試合で・誰を・何で当てたか）をメンバー別に用意
   const fById = Object.fromEntries(fights.map(f => [f.id, f]));
   window.PITARI = {};
@@ -173,8 +404,13 @@ function render() {
       <button class="${MODE === "win" ? "on" : ""}" onclick="setMode('win')">勝敗</button>
       <button class="${MODE === "pitari" ? "on" : ""}" onclick="setMode('pitari')">🎯 ピタリ</button>
     </div>
+    ${whoBar(W)}
+    ${blank ? `<div class="rk-blank">${W.kind === "follow"
+        ? `<b>まだ誰もフォローしていません</b><p>気になる予想者・友達・YouTuberを選ぶと、<br>その人たち＋自分だけの順位表になります。</p><button onclick="openEditor('follow')">フォローする人を選ぶ</button>`
+        : `<b>この顔ぶれの予想者が見つかりません</b><p>総合に戻るか、自分で選び直してください。</p><button onclick="setWho('all')">総合に戻る</button>`}</div>` : `
     <div class="rk-card${FLIPPED ? " anim" : ""}">
       <div class="rk-head">
+        ${W ? `<div class="rk-who-tag">${W.kind === "follow" ? "★" : "👥"} ${esc(W.name)}<small>${W.ids.length}人</small></div>` : ""}
         <div class="rk-ttl">${single ? esc(single.name) : MODE === "win" ? "通算ランキング" : "通算ピタリ"}</div>
         <p class="rk-scope">${single ? `${esc(fmtDate(single.event_date))}・直近の大会の成績`
           : `${fromName}〜${esc(RECENT ? RECENT.name : "")}・${EVENTS.length}大会の通算`}</p>
@@ -187,11 +423,14 @@ function render() {
     <p class="rk-tap">名前をタップすると、その人の通算の戦績が見られます。</p>
 
       ${MODE === "win" ? unrankedGrid(unranked, rankMin(fights, scope), single ? "この大会で" : "通算") : ""}
+      ${absent.length ? `<p class="rk-absent">${single ? "この大会を" : "この期間に"}予想していない：${absent.map(r => esc(r.member.name)).join("・")}</p>` : ""}
       <div class="rk-share">${window.shareButton(
+        (W ? `【${W.name}】` : "") +
         (single ? single.name + "の勝敗予想ランキング" : "通算の勝敗予想ランキング") +
         (rows[0] && rows[0].rate !== null ? `　1位 ${rows[0].member.name}（${rows[0].hits}/${rows[0].decided}的中）` : "") +
-        " #予想番付", location.href, "ランキングをポスト")}</div>
+        " #予想番付", W ? RankLists.link(W.name, W.ids, VIEW === "career" ? { view: "career" } : null) : location.href, "ランキングをポスト")}</div>`}
       <p class="rk-note">直近も通算も<b>的中率</b>で並べ、同じ率なら当てた数が多い方が上。少ない予想で率が跳ねないよう、直近はその大会、通算は${fromName}からの全大会で、結果の出た試合の<b>半分以上</b>を予想した人からランクイン（美食会の3人はいつでも掲載）。<br>
+      <b>★ フォロー中</b>・<b>＋ 作る</b>で、比べる顔ぶれを自分で選べる（友達だけ・推しのYouTuberだけ等）。並べ方とランクインの決まりは総合と同じ。顔ぶれはこの端末に保存し、「🔗 送る」のリンクならどの端末でも同じ順位表が開く。<br>
       <b>ピタリ</b>（KO・一本の決まり手＋ラウンドまで一致・判定決着は対象外）は上の「🎯 ピタリ」タブで。<br>
       通算は美食会が予想を始めた<b>${fromName}から</b>（全員同じ大会で比べる）。<br>
       それより前の大会やサイト開設前のYouTube予想動画を含む通算は、名前をタップした戦績ページで見られる。<br>

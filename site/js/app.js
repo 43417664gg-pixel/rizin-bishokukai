@@ -130,6 +130,79 @@
     return !!row.qualified || !!(row.member && window.ALWAYS_RANKED.includes(row.member.id));
   };
 
+  // ---------- 自分で選ぶランキング（フォロー＋マイランキング・2026-11-09） ----------
+  // Gaku 11/9「ランキングを載せられる人を自分で選べる仕組み。フォローの仕組み。自分だけのランキング他作れる。
+  // 友達でもインフルエンサーでも…全く関係のないランキングも作る。初めは総合」。
+  // ・最初に開くのは今までどおり総合（全員）。フォロー中／自分で作った顔ぶれは選んだ時だけ
+  // ・フォロー中＝フォローした人＋自分（名前を選んでいれば）／マイランキング＝選んだ人だけ（自分を入れなくてよい）
+  // ・保存はこの端末（localStorage）。顔ぶれはリンク（ranking.html?l=名前&m=id,id）にも入れるので、
+  //   LINEで送ればどの端末でも同じ順位表が開き、Safariが7日でデータを消してもリンクから戻せる。
+  //   名前に紐づけたDB保存は後回し（要SQL）
+  // ・順位の決まり（rankMin・美食会は常に掲載・ランク外）は総合と同じ。ランキングに出さない人（RANK_HIDDEN）は選ぶ候補にも出さない
+  const RL_KEY = "yb_rank_lists_v1";
+  const idOk = (x) => typeof x === "string" && /^m_[A-Za-z0-9_]{1,40}$/.test(x);
+  const uniq = (a) => [...new Set(a)];
+  window.RankLists = {
+    MAX: 100,
+    load() {
+      let d = null;
+      try { d = JSON.parse(localStorage.getItem(RL_KEY) || "null"); } catch (e) { d = null; }
+      d = d && typeof d === "object" ? d : {};
+      return {
+        follow: Array.isArray(d.follow) ? uniq(d.follow.filter(idOk)) : [],
+        lists: Array.isArray(d.lists) ? d.lists.filter(l => l && typeof l.id === "string" && /^l[a-z0-9]{1,16}$/.test(l.id))
+          .map(l => ({ id: l.id, name: window.RankLists.cleanName(l.name), m: uniq((l.m || []).filter(idOk)) })) : [],
+      };
+    },
+    save(d) { try { localStorage.setItem(RL_KEY, JSON.stringify(d)); return true; } catch (e) { return false; } },
+    cleanName(s) { return String(s || "").replace(/[\u0000-\u001f]/g, "").trim().slice(0, 20) || "マイランキング"; },
+    isFollowing(id) { return this.load().follow.includes(id); },
+    toggleFollow(id) {
+      const d = this.load(), i = d.follow.indexOf(id);
+      if (i >= 0) d.follow.splice(i, 1); else d.follow.push(id);
+      return this.save(d) ? i < 0 : null;   // true＝フォローした／false＝外した／null＝保存できない
+    },
+    setFollow(ids) { const d = this.load(); d.follow = uniq(ids.filter(idOk)).slice(0, this.MAX); return this.save(d); },
+    // 新規は id を作って返す。保存できなければ null
+    saveList(list) {
+      const d = this.load();
+      const l = { id: list.id || "l" + Date.now().toString(36), name: this.cleanName(list.name), m: uniq((list.m || []).filter(idOk)).slice(0, this.MAX) };
+      const i = d.lists.findIndex(x => x.id === l.id);
+      if (i >= 0) d.lists[i] = l; else d.lists.push(l);
+      return this.save(d) ? l.id : null;
+    },
+    removeList(id) { const d = this.load(); d.lists = d.lists.filter(x => x.id !== id); return this.save(d); },
+    // 共有リンク（?l=名前&m=id,id）。ranking.html からの相対
+    link(name, ids, extra) {
+      const u = new URL("ranking.html", location.href);
+      u.search = "";
+      if (extra) for (const [k, v] of Object.entries(extra)) u.searchParams.set(k, v);
+      u.searchParams.set("l", this.cleanName(name));
+      u.searchParams.set("m", ids.filter(idOk).join(","));
+      return u.toString().replace(/%2C/g, ",");
+    },
+    fromQuery() {
+      const p = new URLSearchParams(location.search);
+      const m = uniq((p.get("m") || "").split(",").filter(idOk)).slice(0, this.MAX);
+      return m.length ? { name: this.cleanName(p.get("l")), m } : null;
+    },
+  };
+  // 画面下に一言だけ出す（リンクをコピーした等）
+  window.flashMsg = function (text) {
+    let el = document.getElementById("flash-msg");
+    if (!el) { el = document.createElement("div"); el.id = "flash-msg"; el.className = "flash-msg"; document.body.appendChild(el); }
+    el.textContent = text;
+    el.classList.add("on");
+    clearTimeout(window._flashT);
+    window._flashT = setTimeout(() => el.classList.remove("on"), 2200);
+  };
+  // リンクを送る：スマホは共有シート（LINE等）、無ければコピー
+  window.sendLink = async function (url, title) {
+    try { if (navigator.share) { await navigator.share({ title, url }); return; } } catch (e) { if (e && e.name === "AbortError") return; }
+    try { await navigator.clipboard.writeText(url); window.flashMsg("リンクをコピーしました"); }
+    catch (e) { window.prompt("このリンクを送ってください", url); }
+  };
+
   // ---------- 順位表（2列×5段の塊・ranking.html と event.html の「この大会の成績」で共用） ----------
   // Gaku 11/8「1−5、6−10位で上部2列／11−15、16−20位で下部2列」。塊の中は縦に流す（左＝1〜5位・右＝6〜10位）。
   // 1段1人の表は横が空いて縦に長かった。11/9 大会ページも同じ形に（「ランキングの出し方変わってない」）
