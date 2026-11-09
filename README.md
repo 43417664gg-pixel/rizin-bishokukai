@@ -52,6 +52,7 @@
 **その大会の的中率には含めるが、通算の的中率には含めない**。`no_score`（体重超過＝どこでも採点しない）とは別概念。
 - `scoreFight(pred, fight, {scope})` ／ `computeLeaderboard(..., {scope})` の scope は `"event"`（既定）と `"career"`
 - ranking.html は**直近の大会（表）＝event、通算（裏・RIZIN.54から＝`RANK_FROM`）＝career**（2026-11-08 大会チェック欄を廃止）
+- 並びは直近も通算も**的中率→当てた数**。ランクインは集計範囲で結果の出た試合の**半分（切り上げ）**から＝`rankMin()`（2026-11-09・旧 `CAREER_MIN=8` は廃止）。大会ページの成績も同じ表（`rankGrid`/`unrankedGrid`）
 - 列が無くても `fillFromSeed` が demo-data.js から補うのでDDLは任意（`2026-08-21_event_only.sql`）
 
 ### ★予想の抽出は決定的でない（2026-08-21に判明・重要）
