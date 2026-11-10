@@ -7,19 +7,19 @@
 <title>予想番付｜格闘技の勝敗予想</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261110215715">
+<link rel="stylesheet" href="css/style.css?v=20261110220500">
 </head>
 <body>
 <div id="app-header"></div>
 <div class="wrap" id="main"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261110215715"></script>
-<script src="js/techniques.js?v=20261110215715"></script>
-<script src="js/demo-data.js?v=20261110215715"></script>
-<script src="js/api.js?v=20261110215715"></script>
-<script src="js/app.js?v=20261110215715"></script>
-<script src="js/glyph_fit.js?v=20261110215715"></script>
+<script src="js/config.js?v=20261110220500"></script>
+<script src="js/techniques.js?v=20261110220500"></script>
+<script src="js/demo-data.js?v=20261110220500"></script>
+<script src="js/api.js?v=20261110220500"></script>
+<script src="js/app.js?v=20261110220500"></script>
+<script src="js/glyph_fit.js?v=20261110220500"></script>
 <script>
 // Xから来た人に「いま何をやっているか」を最初に見せる。
 // 監査（2026-08-31）で、入口に大会情報がゼロのまま登録を求めていて離脱する形だったため追加。
@@ -62,11 +62,40 @@ async function nextEventTeaser() {
   } catch (e) { return ""; }
 }
 
+// 登録欄の「いまの番付」（Gaku 11/10「ランキングの内容スクショにランキングに参加しよう！みたいなキャッチ画像あっていい」
+// 「ジョビンとかストラッサーとかがいる想定だった」）。ランキングの通算と同じ式・同じ見た目（rankGrid）で上位9人を出し、
+// 10番目の席を空けて「あなた」にする。数字は毎回DBから計算する（画像にすると古くなる）。失敗したら札ごと出さない
+async function joinRankCard() {
+  try {
+    const [events, members, fights, preds] = await Promise.all([DB.listEvents(), DB.listMembers(), DB.listFights(), DB.listPredictions({})]);
+    const from = events.find(e => e.id === window.RANK_FROM);
+    const done = new Set(fights.filter(f => f.winner_id || f.result_method).map(f => f.event_id));
+    const evs = events.filter(e => done.has(e.id) && (!from || e.event_date >= from.event_date))
+      .sort((a, b) => String(a.event_date).localeCompare(String(b.event_date)));
+    const evIds = new Set(evs.map(e => e.id));
+    const fs = fights.filter(f => evIds.has(f.event_id)), fIds = new Set(fs.map(f => f.id));
+    await window.AVATARS_READY;
+    const pool = members.filter(m => !window.RANK_HIDDEN.includes(m.id));
+    const rows = computeLeaderboard(pool, fs, preds.filter(p => fIds.has(p.fight_id)), { scope: "career" })
+      .filter(r => window.isRanked(r, "career") && r.decided > 0).slice(0, 9);
+    if (!rows.length) return "";
+    const you = `<div class="rk-cell you"><span class="lb-rank">?</span><span class="lb-ava you-ava">?</span>
+        <span class="rk-body"><span class="you-nm">あなた</span><span class="rk-nums"><span class="lb-hit">—</span></span></span></div>`;
+    const grid = window.rankGrid(rows).replace(/<\/div><\/div>$/, you + "</div></div>");
+    const scope = evs.length ? `${esc(evs[0].name)}〜${esc(evs[evs.length - 1].name)}・${evs.length}大会の通算` : "";
+    return `<div class="jr-card">
+        <div class="jr-head"><div class="jr-ttl">通算ランキング</div><p class="jr-scope">${scope}</p></div>
+        ${grid}
+        <div class="rk-cta"><b>あなたの予想も、番付に。</b><span>参加無料</span></div>
+      </div>`;
+  } catch (e) { console.warn("[joinRankCard]", e); return ""; }
+}
+
 // 運用哲学への入口（Gaku 11/9「HP TOPか『運用哲学』とまとめておきたい」）。ヘッダーのナビは375px幅で埋まっているのでTOPの最後に置く
 const PH_LINK = `<a class="ph-link" href="philosophy.html"><b>熱狂は、予想から。</b><span>運用哲学とルールを読む ›</span></a>`;
 
 async function renderPlayerSelect() {
-  const [members, teaser] = await Promise.all([DB.listMembers(), nextEventTeaser()]);
+  const [members, teaser, rankCard] = await Promise.all([DB.listMembers(), nextEventTeaser(), joinRankCard()]);
   window._nameKeys = new Set(members.map(m => nameKey(m.name)));
   // 美食会コア（3人）だけ既存タイルで復帰可。インフルエンサーは予想の出典であって"なりすまし入口"にしない。
   const FRIEND_IDS = ["m_hame", "m_nuki", "m_maruyama"];
@@ -89,11 +118,10 @@ async function renderPlayerSelect() {
       <div class="title-row"><h1 class="page-title">はじめての人はこちら</h1><span class="en-label">JOIN FREE</span></div>
       <p class="page-sub">名前を決めるだけ。登録不要で今すぐ予想＆応援できる。</p>
     </div>
-    <!-- 11/10 Gaku「これださい」：絵文字の丸札3つ＋別行のリンク → 宣言1行（句点だけ赤）＋その下に理由への入口。札にしない・面を塗らない -->
-    <a class="free-decl" href="philosophy.html">
-      <span class="fd-words">無料<i>。</i>広告なし<i>。</i>賭けなし<i>。</i></span>
-      <span class="fd-why">そうしている理由 ›</span>
-    </a>
+    ${rankCard}
+    <!-- 11/10 Gaku「これださい」：絵文字の丸札3つ → 宣言1行（句点だけ赤）。札にしない・面を塗らない。
+         理由のページへは誘わない（Gaku「理由はあるだけ。誘導しない。」）＝ここはリンクにしない -->
+    <p class="free-decl"><span class="fd-words">無料<i>。</i>広告なし<i>。</i>賭けなし<i>。</i></span></p>
     <div class="guest-box" style="background:#131318;border:1px solid #2a2a33;border-radius:12px;padding:16px;margin:0 auto;max-width:460px">
       <input id="gname" placeholder="ニックネーム（全角8文字まで）" maxlength="16" autocomplete="nickname"
         style="width:100%;box-sizing:border-box;padding:12px;font-size:16px;border-radius:8px;border:1px solid #3a3a44;background:#0d0d10;color:#fff"
@@ -108,6 +136,9 @@ async function renderPlayerSelect() {
       KO・一本の決まり手とラウンドまで当てれば<b class="gold">🎯ピタリ</b>（判定決着は対象外・おまけ・ランキングには関係なし）。
       予想しない試合はノーカウント。
     </div>`;
+  // 長い名前（MMA言語化挑戦中 など）は…で切らずに字を小さくして収める（ランキングと同じ処理）
+  const jc = document.querySelector(".jr-card");
+  if (jc && window.fitRankNames) window.fitRankNames(jc);
 }
 
 function choose(id) { setMemberId(id); renderHome(); }

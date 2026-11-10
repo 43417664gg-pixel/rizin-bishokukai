@@ -1574,9 +1574,34 @@ body.wiz-open .toast { bottom: 84px; }   /* 予想の画面では「戻る/次�
 .gname-msg.on { margin-top:8px; }
 
 /* TOPの「無料。広告なし。賭けなし。」（11/10 Gaku「これださい」で丸札3つから作り直し）。宣言は白の太字、句点だけ赤。理由への入口は下に小さく */
-.free-decl { display:flex; flex-direction:column; align-items:center; gap:6px; margin:4px auto 18px; text-decoration:none; }
+.free-decl { margin:4px auto 18px; text-align:center; }
 .free-decl .fd-words { font:900 19px/1.2 "Noto Sans JP", sans-serif; letter-spacing:.06em; color:var(--text); }
 .free-decl .fd-words i { font-style:normal; color:var(--red-hot); margin-right:.15em; }
-.free-decl .fd-why { font-size:12px; font-weight:700; color:#b9b9c4; padding-bottom:1px; border-bottom:1px dashed rgba(255,255,255,.3); }
-.free-decl:active .fd-why { color:var(--gold-hot); }
 .free-decl .fd-words i:last-child { margin-right:0; }
+
+/* スクショ用の誘い（Gaku 11/10「ランキングの内容スクショにランキングに参加しよう！みたいなキャッチ画像あっていい」）。
+   表の下・ロゴの上に赤い帯を1本。スクショが回った先で「自分も載れる」と分かるように。右端は斜めに切る（サイトの斜めの意匠） */
+.rk-cta { position:relative; display:flex; align-items:center; justify-content:space-between; gap:10px; margin:4px 0 0;
+  padding:11px 22px 11px 16px; background:linear-gradient(100deg, var(--red) 0%, #b0000e 60%, #5a0007 100%);
+  clip-path:polygon(0 0, 100% 0, calc(100% - 12px) 100%, 0 100%); }
+.rk-cta b { font:900 17px/1.2 "Noto Sans JP", sans-serif; letter-spacing:.04em; color:#fff; white-space:nowrap; }
+.rk-cta span { flex:none; font:900 11px/1 "Noto Sans JP", sans-serif; letter-spacing:.08em; color:#fff;
+  padding:5px 8px; border:1px solid rgba(255,255,255,.7); border-radius:3px; }
+
+/* TOPの登録欄の「いまの番付」（11/10）。ランキングの札（ranking.html の .rk-card）と同じ地・同じ順位表で、10番目を「あなた」の席に */
+.jr-card { position:relative; overflow:hidden; margin:6px auto 18px; max-width:460px; border-radius:16px; border:1px solid #2a2a33;
+  background:
+    radial-gradient(120% 50% at 100% 0%, rgba(230,0,18,.20), transparent 55%),
+    radial-gradient(90% 50% at 0% 100%, rgba(212,175,55,.08), transparent 60%),
+    linear-gradient(180deg,#121217,#0a0a0d);
+  box-shadow:0 10px 40px rgba(0,0,0,.55); }
+.jr-head { padding:16px 14px 8px; }
+.jr-ttl { display:flex; align-items:center; gap:10px; font:900 20px/1.15 var(--display); font-synthesis:none; letter-spacing:.02em; color:var(--text); }
+.jr-ttl::before { content:""; flex:none; width:7px; height:20px; background:var(--red); transform:skewX(-18deg); }
+.jr-scope { margin:0; padding:5px 0 0 17px; font:700 11.5px/1.45 "Noto Sans JP", sans-serif; letter-spacing:.06em; color:#9d9daa; }
+.jr-card .rk-cta { margin-top:8px; }
+.rk-cell.you { border:1px dashed rgba(255,36,54,.75); border-radius:8px; background:rgba(230,0,18,.08); }
+.rk-grid .rk-cell.you .lb-rank { color:var(--red-hot); }
+.rk-cell.you .you-ava { width:24px; height:24px; border:1px dashed var(--red-hot); background:transparent; color:var(--red-hot); font-size:12px; }
+.rk-cell.you .you-nm { display:block; font-size:12.5px; font-weight:900; line-height:1.3; color:var(--red-hot); }
+.rk-cell.you .lb-hit { color:var(--red-hot); }
