@@ -7,19 +7,19 @@
 <title>予想番付｜格闘技の勝敗予想</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261110212241">
+<link rel="stylesheet" href="css/style.css?v=20261110215715">
 </head>
 <body>
 <div id="app-header"></div>
 <div class="wrap" id="main"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261110212241"></script>
-<script src="js/techniques.js?v=20261110212241"></script>
-<script src="js/demo-data.js?v=20261110212241"></script>
-<script src="js/api.js?v=20261110212241"></script>
-<script src="js/app.js?v=20261110212241"></script>
-<script src="js/glyph_fit.js?v=20261110212241"></script>
+<script src="js/config.js?v=20261110215715"></script>
+<script src="js/techniques.js?v=20261110215715"></script>
+<script src="js/demo-data.js?v=20261110215715"></script>
+<script src="js/api.js?v=20261110215715"></script>
+<script src="js/app.js?v=20261110215715"></script>
+<script src="js/glyph_fit.js?v=20261110215715"></script>
 <script>
 // Xから来た人に「いま何をやっているか」を最初に見せる。
 // 監査（2026-08-31）で、入口に大会情報がゼロのまま登録を求めていて離脱する形だったため追加。
@@ -89,14 +89,13 @@ async function renderPlayerSelect() {
       <div class="title-row"><h1 class="page-title">はじめての人はこちら</h1><span class="en-label">JOIN FREE</span></div>
       <p class="page-sub">名前を決めるだけ。登録不要で今すぐ予想＆応援できる。</p>
     </div>
-    <div style="display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:2px auto 16px;max-width:460px">
-      <span style="font-size:12px;font-weight:900;color:#c9a84a;background:#1a1710;border:1px solid #3a3320;border-radius:999px;padding:5px 12px">🎁 完全無料</span>
-      <span style="font-size:12px;font-weight:900;color:#c9a84a;background:#1a1710;border:1px solid #3a3320;border-radius:999px;padding:5px 12px">🚫 広告なし</span>
-      <span style="font-size:12px;font-weight:900;color:#c9a84a;background:#1a1710;border:1px solid #3a3320;border-radius:999px;padding:5px 12px">🪙 賭けなし</span>
-    </div>
-    <a class="ph-link small" href="philosophy.html">なぜ無料で、賭けも広告もないのか ›</a>
+    <!-- 11/10 Gaku「これださい」：絵文字の丸札3つ＋別行のリンク → 宣言1行（句点だけ赤）＋その下に理由への入口。札にしない・面を塗らない -->
+    <a class="free-decl" href="philosophy.html">
+      <span class="fd-words">無料<i>。</i>広告なし<i>。</i>賭けなし<i>。</i></span>
+      <span class="fd-why">そうしている理由 ›</span>
+    </a>
     <div class="guest-box" style="background:#131318;border:1px solid #2a2a33;border-radius:12px;padding:16px;margin:0 auto;max-width:460px">
-      <input id="gname" placeholder="ニックネーム（例：格闘技太郎）" maxlength="20" autocomplete="nickname"
+      <input id="gname" placeholder="ニックネーム（全角8文字まで）" maxlength="16" autocomplete="nickname"
         style="width:100%;box-sizing:border-box;padding:12px;font-size:16px;border-radius:8px;border:1px solid #3a3a44;background:#0d0d10;color:#fff"
         oninput="checkGuestName()" onkeydown="if(event.key==='Enter')startGuest()">
       <p id="gname-msg" class="gname-msg" role="alert" aria-live="polite"></p>
@@ -119,8 +118,13 @@ function choose(id) { setMemberId(id); renderHome(); }
 // （supabase/migrations/2026-11-10_member_name_unique.sql）。ここは打っている途中に知らせるための先回り。
 function nameKey(s) { return String(s || "").normalize("NFKC").replace(/[\s・]/g, "").toLowerCase(); }
 const RESERVED_NAME = /予想番付|運営|管理人|公式/;
+// 字数制限（Gaku 11/10「名前字数制限」）：全角1・半角0.5で数えて8まで。
+// 根拠＝スマホ幅のランキングの名前欄（104px・12.5px）に全角8字が切れずに収まる（11/10実測）。DB側も同じ数え方（member_name_width）
+const NAME_MAX = 8;
+function nameWidth(s) { const t = String(s || ""); return t.length - (t.match(/[ -~\uFF61-\uFF9F]/g) || []).length / 2; }
 function guestNameProblem(name) {
   if (!name) return "ニックネームを入れてください";
+  if (nameWidth(name) > NAME_MAX) return "名前は全角8文字（半角16文字）までです";
   if (RESERVED_NAME.test(name.normalize("NFKC"))) return "「予想番付」「運営」「管理人」「公式」を含む名前は使えません";
   if (window._nameKeys && window._nameKeys.has(nameKey(name))) return "この名前は使われています。別の名前にしてください";
   return "";

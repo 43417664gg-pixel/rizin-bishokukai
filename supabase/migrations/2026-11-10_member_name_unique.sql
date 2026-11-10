@@ -32,6 +32,21 @@ alter table public.members drop constraint if exists members_name_reserved;
 alter table public.members add constraint members_name_reserved
   check (coalesce(is_curated, false) or normalize(name, NFKC) !~ '(予想番付|運営|管理人|公式)');
 
--- 確認（流したあとに実行・どちらも1行返れば成功）
+-- 字数制限（Gaku 11/10「名前字数制限」）：全角1・半角0.5で数えて8まで（画面の nameWidth と同じ数え方）
+-- 根拠＝スマホ幅のランキングの名前欄に全角8字が切れずに収まる。掲載中の予想者（is_curated）は対象外
+-- （「ホベルト・サトシ・ソウザ」等、本名で12字の人がいる）。11/10実測：対象の3人（美食会）は全員4字
+create or replace function public.member_name_width(n text)
+returns numeric
+language sql
+immutable
+parallel safe
+as $$
+  select (2 * char_length(coalesce(n, '')) - char_length(regexp_replace(coalesce(n, ''), '[^ -~｡-ﾟ]', '', 'g')))::numeric / 2
+$$;
+alter table public.members drop constraint if exists members_name_width;
+alter table public.members add constraint members_name_width
+  check (coalesce(is_curated, false) or public.member_name_width(name) <= 8);
+
+-- 確認（流したあとに実行・どれも1行返れば成功）
 -- select indexname from pg_indexes where indexname = 'members_name_key_uniq';
--- select conname from pg_constraint where conname = 'members_name_reserved';
+-- select conname from pg_constraint where conname in ('members_name_reserved', 'members_name_width');

@@ -1572,3 +1572,11 @@ body.wiz-open .toast { bottom: 84px; }   /* 予想の画面では「戻る/次�
 /* ゲスト登録：名前のかぶり・使えない名前のお知らせ（11/10）。空の時は高さを取らない */
 .gname-msg { margin:0; font-size:13px; font-weight:900; line-height:1.5; color:#ff6b6b; }
 .gname-msg.on { margin-top:8px; }
+
+/* TOPの「無料。広告なし。賭けなし。」（11/10 Gaku「これださい」で丸札3つから作り直し）。宣言は白の太字、句点だけ赤。理由への入口は下に小さく */
+.free-decl { display:flex; flex-direction:column; align-items:center; gap:6px; margin:4px auto 18px; text-decoration:none; }
+.free-decl .fd-words { font:900 19px/1.2 "Noto Sans JP", sans-serif; letter-spacing:.06em; color:var(--text); }
+.free-decl .fd-words i { font-style:normal; color:var(--red-hot); margin-right:.15em; }
+.free-decl .fd-why { font-size:12px; font-weight:700; color:#b9b9c4; padding-bottom:1px; border-bottom:1px dashed rgba(255,255,255,.3); }
+.free-decl:active .fd-why { color:var(--gold-hot); }
+.free-decl .fd-words i:last-child { margin-right:0; }
