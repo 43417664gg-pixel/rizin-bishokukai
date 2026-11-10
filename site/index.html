@@ -7,19 +7,19 @@
 <title>予想番付｜格闘技の勝敗予想</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261109144535">
+<link rel="stylesheet" href="css/style.css?v=20261110212241">
 </head>
 <body>
 <div id="app-header"></div>
 <div class="wrap" id="main"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261109144535"></script>
-<script src="js/techniques.js?v=20261109144535"></script>
-<script src="js/demo-data.js?v=20261109144535"></script>
-<script src="js/api.js?v=20261109144535"></script>
-<script src="js/app.js?v=20261109144535"></script>
-<script src="js/glyph_fit.js?v=20261109144535"></script>
+<script src="js/config.js?v=20261110212241"></script>
+<script src="js/techniques.js?v=20261110212241"></script>
+<script src="js/demo-data.js?v=20261110212241"></script>
+<script src="js/api.js?v=20261110212241"></script>
+<script src="js/app.js?v=20261110212241"></script>
+<script src="js/glyph_fit.js?v=20261110212241"></script>
 <script>
 // Xから来た人に「いま何をやっているか」を最初に見せる。
 // 監査（2026-08-31）で、入口に大会情報がゼロのまま登録を求めていて離脱する形だったため追加。
@@ -67,6 +67,7 @@ const PH_LINK = `<a class="ph-link" href="philosophy.html"><b>熱狂は、予想
 
 async function renderPlayerSelect() {
   const [members, teaser] = await Promise.all([DB.listMembers(), nextEventTeaser()]);
+  window._nameKeys = new Set(members.map(m => nameKey(m.name)));
   // 美食会コア（3人）だけ既存タイルで復帰可。インフルエンサーは予想の出典であって"なりすまし入口"にしない。
   const FRIEND_IDS = ["m_hame", "m_nuki", "m_maruyama"];
   const friends = members.filter(m => FRIEND_IDS.includes(m.id));
@@ -95,9 +96,10 @@ async function renderPlayerSelect() {
     </div>
     <a class="ph-link small" href="philosophy.html">なぜ無料で、賭けも広告もないのか ›</a>
     <div class="guest-box" style="background:#131318;border:1px solid #2a2a33;border-radius:12px;padding:16px;margin:0 auto;max-width:460px">
-      <input id="gname" placeholder="ニックネーム（例：格闘技太郎）" maxlength="20"
+      <input id="gname" placeholder="ニックネーム（例：格闘技太郎）" maxlength="20" autocomplete="nickname"
         style="width:100%;box-sizing:border-box;padding:12px;font-size:16px;border-radius:8px;border:1px solid #3a3a44;background:#0d0d10;color:#fff"
-        onkeydown="if(event.key==='Enter')startGuest()">
+        oninput="checkGuestName()" onkeydown="if(event.key==='Enter')startGuest()">
+      <p id="gname-msg" class="gname-msg" role="alert" aria-live="polite"></p>
       <button onclick="startGuest()"
         style="width:100%;margin-top:10px;padding:13px;font-size:15px;font-weight:900;border:none;border-radius:8px;background:#e60012;color:#fff;cursor:pointer">この名前で始める →</button>
       <p style="font-size:11px;color:#8a8a92;margin:8px 0 0">※記録はこの端末に保存。別端末で引き継ぎたい人は後からアカウント連携（近日）。</p>
@@ -111,17 +113,50 @@ async function renderPlayerSelect() {
 
 function choose(id) { setMemberId(id); renderHome(); }
 
-// ゲスト登録：名前だけで自分専用のメンバーを作って即プレイ（ゼロ障壁）
-async function startGuest() {
+// 名前のかぶり・なりすましを弾く（Gaku 11/10「名前のかぶりは使用されてますみたいな感じに」）。
+// 比べるのは「見た目が同じ名前」：全角半角・大文字小文字・空白・中黒の違いは同じ名前とみなす
+// （「青木 真也」「ﾊﾒ太郎」で既存の予想者を名乗れないように）。DB側にも同じ鍵の一意制約がある
+// （supabase/migrations/2026-11-10_member_name_unique.sql）。ここは打っている途中に知らせるための先回り。
+function nameKey(s) { return String(s || "").normalize("NFKC").replace(/[\s・]/g, "").toLowerCase(); }
+const RESERVED_NAME = /予想番付|運営|管理人|公式/;
+function guestNameProblem(name) {
+  if (!name) return "ニックネームを入れてください";
+  if (RESERVED_NAME.test(name.normalize("NFKC"))) return "「予想番付」「運営」「管理人」「公式」を含む名前は使えません";
+  if (window._nameKeys && window._nameKeys.has(nameKey(name))) return "この名前は使われています。別の名前にしてください";
+  return "";
+}
+function showGuestMsg(msg) {
+  const el = document.getElementById("gname-msg");
+  if (el) { el.textContent = msg; el.classList.toggle("on", !!msg); }
+}
+function checkGuestName() {
   const name = (document.getElementById("gname").value || "").trim();
-  if (!name) { alert("ニックネームを入れてね"); return; }
+  showGuestMsg(name ? guestNameProblem(name) : "");
+}
+
+// ゲスト登録：名前だけで自分専用のメンバーを作って即プレイ（ゼロ障壁）
+let _guestBusy = false;
+async function startGuest() {
+  if (_guestBusy) return;
+  const name = (document.getElementById("gname").value || "").trim();
+  // 画面を開いてから他の人が同じ名前で登録したかもしれないので、押した時に一覧を取り直す
+  try { window._nameKeys = new Set((await DB.listMembers()).map(m => nameKey(m.name))); } catch (e) { /* 取れなければ手元の一覧で見る */ }
+  const problem = guestNameProblem(name);
+  if (problem) { showGuestMsg(problem); return; }
   const pal = ["#e17055", "#00b894", "#0984e3", "#e84393", "#00cec9", "#6c5ce7", "#fdcb6e", "#d63031"];
   const id = "m_g_" + Math.random().toString(36).slice(2, 9);
+  _guestBusy = true;
   try {
     await DB.upsertMember({ id, name, color: pal[Math.floor(Math.random() * pal.length)] });
     setMemberId(id);
     renderHome();
-  } catch (e) { alert("登録できませんでした（メンバー作成のRLS未設定かも）：" + (e.message || e)); }
+  } catch (e) {
+    // 23505＝DBの一意制約（同じ瞬間に同じ名前が登録された）
+    const dup = e && (e.code === "23505" || /duplicate|unique/i.test(String(e.message || "")));
+    showGuestMsg(dup ? "この名前は使われています。別の名前にしてください"
+                     : "登録できませんでした。通信の状態を確かめて、もう一度押してください");
+    console.warn("[guest]", e);
+  } finally { _guestBusy = false; }
 }
 
 async function renderHome() {

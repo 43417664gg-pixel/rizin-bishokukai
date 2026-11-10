@@ -1568,3 +1568,7 @@ body.wiz-open .toast { bottom: 84px; }   /* 予想の画面では「戻る/次�
   padding:10px 16px; border-radius:999px; background:#1d1d24; border:1px solid #3a3a44; color:#f4f4f6; font:700 13px/1.4 "Noto Sans JP", sans-serif;
   box-shadow:0 8px 30px rgba(0,0,0,.6); opacity:0; pointer-events:none; transform:translate(-50%, 10px); transition:opacity .2s, transform .2s; }
 .flash-msg.on { opacity:1; transform:translate(-50%, 0); }
+
+/* ゲスト登録：名前のかぶり・使えない名前のお知らせ（11/10）。空の時は高さを取らない */
+.gname-msg { margin:0; font-size:13px; font-weight:900; line-height:1.5; color:#ff6b6b; }
+.gname-msg.on { margin-top:8px; }
