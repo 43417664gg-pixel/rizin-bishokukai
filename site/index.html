@@ -7,19 +7,19 @@
 <title>予想番付｜格闘技の勝敗予想</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261110220500">
+<link rel="stylesheet" href="css/style.css?v=20261110221146">
 </head>
 <body>
 <div id="app-header"></div>
 <div class="wrap" id="main"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261110220500"></script>
-<script src="js/techniques.js?v=20261110220500"></script>
-<script src="js/demo-data.js?v=20261110220500"></script>
-<script src="js/api.js?v=20261110220500"></script>
-<script src="js/app.js?v=20261110220500"></script>
-<script src="js/glyph_fit.js?v=20261110220500"></script>
+<script src="js/config.js?v=20261110221146"></script>
+<script src="js/techniques.js?v=20261110221146"></script>
+<script src="js/demo-data.js?v=20261110221146"></script>
+<script src="js/api.js?v=20261110221146"></script>
+<script src="js/app.js?v=20261110221146"></script>
+<script src="js/glyph_fit.js?v=20261110221146"></script>
 <script>
 // Xから来た人に「いま何をやっているか」を最初に見せる。
 // 監査（2026-08-31）で、入口に大会情報がゼロのまま登録を求めていて離脱する形だったため追加。
@@ -82,9 +82,9 @@ async function joinRankCard() {
     const you = `<div class="rk-cell you"><span class="lb-rank">?</span><span class="lb-ava you-ava">?</span>
         <span class="rk-body"><span class="you-nm">あなた</span><span class="rk-nums"><span class="lb-hit">—</span></span></span></div>`;
     const grid = window.rankGrid(rows).replace(/<\/div><\/div>$/, you + "</div></div>");
-    const scope = evs.length ? `${esc(evs[0].name)}〜${esc(evs[evs.length - 1].name)}・${evs.length}大会の通算` : "";
+    const scope = evs.length ? `${esc(evs[0].name)}〜${esc(evs[evs.length - 1].name)}・${evs.length}大会の通算ランキング` : "通算ランキング";
     return `<div class="jr-card">
-        <div class="jr-head"><div class="jr-ttl">通算ランキング</div><p class="jr-scope">${scope}</p></div>
+        <div class="jr-head"><h3 class="jr-ttl"><span>予想通りに全くいかない。</span><span class="jr-hot">だから面白い。</span></h3><p class="jr-scope">${scope}</p></div>
         ${grid}
         <div class="rk-cta"><b>あなたの予想も、番付に。</b><span>参加無料</span></div>
       </div>`;

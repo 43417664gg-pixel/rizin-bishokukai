@@ -1596,8 +1596,11 @@ body.wiz-open .toast { bottom: 84px; }   /* 予想の画面では「戻る/次�
     linear-gradient(180deg,#121217,#0a0a0d);
   box-shadow:0 10px 40px rgba(0,0,0,.55); }
 .jr-head { padding:16px 14px 8px; }
-.jr-ttl { display:flex; align-items:center; gap:10px; font:900 20px/1.15 var(--display); font-synthesis:none; letter-spacing:.02em; color:var(--text); }
-.jr-ttl::before { content:""; flex:none; width:7px; height:20px; background:var(--red); transform:skewX(-18deg); }
+/* 見出し＝Gaku 11/10「予想通りに全くいかない。だから面白い。」。1位でも6割弱という番付そのものが、この一行の証拠になる */
+.jr-ttl { position:relative; margin:0; padding-left:17px; font:900 min(21px, 5.9vw)/1.3 var(--display); font-synthesis:none; letter-spacing:.02em; color:var(--text); }
+.jr-ttl::before { content:""; position:absolute; left:0; top:4px; bottom:4px; width:7px; background:var(--red); transform:skewX(-12deg); }
+.jr-ttl span { display:block; white-space:nowrap; }
+.jr-ttl .jr-hot { color:var(--red-hot, #ff2d3d); }
 .jr-scope { margin:0; padding:5px 0 0 17px; font:700 11.5px/1.45 "Noto Sans JP", sans-serif; letter-spacing:.06em; color:#9d9daa; }
 .jr-card .rk-cta { margin-top:8px; }
 .rk-cell.you { border:1px dashed rgba(255,36,54,.75); border-radius:8px; background:rgba(230,0,18,.08); }
