@@ -7,7 +7,7 @@
 <title>ランキング｜予想番付</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261110221146">
+<link rel="stylesheet" href="css/style.css?v=20261111103642">
 <style>
 /* ランキングを1枚のカードにする（2026-10-20）：スクショ単体でXに貼れるよう、
    ブランド・集計対象・サイトURLをカードの中に入れる。名前をタップ→その人の戦績へ。 */
@@ -148,12 +148,12 @@ a.lb-name:active { color:var(--gold-hot); }
 <div class="wrap" id="main"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261110221146"></script>
-<script src="js/techniques.js?v=20261110221146"></script>
-<script src="js/demo-data.js?v=20261110221146"></script>
-<script src="js/api.js?v=20261110221146"></script>
-<script src="js/app.js?v=20261110221146"></script>
-<script src="js/glyph_fit.js?v=20261110221146"></script>
+<script src="js/config.js?v=20261111103642"></script>
+<script src="js/techniques.js?v=20261111103642"></script>
+<script src="js/demo-data.js?v=20261111103642"></script>
+<script src="js/api.js?v=20261111103642"></script>
+<script src="js/app.js?v=20261111103642"></script>
+<script src="js/glyph_fit.js?v=20261111103642"></script>
 <script>
 let EVENTS, MEMBERS, ALL_FIGHTS, ALL_PREDS, FMAP = {};
 // 表＝直近の大会のランキング／裏＝通算（Gaku確定・2026-11-08「直近のものだけで一旦はだそう。派手に通算ボタン…直近ボタンが裏」）。
@@ -242,9 +242,11 @@ function openEditor(mode) {
   // ランキングに出さない人（RANK_HIDDEN）は候補にも出さない。フォローでは自分は選ばなくても入る
   const pool = MEMBERS.filter(m => !window.RANK_HIDDEN.includes(m.id) && !(mode === "follow" && m.id === meId));
   const byN = (a, b) => (CAREER[b.id]?.decided || 0) - (CAREER[a.id]?.decided || 0) || String(a.name).localeCompare(String(b.name), "ja");
+  // 「美食会」の段は美食会の3人が見ている時だけ。一般の人には3人も「登録した人」の1人（Gaku 11/11）
+  const grp = window.isBishokuViewer() ? window.BISHOKU : [];
   const groups = [
-    ["美食会", pool.filter(m => window.BISHOKU.includes(m.id))],
-    ["登録した人", pool.filter(m => !window.BISHOKU.includes(m.id) && !/^m_yt_/.test(m.id)).sort(byN)],
+    ["美食会", pool.filter(m => grp.includes(m.id))],
+    ["登録した人", pool.filter(m => !grp.includes(m.id) && !/^m_yt_/.test(m.id)).sort(byN)],
     ["YouTube・SNSの予想者", pool.filter(m => /^m_yt_/.test(m.id)).sort(byN)],
   ].filter(g => g[1].length);
   const tile = (m) => {
@@ -430,10 +432,10 @@ function render() {
         (single ? single.name + "の勝敗予想ランキング" : "通算の勝敗予想ランキング") +
         (rows[0] && rows[0].rate !== null ? `　1位 ${rows[0].member.name}（${rows[0].hits}/${rows[0].decided}的中）` : "") +
         " #予想番付", W ? RankLists.link(W.name, W.ids, VIEW === "career" ? { view: "career" } : null) : location.href, "ランキングをポスト")}</div>`}
-      <p class="rk-note">直近も通算も<b>的中率</b>で並べ、同じ率なら当てた数が多い方が上。少ない予想で率が跳ねないよう、直近はその大会、通算は${fromName}からの全大会で、結果の出た試合の<b>半分以上</b>を予想した人からランクイン（美食会の3人はいつでも掲載）。<br>
+      <p class="rk-note">直近も通算も<b>的中率</b>で並べ、同じ率なら当てた数が多い方が上。少ない予想で率が跳ねないよう、直近はその大会、通算は${fromName}からの全大会で、結果の出た試合の<b>半分以上</b>を予想した人からランクイン。<br>
       <b>★ フォロー中</b>・<b>＋ 作る</b>で、比べる顔ぶれを自分で選べる（友達だけ・推しのYouTuberだけ等）。並べ方とランクインの決まりは総合と同じ。顔ぶれはこの端末に保存し、「🔗 送る」のリンクならどの端末でも同じ順位表が開く。<br>
       <b>ピタリ</b>（KO・一本の決まり手＋ラウンドまで一致・判定決着は対象外）は上の「🎯 ピタリ」タブで。<br>
-      通算は美食会が予想を始めた<b>${fromName}から</b>（全員同じ大会で比べる）。<br>
+      通算はこのサイトが集計を始めた<b>${fromName}から</b>（全員同じ大会で比べる）。<br>
       それより前の大会やサイト開設前のYouTube予想動画を含む通算は、名前をタップした戦績ページで見られる。<br>
       予想しなかった試合・中止・体重超過・ドロー・無効試合は数えない。</p>`;
   fitRankNames(document.getElementById("main"));

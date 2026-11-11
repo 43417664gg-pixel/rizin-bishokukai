@@ -7,22 +7,25 @@
 <title>予想番付｜格闘技の勝敗予想</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261110221146">
+<link rel="stylesheet" href="css/style.css?v=20261111103642">
 </head>
 <body>
 <div id="app-header"></div>
 <div class="wrap" id="main"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261110221146"></script>
-<script src="js/techniques.js?v=20261110221146"></script>
-<script src="js/demo-data.js?v=20261110221146"></script>
-<script src="js/api.js?v=20261110221146"></script>
-<script src="js/app.js?v=20261110221146"></script>
-<script src="js/glyph_fit.js?v=20261110221146"></script>
+<script src="js/config.js?v=20261111103642"></script>
+<script src="js/techniques.js?v=20261111103642"></script>
+<script src="js/demo-data.js?v=20261111103642"></script>
+<script src="js/api.js?v=20261111103642"></script>
+<script src="js/app.js?v=20261111103642"></script>
+<script src="js/glyph_fit.js?v=20261111103642"></script>
 <script>
 // Xから来た人に「いま何をやっているか」を最初に見せる。
 // 監査（2026-08-31）で、入口に大会情報がゼロのまま登録を求めていて離脱する形だったため追加。
+// 入口の次大会（Gaku 11/11「予想受付中って書いてあるけど、ファイトカードとかのビジュアルがないと意味がない」）。
+// 文字の「予想受付中」と1人だけの割れ具合（0%／100%）をやめ、公式のVSバナーで「何を予想するのか」を見せる。
+// メインを横いっぱいに、続く3試合を小さく並べる。押すと名前の欄へ（goJoin）
 async function nextEventTeaser() {
   try {
     const events = await DB.listEvents();
@@ -30,36 +33,46 @@ async function nextEventTeaser() {
       .sort((a, b) => (a.event_date || "").localeCompare(b.event_date || ""))[0];
     if (!up) return "";
     const [fights, fighters] = await Promise.all([DB.listFights(up.id), DB.listFighters()]);
-    const live = fights.filter(f => !f.cancelled);
+    const live = fights.filter(f => !f.cancelled && !f.event_only).sort((a, b) => b.order_no - a.order_no);
     if (!live.length) return "";
     const FM = fighterMap(fighters);
-    const preds = await DB.listPredictions({ fightIds: live.map(f => f.id) });
-    const people = new Set(preds.map(p => p.member_id)).size;
-    // メイン（order_noが最大）の割れ具合を看板にする＝民意の可視化がこのサイトの売り
-    const main = live.slice().sort((a, b) => b.order_no - a.order_no)[0];
-    const mp = preds.filter(p => p.fight_id === main.id);
-    const c1 = mp.filter(p => p.winner_id === main.fighter1_id).length;
-    const c2 = mp.filter(p => p.winner_id === main.fighter2_id).length;
-    const tot = c1 + c2;
-    const p1 = tot ? Math.round(c1 / tot * 100) : 50, p2 = tot ? 100 - p1 : 50;
+    const vs = (f) => `${FM[f.fighter1_id]?.name || ""} vs ${FM[f.fighter2_id]?.name || ""}`;
+    // タイトルマッチ等の札は重ねない＝バナー自体に書いてある（重ねると主役の絵を隠す）
+    const ban = (f, cls) => f.image_url ? `<figure class="${cls}"><img src="${esc(f.image_url)}" alt="${esc(vs(f))}" loading="lazy"></figure>` : "";
+    const withImg = live.filter(f => f.image_url);
+    if (!withImg.length) return "";
+    const [main, ...rest] = withImg;
     const days = daysToEvent(up);
+    const [ttl, sub] = evParts(up.name);
     return `
-      <a class="tz-card" href="event.html?id=${up.id}">
-        <div class="tz-top">
-          <span class="tz-live">● 予想受付中</span>
-          <span class="tz-date">${fmtDate(up.event_date)}${days != null && days >= 0 ? `　あと${days}日` : ""}</span>
+      <div class="next-flag"><i></i>NEXT EVENT</div>
+      <a class="tz-card" href="#gname" onclick="event.preventDefault();goJoin()">
+        ${ban(main, "tz-main")}
+        <div class="tz-head">
+          <div class="tz-ev"><span class="tz-ev-m">${evNameHTML(ttl)}</span>${sub ? `<small>${esc(sub)}</small>` : ""}</div>
+          ${dateBlock(up.event_date)}
         </div>
-        <div class="tz-ev">${esc(up.name)}</div>
-        ${tot ? `
-        <div class="tz-vs">
-          <span class="r">${esc(FM[main.fighter1_id]?.name || "")}</span>
-          <span class="b">${esc(FM[main.fighter2_id]?.name || "")}</span>
-        </div>
-        <div class="tz-bar"><i style="width:${p1}%"></i><b style="width:${p2}%"></b></div>
-        <div class="tz-pct"><span class="r">${p1}%</span><span class="b">${p2}%</span></div>` : ""}
-        <div class="tz-foot">${people ? `${people}人が予想済み` : "まだ誰も予想していない"}　${live.length}試合　▶ カードを見る</div>
+        ${rest.length ? `<div class="tz-rest">${rest.slice(0, 3).map(f => ban(f, "tz-sub")).join("")}</div>` : ""}
+        <div class="tz-foot"><span><b>全${live.length}試合</b>${days != null && days >= 0 ? `<em>あと${days}日</em>` : ""}</span><i>名前を決めて予想 ↓</i></div>
       </a>`;
   } catch (e) { return ""; }
+}
+
+// 大会ページは名前を決めてから開く作り（requireMember）。決める前に大会ページへ飛ばすとTOPへ送り返されるので、
+// 名前の欄まで降ろして入れてもらう（11/11 気づき：前の札は event.html へ飛んで、そのまま戻されていた）
+function goJoin() {
+  const box = document.querySelector(".guest-box"), inp = document.getElementById("gname");
+  if (!box) return;
+  box.scrollIntoView({ behavior: "smooth", block: "center" });
+  setTimeout(() => inp && inp.focus({ preventScroll: true }), 450);
+}
+
+// このブラウザが美食会のLINEのリンクで開かれたか（美食会の札を出すのはその時だけ）
+async function bishokuDevice() {
+  try {
+    if ((await window.JOIN_PROMISE) === true) return true;
+    return typeof DB.isBishokuDevice === "function" ? !!(await DB.isBishokuDevice()) : false;
+  } catch (e) { return false; }
 }
 
 // 登録欄の「いまの番付」（Gaku 11/10「ランキングの内容スクショにランキングに参加しよう！みたいなキャッチ画像あっていい」
@@ -92,28 +105,35 @@ async function joinRankCard() {
 }
 
 // 運用哲学への入口（Gaku 11/9「HP TOPか『運用哲学』とまとめておきたい」）。ヘッダーのナビは375px幅で埋まっているのでTOPの最後に置く
-const PH_LINK = `<a class="ph-link" href="philosophy.html"><b>熱狂は、予想から。</b><span>運用哲学とルールを読む ›</span></a>`;
+const PH_LINK = `<a class="ph-link" href="philosophy.html"><b>熱狂は、予想から。</b><span>予想番付について（運用哲学とルール） ›</span></a>`;
 
 async function renderPlayerSelect() {
-  const [members, teaser, rankCard] = await Promise.all([DB.listMembers(), nextEventTeaser(), joinRankCard()]);
+  const [members, teaser, rankCard, isGroup] = await Promise.all([DB.listMembers(), nextEventTeaser(), joinRankCard(), bishokuDevice()]);
   window._nameKeys = new Set(members.map(m => nameKey(m.name)));
-  // 美食会コア（3人）だけ既存タイルで復帰可。インフルエンサーは予想の出典であって"なりすまし入口"にしない。
-  const FRIEND_IDS = ["m_hame", "m_nuki", "m_maruyama"];
-  const friends = members.filter(m => FRIEND_IDS.includes(m.id));
-  document.getElementById("main").innerHTML = `
-    ${teaser}
-    ${friends.length ? `
-    <div class="back-box">
-      <div class="back-ttl">前に参加した人はこちら</div>
-      <div class="player-grid">
-        ${friends.map((m, i) => `
+  // 美食会は特別グループ。3人の札は、美食会のLINEのリンクで開いたブラウザにだけ出す
+  // （Gaku 11/11「表からは美食会の要素を消して」「ハメ太郎、丸山先生、抜き太郎のこのサンプルは、あんまり良くない」）。
+  // インフルエンサーは予想の出典であって"なりすまし入口"にしない。
+  const friends = isGroup ? members.filter(m => window.BISHOKU.includes(m.id)) : [];
+  const tiles = friends.map((m, i) => `
           <button class="player-tile" style="--c:${esc(m.color)};--d:${i * 70}ms" data-initial="${esc(m.name.slice(0, 1))}" onclick="choose('${m.id}')">
             <span class="entry-no">MEMBER</span>
             <span class="pname">${esc(m.name)}</span>
-          </button>`).join("")}
-      </div>
-      <p class="back-note">※記録は端末に保存されます。端末やブラウザを変えると名前の選び直しが要ります。</p>
-    </div>` : ""}
+          </button>`).join("");
+  // 「前に参加した人」は下に小さく（Gaku 11/11「主従が逆じゃない？初めての人を優先して、前に参加した人はこちらボタンを下に」）。
+  // 同じブラウザで前に名前を作った人は、この画面を通らずに続きから始まる＝ここに来るのは別の端末・別のブラウザで開いた人
+  const back = friends.length ? `
+    <div class="back-box">
+      <div class="back-ttl">美食会のメンバー</div>
+      <div class="player-grid">${tiles}</div>
+    </div>` : `
+    <details class="back-more">
+      <summary>前に参加した人はこちら</summary>
+      <p>同じスマホ・同じブラウザなら、開くだけで前の続きから始まります。この画面が出たのは、別の端末かブラウザで開いているからです。</p>
+      <p>別の端末へ記録を引き継ぐ「Xでつなぐ」を準備しています。</p>
+    </details>`;
+  document.getElementById("main").innerHTML = `
+    ${friends.length ? back : ""}
+    ${teaser}
     <div class="ps-hero">
       <div class="title-row"><h1 class="page-title">はじめての人はこちら</h1><span class="en-label">JOIN FREE</span></div>
       <p class="page-sub">名前を決めるだけ。登録不要で今すぐ予想＆応援できる。</p>
@@ -135,7 +155,9 @@ async function renderPlayerSelect() {
       <b class="gold">ランキングは勝敗だけ。</b>勝つと思う方を選ぶだけでOK。<br>
       KO・一本の決まり手とラウンドまで当てれば<b class="gold">🎯ピタリ</b>（判定決着は対象外・おまけ・ランキングには関係なし）。
       予想しない試合はノーカウント。
-    </div>`;
+    </div>
+    ${friends.length ? "" : back}
+    ${PH_LINK}`;
   // 長い名前（MMA言語化挑戦中 など）は…で切らずに字を小さくして収める（ランキングと同じ処理）
   const jc = document.querySelector(".jr-card");
   if (jc && window.fitRankNames) window.fitRankNames(jc);

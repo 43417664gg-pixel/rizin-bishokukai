@@ -124,7 +124,11 @@
   //    RIZIN.54までは「勝敗予想」、超RIZIN.5から「展開予想」。RIZIN.55（nkdSWqhsDYs）は注目カードだけで勝者を言わない（「五分五分」）
   //  - 久保優太：「久保はずそう」＝自分の勝敗予想はLANDMARK 15（2026-07）が最後で、以降は直前解説だけ
   window.RANK_HIDDEN = ["m_yt_tsuruya", "m_yt_yutakasaito", "m_yt_69bc9bd4"];
-  window.ALWAYS_RANKED = window.BISHOKU;
+  // 美食会は特別グループ。一般の人の画面には出さない（Gaku 11/11「表からは美食会の要素を消して。一般客の動線に美食会がいないか」
+  // 「一般ランキングにはハメ太郎はいてもいい」）。美食会の名前を選んでいるブラウザ＝3人が見ている時だけ、常時掲載・上に固定・予想まとめを出す。
+  // 一般の人には規定数どおり＝実力でランクインした時だけ載る
+  window.isBishokuViewer = () => window.BISHOKU.includes(getMemberId() || "");
+  Object.defineProperty(window, "ALWAYS_RANKED", { configurable: true, get: () => window.isBishokuViewer() ? window.BISHOKU : [] });
   // 美食会は予想0件の範囲でも必ず載せる（Gaku指示・2026-11-07「丸山先生は必ず入れて」）。qualified は computeLeaderboard が付ける
   window.isRanked = function (row) {
     return !!row.qualified || !!(row.member && window.ALWAYS_RANKED.includes(row.member.id));

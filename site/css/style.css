@@ -895,22 +895,27 @@ tr.top .lb-rate { color: var(--gold-hot); }
   .lb-table .lb-name { font-size:14px !important; }
 }
 
-/* 入口の大会ティーザー（2026-08-31）：登録を求める前に価値を見せる */
-.tz-card { display:block; max-width:460px; margin:6px auto 18px; padding:14px 16px 12px; text-decoration:none;
-  background:linear-gradient(135deg,#1a1013,#0d0d0f); border:1px solid #3a2228; border-left:4px solid #e60012;
-  border-radius:12px; color:#eee; }
-.tz-card:hover { border-color:#7a1520; }
-.tz-top { display:flex; justify-content:space-between; align-items:center; font-size:11px; }
-.tz-live { color:#ff5a67; font-weight:900; }
-.tz-date { color:#9a9aa2; }
-.tz-ev { font-weight:900; font-size:18px; margin:4px 0 10px; line-height:1.25; }
-.tz-vs { display:flex; justify-content:space-between; font-size:13px; font-weight:900; gap:10px; }
-.tz-vs .r { color:#ff5a67; } .tz-vs .b { color:#5aa0ff; text-align:right; }
-.tz-bar { display:flex; height:9px; border-radius:5px; overflow:hidden; margin:5px 0 3px; background:#222; }
-.tz-bar i { background:#e60012; } .tz-bar b { background:#2e78ff; }
-.tz-pct { display:flex; justify-content:space-between; font-family:Oswald,sans-serif; font-size:13px; font-weight:700; }
-.tz-pct .r { color:#ff5a67; } .tz-pct .b { color:#5aa0ff; }
-.tz-foot { margin-top:9px; font-size:11px; color:#c9a84a; font-weight:700; }
+/* 入口の次大会（2026-11-11 作り直し）：公式のVSバナーで「何を予想するのか」を見せる。
+   Gaku「予想受付中って書いてあるけど、ファイトカードとかのビジュアルがないと意味がない」 */
+.tz-card { display:block; max-width:460px; margin:0 auto 26px; overflow:hidden; text-decoration:none; color:var(--text);
+  background:linear-gradient(180deg,#141419,#0b0b0e); border:1px solid #2a2a33; border-radius:14px;
+  box-shadow:0 10px 40px rgba(0,0,0,.5); }
+.tz-card:hover { border-color:#5a1a22; }
+.tz-card figure { margin:0; position:relative; background:#000; }
+.tz-card img { display:block; width:100%; aspect-ratio:16/9; object-fit:cover; }
+.tz-head { display:flex; align-items:flex-end; justify-content:space-between; gap:12px; padding:12px 14px 10px; }
+.tz-ev { min-width:0; }
+.tz-ev-m { display:block; font:900 22px/1.15 var(--display); font-synthesis:none; letter-spacing:.02em; }
+.tz-ev small { display:block; margin-top:4px; font:700 12px/1.35 "Noto Sans JP",sans-serif; color:#c9c9d2; }
+.tz-head .edate { flex:none; }
+.tz-rest { display:grid; grid-template-columns:repeat(3,1fr); gap:4px; padding:0 14px; }
+.tz-rest figure { border-radius:6px; overflow:hidden; }
+.tz-foot { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:12px; padding:11px 14px;
+  border-top:1px solid #23232b; font:700 13px/1.3 "Noto Sans JP",sans-serif; }
+.tz-foot span, .tz-foot em { white-space:nowrap; }
+.tz-foot b { font-weight:900; color:#fff; }
+.tz-foot em { margin-left:8px; font-style:normal; font-weight:900; color:var(--red-hot); }
+.tz-foot i { flex:none; font-style:normal; font-weight:900; color:#fff; }
 
 /* ALL PICKS を折りたたみに（2026-08-31）：スマホで横スクロールの表が最初に来るのを防ぐ */
 .mx-details { margin:14px 0 18px; border:1px solid #3a3320; border-radius:10px; background:#101014; }
@@ -924,13 +929,18 @@ tr.top .lb-rate { color: var(--gold-hot); }
 .mx-count { margin-left:auto; font-size:12px; color:#3a2f10; font-weight:900; }
 .mx-details #matrix-section { padding:0 8px 10px; }
 
-/* 復帰口（2026-09-09）：端末を変えると身元が消える設計なので、
-   『前に参加した人』を折りたたまず最初に見える位置へ出す。
-   丸山さんがログインできなかった実例への対処。 */
-.back-box { max-width:460px; margin:0 auto 20px; padding:14px 16px 12px;
+/* 美食会のメンバーの札（美食会のLINEのリンクで開いたブラウザにだけ出る・2026-11-11） */
+.back-box { max-width:460px; margin:16px auto 20px; padding:14px 16px 12px;
   background:#12121a; border:1px solid #2f2f3a; border-left:4px solid #c9a84a; border-radius:12px; }
 .back-ttl { font-weight:900; font-size:14px; color:#c9a84a; margin-bottom:10px; }
-.back-note { font-size:11px; color:#8a8a92; margin:10px 0 0; line-height:1.5; }
+/* 「前に参加した人はこちら」は登録欄の下に小さく（Gaku 11/11「主従が逆じゃない？」）。押すと理由が開く */
+.back-more { max-width:460px; margin:22px auto 0; text-align:center; }
+.back-more summary { display:inline-block; cursor:pointer; list-style:none; padding:9px 18px; border:1px solid #3a3a44; border-radius:999px;
+  font:900 13px/1.3 "Noto Sans JP",sans-serif; color:#e8e8ee; }
+.back-more summary::-webkit-details-marker { display:none; }
+.back-more summary::after { content:" ›"; color:var(--red-hot); }
+.back-more[open] summary::after { content:" ×"; }
+.back-more p { margin:12px 4px 0; text-align:left; font-size:13px; line-height:1.7; color:#d4d4dc; }
 
 /* お詫びのお知らせ（2026-09-10） */
 #apology-modal { position:fixed; inset:0; z-index:10000; display:flex; align-items:center; justify-content:center; padding:16px; box-sizing:border-box; }

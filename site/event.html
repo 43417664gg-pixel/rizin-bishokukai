@@ -7,7 +7,7 @@
 <title>大会予想｜予想番付</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&family=Noto+Serif+JP:wght@900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261110221146">
+<link rel="stylesheet" href="css/style.css?v=20261111103642">
 </head>
 <body>
 <div id="app-header"></div>
@@ -18,20 +18,21 @@
 <div class="pg-spot" id="pg-spot" hidden></div><div class="pick-guide" id="pick-guide" aria-hidden="true"><span class="pg-t"></span><span class="pg-a"></span><span class="pg-x">予想を入れる<i class="pg-arw"></i></span></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261110221146"></script>
-<script src="js/techniques.js?v=20261110221146"></script>
-<script src="js/demo-data.js?v=20261110221146"></script>
-<script src="js/api.js?v=20261110221146"></script>
-<script src="js/app.js?v=20261110221146"></script>
-<script src="js/glyph_fit.js?v=20261110221146"></script>
-<script src="js/stats.js?v=20261110221146"></script>
-<script src="js/bishoku_summary.js?v=20261110221146"></script>
+<script src="js/config.js?v=20261111103642"></script>
+<script src="js/techniques.js?v=20261111103642"></script>
+<script src="js/demo-data.js?v=20261111103642"></script>
+<script src="js/api.js?v=20261111103642"></script>
+<script src="js/app.js?v=20261111103642"></script>
+<script src="js/glyph_fit.js?v=20261111103642"></script>
+<script src="js/stats.js?v=20261111103642"></script>
+<script src="js/bishoku_summary.js?v=20261111103642"></script>
 <script>
 let EV, PHASE, FIGHTS, FMAP, MEMBERS, myPreds = {}, allPreds = [], ALL_SUPPORTS = [];
 
 // 美食会の3人（ハメ・抜き・丸山）は一覧では左・各カードでは最上部に固定する（Gaku方針）
 const FRIEND_IDS = ["m_hame", "m_nuki", "m_maruyama"];
-const friendRank = (id) => { const i = FRIEND_IDS.indexOf(id); return i < 0 ? 99 : i; };
+// 固定は美食会の3人が見ている時だけ（Gaku 11/11「表からは美食会の要素を消して」）。一般の人には誰も特別扱いしない
+const friendRank = (id) => { if (!window.isBishokuViewer()) return 0; const i = FRIEND_IDS.indexOf(id); return i < 0 ? 99 : i; };
 // 3人を先頭（固定順）→ 残りは元の順。安定ソート。
 const orderMembers = (list) => [...list].sort((a, b) => friendRank(a.id) - friendRank(b.id));
 // 結果が出ている時の見せ場ランク（あらます>ピタリ>的中>その他）
@@ -418,8 +419,8 @@ function render() {
     <div class="title-row"><h1 class="page-title">${evNameHTML(evParts(EV.name)[0])}${evParts(EV.name)[1] ? `<small class="ev-sub">${esc(evParts(EV.name)[1])}</small>` : ""}</h1>${dateBlock(EV.event_date)}</div>
     ${PHASE === "finished" ? eventSummary() : ""}
     <!-- 日付と案内文・ALL PICKS（全員の予想の一覧表）は撤去（Gaku指示11/7「これ削除」「ALLPICKS削除」）。
-         みんなの予想は各カードの下と美食会予想まとめで見える -->
-    ${PHASE !== "before_open" ? `<div id="bsum" class="bsum"></div>` : ""}
+         みんなの予想は各カードの下で見える。美食会予想まとめは美食会の3人が見ている時だけ（Gaku 11/11「一般客の動線に美食会がいないか」） -->
+    ${PHASE !== "before_open" && window.isBishokuViewer() ? `<div id="bsum" class="bsum"></div>` : ""}
     ${main.length ? `<div class="section-label">MAIN CARD</div>` : ""}
     ${main.map(card).join("")}
     ${op.length ? `<div class="section-label">OPENING FIGHTS</div>` : ""}
