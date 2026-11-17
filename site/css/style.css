@@ -1005,6 +1005,9 @@ tr.top .lb-rate { color: var(--gold-hot); }
 
 /* 予想者のアイコン：外部予想者はチャンネルロゴ、それ以外は頭文字の丸（app.js の avatarHTML） */
 .ava-img { object-fit: cover; background: #fff; padding: 0; }
+/* 動画で予想を公開している予想者（インフルエンサー）は、アイコンの外に赤い細い輪（Gaku 11/17「ランキングに並んでたら少し目立つようにアイコンに施す」）。
+   輪とアイコンの間は透かす（outline-offset）＝下の背景がそのまま見える。一般の人の名前・色・形の意味は変えない */
+.ava-pub { outline: 1.5px solid var(--red-hot); outline-offset: 1.5px; }
 /* 頭文字の丸は原色のベタ塗りをやめ、左上に光・縁に影の球（Gaku 11/7「丸アイコンの色もデザイン寄せて」）。
    赤・青・金の系統は誰の丸かを見分ける目印なので残す */
 span.mav { background: radial-gradient(circle at 32% 26%, color-mix(in srgb, var(--c) 58%, #fff) 0%, var(--c) 46%, color-mix(in srgb, var(--c) 52%, #000) 100%);

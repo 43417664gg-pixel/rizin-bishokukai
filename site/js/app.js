@@ -341,7 +341,11 @@
   window.AVATARS = {};
   window.AVATARS_READY = fetch("data/avatars.json", { cache: "no-cache" })
     .then(r => r.ok ? r.json() : {}).then(a => { window.AVATARS = a; }).catch(() => {});
+  // 動画で予想を公開している予想者（is_curated・m_yt_*）には ava-pub を付けて、アイコンの外に細い輪を出す（Gaku 11/17）。
+  // 呼び出し側が {id,name,color} だけ渡すページ（predictor.html）もあるので、id の接頭辞でも判定する
+  window.isPublicPredictor = (m) => !!(m && (m.is_curated || String(m.id || "").startsWith("m_yt_")));
   window.avatarHTML = (m, cls = "ava") => {
+    if (window.isPublicPredictor(m)) cls += " ava-pub";
     const src = m && window.AVATARS[m.id];
     if (src) return `<img class="${cls} ava-img" src="${esc(src)}" alt="" loading="lazy">`;
     const ini = String(m?.name || "?").trim().slice(0, 1);
