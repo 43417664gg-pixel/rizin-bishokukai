@@ -23,7 +23,9 @@ const waysBase = (x) => Math.max(x.rec_w, WAYS.reduce((a, [, k]) => a + (x[k] ??
 function tapeWay(x, key, cls) {
   if (!hasWays(x)) return `<span class="tp-none">—</span>`;
   const n = x[key] ?? 0, p = n / waysBase(x);
-  return `<b class="tp-c${n ? "" : " zero"}">${n}</b>${n ? `<span class="tp-bar ${cls}"><i style="--p:${p.toFixed(3)}"></i><em>${Math.round(p * 100)}%</em></span>` : ""}`;
+  // バーは薄い溝（s）の中を伸びる。割合は溝の外の決まった位置＝3段の割合が縦に揃う（Gaku 11/17「勝率あたりがギュッと詰まってて読みにくい」：
+  // 前は割合がバーの先に付いて、段ごとに横の位置がばらばらだった）。0勝は溝だけ（数は沈める・割合は出さない）
+  return `<b class="tp-c${n ? "" : " zero"}">${n}</b><span class="tp-bar ${cls}"><s>${n ? `<i style="--p:${p.toFixed(3)}"></i>` : ""}</s><em>${n ? Math.round(p * 100) + "%" : ""}</em></span>`;
 }
 function tapeRec(x) {
   if (x?.rec_w == null) return `<span class="tp-none">戦績なし</span>`;
@@ -34,23 +36,29 @@ function tapeRec(x) {
 // フィニッシュ率＝勝ちのうち KO・一本の割合（Gaku 11/8「フィニッシュレートの方が大事」）。戦績のすぐ下に、勝ち方の内訳の要約として大きめに出す
 const tapeFin = (x) => hasWays(x)
   ? `<span class="tp-fin"><b>${Math.round(((x.rec_ko ?? 0) + (x.rec_sub ?? 0)) / waysBase(x) * 100)}</b>%</span>` : `<span class="tp-none">—</span>`;
-// 年齢・身長・リーチは表の一番下に小さく1段（Gaku 11/8「優先度としては低いから表示も小さめでいいよ」）。身長・リーチは RIZIN公式の選手ページ（fetch_profiles.py）。
-// 真ん中寄り＝身長/リーチ（項目名の隣）、外側＝年齢。2人とも身長・リーチが無い試合は年齢だけの段にする
+// 年齢・身長・リーチは表の一番下に小さく（Gaku 11/8「優先度としては低いから表示も小さめでいいよ」）。身長・リーチは RIZIN公式の選手ページ（fetch_profiles.py）。
+// 身長とリーチは1段ずつ分け、項目名を真ん中の帯に置く（Gaku 11/17「リーチと身長がどっちかわからん」：前は「165/165.5cm」を1段に並べ、
+// 項目名を縦に2つ積んでいた＝数字は横・項目名は縦で、どっちがどっちか読めなかった）。年齢は「歳」で読めるので身長の段の外側に置く（段を増やさない）。
+// 2人とも身長・リーチが無い試合は年齢だけの段にする
 const cmv = (v) => v != null ? `<b>${v}</b>` : `<b class="na">—</b>`;
-function tapeBody(x, hr) {
-  const a = ageText(x?.birth_date).match(/^(\d+)歳/)?.[1];   // 数字だけ（生年月日は名鑑で）
-  const parts = [hr && `<span class="tp-hr">${cmv(x?.height_cm)}<i>/</i>${cmv(x?.reach_cm)}<small>cm</small></span>`, a && `<span class="tp-age"><b>${a}</b>歳</span>`].filter(Boolean);
-  return parts.length ? parts.join("") : `<span class="tp-none">—</span>`;
+const cmText = (v) => `<span class="tp-hr">${cmv(v)}${v != null ? "<small>cm</small>" : ""}</span>`;
+const ageNum = (x) => ageText(x?.birth_date).match(/^(\d+)歳/)?.[1];   // 数字だけ（生年月日は名鑑で）
+const ageSpan = (x) => { const a = ageNum(x); return a ? `<span class="tp-age"><b>${a}</b>歳</span>` : ""; };
+function tapeBodyRows(f1, f2, row) {
+  const has = (k) => [f1, f2].some(x => x?.[k] != null);
+  const keys = [["身長", "height_cm"], ["リーチ", "reach_cm"]].filter(([, k]) => has(k));
+  const none = `<span class="tp-none">—</span>`;
+  if (!keys.length) return row("年齢", "body", ageSpan(f1) || none, ageSpan(f2) || none);
+  return keys.map(([l, k], i) => row(l, "body", cmText(f1?.[k]) + (i ? "" : ageSpan(f1)), cmText(f2?.[k]) + (i ? "" : ageSpan(f2)))).join("");
 }
 function statsTape(f1, f2) {
   const row = (k, cls, a, b) => `<div class="tp-row ${cls}"><div class="tp-v c1">${a}</div><div class="tp-k">${k}</div><div class="tp-v c2">${b}</div></div>`;
   // 2人とも内訳が無い試合は勝ち方の段ごと出さない（「—」が6つ並ぶだけになる）
   const anyWays = hasWays(f1) || hasWays(f2);
   const ways = anyWays ? WAYS.map(([l, k, c]) => row(l, "way", tapeWay(f1, k, c), tapeWay(f2, k, c))).join("") : "";
-  const hr = [f1, f2].some(x => x?.height_cm != null || x?.reach_cm != null);
   return `<div class="st-tape"><div class="st-sep s1"></div>
     <div class="tp-rows">${row("戦績", "rec", tapeRec(f1), tapeRec(f2))}${anyWays ? row("FINISH", "fin", tapeFin(f1), tapeFin(f2)) : ""}${ways}${
-      row(hr ? "<span>身長</span><span>リーチ</span>" : "年齢", `body${hr ? " hr" : ""}`, tapeBody(f1, hr), tapeBody(f2, hr))}</div></div>`;
+      tapeBodyRows(f1, f2, row)}</div></div>`;
 }
 // 名前の段＝異名だけ。
 // 選手名は出さない（Gaku 11/8「異名だけでいいかも。名前は書かなくていいや。カードに書いてある」＝真上の写真と下の札に名前がある）。
@@ -125,11 +133,12 @@ function soloTape(x) {
   const row = (k, cls, v) => `<div class="tp-row ${cls}"><div class="tp-k">${k}</div><div class="tp-v solo">${v}</div></div>`;
   const ways = hasWays(x) ? WAYS.map(([l, k, c]) => row(l, "way", tapeWay(x, k, c))).join("") : "";
   const age = ageText(x?.birth_date), a = age.match(/^(\d+)歳/)?.[1], born = age.match(/（(.+)）/)?.[1];
-  const hr = x?.height_cm != null || x?.reach_cm != null;
+  // 身長とリーチは1段ずつ（大会ページと同じ・11/17）
   return `<div class="st-solo"><div class="tp-rows">${row("戦績", "rec", tapeRec(x))}${
     hasWays(x) ? row("FINISH", "fin", tapeFin(x)) : ""}${ways}${
     a ? row("年齢", "body", `<span class="tp-age"><b>${a}</b>歳</span>${born ? `<span class="tp-born">${esc(born)}</span>` : ""}`) : ""}${
-    hr ? row("<span>身長</span><span>リーチ</span>", "body hr", `<span class="tp-hr">${cmv(x.height_cm)}<i>/</i>${cmv(x.reach_cm)}<small>cm</small></span>`) : ""}</div></div>`;
+    x?.height_cm != null ? row("身長", "body", cmText(x.height_cm)) : ""}${
+    x?.reach_cm != null ? row("リーチ", "body", cmText(x.reach_cm)) : ""}</div></div>`;
 }
 // 名鑑の全戦績の1行＝大会ページの前戦と同じ形（WIN／LOSE＋日付・相手・決着）。相手が名鑑にいれば押せる
 function recordRow(r, byName) {

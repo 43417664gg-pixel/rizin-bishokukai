@@ -1092,7 +1092,7 @@ span.mav.tri > i { --k: 50cqw; position: relative; top: 7cqh; }
    帯は左右の列をまたいで1本（真ん中の縦線もそこで切る）。前戦は左右の列の同じ段（subgrid）に高さだけの空き（.st-gap）を置き、その上に帯を重ねる。
    前戦の帯は「直近5試合」の札を載せるので高さを残し、表の上の帯は線だけなので細く（24→14：1画面に収める余白を足す） */
 .st-gap { height: 24px; }
-.st-tape > .st-sep { height: 14px; }
+.st-tape > .st-sep { height: 11px; }
 .st-sep { grid-column: 1 / -1; position: relative; z-index: 1; display: flex; align-items: center; padding: 0 10px; background: var(--sheet); }
 .st-sep::before { content: ""; flex: 1; height: 1px;
   background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .16) 25%, rgba(255, 255, 255, .16) 75%, transparent); }
@@ -1108,11 +1108,14 @@ span.mav.tri > i { --k: 50cqw; position: relative; top: 7cqh; }
 .tp-row { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) 48px minmax(0, 1fr); align-items: center; }
 /* まとまり（戦績／勝ち方の3段／年齢）の間だけ空ける。勝ち方の3段は詰めて1つの塊に見せる。
    前の形（勝ち方を1本のバー＋凡例）より高くならないよう詰めてある（Gaku 11/8「さっきの方がコンパクトだったけどなあ」） */
-.tp-row.rec { padding-bottom: 5px; }
+.tp-row.rec { padding-bottom: 4px; }
 .tp-row.way { min-height: 16px; }
 .tp-row.way + .tp-row.way { margin-top: 2px; }
-.tp-row.fin { margin-bottom: 3px; }
-.tp-row.body { margin-top: 3px; }
+.tp-row.fin { margin-bottom: 4px; }
+.tp-row.body { margin-top: 4px; }
+/* 身長とリーチの2段は行の高さ＝数字の高さに詰めて1つの塊に（11/17・段を分けても表の高さをほぼ変えない） */
+.tp-row.body + .tp-row.body { margin-top: 3px; }
+.tp-row.body .tp-k, .tp-row.body .tp-v { line-height: 1; }
 /* 項目名は「小さな灰色の文字」で済ませない（設計哲学の問い9）：太字の白で、真ん中の帯の上に置く */
 .tp-k { text-align: center; font: 900 11.5px/1 "Noto Sans JP", sans-serif; letter-spacing: .06em; color: #e4e4ea; }
 .tp-v { display: flex; align-items: center; gap: 6px; min-width: 0; padding: 0 10px; }
@@ -1138,13 +1141,12 @@ span.mav.tri > i { --k: 50cqw; position: relative; top: 7cqh; }
 .tp-fin b { font: 600 22px/1 var(--num); color: #fff; margin-right: 1px; }
 /* 年齢・身長・リーチ（11/8「優先度としては低いから表示も小さめでいいよ」）：表の一番下に、項目名も数字も小さく灰で */
 .tp-row.body .tp-v { gap: 8px; }
-.tp-row.body .tp-k { font-size: 10px; color: var(--muted); }
-.tp-row.body.hr .tp-k { display: flex; flex-direction: column; align-items: center; gap: 1px; font-size: 8.5px; letter-spacing: 0; }
+/* 項目名（年齢・身長・リーチ）は、どっちの数字かを決める鍵なので灰に沈めない（11/17「リーチと身長がどっちかわからん」） */
+.tp-row.body .tp-k { font-size: 10px; letter-spacing: .02em; color: #c8c8d0; }
 .tp-age, .tp-hr { font-size: 10.5px; font-weight: 700; color: var(--muted); white-space: nowrap; }
 .tp-age b, .tp-hr b { font: 600 13px/1 var(--num); color: #c8c8d0; }
 .tp-age b { margin-right: 1px; }
 .tp-hr b.na { color: #55555f; }
-.tp-hr i { font-style: normal; margin: 0 2px; color: #6a6a74; }
 .tp-hr small { font-size: 10px; margin-left: 1px; }
 .tp-none { font-size: 12px; font-weight: 700; color: var(--muted); white-space: nowrap; }
 /* 勝ち方：何勝かは真ん中寄り（幅をそろえてバーの根元を縦に揃える）。バーは真ん中から外へ伸び、割合はバーの先。
@@ -1152,10 +1154,15 @@ span.mav.tri > i { --k: 50cqw; position: relative; top: 7cqh; }
 .tp-c { flex: none; width: 20px; font: 600 15px/1 var(--num); color: #fff; }
 .tp-v.c1 > .tp-c { text-align: right; }
 .tp-c.zero { color: #4c4c56; }   /* 0勝はバーも割合も出さず、数だけ沈める */
-.tp-bar { flex: 1; min-width: 0; max-width: 230px; display: flex; align-items: center; gap: 4px; }
+/* 11/17：バーは薄い溝（s）の中を伸び、割合は溝の外の決まった幅に置く＝3段の割合が縦に揃う。前は割合がバーの先に付き、段ごとに位置がばらばらで詰まって見えた */
+.tp-bar { flex: 1; min-width: 0; max-width: 230px; display: flex; align-items: center; gap: 5px; }
 .tp-v.c1 > .tp-bar { flex-direction: row-reverse; }
-.tp-bar i { flex: none; height: 10px; width: calc((100% - 30px) * var(--p)); min-width: 4px; }
-.tp-bar em { flex: none; font: 600 11px/1 var(--num); color: #c4c4ce; }
+.tp-bar s { flex: 1; min-width: 0; height: 7px; display: flex; background: rgba(255, 255, 255, .06); text-decoration: none; }
+.tp-v.c1 > .tp-bar s { justify-content: flex-end; }   /* 左は真ん中（右端）から外へ伸びる */
+.tp-bar i { flex: none; height: 100%; width: calc(var(--p) * 100%); min-width: 4px; }
+.tp-bar em { flex: none; width: 27px; font: 600 11.5px/1 var(--num); color: #c4c4ce; }
+.tp-v.c1 > .tp-bar em { text-align: left; }
+.tp-v.c2 > .tp-bar em { text-align: right; }
 /* KO と一本はフィニッシュ＝コーナー色（KO が明るく、一本は一段深い）、判定だけ灰＝色の付いた段がフィニッシュ（Gaku指示11/7・色は11/8）。
    得票率のバーと同じく外側を暗く・真ん中を明るく、外の端は斜めに切る（ファイトカードの鋭角トーン） */
 .tp-v.c1 > .tp-bar i { clip-path: polygon(4px 0, 100% 0, 100% 100%, 0 100%); }
@@ -1521,11 +1528,13 @@ body.wiz-open .toast { bottom: 84px; }   /* 予想の画面では「戻る/次�
 .st-solo .tp-row.way + .tp-row.way { margin-top: 4px; }
 .st-solo .tp-row.fin { margin: 4px 0 8px; }
 .st-solo .tp-row.body { margin-top: 8px; }
+.st-solo .tp-row.body + .tp-row.body { margin-top: 4px; }
 .tp-v.solo { flex-direction: row; padding: 0 14px; }
 .tp-row.rec .tp-v.solo { align-items: flex-start; }
 .tp-v.solo .st-n.w b { color: #fff; }
 .tp-v.solo .st-n.l b { color: #9a9aa6; }
 .tp-v.solo > .tp-bar { max-width: none; }
+.tp-v.solo > .tp-bar em { text-align: right; }
 .tp-v.solo > .tp-bar i { clip-path: polygon(0 0, 100% 0, calc(100% - 4px) 100%, 0 100%); }
 .tp-v.solo > .tp-bar.k i { background: linear-gradient(90deg, #3a3a44, #fff); }
 .tp-v.solo > .tp-bar.s i { background: linear-gradient(90deg, #2c2c35, #c8c8d0); }
