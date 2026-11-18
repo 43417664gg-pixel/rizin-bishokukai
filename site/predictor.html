@@ -56,6 +56,19 @@ body { padding-bottom: 40px; }
 .cr-spark i { flex:1; max-width:26px; border-radius:2px 2px 0 0; background:linear-gradient(180deg,#f0cd5a,#b8902a); min-height:3px; opacity:.9; }
 .cr-spark i.lo { background:linear-gradient(180deg,#ff5a67,#8a1a24); }
 .cr-axis { position:relative; display:flex; justify-content:space-between; padding:3px 14px 0; font-family:var(--num); font-size:9px; color:#6f6f7a; }
+/* 11/18 Gaku「的中率グラフは横軸の点線がないとわからん」→ 25%刻みの点線（50%だけ濃く＝赤と金の境目）＋左に100%・50%の目盛り。
+   点線は棒の上に薄く重ねる＝棒の頭が線より上か下かで読める */
+.cr-spark { margin-top:7px; padding-left:42px; }
+.cr-spark::before { content:""; position:absolute; left:42px; right:14px; top:0; bottom:0; z-index:1; pointer-events:none;
+  background-image:
+    linear-gradient(90deg, rgba(255,255,255,.34) 50%, transparent 0),
+    linear-gradient(90deg, rgba(255,255,255,.2) 50%, transparent 0),
+    linear-gradient(90deg, rgba(255,255,255,.5) 50%, transparent 0),
+    linear-gradient(90deg, rgba(255,255,255,.2) 50%, transparent 0);
+  background-size:6px 1px; background-repeat:repeat-x; background-position:0 0, 0 25%, 0 50%, 0 75%; }
+.cr-spark .yl { position:absolute; left:8px; width:30px; transform:translateY(-50%); text-align:right;
+  font:500 10px/1 var(--num); letter-spacing:.02em; color:#b4b4c0; }
+.cr-axis { padding-left:42px; }
 .cr-dots { position:relative; display:flex; flex-wrap:wrap; gap:4px; padding:4px 14px 2px; }
 .cr-dots i { width:14px; height:14px; border-radius:50%; font-style:normal; font-size:8px; font-weight:900; display:flex; align-items:center; justify-content:center; }
 .cr-dots i.h { background:#1f8a3e; color:#fff; } .cr-dots i.m { background:#2a1013; color:#ff6b75; border:1px solid #6a1d25; }
@@ -210,7 +223,7 @@ async function load() {
       </div>
     </div>
     <div class="cr-sec">大会ごとの的中率</div>
-    <div class="cr-spark">${spark}</div>
+    <div class="cr-spark"><span class="yl" style="top:0">100%</span><span class="yl" style="top:50%">50%</span>${spark}</div>
     <div class="cr-axis"><span>${esc((evs[0]?.date || "").slice(0, 7).replace("-", "."))}</span><span>${esc((evs[evs.length - 1]?.date || "").slice(0, 7).replace("-", "."))}</span></div>
     <div class="cr-sec">直近${Math.min(20, n)}試合</div>
     <div class="cr-dots">${last}</div>
