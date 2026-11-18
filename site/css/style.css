@@ -1092,7 +1092,7 @@ span.mav.tri > i { --k: 50cqw; position: relative; top: 7cqh; }
    帯は左右の列をまたいで1本（真ん中の縦線もそこで切る）。前戦は左右の列の同じ段（subgrid）に高さだけの空き（.st-gap）を置き、その上に帯を重ねる。
    前戦の帯は「直近5試合」の札を載せるので高さを残し、表の上の帯は線だけなので細く（24→14：1画面に収める余白を足す） */
 .st-gap { height: 24px; }
-.st-tape > .st-sep { height: 11px; }
+.st-tape > .st-sep { height: 9px; }
 .st-sep { grid-column: 1 / -1; position: relative; z-index: 1; display: flex; align-items: center; padding: 0 10px; background: var(--sheet); }
 .st-sep::before { content: ""; flex: 1; height: 1px;
   background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .16) 25%, rgba(255, 255, 255, .16) 75%, transparent); }
@@ -1108,13 +1108,15 @@ span.mav.tri > i { --k: 50cqw; position: relative; top: 7cqh; }
 .tp-row { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) 48px minmax(0, 1fr); align-items: center; }
 /* まとまり（戦績／勝ち方の3段／年齢）の間だけ空ける。勝ち方の3段は詰めて1つの塊に見せる。
    前の形（勝ち方を1本のバー＋凡例）より高くならないよう詰めてある（Gaku 11/8「さっきの方がコンパクトだったけどなあ」） */
-.tp-row.rec { padding-bottom: 4px; }
-.tp-row.way { min-height: 16px; }
-.tp-row.way + .tp-row.way { margin-top: 2px; }
-.tp-row.fin { margin-bottom: 4px; }
-.tp-row.body { margin-top: 4px; }
+/* ★1画面の予算（390×664 で一番背の高いカード ≦552px）に効く値。触ったら超RIZIN.6 等の upcoming 大会で全カードを測る。
+   11/17 に身長とリーチを2段に分けた時、予算を測らずに出して最大560px（5試合が超過）＝ここを1pxずつ詰めて550pxへ戻した */
+.tp-row.rec { padding-bottom: 3px; }
+.tp-row.way { min-height: 15px; }
+.tp-row.way + .tp-row.way { margin-top: 1.5px; }
+.tp-row.fin { margin-bottom: 3px; }
+.tp-row.body { margin-top: 3px; }
 /* 身長とリーチの2段は行の高さ＝数字の高さに詰めて1つの塊に（11/17・段を分けても表の高さをほぼ変えない） */
-.tp-row.body + .tp-row.body { margin-top: 3px; }
+.tp-row.body + .tp-row.body { margin-top: 2px; }
 .tp-row.body .tp-k, .tp-row.body .tp-v { line-height: 1; }
 /* 項目名は「小さな灰色の文字」で済ませない（設計哲学の問い9）：太字の白で、真ん中の帯の上に置く */
 .tp-k { text-align: center; font: 900 11.5px/1 "Noto Sans JP", sans-serif; letter-spacing: .06em; color: #e4e4ea; }
