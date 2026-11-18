@@ -7,7 +7,7 @@
 <title>ランキング｜予想番付</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261118170148">
+<link rel="stylesheet" href="css/style.css?v=20261118171941">
 <style>
 /* ランキングを1枚のカードにする（2026-10-20）：スクショ単体でXに貼れるよう、
    ブランド・集計対象・サイトURLをカードの中に入れる。名前をタップ→その人の戦績へ。 */
@@ -61,21 +61,20 @@ a.lb-name:active { color:var(--gold-hot); }
 .rk-logo { display:block; flex:none; height:18px; width:auto; }   /* ヘッダーと同じロゴ画像（11/8） */
 .rk-foot .site { min-width:0; overflow:hidden; text-overflow:ellipsis; font:500 11px/1 var(--num); letter-spacing:.02em; color:#7a7a86; }
 .rk-tap { font-size:11px; color:#6a6a72; text-align:center; margin:6px 0 0; }
-/* 直近⇄通算の切替札（Gaku 11/8「派手に通算ボタン…直近ボタンが裏」）。表＝金の「通算」／裏＝赤の「直近」。押すと縦に裏返る */
-.rk-flip { position:relative; overflow:hidden; display:grid; grid-template-columns:1fr auto; align-items:center; width:100%;
-  margin:4px 0 8px; padding:11px 14px 11px 16px; border-radius:14px; cursor:pointer; text-align:left; font-family:inherit; }
-.rk-flip.recent { color:#1a1205; border:1px solid #ffe08a;
-  background:linear-gradient(115deg,#f9dc7a 0%,#d4af37 48%,#a8811c 100%); box-shadow:0 0 0 1px rgba(0,0,0,.4) inset, 0 6px 26px rgba(212,175,55,.38); }
-.rk-flip.career { color:#fff; border:1px solid #ff6b6b;
-  background:linear-gradient(115deg,#ff4d4d 0%,#e60012 48%,#7a000a 100%); box-shadow:0 0 0 1px rgba(0,0,0,.4) inset, 0 6px 26px rgba(230,0,18,.35); }
+/* 直近⇄通算の切替（Gaku 11/8「派手に通算ボタン…直近ボタンが裏」）。押すと縦に裏返る。
+   11/18 Gaku「今通算ランキングが表示されていると勘違いしそう。通算ランキングはこちらボタンを左に」
+   → 幅いっぱいの金の札（大きな「🏆 通算ランキング」が見出しに読めた）をやめ、左に寄せた「〇〇はこちら ›」のボタンへ。
+   いま見ている表の名前は下のカードの見出しだけが言う。金は枠と字の差し色まで（設計哲学「黄色やめよ」） */
+.rk-flip { position:relative; overflow:hidden; display:flex; align-items:center; gap:8px; width:max-content; max-width:100%;
+  margin:4px 0 9px; padding:9px 13px 9px 15px; border-radius:999px; cursor:pointer; font-family:inherit; background:#141418; white-space:nowrap; }
+.rk-flip.recent { color:var(--gold-hot); border:1px solid rgba(240,205,90,.75); box-shadow:0 0 16px rgba(212,175,55,.2); }
+.rk-flip.career { color:#fff; border:1px solid #ff4d5a; box-shadow:0 0 16px rgba(230,0,18,.22); }
 .rk-flip::after { content:""; position:absolute; top:0; left:-50%; width:34%; height:100%; pointer-events:none;
-  background:linear-gradient(100deg,transparent,rgba(255,255,255,.45),transparent); transform:skewX(-20deg); animation:rkShine 3.2s ease-in-out infinite; }
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.16),transparent); transform:skewX(-20deg); animation:rkShine 3.2s ease-in-out infinite; }
 @keyframes rkShine { 0%,55% { left:-50%; } 100% { left:130%; } }
-.rk-flip .fl-k { grid-column:1; font:900 21px/1.15 var(--display); font-synthesis:none; letter-spacing:.03em; }
-.rk-flip .fl-s { grid-column:1; margin-top:3px; font:700 11.5px/1.35 "Noto Sans JP", sans-serif; opacity:.85; }
-.rk-flip .fl-go { grid-column:2; grid-row:1 / span 2; padding:8px 13px; border-radius:999px; white-space:nowrap;
-  font:900 14px/1 var(--display); background:rgba(0,0,0,.72); color:#fff; }
-.rk-flip.recent .fl-go { color:var(--gold-hot); }
+.rk-flip .fl-k { font:900 14.5px/1.2 "Noto Sans JP", sans-serif; letter-spacing:.02em; }
+.rk-flip .fl-s { font:700 12px/1.2 "Noto Sans JP", sans-serif; color:#d6d6de; }
+.rk-flip .fl-go { font:900 17px/1 "Noto Sans JP", sans-serif; margin-top:-2px; }
 .rk-flip.anim { animation:rkFlip .5s cubic-bezier(.2,.8,.3,1.2); }
 @keyframes rkFlip { from { transform:perspective(700px) rotateX(-100deg); } to { transform:perspective(700px) rotateX(0); } }
 .rk-card.anim { animation:rkIn .45s ease-out; }
@@ -148,12 +147,12 @@ a.lb-name:active { color:var(--gold-hot); }
 <div class="wrap" id="main"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=20261118170148"></script>
-<script src="js/techniques.js?v=20261118170148"></script>
-<script src="js/demo-data.js?v=20261118170148"></script>
-<script src="js/api.js?v=20261118170148"></script>
-<script src="js/app.js?v=20261118170148"></script>
-<script src="js/glyph_fit.js?v=20261118170148"></script>
+<script src="js/config.js?v=20261118171941"></script>
+<script src="js/techniques.js?v=20261118171941"></script>
+<script src="js/demo-data.js?v=20261118171941"></script>
+<script src="js/api.js?v=20261118171941"></script>
+<script src="js/app.js?v=20261118171941"></script>
+<script src="js/glyph_fit.js?v=20261118171941"></script>
 <script>
 let EVENTS, MEMBERS, ALL_FIGHTS, ALL_PREDS, FMAP = {};
 // 表＝直近の大会のランキング／裏＝通算（Gaku確定・2026-11-08「直近のものだけで一旦はだそう。派手に通算ボタン…直近ボタンが裏」）。
@@ -399,8 +398,8 @@ function render() {
   document.getElementById("main").innerHTML = `
     <button class="rk-flip ${VIEW}${FLIPPED ? " anim" : ""}" onclick="flipView()">
       ${VIEW === "recent"
-        ? `<span class="fl-k">🏆 通算ランキング</span><span class="fl-s">${fromName}から${EVENTS.length}大会・全員同じ大会で</span><span class="fl-go">見る ▶</span>`
-        : `<span class="fl-k">⚡ 直近の大会</span><span class="fl-s">${esc(RECENT ? RECENT.name : "")}のランキングへ</span><span class="fl-go">◀ 戻る</span>`}
+        ? `<span class="fl-k">通算ランキングはこちら</span><span class="fl-go">›</span>`
+        : `<span class="fl-k">直近の大会はこちら</span><span class="fl-s">${esc(RECENT ? RECENT.name : "")}</span><span class="fl-go">›</span>`}
     </button>
     <div class="rk-mode">
       <button class="${MODE === "win" ? "on" : ""}" onclick="setMode('win')">勝敗</button>
