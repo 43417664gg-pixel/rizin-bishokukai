@@ -63,6 +63,11 @@ const CSS = `
   .sheet.bare .fc { display:flex; flex-direction:column; }   /* 写真の下の余白（垂れる丸の分）とバーの上の余白を足し算にする（縦に積むだけだと大きい方に呑まれて、バーが決まり手に寄りすぎた） */
   .ph { position:relative; margin-bottom:calc(var(--ic) / 2 + 34px * var(--u)); }
   .ph .banner { width:100%; aspect-ratio:16/9; object-fit:cover; display:block; border-radius:calc(8px * var(--u)); }
+  /* 公式のVSバナーがまだ無い試合（会見で発表→公式ページ未掲載の間）＝2人の名前の札で代える。壊れた画像の箱を出さない（11/21） */
+  .ph .banner.nb { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:calc(2px * var(--u));
+                   box-sizing:border-box; padding:0 6%; background:linear-gradient(160deg, #26262e, #141418); border:1px solid #33333c; text-align:center; }
+  .ph .banner.nb b { font-size:calc(52px * var(--u) + 2px); font-weight:800; color:#ececf2; line-height:1.15; word-break:keep-all; overflow-wrap:anywhere; }
+  .ph .banner.nb i { font:600 calc(30px * var(--u) + 2px)/1 var(--num, "Oswald"), sans-serif; font-style:normal; letter-spacing:.12em; color:#8a8a96; }
   /* 下端の影＝丸が乗る帯を絵から一段下げる。濃さ（--scrim）は大会ごとのバナーのうるささで決まる。顔のある上半分には掛けない */
   .ph .scrim { position:absolute; left:0; right:0; bottom:0; height:38%; border-radius:0 0 calc(8px * var(--u)) calc(8px * var(--u));
                background:linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,var(--scrim, .45))); }
@@ -263,7 +268,8 @@ function fightCard(f) {
   return `<div class="fc">
     ${BARE ? "" : `<div class="lab"><span class="no">第${f.order_no}試合</span><span class="tt">${esc(title)}</span>${badge}</div>`}
     <div class="ph${off(f) ? " off" : ""}">
-      <img class="banner" src="${esc(o.img(f.image_url))}"><div class="scrim" style="--scrim:${scrimOf(f)}"></div>
+      ${f.image_url ? `<img class="banner" src="${esc(o.img(f.image_url))}">`
+        : `<div class="banner nb"><b>${esc(fname(f.fighter1_id))}</b><i>vs</i><b>${esc(fname(f.fighter2_id))}</b></div>`}<div class="scrim" style="--scrim:${scrimOf(f)}"></div>
       ${won ? `<div class="lose ${won === "l" ? "r" : "l"}"></div><div class="win ${won}"><b>WIN</b><span>${esc(result(f))}</span></div>` : ""}
       ${off(f) ? `<div class="void"><b>対象外</b><span>${offText(f)}</span></div>` : ""}
       <div class="cheer l">${cheer(f.fighter1_id)}</div><div class="cheer r">${cheer(f.fighter2_id)}</div>
