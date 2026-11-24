@@ -5,8 +5,8 @@
   // ---------- 公開・シェア ----------
   // スクショが拡散しても辿り着けるよう、カード内に必ずURLを出す（2026-08-31の監査で
   // 「全ページにURLが無く、流入経路がゼロ」だったのを潰すための共通定数）。
-  window.SITE_URL = "43417664gg-pixel.github.io/rizin-bishokukai";
-  window.SITE_URL_FULL = "https://43417664gg-pixel.github.io/rizin-bishokukai/";
+  window.SITE_URL = "yosou-banzuke.github.io";
+  window.SITE_URL_FULL = "https://yosou-banzuke.github.io/";
 
   // Xへの投稿はWeb Intent（無料・API不要）。画像は添付できないのでスクショ前提。
   window.shareOnX = function (text, url) {

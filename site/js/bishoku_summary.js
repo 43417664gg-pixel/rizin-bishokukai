@@ -312,7 +312,7 @@ return `
     : `<div class="who">${counts}</div>
   <div class="legend"><b>下の丸</b>＝その選手が勝つと予想　<b>上の「📣応援」の丸</b>＝その選手を応援（勝敗とは別）</div>`}
   ${grids}
-  <div class="ft"><span>${esc(D.built_at)}時点</span><b>予想<span>番付</span>　43417664gg-pixel.github.io/rizin-bishokukai</b></div>`;
+  <div class="ft"><span>${esc(D.built_at)}時点</span><b>予想<span>番付</span>　yosou-banzuke.github.io</b></div>`;
 }
 
 window.BishokuSummary = { CSS, render };

@@ -41,7 +41,7 @@ function renderLogin() {
   document.getElementById("main").innerHTML = `
     <h1 class="page-title">管理ログイン</h1>
     <div class="admin-section">
-      <div class="form-row"><input id="lg_email" type="email" placeholder="メールアドレス" value="43417664gg@gmail.com"></div>
+      <div class="form-row"><input id="lg_email" type="email" placeholder="メールアドレス" autocomplete="username"></div>
       <div class="form-row"><input id="lg_pass" type="password" placeholder="パスワード"></div>
       <button class="btn" onclick="doLogin()">ログイン</button>
     </div>

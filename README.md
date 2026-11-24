@@ -23,7 +23,7 @@
 | データの反映 | 正本＝`site/js/demo-data.js`。`rizin-card-intake` の `sync_to_supabase.py` でローカルから直接プッシュ（admin の⚡同期は旧方式）。DBに無い列は `fillFromSeed` がseedで補う |
 | サイトの反映 | main へ push → GitHub Actions で2〜3分 |
 | 採点 | ランキングは**勝敗だけ**（的中率）。ピタリ（KO・一本の決定打＋ラウンド。判定決着は対象外・2026-11-08）はおまけ。正本＝`app.js` の `scoreFight` |
-| 公開URL | https://43417664gg-pixel.github.io/rizin-bishokukai/ |
+| 公開URL | https://yosou-banzuke.github.io/ |
 
 > ここから下は、各見出しの日付時点の記録（履歴）。現行の仕組みと食い違う所（反映の手順・ルールの段数など）は、上の表と正本が正しい。
 
@@ -234,9 +234,9 @@ YouTube予想動画 → NotebookLMにソース追加＋prompts/notebooklm_predic
   `.eposter` で**切り抜かず全体を表示**し、余白はポスター自身をぼかして敷いている
 
 ### D. 公開（GitHub Pages）— **完了（2026-07-20）**
-**URL：https://43417664gg-pixel.github.io/rizin-bishokukai/**
+**URL：https://yosou-banzuke.github.io/**（2026-11-24 組織 yosou-banzuke へ移転。旧URLは転送）
 
-- リポジトリ：`43417664gg-pixel/rizin-bishokukai`（public・無料枠のため）
+- リポジトリ：`yosou-banzuke/yosou-banzuke.github.io`（public・無料枠のため）
 - 配信方式：**GitHub Actions**（`.github/workflows/pages.yml`）。`site/` がサブディレクトリでブランチ配信（ルート or `/docs`）では出せないため
 - **main へ push すれば自動デプロイ**。所要2〜3分
 - 公開前チェック通過：全5ページ `noindex` ／`config.js` は publishable key のみ（secret無し）／assets 5.6MB
@@ -265,7 +265,7 @@ YouTube予想動画 → NotebookLMにソース追加＋prompts/notebooklm_predic
 
 ## 認証情報
 - Supabase URL / publishable key … `site/js/config.js`（平文・公開前提）
-- admin ログイン … `43417664gg@gmail.com` ＋ **パスワードはGaku保持**（どこにも記録していない）
+- admin ログイン … 運営のメールアドレス＋パスワード（どちらもリポジトリに書かない・公開リポジトリのため）
 - RLS … 書き込みは上記メールでログインした場合のみ許可。匿名は読み取りと予想の投稿のみ
 
 ## 画像の出所
