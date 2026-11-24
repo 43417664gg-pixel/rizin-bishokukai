@@ -23,6 +23,16 @@
   window.getMemberId = () => localStorage.getItem(MEMBER_KEY);
   window.setMemberId = (id) => localStorage.setItem(MEMBER_KEY, id);
   window.clearMemberId = () => localStorage.removeItem(MEMBER_KEY);
+  // 旧URL（2026-11-24 まで）からの転送で、前のブラウザで選んでいた名前を引き継ぐ。
+  // 転送ページが #me=<member_id> を付けてくる。すでに名前があるブラウザでは上書きしない。
+  // 美食会の鍵（#bishoku=…）や #join はそのまま残す。
+  (() => {
+    const m = /[#&]me=([a-z0-9_]+)/i.exec(location.hash);
+    if (!m) return;
+    try { if (!getMemberId()) setMemberId(m[1]); } catch (e) { /* 保存できなくても表示は止めない */ }
+    const rest = location.hash.replace(/[#&]me=[a-z0-9_]+/i, "").replace(/^&/, "#").replace(/^#$/, "");
+    history.replaceState(null, "", location.pathname + location.search + rest);
+  })();
 
   // ---------- スコアリング（ルールの正本・2段に簡素化 2026-08-05） ----------
   // 二段梯子：的中（勝者）→ ピタリ（勝者＋決まり手まで一致）。勝者を外したら不成立。
